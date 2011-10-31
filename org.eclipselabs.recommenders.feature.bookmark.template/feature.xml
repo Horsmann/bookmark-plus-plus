@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipselabs.recommenders.ep.template.feature"
+      id="org.eclipselabs.recommenders.bookmark.template.feature"
       label="Template Feature"
       version="0.1.0.qualifier"
       provider-name="Eclipse Code Recommenders">
@@ -18,7 +18,7 @@
    </license>
 
    <plugin
-         id="org.eclipselabs.recommenders.ep.template.example"
+         id="org.eclipselabs.recommenders.bookmark.template.example"
          download-size="0"
          install-size="0"
          version="0.0.0"

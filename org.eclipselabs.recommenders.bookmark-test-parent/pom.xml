@@ -8,7 +8,7 @@
 		<groupId>org.eclipselabs.recommenders</groupId>
 		<artifactId>org.eclipselabs.recommenders.bookmark-parent</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
-		<relativePath>../org.eclipselabs.recommenders.ep-parent</relativePath>
+		<relativePath>../org.eclipselabs.recommenders.bookmark-parent</relativePath>
 	</parent>
   
   	<properties>

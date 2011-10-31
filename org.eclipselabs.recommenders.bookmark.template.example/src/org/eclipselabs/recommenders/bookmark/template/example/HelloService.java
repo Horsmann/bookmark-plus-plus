@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.ep.template.example;
+package org.eclipselabs.recommenders.bookmark.template.example;
 
 public class HelloService implements IHelloService {
 

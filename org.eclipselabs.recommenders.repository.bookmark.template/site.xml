@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipselabs.recommenders.ep.template.feature_0.1.0.qualifier.jar" id="org.eclipselabs.recommenders.ep.template.feature" version="0.1.0.qualifier">
+   <feature url="features/org.eclipselabs.recommenders.bookmark.template.feature_0.1.0.qualifier.jar" id="org.eclipselabs.recommenders.bookmark.template.feature" version="0.1.0.qualifier">
       <category name="template"/>
    </feature>
-   <feature url="features/org.eclipselabs.recommenders.feature.ep.template.source_0.1.0.qualifier.jar" id="org.eclipselabs.recommenders.feature.ep.template.source" version="0.1.0.qualifier">
+   <feature url="features/org.eclipselabs.recommenders.feature.bookmark.template.source_0.1.0.qualifier.jar" id="org.eclipselabs.recommenders.feature.bookmark.template.source" version="0.1.0.qualifier">
       <category name="template"/>
    </feature>
    <category-def name="template" label="Template"/>
