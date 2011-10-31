@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for Example Project
+Bundle-SymbolicName: org.eclipselabs.recommenders.ep.template.tests.example
+Bundle-Version: 0.1.0.qualifier
+Bundle-Vendor: Eclipse Code Recommenders
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit,
+ org.eclipselabs.recommenders.ep.template.example
