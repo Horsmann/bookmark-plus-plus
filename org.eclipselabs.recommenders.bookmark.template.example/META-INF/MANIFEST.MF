@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Example Project
-Bundle-SymbolicName: org.eclipselabs.recommenders.ep.template.example
+Bundle-SymbolicName: org.eclipselabs.recommenders.bookmark.template.example
 Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
