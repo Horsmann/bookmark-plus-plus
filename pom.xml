@@ -17,8 +17,8 @@
 		<module>org.eclipselabs.recommenders.feature.bookmark.template.source</module>
 		<module>org.eclipselabs.recommenders.repository.bookmark.template</module>
 	
-		<module>org.eclipselabs.recommenders.bookmark.template.example</module>
-		<module>org.eclipselabs.recommenders.bookmark.template.tests.example</module>
+		<module>org.eclipselabs.recommenders.bookmark</module>
+		<module>org.eclipselabs.recommenders.bookmark.tests</module>
 	</modules>
 
 </project>

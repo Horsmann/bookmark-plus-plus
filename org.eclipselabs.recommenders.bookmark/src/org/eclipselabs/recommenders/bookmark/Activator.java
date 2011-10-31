@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.template.example;
+package org.eclipselabs.recommenders.bookmark;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

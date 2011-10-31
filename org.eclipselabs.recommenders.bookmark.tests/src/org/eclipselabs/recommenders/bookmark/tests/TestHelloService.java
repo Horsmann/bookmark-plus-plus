@@ -1,8 +1,8 @@
-package org.eclipselabs.recommenders.bookmark.template.tests.example;
+package org.eclipselabs.recommenders.bookmark.tests;
 
 import junit.framework.Assert;
 
-import org.eclipselabs.recommenders.bookmark.template.example.HelloService;
+import org.eclipselabs.recommenders.bookmark.HelloService;
 import org.junit.Test;
 
 public class TestHelloService {
