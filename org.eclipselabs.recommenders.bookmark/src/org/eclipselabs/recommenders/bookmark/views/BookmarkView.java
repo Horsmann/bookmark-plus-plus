@@ -10,31 +10,20 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipselabs.recommenders.bookmark.vogella.ContentProviderTree;
-import org.eclipselabs.recommenders.bookmark.vogella.MyDropListener;
-import org.eclipselabs.recommenders.bookmark.vogella.TreeContentProvider;
-import org.eclipselabs.recommenders.bookmark.vogella.TreeLabelProvider;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -63,9 +52,6 @@ public class BookmarkView extends ViewPart {
 	private Action action2;
 	private Action doubleClickAction;
 
-	private TableColumn typeColumn;
-	private TableColumn nameColumn;
-	private TableColumn locationColumn;
 
 	/*
 	 * The content provider class is responsible for providing objects to the
@@ -74,18 +60,6 @@ public class BookmarkView extends ViewPart {
 	 * or ignore it and always show the same content (like Task List, for
 	 * example).
 	 */
-
-	class ViewContentProvider implements IStructuredContentProvider {
-		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-		}
-
-		public void dispose() {
-		}
-
-		public Object[] getElements(Object parent) {
-			return new String[] { "One", "Two", "Three" };
-		}
-	}
 
 	class ViewLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
@@ -119,38 +93,15 @@ public class BookmarkView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.FULL_SELECTION);
-		viewer.setContentProvider(new ViewContentProvider());
-		viewer.setLabelProvider(new ViewLabelProvider());
+		viewer.setContentProvider(new BookmarkContentProvider());
+		viewer.setLabelProvider(new BookmarkLabelProvider());
 		viewer.setSorter(new NameSorter());
 		viewer.setInput(getViewSite());
-		
-		TreeViewer viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
-		int operations = DND.DROP_COPY | DND.DROP_MOVE;
-		Transfer[] transferTypes = new Transfer[]{TextTransfer.getInstance()};
-		viewer.addDropSupport(operations, transferTypes, new MyDropListener(viewer));
-		viewer.setContentProvider(new TreeContentProvider());
-		viewer.setLabelProvider(new TreeLabelProvider());
-		viewer.setInput(ContentProviderTree.INSTANCE.getModel());
-		
 
-//		final Table table = viewer.getTable();
-//
-//		typeColumn = new TableColumn(table, SWT.LEFT);
-//		typeColumn.setText("");
-//		typeColumn.setWidth(18);
-//		nameColumn = new TableColumn(table, SWT.LEFT);
-//		nameColumn.setText("Name");
-//		nameColumn.setWidth(200);
-//		locationColumn = new TableColumn(table, SWT.LEFT);
-//		locationColumn.setText("Location");
-//		locationColumn.setWidth(450);
-//		table.setHeaderVisible(true);
-//		table.setLinesVisible(false);
-//		
-//		viewer.setContentProvider(new ViewContentProvider());
-//		viewer.setLabelProvider(new ViewLabelProvider());
-//		viewer.setInput(getViewSite());
+		// viewer.setContentProvider(new ViewContentProvider());
+		// viewer.setLabelProvider(new ViewLabelProvider());
+		// viewer.setSorter(new NameSorter());
+		// viewer.setInput(getViewSite());
 
 		// Create the help context id for the viewer's control
 		PlatformUI

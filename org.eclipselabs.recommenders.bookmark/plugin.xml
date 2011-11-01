@@ -14,12 +14,6 @@
             id="org.eclipselabs.recommenders.bookmark.views.BookmarkView"
             name="Bookmarks++">
       </view>
-      <view
-            class="org.eclipselabs.recommenders.bookmark.vogella.TreeView"
-            id="org.eclipselabs.recommenders.bookmark.view1"
-            name="BookmarkTreeView"
-            restorable="true">
-      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
