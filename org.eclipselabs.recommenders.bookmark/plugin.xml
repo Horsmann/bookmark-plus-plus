@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.eclipselabs.recommenders.bookmark"
+            name="Bookmark++">
+      </category>
+      <view
+            category="org.eclipselabs.recommenders.bookmark"
+            class="org.eclipselabs.recommenders.bookmark.views.BookmarkView"
+            icon="icons/sample.gif"
+            id="org.eclipselabs.recommenders.bookmark.views.BookmarkView"
+            name="Bookmarks++">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               id="org.eclipselabs.recommenders.bookmark.views.BookmarkView"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+
+
+</plugin>
