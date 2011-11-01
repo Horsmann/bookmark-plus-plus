@@ -17,11 +17,11 @@
       [Enter License Description here.]
    </license>
 
-   <plugin
-         id="org.eclipselabs.recommenders.bookmark.template.source"
+  <!-- <plugin
+         id="org.eclipselabs.recommenders.feature.bookmark.template.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/>
+         unpack="false"/> -->
 
 </feature>
