@@ -1,81 +1,45 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
-import java.util.ArrayList;
 
 public class TreeModel {
 
-	public TreeObject getModel() {
-		
-		
-		TreeParent root = new TreeParent("top");
-		TreeObject level1 = new TreeObject("level one");
-		root.addChild(level1);
-		
-		TreeObject level2 = new TreeObject("level two");
-		root.addChild(level2);
-		
-		
-		TreeObject level3 = new TreeObject("level three");
-		root.addChild(level3);
-		
-		TreeParent dummy = new TreeParent("");
-		dummy.addChild(root);
-		
-		return dummy;
-	}
-}
+	TreeNode root = null;
 
-class TreeObject {
-
-	private String name;
-	private TreeParent parent;
-
-	public TreeObject(String name) {
-		this.name = name;
+	public TreeModel() {
+		generateDummyValues();
 	}
 
-	public String getName() {
-		return name;
+	public TreeNode getModelRoot() {
+		return root;
 	}
 
-	public void setParent(TreeParent parent) {
-		this.parent = parent;
+	public TreeNode generateDummyValues() {
+
+		TreeNode topeNode1 = new TreeNode("top");
+		TreeNode level1 = new TreeNode("level one");
+		level1.addChild(new TreeNode("level one one"));
+		topeNode1.addChild(level1);
+
+		TreeNode level2 = new TreeNode("level two");
+		topeNode1.addChild(level2);
+
+		TreeNode level3 = new TreeNode("level three");
+		topeNode1.addChild(level3);
+
+		TreeNode topeNode2 = new TreeNode("top 2");
+		TreeNode level11 = new TreeNode("level one");
+		topeNode2.addChild(level11);
+
+		TreeNode level22 = new TreeNode("level two");
+		topeNode2.addChild(level22);
+
+		TreeNode level33 = new TreeNode("level three");
+		topeNode2.addChild(level33);
+
+		root = new TreeNode("");
+		root.addChild(topeNode1);
+		root.addChild(topeNode2);
+
+		return root;
 	}
-
-	public TreeParent getParent() {
-		return parent;
-	}
-
-	public String toString() {
-		return getName();
-	}
-
-}
-
-class TreeParent extends TreeObject {
-	private ArrayList<TreeObject> children;
-
-	public TreeParent(String name) {
-		super(name);
-		children = new ArrayList<TreeObject>();
-	}
-
-	public void addChild(TreeObject child) {
-		children.add(child);
-		child.setParent(this);
-	}
-
-	public void removeChild(TreeObject child) {
-		children.remove(child);
-		child.setParent(null);
-	}
-
-	public TreeObject[] getChildren() {
-		return (TreeObject[]) children.toArray(new TreeObject[children.size()]);
-	}
-
-	public boolean hasChildren() {
-		return children.size() > 0;
-	}
-
 }
