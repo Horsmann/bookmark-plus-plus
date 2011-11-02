@@ -1,17 +1,18 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TransferData;
 
-public class BookmarkDropListener extends ViewerDropAdapter {
+public class TreeDropListener extends ViewerDropAdapter {
 
-	private final Viewer viewer;
+	private final TreeViewer viewer;
 	private TreeModel model;
 	private TreeNode nodeTarget = null;
 
-	public BookmarkDropListener(Viewer viewer, TreeModel model) {
+	public TreeDropListener(TreeViewer viewer, TreeModel model) {
 		super(viewer);
 		this.viewer = viewer;
 		this.model = model;
@@ -53,14 +54,20 @@ public class BookmarkDropListener extends ViewerDropAdapter {
 	public boolean performDrop(Object data) {
 
 		if (nodeTarget != null) {
-			TreeNode newNode = new TreeNode((String)data);
+			TreeNode newNode = new TreeNode((String) data);
 			newNode.setParent(nodeTarget);
 			nodeTarget.addChild(newNode);
+			TreePath[] treeExpansion = viewer.getExpandedTreePaths();
 			viewer.setInput(model.getModelRoot());
+			viewer.setExpandedTreePaths(treeExpansion);
 		} else {
 
+			TreePath[] treeExpansion = viewer.getExpandedTreePaths();
 			model.getModelRoot().addChild(new TreeNode((String) data));
 			viewer.setInput(model.getModelRoot());
+
+			if (treeExpansion != null)
+				viewer.setExpandedTreePaths(treeExpansion);
 		}
 		return false;
 	}
@@ -68,9 +75,6 @@ public class BookmarkDropListener extends ViewerDropAdapter {
 	@Override
 	public boolean validateDrop(Object target, int operation,
 			TransferData transferType) {
-
-		int a = 3;
-
 		return true;
 
 	}

@@ -21,7 +21,7 @@ public class BookmarkView extends ViewPart {
 
 		TreeModel model = new TreeModel();
 		viewer.addDropSupport(operations, transferTypes,
-				new BookmarkDropListener(viewer, model));
+				new TreeDropListener(viewer, model));
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new BookmarkLabelProvider());
 		viewer.setInput(model.getModelRoot());
