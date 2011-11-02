@@ -20,56 +20,44 @@ public class TreeDropListener extends ViewerDropAdapter {
 
 	@Override
 	public void drop(DropTargetEvent event) {
-		int location = this.determineLocation(event);
-
-		if (determineTarget(event) instanceof TreeNode)
+		if ((TreeNode) determineTarget(event) instanceof TreeNode)
 			nodeTarget = (TreeNode) determineTarget(event);
 
-		// String target = (String) determineTarget(event);
-		String translatedLocation = "";
-		switch (location) {
-		case 1:
-			translatedLocation = "Dropped before the target ";
-			break;
-		case 2:
-			translatedLocation = "Dropped after the target ";
-			break;
-		case 3:
-			translatedLocation = "Dropped on the target ";
-			break;
-		case 4:
-			translatedLocation = "Dropped into nothing ";
-			break;
-		}
-		System.err.println(translatedLocation);
-		// System.err.println("The drop was done on the element: " + target);
 		super.drop(event);
 	}
 
-	// This method performs the actual drop
-	// We simply add the String we receive to the model and trigger a refresh of
-	// the
-	// viewer by calling its setInput method.
 	@Override
 	public boolean performDrop(Object data) {
 
-		if (nodeTarget != null) {
-			TreeNode newNode = new TreeNode((String) data);
-			newNode.setParent(nodeTarget);
-			nodeTarget.addChild(newNode);
-			TreePath[] treeExpansion = viewer.getExpandedTreePaths();
-			viewer.setInput(model.getModelRoot());
-			viewer.setExpandedTreePaths(treeExpansion);
-		} else {
+		if (nodeTarget != null)
+			createNewNodeAndAddAsChildToTargetNode((String) data);
+		else
+			createNewTopLevelNode((String) data);
 
-			TreePath[] treeExpansion = viewer.getExpandedTreePaths();
-			model.getModelRoot().addChild(new TreeNode((String) data));
-			viewer.setInput(model.getModelRoot());
-
-			if (treeExpansion != null)
-				viewer.setExpandedTreePaths(treeExpansion);
-		}
 		return false;
+	}
+
+	private void createNewTopLevelNode(String data) {
+		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
+		model.getModelRoot().addChild(new TreeNode((String) data));
+
+		viewer.setInput(model.getModelRoot());
+
+		viewer.setExpandedTreePaths(treeExpansion);
+	}
+
+	private void createNewNodeAndAddAsChildToTargetNode(String data) {
+		TreeNode newNode = new TreeNode(data);
+		newNode.setParent(nodeTarget);
+		nodeTarget.addChild(newNode);
+
+		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
+
+		viewer.setInput(model.getModelRoot());
+
+		viewer.setExpandedTreePaths(treeExpansion);
+		
+		nodeTarget = null;
 	}
 
 	@Override
