@@ -28,6 +28,8 @@ public class TreeDropListener extends ViewerDropAdapter {
 
 	@Override
 	public boolean performDrop(Object data) {
+		
+		String [] hm = (String [])data;
 
 		if (nodeTarget != null)
 			createNewNodeAndAddAsChildToTargetNode((String) data);
