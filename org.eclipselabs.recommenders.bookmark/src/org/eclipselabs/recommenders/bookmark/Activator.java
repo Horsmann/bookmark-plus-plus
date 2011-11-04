@@ -1,21 +1,36 @@
 package org.eclipselabs.recommenders.bookmark;
 
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 
-public class Activator implements BundleActivator {
+public class Activator extends AbstractUIPlugin implements BundleActivator {
 
-    private ServiceRegistration serviceRegistration;
+	// The plug-in ID
+	public static final String PLUGIN_ID = "org.eclipselabs.recommenders.bookmark"; //$NON-NLS-1$
 
-    @Override
-    public void start(final BundleContext context) throws Exception {
-        serviceRegistration = context.registerService(IHelloService.class.getName(), new HelloService(), null);
-    }
+	// The shared instance
+	private static Activator plugin;
 
-    @Override
-    public void stop(final BundleContext context) throws Exception {
-        serviceRegistration.unregister();
-    }
+	public Activator() {
+	}
 
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		plugin = this;
+	}
+
+	public void stop(BundleContext context) throws Exception {
+		plugin = null;
+		super.stop(context);
+	}
+
+	public static Activator getDefault() {
+		return plugin;
+	}
+
+	public static ImageDescriptor getImageDescriptor(String path) {
+		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
 }

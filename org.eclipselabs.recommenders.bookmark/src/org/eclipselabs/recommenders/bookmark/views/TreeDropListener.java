@@ -1,5 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
@@ -29,38 +31,45 @@ public class TreeDropListener extends ViewerDropAdapter {
 
 		if (getCurrentTarget() instanceof TreeNode)
 			nodeTarget = (TreeNode) getCurrentTarget();
+		
+		if (data instanceof String) {
+			String dataString = (String) data;
+			if (nodeTarget != null) {
+				createNewNodeAndAddAsChildToTargetNode(dataString);
+			} else {
+				createNewTopLevelNode(dataString);
+			}
+		}
+		
+		if (data instanceof String[]) {
+			int a = 0;
+		}
 
-		// String [] hm = (String [])data;
+		if (data instanceof IResource[]) {
+			IResource[] resources = (IResource[]) data;
 
-		if (nodeTarget != null) {
-			if (data instanceof String)
-				createNewNodeAndAddAsChildToTargetNode((String) data);
-			else if (data instanceof String[])
-				createNewNodeAndAddAsChildToTargetNode((String[]) data);
+			for (IResource res : resources) {
+				if (nodeTarget != null) {
+					createNewNodeAndAddAsChildToTargetNode(res.getFullPath()
+							.toString());
+				} else {
+					createNewTopLevelNode(res.getFullPath().toString());
+				}
+			}
 			nodeTarget = null;
-		} else {
-			if (data instanceof String)
-				createNewTopLevelNode((String) data);
-			else if (data instanceof String[])
-				createNewTopLevelNode((String[]) data);
+		}
+
+		if (data instanceof TreeNode) {
+			TreeNode node = (TreeNode) data;
+			if (nodeTarget != null) {
+				createNewNodeAndAddAsChildToTargetNode(node.getName());
+				nodeTarget = null;
+			} else {
+				createNewTopLevelNode(node.getName());
+			}
 		}
 
 		return false;
-	}
-
-	private void createNewTopLevelNode(String[] data) {
-
-		for (String string : data) {
-			createNewTopLevelNode(string);
-		}
-
-	}
-
-	private void createNewNodeAndAddAsChildToTargetNode(String[] data) {
-		for (String string : data) {
-			createNewNodeAndAddAsChildToTargetNode(string);
-		}
-
 	}
 
 	private void createNewTopLevelNode(String data) {
