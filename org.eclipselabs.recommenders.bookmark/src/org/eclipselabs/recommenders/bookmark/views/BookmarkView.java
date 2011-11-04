@@ -9,7 +9,6 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.part.ResourceTransfer;
 
 public class BookmarkView extends ViewPart {
 
@@ -19,11 +18,14 @@ public class BookmarkView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		int operations = DND.DROP_COPY | DND.DROP_MOVE;
-		Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance(), FileTransfer.getInstance()};
+		Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance(),
+				FileTransfer.getInstance() };
 
 		TreeModel model = new TreeModel();
-		viewer.addDropSupport(operations, transferTypes,
-				new TreeDropListener(viewer, model));
+		viewer.addDropSupport(operations, transferTypes, new TreeDropListener(
+				viewer, model));
+		viewer.addDragSupport(operations, transferTypes, new TreeDragListener(
+				viewer));
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());

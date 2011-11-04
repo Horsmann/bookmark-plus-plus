@@ -9,6 +9,10 @@ public class TreeNode extends TreeObject {
 			super(name);
 			children = new ArrayList<TreeNode>();
 		}
+		
+		public void removeAllChildren() {
+			children = new ArrayList<TreeNode>();
+		}
 
 		public void addChild(TreeNode child) {
 			children.add(child);
