@@ -20,30 +20,54 @@ public class TreeDropListener extends ViewerDropAdapter {
 
 	@Override
 	public void drop(DropTargetEvent event) {
-		if ((TreeNode) determineTarget(event) instanceof TreeNode)
-			nodeTarget = (TreeNode) determineTarget(event);
 
 		super.drop(event);
 	}
 
 	@Override
 	public boolean performDrop(Object data) {
-		
-		String [] hm = (String [])data;
 
-		if (nodeTarget != null)
-			createNewNodeAndAddAsChildToTargetNode((String) data);
-		else
-			createNewTopLevelNode((String) data);
+		if (getCurrentTarget() instanceof TreeNode)
+			nodeTarget = (TreeNode) getCurrentTarget();
+
+		// String [] hm = (String [])data;
+
+		if (nodeTarget != null) {
+			if (data instanceof String)
+				createNewNodeAndAddAsChildToTargetNode((String) data);
+			else if (data instanceof String[])
+				createNewNodeAndAddAsChildToTargetNode((String[]) data);
+			nodeTarget = null;
+		} else {
+			if (data instanceof String)
+				createNewTopLevelNode((String) data);
+			else if (data instanceof String[])
+				createNewTopLevelNode((String[]) data);
+		}
 
 		return false;
+	}
+
+	private void createNewTopLevelNode(String[] data) {
+
+		for (String string : data) {
+			createNewTopLevelNode(string);
+		}
+
+	}
+
+	private void createNewNodeAndAddAsChildToTargetNode(String[] data) {
+		for (String string : data) {
+			createNewNodeAndAddAsChildToTargetNode(string);
+		}
+
 	}
 
 	private void createNewTopLevelNode(String data) {
 		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
 		model.getModelRoot().addChild(new TreeNode((String) data));
 
-		viewer.setInput(model.getModelRoot());
+		viewer.refresh();
 
 		viewer.setExpandedTreePaths(treeExpansion);
 	}
@@ -55,16 +79,16 @@ public class TreeDropListener extends ViewerDropAdapter {
 
 		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
 
-		viewer.setInput(model.getModelRoot());
+		viewer.refresh();
 
 		viewer.setExpandedTreePaths(treeExpansion);
-		
-		nodeTarget = null;
+
 	}
 
 	@Override
 	public boolean validateDrop(Object target, int operation,
 			TransferData transferType) {
+
 		return true;
 
 	}

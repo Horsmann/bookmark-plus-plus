@@ -9,6 +9,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.part.ResourceTransfer;
 
 public class BookmarkView extends ViewPart {
 
