@@ -1,6 +1,5 @@
-package org.eclipselabs.recommenders.bookmark.views;
+package org.eclipselabs.recommenders.bookmark.tree;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -31,7 +30,7 @@ public class TreeDropListener extends ViewerDropAdapter {
 
 		if (getCurrentTarget() instanceof TreeNode)
 			nodeTarget = (TreeNode) getCurrentTarget();
-		
+
 		if (data instanceof String) {
 			String dataString = (String) data;
 			if (nodeTarget != null) {
@@ -39,10 +38,6 @@ public class TreeDropListener extends ViewerDropAdapter {
 			} else {
 				createNewTopLevelNode(dataString);
 			}
-		}
-		
-		if (data instanceof String[]) {
-			int a = 0;
 		}
 
 		if (data instanceof IResource[]) {

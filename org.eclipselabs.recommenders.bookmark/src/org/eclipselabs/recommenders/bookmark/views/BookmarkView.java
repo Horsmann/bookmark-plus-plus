@@ -9,6 +9,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.tree.TreeContentProvider;
+import org.eclipselabs.recommenders.bookmark.tree.TreeDragListener;
+import org.eclipselabs.recommenders.bookmark.tree.TreeDropListener;
+import org.eclipselabs.recommenders.bookmark.tree.TreeLabelProvider;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 
 public class BookmarkView extends ViewPart {
 
