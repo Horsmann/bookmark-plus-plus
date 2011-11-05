@@ -11,7 +11,7 @@ public class TreeDropListener extends ViewerDropAdapter {
 
 	private final TreeViewer viewer;
 	private TreeModel model;
-	private TreeNode nodeTarget = null;
+	private TreeNode targetNode = null;
 
 	public TreeDropListener(TreeViewer viewer, TreeModel model) {
 		super(viewer);
@@ -29,11 +29,22 @@ public class TreeDropListener extends ViewerDropAdapter {
 	public boolean performDrop(Object data) {
 
 		if (getCurrentTarget() instanceof TreeNode)
-			nodeTarget = (TreeNode) getCurrentTarget();
+			targetNode = (TreeNode) getCurrentTarget();
+
+		if (getSelectedObject() instanceof TreeNode && targetNode != null) {
+			TreeNode sourceNode = (TreeNode) getSelectedObject();
+
+			sourceNode.getParent().removeChild(sourceNode);
+
+			sourceNode.setParent(targetNode);
+			targetNode.addChild(sourceNode);
+
+			return true;
+		}
 
 		if (data instanceof String) {
 			String dataString = (String) data;
-			if (nodeTarget != null) {
+			if (targetNode != null) {
 				createNewNodeAndAddAsChildToTargetNode(dataString);
 			} else {
 				createNewTopLevelNode(dataString);
@@ -44,24 +55,14 @@ public class TreeDropListener extends ViewerDropAdapter {
 			IResource[] resources = (IResource[]) data;
 
 			for (IResource res : resources) {
-				if (nodeTarget != null) {
+				if (targetNode != null) {
 					createNewNodeAndAddAsChildToTargetNode(res.getFullPath()
 							.toString());
 				} else {
 					createNewTopLevelNode(res.getFullPath().toString());
 				}
 			}
-			nodeTarget = null;
-		}
-
-		if (data instanceof TreeNode) {
-			TreeNode node = (TreeNode) data;
-			if (nodeTarget != null) {
-				createNewNodeAndAddAsChildToTargetNode(node.getName());
-				nodeTarget = null;
-			} else {
-				createNewTopLevelNode(node.getName());
-			}
+			targetNode = null;
 		}
 
 		return false;
@@ -78,8 +79,8 @@ public class TreeDropListener extends ViewerDropAdapter {
 
 	private void createNewNodeAndAddAsChildToTargetNode(String data) {
 		TreeNode newNode = new TreeNode(data);
-		newNode.setParent(nodeTarget);
-		nodeTarget.addChild(newNode);
+		newNode.setParent(targetNode);
+		targetNode.addChild(newNode);
 
 		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
 
@@ -92,6 +93,10 @@ public class TreeDropListener extends ViewerDropAdapter {
 	@Override
 	public boolean validateDrop(Object target, int operation,
 			TransferData transferType) {
+
+		// The bookmarks head node can't become a child node
+		if (((TreeNode) getSelectedObject()).getParent() == model.getModelRoot())
+			return false;
 
 		return true;
 

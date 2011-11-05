@@ -3,9 +3,10 @@ package org.eclipselabs.recommenders.bookmark.tree;
 
 public class TreeModel {
 
-	TreeNode root = null;
+	private TreeNode root = null;
 
 	public TreeModel() {
+		root = new TreeNode("");
 		generateDummyValues();
 	}
 
@@ -36,7 +37,6 @@ public class TreeModel {
 		TreeNode level33 = new TreeNode("level three");
 		topeNode2.addChild(level33);
 
-		root = new TreeNode("");
 		root.addChild(topeNode1);
 		root.addChild(topeNode2);
 

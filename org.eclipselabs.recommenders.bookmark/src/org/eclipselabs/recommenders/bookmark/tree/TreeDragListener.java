@@ -11,7 +11,7 @@ public class TreeDragListener implements DragSourceListener {
 
 	private final TreeViewer viewer;
 	private TreeNode dragNode;
-	private boolean deleteOldNode;
+	private boolean dropPerformed;
 
 	public TreeDragListener(TreeViewer viewer) {
 		this.viewer = viewer;
@@ -19,13 +19,8 @@ public class TreeDragListener implements DragSourceListener {
 
 	@Override
 	public void dragFinished(DragSourceEvent event) {
-		if (dragNode != null && deleteOldNode) {
-			dragNode.removeAllChildren();
-			dragNode.getParent().removeChild(dragNode);
-		}
-
-		viewer.refresh();
-		System.out.println("Finshed Drag");
+		if (dropPerformed)
+			viewer.refresh();
 	}
 
 	@Override
@@ -37,17 +32,17 @@ public class TreeDragListener implements DragSourceListener {
 
 		if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 			event.data = dragNode.getName();
-			deleteOldNode = true;
+			dropPerformed = true;
 		} else if (ResourceTransfer.getInstance().isSupportedType(
 				event.dataType)) {
 			event.data = dragNode.getName();
-			deleteOldNode = true;
+			dropPerformed = true;
 		}
 
 	}
 
 	@Override
 	public void dragStart(DragSourceEvent event) {
-		deleteOldNode = false;
+		dropPerformed = false;
 	}
 }
