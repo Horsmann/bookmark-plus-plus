@@ -1,11 +1,13 @@
 package org.eclipselabs.recommenders.bookmark.tree;
 
+
 public class TreeModel {
 
 	private TreeNode root = null;
 
 	public TreeModel() {
 		root = new TreeNode("");
+		generateDummyValues();
 	}
 
 	public TreeNode getModelRoot() {
