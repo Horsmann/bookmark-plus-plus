@@ -1,21 +1,22 @@
 package org.eclipselabs.recommenders.bookmark;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.BundleActivator;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-public class Activator extends AbstractUIPlugin implements BundleActivator {
+public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipselabs.recommenders.bookmark"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;
-
-	public Activator() {
-	}
-
+	
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
@@ -25,12 +26,23 @@ public class Activator extends AbstractUIPlugin implements BundleActivator {
 		plugin = null;
 		super.stop(context);
 	}
-
+	
 	public static Activator getDefault() {
 		return plugin;
 	}
 
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	@Override
+	protected void initializeImageRegistry(ImageRegistry registry) {
+		super.initializeImageRegistry(registry);
+		Bundle bundle = Platform.getBundle(PLUGIN_ID);
+
+		ImageDescriptor imgDesc = ImageDescriptor.createFromURL(FileLocator
+				.find(bundle, new Path("icons/sample.gif"), null));
+		registry.put("default", imgDesc);
+		
+		imgDesc = ImageDescriptor.createFromURL(FileLocator
+				.find(bundle, new Path("icons/jcu_obj.gif"), null));
+		registry.put("javafile", imgDesc);
+
 	}
 }

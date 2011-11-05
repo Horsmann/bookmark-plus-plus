@@ -1,6 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.tree;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
@@ -94,8 +95,15 @@ public class TreeDropListener extends ViewerDropAdapter {
 	public boolean validateDrop(Object target, int operation,
 			TransferData transferType) {
 
+		IStructuredSelection selection = (IStructuredSelection) viewer
+				.getSelection();
+
+		// The drag is not performed on the tree
+		if (selection.getFirstElement() == null)
+			return true;
 		// The bookmarks head node can't become a child node
-		if (((TreeNode) getSelectedObject()).getParent() == model.getModelRoot())
+		TreeNode node = ((TreeNode) getSelectedObject()).getParent();
+		if (node != null && node == model.getModelRoot())
 			return false;
 
 		return true;
