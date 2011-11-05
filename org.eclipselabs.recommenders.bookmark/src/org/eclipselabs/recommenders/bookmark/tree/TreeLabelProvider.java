@@ -9,8 +9,10 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 public class TreeLabelProvider extends LabelProvider {
 	@Override
 	public String getText(Object element) {
-		if (element instanceof TreeObject)
-			return ((TreeObject) element).getName();
+		if (element instanceof TreeNode) {
+			TreeNode node = (TreeNode) element;
+			return node.getName() + "@" + node.getProjectName(); 
+			}
 		return "";
 	}
 

@@ -15,8 +15,8 @@ public class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object getParent(Object element) {
-		if (element instanceof TreeObject) {
-			return ((TreeObject) element).getParent();
+		if (element instanceof TreeNode) {
+			return ((TreeNode) element).getParent();
 		}
 
 		return null;
