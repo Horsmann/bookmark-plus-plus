@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree;
+package org.eclipselabs.recommenders.bookmark.tree.node;
 
 public class ReferenceNode extends TreeNode {
 	

@@ -16,7 +16,11 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
-	
+
+	public static final String ICON_DEFAULT = "default";
+	public static final String ICON_BOOKMARK = "bookmark";
+	public static final String ICON_JAVAFILE = "java";
+
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
@@ -26,7 +30,7 @@ public class Activator extends AbstractUIPlugin {
 		plugin = null;
 		super.stop(context);
 	}
-	
+
 	public static Activator getDefault() {
 		return plugin;
 	}
@@ -38,15 +42,15 @@ public class Activator extends AbstractUIPlugin {
 
 		ImageDescriptor imgDesc = ImageDescriptor.createFromURL(FileLocator
 				.find(bundle, new Path("icons/sample.gif"), null));
-		registry.put("default", imgDesc);
-		
-		imgDesc = ImageDescriptor.createFromURL(FileLocator
-				.find(bundle, new Path("icons/jcu_obj.gif"), null));
-		registry.put("javafile", imgDesc);
-		
-		imgDesc = ImageDescriptor.createFromURL(FileLocator
-				.find(bundle, new Path("icons/bookmark.gif"), null));
-		registry.put("bookmark", imgDesc);
+		registry.put(ICON_DEFAULT, imgDesc);
+
+		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
+				new Path("icons/jcu_obj.gif"), null));
+		registry.put(ICON_JAVAFILE, imgDesc);
+
+		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
+				new Path("icons/bookmark.gif"), null));
+		registry.put(ICON_BOOKMARK, imgDesc);
 
 	}
 }

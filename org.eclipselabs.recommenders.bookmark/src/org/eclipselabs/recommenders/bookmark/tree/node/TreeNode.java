@@ -1,8 +1,8 @@
-package org.eclipselabs.recommenders.bookmark.tree;
+package org.eclipselabs.recommenders.bookmark.tree.node;
 
 import java.util.ArrayList;
 
-public class TreeNode {
+public abstract class TreeNode {
 	private TreeNode parent;
 	private ArrayList<TreeNode> children;
 	private String text;

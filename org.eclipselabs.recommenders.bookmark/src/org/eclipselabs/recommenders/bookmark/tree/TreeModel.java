@@ -1,5 +1,9 @@
 package org.eclipselabs.recommenders.bookmark.tree;
 
+import org.eclipselabs.recommenders.bookmark.tree.node.BookmarkNode;
+import org.eclipselabs.recommenders.bookmark.tree.node.ReferenceNode;
+import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
+
 
 public class TreeModel {
 
@@ -16,7 +20,7 @@ public class TreeModel {
 
 	public TreeNode generateDummyValues() {
 
-		TreeNode topeNode1 = new ReferenceNode("top");
+		TreeNode topeNode1 = new BookmarkNode("top", "Schnittstelle zwischen A und B");
 		TreeNode level1 = new ReferenceNode("level one");
 		level1.addChild(new ReferenceNode("level one one"));
 		topeNode1.addChild(level1);
@@ -27,7 +31,8 @@ public class TreeModel {
 		TreeNode level3 = new ReferenceNode("level three");
 		topeNode1.addChild(level3);
 
-		TreeNode topeNode2 = new ReferenceNode("top 2");
+		TreeNode topeNode2 = new BookmarkNode("top 2", "Code Master-Pieces");
+//		TreeNode topeNode2 = new ReferenceNode("top 2");
 		TreeNode level11 = new ReferenceNode("level one");
 		topeNode2.addChild(level11);
 

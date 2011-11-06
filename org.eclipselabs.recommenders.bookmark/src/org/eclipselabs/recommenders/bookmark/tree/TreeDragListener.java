@@ -6,6 +6,7 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.tree.node.ReferenceNode;
 
 public class TreeDragListener implements DragSourceListener {
 

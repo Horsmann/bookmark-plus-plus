@@ -2,12 +2,13 @@ package org.eclipselabs.recommenders.bookmark.tree;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeContentProvider implements ITreeContentProvider {
 	@Override
 	public Object[] getChildren(Object element) {
-		if (element instanceof ReferenceNode) {
-			return ((ReferenceNode) element).getChildren();
+		if (element instanceof TreeNode) {
+			return ((TreeNode) element).getChildren();
 		}
 
 		return new Object[0];
@@ -15,8 +16,8 @@ public class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object getParent(Object element) {
-		if (element instanceof ReferenceNode) {
-			return ((ReferenceNode) element).getParent();
+		if (element instanceof TreeNode) {
+			return ((TreeNode) element).getParent();
 		}
 
 		return null;
@@ -24,8 +25,8 @@ public class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(Object element) {
-		if (element instanceof ReferenceNode)
-			return ((ReferenceNode) element).hasChildren();
+		if (element instanceof TreeNode)
+			return ((TreeNode) element).hasChildren();
 		return false;
 
 	}

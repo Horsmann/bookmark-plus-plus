@@ -8,12 +8,14 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipselabs.recommenders.bookmark.tree.node.ReferenceNode;
+import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeDropListener implements DropTargetListener {
 
 	private final TreeViewer viewer;
 	private TreeModel model;
-	private ReferenceNode targetNode = null;
+	private TreeNode targetNode = null;
 
 	public TreeDropListener(TreeViewer viewer, TreeModel model) {
 		// super(viewer);
@@ -42,7 +44,18 @@ public class TreeDropListener implements DropTargetListener {
 	@Override
 	public void dropAccept(DropTargetEvent event) {
 
+		
 		// The bookmarks head node can't become a child node
+		Object selectedObject = getSelectedObject() ;
+		
+		if (selectedObject==null)
+			return;
+		
+		if (!(selectedObject instanceof ReferenceNode)) {
+			event.detail=DND.DROP_NONE;
+			return;
+		}
+		
 		ReferenceNode node = (ReferenceNode) getSelectedObject();
 
 		// Drag operation is performed somewhere outside our view
@@ -54,7 +67,7 @@ public class TreeDropListener implements DropTargetListener {
 			return;
 		}
 
-		if (causesRecursion(node, (ReferenceNode) getTarget(event))) {
+		if (causesRecursion(node, (TreeNode) getTarget(event))) {
 			event.detail = DND.DROP_NONE;
 			System.err.println("Rekursion");
 			return;
@@ -78,8 +91,8 @@ public class TreeDropListener implements DropTargetListener {
 	@Override
 	public void drop(DropTargetEvent event) {
 
-		if (getTarget(event) instanceof ReferenceNode)
-			targetNode = (ReferenceNode) getTarget(event);
+		if (getTarget(event) instanceof TreeNode)
+			targetNode = (TreeNode) getTarget(event);
 
 		if (getSelectedObject() instanceof ReferenceNode && targetNode != null) {
 			ReferenceNode sourceNode = (ReferenceNode) getSelectedObject();
@@ -107,17 +120,7 @@ public class TreeDropListener implements DropTargetListener {
 			return;
 		}
 
-		if (event.data instanceof String) {
-			String dataString = (String) event.data;
-			if (targetNode != null) {
-				createNewNodeAndAddAsChildToTargetNode(dataString);
-			} else {
-				createNewTopLevelNode(dataString);
-			}
-		}
-
 		System.err.println("drop");
-		// TODO Auto-generated method stub
 
 	}
 

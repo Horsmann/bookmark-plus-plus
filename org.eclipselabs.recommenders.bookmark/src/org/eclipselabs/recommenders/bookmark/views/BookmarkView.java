@@ -1,5 +1,6 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -22,6 +23,9 @@ public class BookmarkView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		
+		ColumnViewerToolTipSupport.enableFor(viewer);
+		
 		int operations = DND.DROP_LINK;
 		Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance(),
 				ResourceTransfer.getInstance() };
