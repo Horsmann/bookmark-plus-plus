@@ -22,7 +22,7 @@ public class BookmarkView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		int operations = DND.DROP_COPY | DND.DROP_MOVE;
+		int operations = DND.DROP_LINK;
 		Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance(),
 				ResourceTransfer.getInstance() };
 

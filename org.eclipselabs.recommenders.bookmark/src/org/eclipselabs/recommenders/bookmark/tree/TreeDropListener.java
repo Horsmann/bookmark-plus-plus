@@ -1,36 +1,85 @@
 package org.eclipselabs.recommenders.bookmark.tree;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerDropAdapter;
+import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.dnd.DropTargetListener;
 
-public class TreeDropListener extends ViewerDropAdapter {
+public class TreeDropListener implements DropTargetListener {
 
 	private final TreeViewer viewer;
 	private TreeModel model;
 	private TreeNode targetNode = null;
 
 	public TreeDropListener(TreeViewer viewer, TreeModel model) {
-		super(viewer);
+		// super(viewer);
 		this.viewer = viewer;
 		this.model = model;
 	}
 
 	@Override
-	public void drop(DropTargetEvent event) {
-
-		super.drop(event);
+	public void dragEnter(DropTargetEvent event) {
+		if (event.detail == DND.DROP_NONE)
+			event.detail = DND.DROP_LINK;
 	}
 
 	@Override
-	public boolean performDrop(Object data) {
+	public void dragLeave(DropTargetEvent event) {
+	}
 
-		if (getCurrentTarget() instanceof TreeNode)
-			targetNode = (TreeNode) getCurrentTarget();
+	@Override
+	public void dragOperationChanged(DropTargetEvent event) {
+	}
+
+	@Override
+	public void dragOver(DropTargetEvent event) {
+	}
+
+	@Override
+	public void dropAccept(DropTargetEvent event) {
+
+		// The bookmarks head node can't become a child node
+		TreeNode node = (TreeNode) getSelectedObject();
+
+		// Drag operation is performed somewhere outside our view
+		if (node == null)
+			return;
+
+		if (node.getParent() == model.getModelRoot()) {
+			event.detail = DND.DROP_NONE;
+			return;
+		}
+
+		if (causesRecursion(node, (TreeNode) getTarget(event))) {
+			event.detail = DND.DROP_NONE;
+			System.err.println("Rekursion");
+			return;
+		}
+
+	}
+
+	private boolean causesRecursion(TreeNode source, TreeNode target) {
+
+		TreeNode targetParent = target.getParent();
+
+		if (targetParent == null)
+			return false;
+		else if (targetParent == source)
+			return true;
+		else
+			return causesRecursion(source, targetParent);
+
+	}
+
+	@Override
+	public void drop(DropTargetEvent event) {
+
+		if (getTarget(event) instanceof TreeNode)
+			targetNode = (TreeNode) getTarget(event);
 
 		if (getSelectedObject() instanceof TreeNode && targetNode != null) {
 			TreeNode sourceNode = (TreeNode) getSelectedObject();
@@ -40,20 +89,11 @@ public class TreeDropListener extends ViewerDropAdapter {
 			sourceNode.setParent(targetNode);
 			targetNode.addChild(sourceNode);
 
-			return true;
+			return;
 		}
 
-		if (data instanceof String) {
-			String dataString = (String) data;
-			if (targetNode != null) {
-				createNewNodeAndAddAsChildToTargetNode(dataString);
-			} else {
-				createNewTopLevelNode(dataString);
-			}
-		}
-
-		if (data instanceof IResource[]) {
-			IResource[] resources = (IResource[]) data;
+		if (event.data instanceof IResource[]) {
+			IResource[] resources = (IResource[]) event.data;
 
 			for (IResource res : resources) {
 				if (targetNode != null) {
@@ -64,9 +104,21 @@ public class TreeDropListener extends ViewerDropAdapter {
 				}
 			}
 			targetNode = null;
+			return;
 		}
 
-		return false;
+		if (event.data instanceof String) {
+			String dataString = (String) event.data;
+			if (targetNode != null) {
+				createNewNodeAndAddAsChildToTargetNode(dataString);
+			} else {
+				createNewTopLevelNode(dataString);
+			}
+		}
+
+		System.err.println("drop");
+		// TODO Auto-generated method stub
+
 	}
 
 	private void createNewTopLevelNode(String data) {
@@ -91,23 +143,17 @@ public class TreeDropListener extends ViewerDropAdapter {
 
 	}
 
-	@Override
-	public boolean validateDrop(Object target, int operation,
-			TransferData transferType) {
+	private Object getSelectedObject() {
+		ISelection selection = viewer.getSelection();
+		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
+			IStructuredSelection structured = (IStructuredSelection) selection;
+			return structured.getFirstElement();
+		}
+		return null;
+	}
 
-		IStructuredSelection selection = (IStructuredSelection) viewer
-				.getSelection();
-
-		// The drag is not performed on the tree
-		if (selection.getFirstElement() == null)
-			return true;
-		// The bookmarks head node can't become a child node
-		TreeNode node = ((TreeNode) getSelectedObject()).getParent();
-		if (node != null && node == model.getModelRoot())
-			return false;
-
-		return true;
-
+	private Object getTarget(DropTargetEvent event) {
+		return event.item.getData();
 	}
 
 }
