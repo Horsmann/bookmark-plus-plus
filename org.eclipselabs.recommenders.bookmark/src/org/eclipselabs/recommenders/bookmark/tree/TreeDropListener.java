@@ -1,5 +1,8 @@
 package org.eclipselabs.recommenders.bookmark.tree;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -25,8 +28,7 @@ public class TreeDropListener implements DropTargetListener {
 
 	@Override
 	public void dragEnter(DropTargetEvent event) {
-		if (event.detail == DND.DROP_NONE)
-			event.detail = DND.DROP_LINK;
+		event.detail = DND.DROP_LINK;
 	}
 
 	@Override
@@ -44,35 +46,39 @@ public class TreeDropListener implements DropTargetListener {
 	@Override
 	public void dropAccept(DropTargetEvent event) {
 
-		
-		// The bookmarks head node can't become a child node
-		Object selectedObject = getSelectedObject() ;
-		
-		if (selectedObject==null)
-			return;
-		
-		if (!(selectedObject instanceof ReferenceNode)) {
-			event.detail=DND.DROP_NONE;
-			return;
-		}
-		
-		ReferenceNode node = (ReferenceNode) getSelectedObject();
-
-		// Drag operation is performed somewhere outside our view
-		if (node == null)
-			return;
-
-		if (node.getParent() == model.getModelRoot()) {
+		if (!isValidDrop(event))
 			event.detail = DND.DROP_NONE;
-			return;
-		}
+	}
 
-		if (causesRecursion(node, (TreeNode) getTarget(event))) {
-			event.detail = DND.DROP_NONE;
-			System.err.println("Rekursion");
-			return;
-		}
+	private boolean isValidDrop(DropTargetEvent event) {
 
+		// Iterate the selected items that are being droped
+		List<IStructuredSelection> selectedList = getTreeSelections();
+		for (int i = 0; i < selectedList.size(); i++) {
+			TreeNode node = (TreeNode) selectedList.get(i);
+			if (!(node instanceof ReferenceNode))
+				return false;
+
+			ReferenceNode refNode = (ReferenceNode) node;
+
+			TreeNode target = (TreeNode) getTarget(event);
+			if (causesRecursion(refNode, target)) {
+				return false;
+			}
+
+		}
+		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<IStructuredSelection> getTreeSelections() {
+		ISelection selection = viewer.getSelection();
+		if (selection == null)
+			return Collections.emptyList();
+		if (selection instanceof IStructuredSelection && !selection.isEmpty())
+			return ((IStructuredSelection) selection).toList();
+
+		return Collections.emptyList();
 	}
 
 	private boolean causesRecursion(TreeNode source, TreeNode target) {
@@ -94,17 +100,21 @@ public class TreeDropListener implements DropTargetListener {
 		if (getTarget(event) instanceof TreeNode)
 			targetNode = (TreeNode) getTarget(event);
 
-		if (getSelectedObject() instanceof ReferenceNode && targetNode != null) {
-			ReferenceNode sourceNode = (ReferenceNode) getSelectedObject();
+		if (isInsideViewDrop())
+			processDropEventWithDragFromWithinTheView();
+		else
+			processDropEventWithDragInitiatedFromOutsideTheView(event);
 
-			sourceNode.getParent().removeChild(sourceNode);
+		targetNode = null;
 
-			sourceNode.setParent(targetNode);
-			targetNode.addChild(sourceNode);
+	}
 
-			return;
-		}
+	private boolean isInsideViewDrop() {
+		return !getTreeSelections().isEmpty();
+	}
 
+	private void processDropEventWithDragInitiatedFromOutsideTheView(
+			DropTargetEvent event) {
 		if (event.data instanceof IResource[]) {
 			IResource[] resources = (IResource[]) event.data;
 
@@ -116,12 +126,28 @@ public class TreeDropListener implements DropTargetListener {
 					createNewTopLevelNode(res.getFullPath().toString());
 				}
 			}
-			targetNode = null;
-			return;
+
 		}
+	}
 
-		System.err.println("drop");
+	private void processDropEventWithDragFromWithinTheView() {
+		List<IStructuredSelection> selections = getTreeSelections();
+		for (int i = 0; i < selections.size(); i++) {
+			TreeNode node = (TreeNode) selections.get(i);
 
+			if (isValidSourceAndTarget(node)) {
+				ReferenceNode sourceNode = (ReferenceNode) node;
+
+				sourceNode.getParent().removeChild(sourceNode);
+
+				sourceNode.setParent(targetNode);
+				targetNode.addChild(sourceNode);
+			}
+		}
+	}
+
+	private boolean isValidSourceAndTarget(TreeNode node) {
+		return (node instanceof ReferenceNode && targetNode != null);
 	}
 
 	private void createNewTopLevelNode(String data) {
@@ -144,15 +170,6 @@ public class TreeDropListener implements DropTargetListener {
 
 		viewer.setExpandedTreePaths(treeExpansion);
 
-	}
-
-	private Object getSelectedObject() {
-		ISelection selection = viewer.getSelection();
-		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
-			IStructuredSelection structured = (IStructuredSelection) selection;
-			return structured.getFirstElement();
-		}
-		return null;
 	}
 
 	private Object getTarget(DropTargetEvent event) {
