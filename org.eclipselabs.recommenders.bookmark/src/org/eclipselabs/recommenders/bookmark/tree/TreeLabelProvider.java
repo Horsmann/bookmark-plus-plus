@@ -9,8 +9,8 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 public class TreeLabelProvider extends LabelProvider {
 	@Override
 	public String getText(Object element) {
-		if (element instanceof TreeNode) {
-			TreeNode node = (TreeNode) element;
+		if (element instanceof ReferenceNode) {
+			ReferenceNode node = (ReferenceNode) element;
 			return node.getName() + "@" + node.getProjectName(); 
 			}
 		return "";
@@ -30,10 +30,10 @@ public class TreeLabelProvider extends LabelProvider {
 
 	public String getImageKeyForType(Object element) {
 
-		if (!(element instanceof TreeNode))
+		if (!(element instanceof ReferenceNode))
 			return "default";
 
-		TreeNode node = (TreeNode) element;
+		ReferenceNode node = (ReferenceNode) element;
 		String name = node.getName();
 		int pos = name.lastIndexOf(".");
 		if (pos != -1) {

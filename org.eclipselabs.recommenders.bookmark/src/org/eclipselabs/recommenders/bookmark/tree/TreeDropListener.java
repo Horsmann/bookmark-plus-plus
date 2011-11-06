@@ -13,7 +13,7 @@ public class TreeDropListener implements DropTargetListener {
 
 	private final TreeViewer viewer;
 	private TreeModel model;
-	private TreeNode targetNode = null;
+	private ReferenceNode targetNode = null;
 
 	public TreeDropListener(TreeViewer viewer, TreeModel model) {
 		// super(viewer);
@@ -43,7 +43,7 @@ public class TreeDropListener implements DropTargetListener {
 	public void dropAccept(DropTargetEvent event) {
 
 		// The bookmarks head node can't become a child node
-		TreeNode node = (TreeNode) getSelectedObject();
+		ReferenceNode node = (ReferenceNode) getSelectedObject();
 
 		// Drag operation is performed somewhere outside our view
 		if (node == null)
@@ -54,7 +54,7 @@ public class TreeDropListener implements DropTargetListener {
 			return;
 		}
 
-		if (causesRecursion(node, (TreeNode) getTarget(event))) {
+		if (causesRecursion(node, (ReferenceNode) getTarget(event))) {
 			event.detail = DND.DROP_NONE;
 			System.err.println("Rekursion");
 			return;
@@ -78,11 +78,11 @@ public class TreeDropListener implements DropTargetListener {
 	@Override
 	public void drop(DropTargetEvent event) {
 
-		if (getTarget(event) instanceof TreeNode)
-			targetNode = (TreeNode) getTarget(event);
+		if (getTarget(event) instanceof ReferenceNode)
+			targetNode = (ReferenceNode) getTarget(event);
 
-		if (getSelectedObject() instanceof TreeNode && targetNode != null) {
-			TreeNode sourceNode = (TreeNode) getSelectedObject();
+		if (getSelectedObject() instanceof ReferenceNode && targetNode != null) {
+			ReferenceNode sourceNode = (ReferenceNode) getSelectedObject();
 
 			sourceNode.getParent().removeChild(sourceNode);
 
@@ -123,7 +123,7 @@ public class TreeDropListener implements DropTargetListener {
 
 	private void createNewTopLevelNode(String data) {
 		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
-		model.getModelRoot().addChild(new TreeNode((String) data));
+		model.getModelRoot().addChild(new ReferenceNode((String) data));
 
 		viewer.refresh();
 
@@ -131,7 +131,7 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private void createNewNodeAndAddAsChildToTargetNode(String data) {
-		TreeNode newNode = new TreeNode(data);
+		ReferenceNode newNode = new ReferenceNode(data);
 		newNode.setParent(targetNode);
 		targetNode.addChild(newNode);
 

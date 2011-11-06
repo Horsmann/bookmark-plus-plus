@@ -10,7 +10,7 @@ import org.eclipse.ui.part.ResourceTransfer;
 public class TreeDragListener implements DragSourceListener {
 
 	private final TreeViewer viewer;
-	private TreeNode dragNode;
+	private ReferenceNode dragNode;
 	private boolean dropPerformed;
 
 	public TreeDragListener(TreeViewer viewer) {
@@ -28,7 +28,7 @@ public class TreeDragListener implements DragSourceListener {
 		// Here you do the convertion to the type which is expected.
 		IStructuredSelection selection = (IStructuredSelection) viewer
 				.getSelection();
-		dragNode = (TreeNode) selection.getFirstElement();
+		dragNode = (ReferenceNode) selection.getFirstElement();
 
 		if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 			event.data = dragNode.getName();

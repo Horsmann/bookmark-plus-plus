@@ -6,8 +6,8 @@ import org.eclipse.jface.viewers.Viewer;
 public class TreeContentProvider implements ITreeContentProvider {
 	@Override
 	public Object[] getChildren(Object element) {
-		if (element instanceof TreeNode) {
-			return ((TreeNode) element).getChildren();
+		if (element instanceof ReferenceNode) {
+			return ((ReferenceNode) element).getChildren();
 		}
 
 		return new Object[0];
@@ -15,8 +15,8 @@ public class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object getParent(Object element) {
-		if (element instanceof TreeNode) {
-			return ((TreeNode) element).getParent();
+		if (element instanceof ReferenceNode) {
+			return ((ReferenceNode) element).getParent();
 		}
 
 		return null;
@@ -24,8 +24,8 @@ public class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(Object element) {
-		if (element instanceof TreeNode)
-			return ((TreeNode) element).hasChildren();
+		if (element instanceof ReferenceNode)
+			return ((ReferenceNode) element).hasChildren();
 		return false;
 
 	}

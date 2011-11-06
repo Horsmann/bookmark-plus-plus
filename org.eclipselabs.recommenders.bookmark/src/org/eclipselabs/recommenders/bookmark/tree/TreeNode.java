@@ -5,34 +5,15 @@ import java.util.ArrayList;
 public class TreeNode {
 	private TreeNode parent;
 	private ArrayList<TreeNode> children;
-	private String name;
-	private String path;
-	private String project;
+	private String text;
 
-	public TreeNode(String path) {
-		this.name = extractName(path);
-		this.project = extractProject(path);
-		this.path = path;
+	public TreeNode(String text) {
+		this.text = text;
 		children = new ArrayList<TreeNode>();
 	}
 
-	public String getProjectName() {
-		return project;
-	}
-
-	private String extractProject(String path) {
-		int posFirstSlash = path.indexOf("/");
-		int posSecondSlash = 0;
-		if (posFirstSlash > -1)
-			posSecondSlash = path.indexOf("/", posFirstSlash + 1);
-		else
-			return path;
-
-		if (posSecondSlash > -1) {
-			return path.substring(posFirstSlash + 1, posSecondSlash
-					- posFirstSlash);
-		}
-		return path;
+	public boolean hasParent() {
+		return (parent == null);
 	}
 
 	public void removeAllChildren() {
@@ -57,20 +38,8 @@ public class TreeNode {
 		return children.size() > 0;
 	}
 
-	private String extractName(String path) {
-		int posLastSlash = path.lastIndexOf("/");
-		int posDot = path.lastIndexOf(".");
-
-		if (posDot == -1 || posLastSlash == -1)
-			return path;
-
-		String name = path.substring(posLastSlash + 1);
-
-		return name;
-	}
-
-	public String getName() {
-		return name;
+	public String getText() {
+		return text;
 	}
 
 	public void setParent(TreeNode parent) {
@@ -79,10 +48,6 @@ public class TreeNode {
 
 	public TreeNode getParent() {
 		return parent;
-	}
-
-	public String toString() {
-		return getName();
 	}
 
 }

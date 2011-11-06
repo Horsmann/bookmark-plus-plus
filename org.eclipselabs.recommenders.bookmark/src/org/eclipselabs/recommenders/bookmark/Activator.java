@@ -43,6 +43,10 @@ public class Activator extends AbstractUIPlugin {
 		imgDesc = ImageDescriptor.createFromURL(FileLocator
 				.find(bundle, new Path("icons/jcu_obj.gif"), null));
 		registry.put("javafile", imgDesc);
+		
+		imgDesc = ImageDescriptor.createFromURL(FileLocator
+				.find(bundle, new Path("icons/bookmark.gif"), null));
+		registry.put("bookmark", imgDesc);
 
 	}
 }
