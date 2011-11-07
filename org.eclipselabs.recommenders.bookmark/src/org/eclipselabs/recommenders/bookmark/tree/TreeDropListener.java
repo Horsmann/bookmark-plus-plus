@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipselabs.recommenders.bookmark.tree.node.BookmarkNode;
 import org.eclipselabs.recommenders.bookmark.tree.node.ReferenceNode;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
@@ -97,7 +98,7 @@ public class TreeDropListener implements DropTargetListener {
 	@Override
 	public void drop(DropTargetEvent event) {
 
-		if (getTarget(event) instanceof TreeNode)
+		if (getTarget(event) != null && getTarget(event) instanceof TreeNode)
 			targetNode = (TreeNode) getTarget(event);
 
 		if (isInsideViewDrop())
@@ -152,7 +153,14 @@ public class TreeDropListener implements DropTargetListener {
 
 	private void createNewTopLevelNode(String data) {
 		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
-		model.getModelRoot().addChild(new ReferenceNode((String) data));
+
+		BookmarkNode bookmarkNode = new BookmarkNode("New Bookmark");
+
+		ReferenceNode refNode = new ReferenceNode(data);
+		bookmarkNode.addChild(refNode);
+		refNode.setParent(bookmarkNode);
+
+		model.getModelRoot().addChild(bookmarkNode);
 
 		viewer.refresh();
 
@@ -173,7 +181,7 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private Object getTarget(DropTargetEvent event) {
-		return event.item.getData();
+		return ((event.item == null) ? null : event.item.getData());
 	}
 
 }
