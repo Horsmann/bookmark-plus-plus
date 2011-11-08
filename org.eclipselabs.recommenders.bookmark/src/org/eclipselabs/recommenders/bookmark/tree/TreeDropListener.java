@@ -67,8 +67,8 @@ public class TreeDropListener implements DropTargetListener {
 				return false;
 			}
 
-			//Is multi-selection one of the selected nodes 
-			if (refNode == target) 
+			// Is multi-selection one of the selected nodes
+			if (refNode == target)
 				return false;
 
 		}
@@ -105,7 +105,7 @@ public class TreeDropListener implements DropTargetListener {
 		if (getTarget(event) != null && getTarget(event) instanceof TreeNode)
 			targetNode = (TreeNode) getTarget(event);
 
-		if (isInsideViewDrop())
+		if (isInsideViewDrop(event))
 			processDropEventWithDragFromWithinTheView();
 		else
 			processDropEventWithDragInitiatedFromOutsideTheView(event);
@@ -114,8 +114,9 @@ public class TreeDropListener implements DropTargetListener {
 
 	}
 
-	private boolean isInsideViewDrop() {
-		return !getTreeSelections().isEmpty();
+	private boolean isInsideViewDrop(DropTargetEvent event) {
+		return !getTreeSelections().isEmpty()
+				&& !(event.data instanceof IResource[]);
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
@@ -123,16 +124,33 @@ public class TreeDropListener implements DropTargetListener {
 		if (event.data instanceof IResource[]) {
 			IResource[] resources = (IResource[]) event.data;
 
-			for (IResource res : resources) {
-				if (targetNode != null) {
+			if (targetNode != null) {
+				for (IResource res : resources) {
 					createNewNodeAndAddAsChildToTargetNode(res.getFullPath()
 							.toString());
-				} else {
-					createNewTopLevelNode(res.getFullPath().toString());
 				}
+			} else {
+				createNewTopLevelNode(resources);
 			}
-
 		}
+
+	}
+
+	private void createNewTopLevelNode(IResource[] resources) {
+		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
+
+		BookmarkNode bookmarkNode = new BookmarkNode("New Bookmark");
+
+		for (IResource resource : resources) {
+
+			ReferenceNode refNode = new ReferenceNode(resource.getFullPath()
+					.toString());
+			bookmarkNode.addChild(refNode);
+			refNode.setParent(bookmarkNode);
+		}
+		model.getModelRoot().addChild(bookmarkNode);
+		viewer.refresh();
+		viewer.setExpandedTreePaths(treeExpansion);
 	}
 
 	private void processDropEventWithDragFromWithinTheView() {
@@ -153,22 +171,6 @@ public class TreeDropListener implements DropTargetListener {
 
 	private boolean isValidSourceAndTarget(TreeNode node) {
 		return (node instanceof ReferenceNode && targetNode != null);
-	}
-
-	private void createNewTopLevelNode(String data) {
-		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
-
-		BookmarkNode bookmarkNode = new BookmarkNode("New Bookmark");
-
-		ReferenceNode refNode = new ReferenceNode(data);
-		bookmarkNode.addChild(refNode);
-		refNode.setParent(bookmarkNode);
-
-		model.getModelRoot().addChild(bookmarkNode);
-
-		viewer.refresh();
-
-		viewer.setExpandedTreePaths(treeExpansion);
 	}
 
 	private void createNewNodeAndAddAsChildToTargetNode(String data) {
