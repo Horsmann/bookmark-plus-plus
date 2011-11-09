@@ -67,7 +67,6 @@ public class TreeDropListener implements DropTargetListener {
 				return false;
 			}
 
-			// Is multi-selection one of the selected nodes
 			if (refNode == target)
 				return false;
 
