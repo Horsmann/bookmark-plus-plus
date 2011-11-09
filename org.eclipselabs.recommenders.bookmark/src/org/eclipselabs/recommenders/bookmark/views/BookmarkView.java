@@ -1,6 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
@@ -57,7 +56,10 @@ public class BookmarkView extends ViewPart {
 		final TreeItem[] lastItem = new TreeItem[1];
 		tree.addListener(SWT.MouseDoubleClick, new Listener() {
 			public void handleEvent(Event event) {
-				final TreeItem item = (TreeItem) event.item;
+				if (tree.getSelectionCount() != 1)
+					return;
+//				final TreeItem item = (TreeItem) event.item;
+				final TreeItem item = tree.getSelection()[0];
 //				tree.getSelection
 				if (item != null && item == lastItem[0]) {
 					boolean showBorder = true;
