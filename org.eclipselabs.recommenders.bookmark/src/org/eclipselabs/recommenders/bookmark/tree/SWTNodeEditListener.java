@@ -18,18 +18,19 @@ import org.eclipselabs.recommenders.bookmark.tree.node.BookmarkNode;
 
 public class SWTNodeEditListener implements Listener {
 
-	final TreeViewer viewer;
-	final Tree tree;
-	final TreeEditor editor;
+	private TreeViewer viewer;
+	private Tree tree;
+	private TreeEditor editor;
 
-	final Color black = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+	private Color black = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
 
-	final TreeItem[] lastItem = new TreeItem[1];
+	private TreeItem[] lastItem;
 
 	public SWTNodeEditListener(TreeViewer viewer) {
 		this.viewer = viewer;
 		this.tree = viewer.getTree();
 		this.editor = new TreeEditor(tree);
+		lastItem = new TreeItem[1];
 	}
 
 	public void handleEvent(Event event) {
