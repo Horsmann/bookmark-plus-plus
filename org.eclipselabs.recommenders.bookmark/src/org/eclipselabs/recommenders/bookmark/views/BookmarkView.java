@@ -25,7 +25,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeDragListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeDropListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.node.BookmarkNode;
 
 public class BookmarkView extends ViewPart {
 
@@ -62,6 +62,10 @@ public class BookmarkView extends ViewPart {
 					return;
 				// final TreeItem item = (TreeItem) event.item;
 				final TreeItem item = tree.getSelection()[0];
+
+				if (!(item.getData() instanceof BookmarkNode))
+					return;
+
 				// tree.getSelection
 				if (item != null && item == lastItem[0]) {
 					boolean showBorder = true;
@@ -111,6 +115,14 @@ public class BookmarkView extends ViewPart {
 								switch (e.detail) {
 								case SWT.TRAVERSE_RETURN:
 									item.setText(text.getText());
+									if (item.getData() instanceof BookmarkNode) {
+										BookmarkNode bn = (BookmarkNode) item
+												.getData();
+										bn.setText(item.getText());
+									}
+									viewer.refresh();
+//									composite.setBackground(null);
+									tree.select(item);
 									// FALL THROUGH
 								case SWT.TRAVERSE_ESCAPE:
 									composite.dispose();
