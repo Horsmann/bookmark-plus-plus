@@ -25,6 +25,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeDragListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeDropListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class BookmarkView extends ViewPart {
 
@@ -33,7 +34,7 @@ public class BookmarkView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		
+
 		int operations = DND.DROP_LINK;
 		Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance(),
 				ResourceTransfer.getInstance() };
@@ -46,21 +47,22 @@ public class BookmarkView extends ViewPart {
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
-		
+
 		final Tree tree = viewer.getTree();
-		
-		final Color black = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+
+		final Color black = Display.getCurrent()
+				.getSystemColor(SWT.COLOR_BLACK);
 		final TreeEditor editor = new TreeEditor(tree);
-		
-//		final TreeItem[] lastItem = new TreeItem[1];
+
+		// final TreeItem[] lastItem = new TreeItem[1];
 		final TreeItem[] lastItem = new TreeItem[1];
 		tree.addListener(SWT.MouseDoubleClick, new Listener() {
 			public void handleEvent(Event event) {
 				if (tree.getSelectionCount() != 1)
 					return;
-//				final TreeItem item = (TreeItem) event.item;
+				// final TreeItem item = (TreeItem) event.item;
 				final TreeItem item = tree.getSelection()[0];
-//				tree.getSelection
+				// tree.getSelection
 				if (item != null && item == lastItem[0]) {
 					boolean showBorder = true;
 					final Composite composite = new Composite(tree, SWT.NONE);
@@ -129,10 +131,7 @@ public class BookmarkView extends ViewPart {
 				lastItem[0] = item;
 			}
 		});
-		
-		
-		
-		
+
 	}
 
 	@Override
