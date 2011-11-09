@@ -55,9 +55,10 @@ public class BookmarkView extends ViewPart {
 		
 //		final TreeItem[] lastItem = new TreeItem[1];
 		final TreeItem[] lastItem = new TreeItem[1];
-		tree.addListener(SWT.Selection, new Listener() {
+		tree.addListener(SWT.MouseDoubleClick, new Listener() {
 			public void handleEvent(Event event) {
 				final TreeItem item = (TreeItem) event.item;
+//				tree.getSelection
 				if (item != null && item == lastItem[0]) {
 					boolean showBorder = true;
 					final Composite composite = new Composite(tree, SWT.NONE);
