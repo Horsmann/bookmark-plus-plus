@@ -87,6 +87,9 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean causesRecursion(TreeNode source, TreeNode target) {
+		
+		if (target == null)
+			return false;
 
 		TreeNode targetParent = target.getParent();
 
