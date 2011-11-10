@@ -49,60 +49,13 @@ public class SWTNodeEditListener implements Listener {
 				composite.setBackground(black);
 			final Text text = new Text(composite, SWT.NONE);
 			final int inset = showBorder ? 1 : 0;
-			composite.addListener(SWT.Resize, new Listener() {
-				public void handleEvent(Event e) {
-					Rectangle rect = composite.getClientArea();
-					text.setBounds(rect.x + inset, rect.y + inset, rect.width
-							- inset * 2, rect.height - inset * 2);
-				}
-			});
-			Listener textListener = new Listener() {
-				public void handleEvent(final Event e) {
-					switch (e.type) {
-					case SWT.FocusOut:
-						item.setText(text.getText());
-						composite.dispose();
-						break;
-					case SWT.Verify:
-						String newText = text.getText();
-						String leftText = newText.substring(0, e.start);
-						String rightText = newText.substring(e.end,
-								newText.length());
-						GC gc = new GC(text);
-						Point size = gc.textExtent(leftText + e.text
-								+ rightText);
-						gc.dispose();
-						size = text.computeSize(size.x, SWT.DEFAULT);
-						editor.horizontalAlignment = SWT.LEFT;
-						Rectangle itemRect = item.getBounds(),
-						rect = tree.getClientArea();
-						editor.minimumWidth = Math.max(size.x, itemRect.width)
-								+ inset * 2;
-						int left = itemRect.x,
-						right = rect.x + rect.width;
-						editor.minimumWidth = Math.min(editor.minimumWidth,
-								right - left);
-						editor.minimumHeight = size.y + inset * 2;
-						editor.layout();
-						break;
-					case SWT.Traverse:
-						switch (e.detail) {
-						case SWT.TRAVERSE_RETURN:
-							item.setText(text.getText());
-							if (item.getData() instanceof BookmarkNode) {
-								BookmarkNode bn = (BookmarkNode) item.getData();
-								bn.setText(item.getText());
-							}
-							viewer.refresh();
-							// FALL THROUGH
-						case SWT.TRAVERSE_ESCAPE:
-							composite.dispose();
-							e.doit = false;
-						}
-						break;
-					}
-				}
-			};
+
+			composite.addListener(SWT.Resize, new CompositeResizeListener(
+					composite, text, inset));
+
+			Listener textListener = new TextListener(viewer, item, editor,
+					composite, text, inset);
+
 			text.addListener(SWT.FocusOut, textListener);
 			text.addListener(SWT.Traverse, textListener);
 			text.addListener(SWT.Verify, textListener);
@@ -114,4 +67,88 @@ public class SWTNodeEditListener implements Listener {
 		lastItem[0] = item;
 	}
 
+}
+
+class CompositeResizeListener implements Listener {
+
+	Composite composite;
+	int inset;
+	Text text;
+
+	public CompositeResizeListener(Composite composite, Text text, int inset) {
+		this.composite = composite;
+		this.text = text;
+		this.inset = inset;
+
+	}
+
+	public void handleEvent(Event e) {
+		Rectangle rect = composite.getClientArea();
+		text.setBounds(rect.x + inset, rect.y + inset, rect.width - inset * 2,
+				rect.height - inset * 2);
+	}
+}
+
+class TextListener implements Listener {
+
+	Tree tree;
+	TreeItem item;
+	TreeEditor editor;
+	TreeViewer viewer;
+	Composite composite;
+	Text text;
+	int inset;
+
+	public TextListener(TreeViewer viewer, TreeItem item, TreeEditor editor,
+			Composite composite, Text text, int inset) {
+		this.item = item;
+		this.editor = editor;
+		this.composite = composite;
+		this.text = text;
+		this.tree = viewer.getTree();
+		this.viewer = viewer;
+		this.inset = inset;
+	}
+
+	public void handleEvent(final Event e) {
+		switch (e.type) {
+		case SWT.FocusOut:
+			item.setText(text.getText());
+			composite.dispose();
+			break;
+		case SWT.Verify:
+			String newText = text.getText();
+			String leftText = newText.substring(0, e.start);
+			String rightText = newText.substring(e.end, newText.length());
+			GC gc = new GC(text);
+			Point size = gc.textExtent(leftText + e.text + rightText);
+			gc.dispose();
+			size = text.computeSize(size.x, SWT.DEFAULT);
+			editor.horizontalAlignment = SWT.LEFT;
+			Rectangle itemRect = item.getBounds(),
+			rect = tree.getClientArea();
+			editor.minimumWidth = Math.max(size.x, itemRect.width) + inset * 2;
+			int left = itemRect.x,
+			right = rect.x + rect.width;
+			editor.minimumWidth = Math.min(editor.minimumWidth, right - left);
+			editor.minimumHeight = size.y + inset * 2;
+			editor.layout();
+			break;
+		case SWT.Traverse:
+			switch (e.detail) {
+			case SWT.TRAVERSE_RETURN:
+				item.setText(text.getText());
+				if (item.getData() instanceof BookmarkNode) {
+					BookmarkNode bn = (BookmarkNode) item.getData();
+					bn.setText(item.getText());
+				}
+				viewer.refresh();
+				// FALL THROUGH
+			case SWT.TRAVERSE_ESCAPE:
+				composite.dispose();
+				e.doit = false;
+			}
+			break;
+		}
+	}
 }
