@@ -5,21 +5,21 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.node.BookmarkNode;
-import org.eclipselabs.recommenders.bookmark.tree.node.ReferenceNode;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeLabelProvider extends LabelProvider {
 	@Override
 	public String getText(Object element) {
-		if (element instanceof ReferenceNode) {
-			ReferenceNode node = (ReferenceNode) element;
-			return node.getName() + "@" + node.getProjectName();
-		} else if (element instanceof BookmarkNode) {
-			BookmarkNode node = (BookmarkNode) element;
-			return node.getText();
+		if (element instanceof TreeNode) {
+			TreeNode node = (TreeNode) element;
+
+			if (node.isBookmarkNode())
+				return node.getText();
+			else
+				return node.getName() + "@" + node.getProject();
 		}
-		return "";
+
+		return "UNKNOWN TYPE";
 	}
 
 	@Override
@@ -39,18 +39,16 @@ public class TreeLabelProvider extends LabelProvider {
 		if (!(element instanceof TreeNode))
 			return Activator.ICON_DEFAULT;
 
-		if (element instanceof ReferenceNode) {
-			ReferenceNode node = (ReferenceNode) element;
-			String name = node.getName();
-			int pos = name.lastIndexOf(".");
-			if (pos != -1) {
-				if (name.substring(pos + 1).compareTo("java") == 0)
-					return Activator.ICON_JAVAFILE;
-			}
-		}
+		TreeNode node = (TreeNode) element;
 
-		if (element instanceof BookmarkNode)
+		if (node.isBookmarkNode())
 			return Activator.ICON_BOOKMARK;
+
+		String name = node.getName();
+		int pos = name.lastIndexOf(".");
+		if (pos != -1)
+			if (name.substring(pos + 1).compareTo("java") == 0)
+				return Activator.ICON_JAVAFILE;
 
 		return Activator.ICON_DEFAULT;
 	}

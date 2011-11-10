@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipselabs.recommenders.bookmark.tree.node.BookmarkNode;
+import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 /* A lot of inspiration (and code) taken from:
  * http://dev.eclipse.org/viewcvs/viewvc.cgi/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet111.java?view=co
@@ -41,7 +41,11 @@ public class SWTNodeEditListener implements Listener {
 
 		TreeItem item = tree.getSelection()[0];
 
-		if (!(item.getData() instanceof BookmarkNode))
+		if (!(item.getData() instanceof TreeNode))
+			return;
+
+		TreeNode node = (TreeNode) item.getData();
+		if (!node.isBookmarkNode())
 			return;
 
 		if (item != null) {
@@ -139,9 +143,11 @@ class TextListener implements Listener {
 			switch (e.detail) {
 			case SWT.TRAVERSE_RETURN:
 				item.setText(text.getText());
-				if (item.getData() instanceof BookmarkNode) {
-					BookmarkNode bn = (BookmarkNode) item.getData();
-					bn.setText(item.getText());
+				if (item.getData() instanceof TreeNode) {
+
+					TreeNode node = (TreeNode) item.getData();
+					// if (node.isBookmarkNode())
+					node.setText(item.getText());
 				}
 				viewer.refresh();
 				tree.setSelection(item);

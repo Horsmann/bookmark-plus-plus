@@ -2,18 +2,31 @@ package org.eclipselabs.recommenders.bookmark.tree.node;
 
 import java.util.ArrayList;
 
-public abstract class TreeNode {
+public class TreeNode {
 	private TreeNode parent;
 	private ArrayList<TreeNode> children;
 	private String text;
+	
+	private boolean isBookmarkNode;
 
 	public TreeNode(String text) {
 		this.text = text;
 		children = new ArrayList<TreeNode>();
+		isBookmarkNode=false;
 	}
-
+	
+	public TreeNode(String text, boolean isRoot) {
+		this.text = text;
+		children = new ArrayList<TreeNode>();
+		this.isBookmarkNode=isRoot;
+	}
+	
 	public boolean hasParent() {
-		return (parent == null);
+		return (parent != null);
+	}
+	
+	public boolean isBookmarkNode() {
+		return isBookmarkNode;
 	}
 
 	public void removeAllChildren() {
@@ -52,6 +65,33 @@ public abstract class TreeNode {
 
 	public TreeNode getParent() {
 		return parent;
+	}
+
+	public String getProject() {
+		int posFirstSlash = text.indexOf("/");
+		int posSecondSlash = 0;
+		if (posFirstSlash > -1)
+			posSecondSlash = text.indexOf("/", posFirstSlash + 1);
+		else
+			return text;
+
+		if (posSecondSlash > -1) {
+			return text.substring(posFirstSlash + 1, posSecondSlash
+					- posFirstSlash);
+		}
+		return text;
+	}
+
+	public String getName() {
+		int posLastSlash = text.lastIndexOf("/");
+		int posDot = text.lastIndexOf(".");
+
+		if (posDot == -1 || posLastSlash == -1)
+			return text;
+
+		String name = text.substring(posLastSlash + 1);
+
+		return name;
 	}
 
 }

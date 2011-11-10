@@ -11,8 +11,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipselabs.recommenders.bookmark.tree.node.BookmarkNode;
-import org.eclipselabs.recommenders.bookmark.tree.node.ReferenceNode;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeDropListener implements DropTargetListener {
@@ -57,17 +55,17 @@ public class TreeDropListener implements DropTargetListener {
 		List<IStructuredSelection> selectedList = getTreeSelections();
 		for (int i = 0; i < selectedList.size(); i++) {
 			TreeNode node = (TreeNode) selectedList.get(i);
-			if (!(node instanceof ReferenceNode))
+
+			// Root-Level nodes shall not be moved
+			if (node.isBookmarkNode())
 				return false;
 
-			ReferenceNode refNode = (ReferenceNode) node;
-
 			TreeNode target = (TreeNode) getTarget(event);
-			if (causesRecursion(refNode, target)) {
+			if (causesRecursion(node, target)) {
 				return false;
 			}
 
-			if (refNode == target)
+			if (node == target)
 				return false;
 
 		}
@@ -86,7 +84,7 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean causesRecursion(TreeNode source, TreeNode target) {
-		
+
 		if (target == null)
 			return false;
 
@@ -141,12 +139,11 @@ public class TreeDropListener implements DropTargetListener {
 	private void createNewTopLevelNode(IResource[] resources) {
 		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
 
-		BookmarkNode bookmarkNode = new BookmarkNode("New Bookmark");
+		TreeNode bookmarkNode = new TreeNode("New Bookmark", true);
 
 		for (IResource resource : resources) {
 
-			ReferenceNode refNode = new ReferenceNode(resource.getFullPath()
-					.toString());
+			TreeNode refNode = new TreeNode(resource.getFullPath().toString());
 			bookmarkNode.addChild(refNode);
 			refNode.setParent(bookmarkNode);
 		}
@@ -161,7 +158,7 @@ public class TreeDropListener implements DropTargetListener {
 			TreeNode node = (TreeNode) selections.get(i);
 
 			if (isValidSourceAndTarget(node)) {
-				ReferenceNode sourceNode = (ReferenceNode) node;
+				TreeNode sourceNode = (TreeNode) node;
 
 				sourceNode.getParent().removeChild(sourceNode);
 
@@ -172,11 +169,11 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean isValidSourceAndTarget(TreeNode node) {
-		return (node instanceof ReferenceNode && targetNode != null);
+		return (node instanceof TreeNode && targetNode != null);
 	}
 
 	private void createNewNodeAndAddAsChildToTargetNode(String data) {
-		ReferenceNode newNode = new ReferenceNode(data);
+		TreeNode newNode = new TreeNode(data);
 		newNode.setParent(targetNode);
 		targetNode.addChild(newNode);
 
