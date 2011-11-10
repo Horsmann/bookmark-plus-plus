@@ -143,6 +143,7 @@ class TextListener implements Listener {
 					bn.setText(item.getText());
 				}
 				viewer.refresh();
+				tree.redraw();
 				// FALL THROUGH
 			case SWT.TRAVERSE_ESCAPE:
 				composite.dispose();
