@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.ui.part.PluginTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeDropListener implements DropTargetListener {
@@ -56,10 +57,8 @@ public class TreeDropListener implements DropTargetListener {
 		for (int i = 0; i < selectedList.size(); i++) {
 			TreeNode node = (TreeNode) selectedList.get(i);
 
-			// Root-Level nodes shall not be moved
-			if (node.isBookmarkNode())
-				return false;
-
+			
+			//TODO: Kein drop ausfŸhren, wenn knoten im selben baum landen wŸrde
 			TreeNode target = (TreeNode) getTarget(event);
 			if (causesRecursion(node, target)) {
 				return false;

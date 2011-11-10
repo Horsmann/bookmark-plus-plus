@@ -30,6 +30,11 @@ public class TreeDragListener implements DragSourceListener {
 				.getSelection();
 		dragNode = (TreeNode) selection.getFirstElement();
 
+		if (dragNode.isBookmarkNode()) {
+			event.doit = false;
+			return;
+		}
+
 		if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 			event.data = dragNode.getName();
 			dropPerformed = true;

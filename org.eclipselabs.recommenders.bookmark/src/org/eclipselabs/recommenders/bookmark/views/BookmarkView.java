@@ -7,6 +7,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.part.PluginTransfer;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.SWTNodeEditListener;
@@ -23,16 +24,10 @@ public class BookmarkView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-
-		int operations = DND.DROP_LINK;
-		Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance(),
-				ResourceTransfer.getInstance() };
-
 		TreeModel model = new TreeModel();
-		viewer.addDropSupport(operations, transferTypes, new TreeDropListener(
-				viewer, model));
-		viewer.addDragSupport(operations, transferTypes, new TreeDragListener(
-				viewer));
+
+		addDragDropSupportToView(viewer, model);
+
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
@@ -48,6 +43,17 @@ public class BookmarkView extends ViewPart {
 
 	public IViewSite getViewSite() {
 		return (IViewSite) getSite();
+	}
+
+	public void addDragDropSupportToView(TreeViewer viewer, TreeModel model) {
+		int operations = DND.DROP_LINK;
+		Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance(),
+				ResourceTransfer.getInstance(), PluginTransfer.getInstance() };
+
+		viewer.addDropSupport(operations, transferTypes, new TreeDropListener(
+				viewer, model));
+		viewer.addDragSupport(operations, transferTypes, new TreeDragListener(
+				viewer));
 	}
 
 }
