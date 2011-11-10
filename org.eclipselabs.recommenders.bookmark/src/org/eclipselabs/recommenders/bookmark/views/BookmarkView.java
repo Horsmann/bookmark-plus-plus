@@ -1,6 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -10,6 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.tree.SWTNodeEditListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.tree.TreeDragListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeDropListener;
@@ -23,9 +23,7 @@ public class BookmarkView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		
-		ColumnViewerToolTipSupport.enableFor(viewer);
-		
+
 		int operations = DND.DROP_LINK;
 		Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance(),
 				ResourceTransfer.getInstance() };
@@ -38,6 +36,10 @@ public class BookmarkView extends ViewPart {
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
+
+		viewer.getTree().addListener(SWT.MouseDoubleClick,
+				new SWTNodeEditListener(viewer));
+
 	}
 
 	@Override
