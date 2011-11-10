@@ -102,8 +102,13 @@ public class TreeDropListener implements DropTargetListener {
 	@Override
 	public void drop(DropTargetEvent event) {
 
-		if (getTarget(event) != null && getTarget(event) instanceof TreeNode)
+		if (getTarget(event) != null && getTarget(event) instanceof TreeNode) {
 			targetNode = (TreeNode) getTarget(event);
+
+			// Get the bookmark node, any drop must be added to a bookmark
+			while (!targetNode.isBookmarkNode())
+				targetNode = targetNode.getParent();
+		}
 
 		if (isInsideViewDrop(event))
 			processDropEventWithDragFromWithinTheView();

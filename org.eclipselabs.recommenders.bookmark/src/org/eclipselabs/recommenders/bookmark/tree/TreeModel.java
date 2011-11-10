@@ -19,7 +19,6 @@ public class TreeModel {
 
 		TreeNode topeNode1 = new TreeNode("top", true);
 		TreeNode level1 = new TreeNode("level one");
-		level1.addChild(new TreeNode("level one one"));
 		topeNode1.addChild(level1);
 
 		TreeNode level2 = new TreeNode("level two");
@@ -29,7 +28,6 @@ public class TreeModel {
 		topeNode1.addChild(level3);
 
 		TreeNode topeNode2 = new TreeNode("top 2", true);
-		// TreeNode topeNode2 = new ReferenceNode("top 2");
 		TreeNode level11 = new TreeNode("level one");
 		topeNode2.addChild(level11);
 

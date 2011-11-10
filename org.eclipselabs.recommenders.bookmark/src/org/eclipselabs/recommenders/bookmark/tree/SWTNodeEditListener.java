@@ -146,7 +146,6 @@ class TextListener implements Listener {
 				if (item.getData() instanceof TreeNode) {
 
 					TreeNode node = (TreeNode) item.getData();
-					// if (node.isBookmarkNode())
 					node.setText(item.getText());
 				}
 				viewer.refresh();
