@@ -16,6 +16,10 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.node.BookmarkNode;
 
+/* A lot of inspiration (and code) taken from:
+ * http://dev.eclipse.org/viewcvs/viewvc.cgi/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet111.java?view=co
+ * */
+
 public class SWTNodeEditListener implements Listener {
 
 	private TreeViewer viewer;
@@ -24,31 +28,29 @@ public class SWTNodeEditListener implements Listener {
 
 	private Color black = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
 
-	private TreeItem[] lastItem;
-
 	public SWTNodeEditListener(TreeViewer viewer) {
 		this.viewer = viewer;
 		this.tree = viewer.getTree();
 		this.editor = new TreeEditor(tree);
-		lastItem = new TreeItem[1];
 	}
 
 	public void handleEvent(Event event) {
+
 		if (tree.getSelectionCount() != 1)
 			return;
 
-		final TreeItem item = tree.getSelection()[0];
+		TreeItem item = tree.getSelection()[0];
 
 		if (!(item.getData() instanceof BookmarkNode))
 			return;
 
-		if (item != null && item == lastItem[0]) {
+		if (item != null) {
 			boolean showBorder = true;
-			final Composite composite = new Composite(tree, SWT.NONE);
+			Composite composite = new Composite(tree, SWT.NONE);
 			if (showBorder)
 				composite.setBackground(black);
-			final Text text = new Text(composite, SWT.NONE);
-			final int inset = showBorder ? 1 : 0;
+			Text text = new Text(composite, SWT.NONE);
+			int inset = showBorder ? 1 : 0;
 
 			composite.addListener(SWT.Resize, new CompositeResizeListener(
 					composite, text, inset));
@@ -64,7 +66,6 @@ public class SWTNodeEditListener implements Listener {
 			text.selectAll();
 			text.setFocus();
 		}
-		lastItem[0] = item;
 	}
 
 }
@@ -143,10 +144,13 @@ class TextListener implements Listener {
 					bn.setText(item.getText());
 				}
 				viewer.refresh();
+				tree.setSelection(item);
 				tree.redraw();
+
 				// FALL THROUGH
 			case SWT.TRAVERSE_ESCAPE:
 				composite.dispose();
+				tree.setFocus();
 				e.doit = false;
 			}
 			break;
