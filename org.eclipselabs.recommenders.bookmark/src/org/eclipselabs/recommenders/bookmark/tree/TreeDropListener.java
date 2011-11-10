@@ -7,11 +7,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipse.ui.part.PluginTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeDropListener implements DropTargetListener {
@@ -57,8 +57,8 @@ public class TreeDropListener implements DropTargetListener {
 		for (int i = 0; i < selectedList.size(); i++) {
 			TreeNode node = (TreeNode) selectedList.get(i);
 
-			
-			//TODO: Kein drop ausfŸhren, wenn knoten im selben baum landen wŸrde
+			// TODO: Kein drop ausfŸhren, wenn knoten im selben baum landen
+			// wŸrde
 			TreeNode target = (TreeNode) getTarget(event);
 			if (causesRecursion(node, target)) {
 				return false;
@@ -109,6 +109,26 @@ public class TreeDropListener implements DropTargetListener {
 				targetNode = targetNode.getParent();
 		}
 
+		/*
+		 * Wenn alles LocalSelection lŠuft, krieg ich Ÿberall her nur ein
+		 * LocalSelectionObjekt, und meine IResource Verarbeitung schlŠgt fehl.
+		 */
+
+		TreeSelection sel = null;
+		if (event.data instanceof TreeSelection)
+			sel = (TreeSelection) event.data;
+
+		TreePath[] p = sel.getPaths();
+
+		for (int i = 0; i < p.length; i++) {
+			System.err.println("Iteration: " + i);
+			// System.err.println("First: " + p[i].getFirstSegment());
+			// System.err.println("Last: " + p[i].getLastSegment());
+			for (int j = 0; j < p[i].getSegmentCount(); j++)
+				System.err.println("Index  " + j + ": " + p[i].getSegment(j));
+			System.err.println("\n");
+		}
+
 		if (isInsideViewDrop(event))
 			processDropEventWithDragFromWithinTheView();
 		else
@@ -125,6 +145,7 @@ public class TreeDropListener implements DropTargetListener {
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
 			DropTargetEvent event) {
+
 		if (event.data instanceof IResource[]) {
 			IResource[] resources = (IResource[]) event.data;
 

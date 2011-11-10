@@ -1,5 +1,6 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -7,7 +8,6 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.part.PluginTransfer;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.SWTNodeEditListener;
@@ -47,8 +47,9 @@ public class BookmarkView extends ViewPart {
 
 	public void addDragDropSupportToView(TreeViewer viewer, TreeModel model) {
 		int operations = DND.DROP_LINK;
-		Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance(),
-				ResourceTransfer.getInstance(), PluginTransfer.getInstance() };
+		Transfer[] transferTypes = new Transfer[] {
+				ResourceTransfer.getInstance(),
+				LocalSelectionTransfer.getTransfer() };
 
 		viewer.addDropSupport(operations, transferTypes, new TreeDropListener(
 				viewer, model));
