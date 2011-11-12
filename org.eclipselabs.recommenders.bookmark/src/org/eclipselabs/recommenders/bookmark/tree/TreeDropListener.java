@@ -3,14 +3,8 @@ package org.eclipselabs.recommenders.bookmark.tree;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.ISourceReference;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -113,163 +107,22 @@ public class TreeDropListener implements DropTargetListener {
 			targetNode = (TreeNode) getTarget(event);
 
 			// Get the bookmark node, any drop must be added to a bookmark
-			while (!targetNode.isBookmarkNode())
-				targetNode = targetNode.getParent();
+			// while (!targetNode.isBookmarkNode())
+			// targetNode = targetNode.getParent();
 		}
 
-		/*
-		 * Wenn alles LocalSelection läuft, krieg ich überall her nur ein
-		 * LocalSelectionObjekt, und meine IResource Verarbeitung schlägt fehl.
-		 */
-
-		TreeSelection sel = null;
+		TreeSelection treeSelection = null;
 		if (event.data instanceof TreeSelection)
-			sel = (TreeSelection) event.data;
+			treeSelection = (TreeSelection) event.data;
 
-		TreePath[] p = sel.getPaths();
-
-		for (int i = 0; i < p.length; i++) {
-			System.err.println("Iteration: " + i);
-			// System.err.println("First: " + p[i].getFirstSegment());
-			// System.err.println("Last: " + p[i].getLastSegment());
-			for (int j = 0; j < p[i].getSegmentCount(); j++) {
-				System.err.println("Index  " + j + ": " + p[i].getSegment(j));
-
-				if (p[i].getSegment(j) instanceof IMember) {
-					IMember o = (IMember) p[i].getSegment(j);
-					System.err.println("Ele name: " + o.getElementName());
-					System.err.println("o.getJavaProject()"
-							+ o.getJavaProject().getElementName());
-				}
-
-				if (p[i].getSegment(j) instanceof IJavaElement) {
-					IJavaElement o = (IJavaElement) p[i].getSegment(j);
-					System.err.println("Ele name: " + o.getElementName());
-					System.err.println("o.getJavaProject()"
-							+ o.getJavaProject().getElementName());
-				}
-
-				if (p[i].getSegment(j) instanceof IFile) {
-					IFile o = (IFile) p[i].getSegment(j);
-					System.err.println("Ele name: " + o.getName());
-				}
-
-				if (p[i].getSegment(j) instanceof IType) {
-					IType o = (IType) p[i].getSegment(j);
-					System.err.println("Ele name: " + o.getElementName());
-					System.err.println("o.getJavaProject()"
-							+ o.getJavaProject().getElementName());
-				}
-				if (p[i].getSegment(j) instanceof IField) {
-					IField o = (IField) p[i].getSegment(j);
-					System.err.println("Ele name: " + o.getElementName());
-					System.err.println("o.getJavaProject()"
-							+ o.getJavaProject().getElementName());
-				}
-				if (p[i].getSegment(j) instanceof IMethod) {
-					IMethod o = (IMethod) p[i].getSegment(j);
-					System.err.println("Ele name: " + o.getElementName());
-					System.err.println("o.getJavaProject()"
-							+ o.getJavaProject().getElementName());
-				}
-
-			}
-			System.err.println("\n");
-		}
-
-		for (int i = 0; i < p.length; i++) {
-
-			if (p[i].getSegment(0) instanceof IMember) {
-				IMember o = (IMember) p[i].getSegment(0);
-				System.err.println("Ele name: " + o.getElementName());
-				System.err.println("o.getJavaProject()"
-						+ o.getJavaProject().getElementName());
-			}
-
-			if (p[i].getSegment(0) instanceof IJavaElement) {
-				IJavaElement o = (IJavaElement) p[i].getSegment(0);
-				System.err.println("Ele name: " + o.getElementName());
-				System.err.println("o.getJavaProject()"
-						+ o.getJavaProject().getElementName());
-			}
-
-			if (p[i].getSegment(0) instanceof IFile) {
-				IFile o = (IFile) p[i].getSegment(0);
-				System.err.println("Ele name: " + o.getName());
-			}
-
-			if (p[i].getSegment(0) instanceof IType) {
-				IType o = (IType) p[i].getSegment(0);
-				System.err.println("Ele name: " + o.getElementName());
-				System.err.println("o.getJavaProject()"
-						+ o.getJavaProject().getElementName());
-			}
-			if (p[i].getSegment(0) instanceof IField) {
-				IField o = (IField) p[i].getSegment(0);
-				System.err.println("Ele name: " + o.getElementName());
-				System.err.println("o.getJavaProject()"
-						+ o.getJavaProject().getElementName());
-			}
-			if (p[i].getSegment(0) instanceof IMethod) {
-				IMethod o = (IMethod) p[i].getSegment(0);
-				System.err.println("Ele name: " + o.getElementName());
-				System.err.println("o.getJavaProject()"
-						+ o.getJavaProject().getElementName());
-			}
-
-			if (p[i].getSegmentCount() > 1) {
-
-				if (p[i].getSegment(1) instanceof IType) {
-					IType o = (IType) p[i].getSegment(1);
-					System.err.println("Ele name: " + o.getElementName());
-					System.err.println("o.getJavaProject()"
-							+ o.getJavaProject().getElementName());
-				}
-
-				if (p[i].getSegment(1) instanceof IMethod) {
-					IMethod o = (IMethod) p[i].getSegment(1);
-					System.err.println("Ele name: " + o.getElementName());
-					System.err.println("o.getJavaProject()"
-							+ o.getJavaProject().getElementName());
-				}
-
-				if (p[i].getSegment(1) instanceof IFile) {
-					IFile o = (IFile) p[i].getSegment(1);
-					System.err.println("Ele name: " + o.getName());
-					System.err.println("Project: " + o.getProject().getName());
-				}
-
-				if (p[i].getSegment(1) instanceof IJavaElement) {
-					IJavaElement o = (IJavaElement) p[i].getSegment(1);
-					System.err.println("Ele name: " + o.getElementName());
-					System.err.println("Project: "
-							+ o.getJavaProject().getElementName());
-				}
-
-				if (p[i].getSegment(1) instanceof IMember) {
-					IMember o = (IMember) p[i].getSegment(1);
-					System.err.println("Ele name: " + o.getElementName());
-					System.err.println("o.getJavaProject()"
-							+ o.getJavaProject().getElementName());
-
-				}
-				if (p[i].getSegment(1) instanceof ICompilationUnit) {
-					ICompilationUnit o = (ICompilationUnit) p[i].getSegment(1);
-					System.err.println("Ele name: " + o.getElementName());
-					System.err.println("o.getJavaProject()"
-							+ o.getJavaProject().getElementName());
-
-				}
-			}
-
-		}
+		TreePath[] treePath = treeSelection.getPaths();
 
 		if (isInsideViewDrop(event))
 			processDropEventWithDragFromWithinTheView();
 		else {
-			int xy = p[0].getSegmentCount();
-			processDropEventWithDragInitiatedFromOutsideTheView(p[0]
-					.getSegment(xy - 1));
+			for (int i = 0; i < treePath.length; i++) {
+				processDropEventWithDragInitiatedFromOutsideTheView(treePath[i]);
+			}
 		}
 
 		targetNode = null;
@@ -277,34 +130,30 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean isInsideViewDrop(DropTargetEvent event) {
-		return !getTreeSelections().isEmpty()
-				&& !(event.data instanceof IResource[]);
+		return event.data instanceof TreeNode;
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
-			Object object) {
+			TreePath path) {
 
-		// if (object instanceof IType) {
-		// IResource[] resources = (IResource[]) object.data;
-		// IType t = (IType) object;
-
-		if (targetNode != null) {
-			createNewNodeAndAddAsChildToTargetNode(object);
-		} else {
-			createNewTopLevelNode(object);
-		}
-		// }
+		if (targetNode != null)
+			createNewNodeAndAddAsChildToTargetNode(path);
+		else
+			createNewTopLevelNode(path);
 
 	}
 
-	private void createNewTopLevelNode(Object t) {
+	private void createNewTopLevelNode(TreePath path) {
 		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
 
 		TreeNode bookmarkNode = new TreeNode("New Bookmark", true);
 
-		TreeNode refNode = new TreeNode(t);
-		bookmarkNode.addChild(refNode);
-		refNode.setParent(bookmarkNode);
+		TreeNode node = buildTreeStructure(path);
+
+		if (node == null)
+			return;
+
+		bookmarkNode = linkNodes(bookmarkNode, node);
 		model.getModelRoot().addChild(bookmarkNode);
 		viewer.refresh();
 		viewer.setExpandedTreePaths(treeExpansion);
@@ -330,17 +179,81 @@ public class TreeDropListener implements DropTargetListener {
 		return (node instanceof TreeNode && targetNode != null);
 	}
 
-	private void createNewNodeAndAddAsChildToTargetNode(Object t) {
-		TreeNode newNode = new TreeNode(t);
-		newNode.setParent(targetNode);
-		targetNode.addChild(newNode);
+	private void createNewNodeAndAddAsChildToTargetNode(TreePath path) {
+
+		TreeNode node = buildTreeStructure(path);
+		if (node == null)
+			return;
+
+		targetNode = linkNodes(targetNode, node);
 
 		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
-
 		viewer.refresh();
-
 		viewer.setExpandedTreePaths(treeExpansion);
 
+	}
+
+	private TreeNode buildTreeStructure(TreePath path) {
+		int segNr = path.getSegmentCount() - 1;
+		TreeNode node = null;
+
+		// Fall through, several instanceof may succeed, take the most specific
+		// one
+		if (path.getSegment(segNr) instanceof IJavaElement)
+			node = new TreeNode(path.getSegment(segNr));
+
+		if (path.getSegment(segNr) instanceof IMethod)
+			node = buildTreeForMethod(path);
+
+		if (path.getSegment(segNr) instanceof IType)
+			node = buildTreeForType(path);
+
+		return node;
+	}
+
+	private TreeNode buildTreeForType(TreePath path) {
+		int segNr = path.getSegmentCount() - 1;
+
+		if (segNr < 0)
+			return null;
+		TreeNode typeNode = new TreeNode(path.getSegment(segNr));
+
+		segNr = segNr - 1;
+		if (segNr < 0)
+			return typeNode;
+		TreeNode fileNode = new TreeNode(path.getSegment(segNr));
+
+		fileNode = linkNodes(fileNode, typeNode);
+		return fileNode;
+	}
+
+	private TreeNode buildTreeForMethod(TreePath path) {
+		int segNr = path.getSegmentCount() - 1;
+
+		if (segNr < 0)
+			return null;
+		TreeNode methodNode = new TreeNode(path.getSegment(segNr));
+
+		segNr = segNr - 1;
+		if (segNr < 0)
+			return methodNode;
+		TreeNode typeNode = new TreeNode(path.getSegment(segNr));
+		typeNode = linkNodes(typeNode, methodNode);
+
+		segNr = segNr - 1;
+		if (segNr < 0)
+			return typeNode;
+		TreeNode fileNode = new TreeNode(path.getSegment(segNr));
+		fileNode = linkNodes(fileNode, typeNode);
+
+		return fileNode;
+	}
+
+	private TreeNode linkNodes(TreeNode parent, TreeNode child) {
+		child.setParent(parent);
+		parent.addChild(child);
+
+		return parent;
 	}
 
 	private Object getTarget(DropTargetEvent event) {

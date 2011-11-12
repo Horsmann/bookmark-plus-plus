@@ -8,7 +8,7 @@ public class TreeModel {
 
 	public TreeModel() {
 		root = new TreeNode("");
-		generateDummyValues();
+//		generateDummyValues();
 	}
 
 	public TreeNode getModelRoot() {

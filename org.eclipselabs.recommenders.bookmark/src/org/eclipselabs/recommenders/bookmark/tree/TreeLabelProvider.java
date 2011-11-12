@@ -12,6 +12,7 @@ public class TreeLabelProvider extends LabelProvider {
 
 	JavaElementLabelProvider jelp = new JavaElementLabelProvider(
 			JavaElementLabelProvider.SHOW_RETURN_TYPE
+					| JavaElementLabelProvider.SHOW_SMALL_ICONS
 					| JavaElementLabelProvider.SHOW_DEFAULT);
 
 	@Override
@@ -26,6 +27,7 @@ public class TreeLabelProvider extends LabelProvider {
 
 			if (node.isBookmarkNode())
 				return (String) node.getValue();
+
 		}
 
 		return "UNKNOWN TYPE";
