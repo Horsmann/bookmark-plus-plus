@@ -2,21 +2,23 @@ package org.eclipselabs.recommenders.bookmark.tree.node;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IAdaptable;
+
 public class TreeNode {
 	private TreeNode parent;
 	private ArrayList<TreeNode> children;
-	private String text;
+	private Object value;
 	
 	private boolean isBookmarkNode;
 
-	public TreeNode(String text) {
-		this.text = text;
+	public TreeNode(Object value) {
+		this.value = value;
 		children = new ArrayList<TreeNode>();
 		isBookmarkNode=false;
 	}
 	
-	public TreeNode(String text, boolean isRoot) {
-		this.text = text;
+	public TreeNode(Object value, boolean isRoot) {
+		this.value = value;
 		children = new ArrayList<TreeNode>();
 		this.isBookmarkNode=isRoot;
 	}
@@ -27,6 +29,10 @@ public class TreeNode {
 	
 	public boolean isBookmarkNode() {
 		return isBookmarkNode;
+	}
+	
+	public Object getValue() {
+		return value;
 	}
 
 	public void removeAllChildren() {
@@ -51,12 +57,12 @@ public class TreeNode {
 		return children.size() > 0;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public void setText(Object value) {
+		this.value = value;
 	}
 
-	public String getText() {
-		return text;
+	public Object getText() {
+		return value;
 	}
 
 	public void setParent(TreeNode parent) {
@@ -67,31 +73,31 @@ public class TreeNode {
 		return parent;
 	}
 
-	public String getProject() {
-		int posFirstSlash = text.indexOf("/");
-		int posSecondSlash = 0;
-		if (posFirstSlash > -1)
-			posSecondSlash = text.indexOf("/", posFirstSlash + 1);
-		else
-			return text;
-
-		if (posSecondSlash > -1) {
-			return text.substring(posFirstSlash + 1, posSecondSlash
-					- posFirstSlash);
-		}
-		return text;
-	}
-
-	public String getName() {
-		int posLastSlash = text.lastIndexOf("/");
-		int posDot = text.lastIndexOf(".");
-
-		if (posDot == -1 || posLastSlash == -1)
-			return text;
-
-		String name = text.substring(posLastSlash + 1);
-
-		return name;
-	}
+//	public String getProject() {
+//		int posFirstSlash = text.indexOf("/");
+//		int posSecondSlash = 0;
+//		if (posFirstSlash > -1)
+//			posSecondSlash = text.indexOf("/", posFirstSlash + 1);
+//		else
+//			return text;
+//
+//		if (posSecondSlash > -1) {
+//			return text.substring(posFirstSlash + 1, posSecondSlash
+//					- posFirstSlash);
+//		}
+//		return text;
+//	}
+//
+//	public String getName() {
+//		int posLastSlash = text.lastIndexOf("/");
+//		int posDot = text.lastIndexOf(".");
+//
+//		if (posDot == -1 || posLastSlash == -1)
+//			return text;
+//
+//		String name = text.substring(posLastSlash + 1);
+//
+//		return name;
+//	}
 
 }

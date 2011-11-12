@@ -3,7 +3,15 @@ package org.eclipselabs.recommenders.bookmark.tree;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.ISourceReference;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
@@ -124,15 +132,145 @@ public class TreeDropListener implements DropTargetListener {
 			System.err.println("Iteration: " + i);
 			// System.err.println("First: " + p[i].getFirstSegment());
 			// System.err.println("Last: " + p[i].getLastSegment());
-			for (int j = 0; j < p[i].getSegmentCount(); j++)
+			for (int j = 0; j < p[i].getSegmentCount(); j++) {
 				System.err.println("Index  " + j + ": " + p[i].getSegment(j));
+
+				if (p[i].getSegment(j) instanceof IMember) {
+					IMember o = (IMember) p[i].getSegment(j);
+					System.err.println("Ele name: " + o.getElementName());
+					System.err.println("o.getJavaProject()"
+							+ o.getJavaProject().getElementName());
+				}
+
+				if (p[i].getSegment(j) instanceof IJavaElement) {
+					IJavaElement o = (IJavaElement) p[i].getSegment(j);
+					System.err.println("Ele name: " + o.getElementName());
+					System.err.println("o.getJavaProject()"
+							+ o.getJavaProject().getElementName());
+				}
+
+				if (p[i].getSegment(j) instanceof IFile) {
+					IFile o = (IFile) p[i].getSegment(j);
+					System.err.println("Ele name: " + o.getName());
+				}
+
+				if (p[i].getSegment(j) instanceof IType) {
+					IType o = (IType) p[i].getSegment(j);
+					System.err.println("Ele name: " + o.getElementName());
+					System.err.println("o.getJavaProject()"
+							+ o.getJavaProject().getElementName());
+				}
+				if (p[i].getSegment(j) instanceof IField) {
+					IField o = (IField) p[i].getSegment(j);
+					System.err.println("Ele name: " + o.getElementName());
+					System.err.println("o.getJavaProject()"
+							+ o.getJavaProject().getElementName());
+				}
+				if (p[i].getSegment(j) instanceof IMethod) {
+					IMethod o = (IMethod) p[i].getSegment(j);
+					System.err.println("Ele name: " + o.getElementName());
+					System.err.println("o.getJavaProject()"
+							+ o.getJavaProject().getElementName());
+				}
+
+			}
 			System.err.println("\n");
+		}
+
+		for (int i = 0; i < p.length; i++) {
+
+			if (p[i].getSegment(0) instanceof IMember) {
+				IMember o = (IMember) p[i].getSegment(0);
+				System.err.println("Ele name: " + o.getElementName());
+				System.err.println("o.getJavaProject()"
+						+ o.getJavaProject().getElementName());
+			}
+
+			if (p[i].getSegment(0) instanceof IJavaElement) {
+				IJavaElement o = (IJavaElement) p[i].getSegment(0);
+				System.err.println("Ele name: " + o.getElementName());
+				System.err.println("o.getJavaProject()"
+						+ o.getJavaProject().getElementName());
+			}
+
+			if (p[i].getSegment(0) instanceof IFile) {
+				IFile o = (IFile) p[i].getSegment(0);
+				System.err.println("Ele name: " + o.getName());
+			}
+
+			if (p[i].getSegment(0) instanceof IType) {
+				IType o = (IType) p[i].getSegment(0);
+				System.err.println("Ele name: " + o.getElementName());
+				System.err.println("o.getJavaProject()"
+						+ o.getJavaProject().getElementName());
+			}
+			if (p[i].getSegment(0) instanceof IField) {
+				IField o = (IField) p[i].getSegment(0);
+				System.err.println("Ele name: " + o.getElementName());
+				System.err.println("o.getJavaProject()"
+						+ o.getJavaProject().getElementName());
+			}
+			if (p[i].getSegment(0) instanceof IMethod) {
+				IMethod o = (IMethod) p[i].getSegment(0);
+				System.err.println("Ele name: " + o.getElementName());
+				System.err.println("o.getJavaProject()"
+						+ o.getJavaProject().getElementName());
+			}
+
+			if (p[i].getSegmentCount() > 1) {
+
+				if (p[i].getSegment(1) instanceof IType) {
+					IType o = (IType) p[i].getSegment(1);
+					System.err.println("Ele name: " + o.getElementName());
+					System.err.println("o.getJavaProject()"
+							+ o.getJavaProject().getElementName());
+				}
+
+				if (p[i].getSegment(1) instanceof IMethod) {
+					IMethod o = (IMethod) p[i].getSegment(1);
+					System.err.println("Ele name: " + o.getElementName());
+					System.err.println("o.getJavaProject()"
+							+ o.getJavaProject().getElementName());
+				}
+
+				if (p[i].getSegment(1) instanceof IFile) {
+					IFile o = (IFile) p[i].getSegment(1);
+					System.err.println("Ele name: " + o.getName());
+					System.err.println("Project: " + o.getProject().getName());
+				}
+
+				if (p[i].getSegment(1) instanceof IJavaElement) {
+					IJavaElement o = (IJavaElement) p[i].getSegment(1);
+					System.err.println("Ele name: " + o.getElementName());
+					System.err.println("Project: "
+							+ o.getJavaProject().getElementName());
+				}
+
+				if (p[i].getSegment(1) instanceof IMember) {
+					IMember o = (IMember) p[i].getSegment(1);
+					System.err.println("Ele name: " + o.getElementName());
+					System.err.println("o.getJavaProject()"
+							+ o.getJavaProject().getElementName());
+
+				}
+				if (p[i].getSegment(1) instanceof ICompilationUnit) {
+					ICompilationUnit o = (ICompilationUnit) p[i].getSegment(1);
+					System.err.println("Ele name: " + o.getElementName());
+					System.err.println("o.getJavaProject()"
+							+ o.getJavaProject().getElementName());
+
+				}
+			}
+
 		}
 
 		if (isInsideViewDrop(event))
 			processDropEventWithDragFromWithinTheView();
-		else
-			processDropEventWithDragInitiatedFromOutsideTheView(event);
+		else {
+			int xy = p[0].getSegmentCount();
+			processDropEventWithDragInitiatedFromOutsideTheView(p[0]
+					.getSegment(xy - 1));
+		}
 
 		targetNode = null;
 
@@ -144,34 +282,29 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
-			DropTargetEvent event) {
+			Object object) {
 
-		if (event.data instanceof IResource[]) {
-			IResource[] resources = (IResource[]) event.data;
+		// if (object instanceof IType) {
+		// IResource[] resources = (IResource[]) object.data;
+		// IType t = (IType) object;
 
-			if (targetNode != null) {
-				for (IResource res : resources) {
-					createNewNodeAndAddAsChildToTargetNode(res.getFullPath()
-							.toString());
-				}
-			} else {
-				createNewTopLevelNode(resources);
-			}
+		if (targetNode != null) {
+			createNewNodeAndAddAsChildToTargetNode(object);
+		} else {
+			createNewTopLevelNode(object);
 		}
+		// }
 
 	}
 
-	private void createNewTopLevelNode(IResource[] resources) {
+	private void createNewTopLevelNode(Object t) {
 		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
 
 		TreeNode bookmarkNode = new TreeNode("New Bookmark", true);
 
-		for (IResource resource : resources) {
-
-			TreeNode refNode = new TreeNode(resource.getFullPath().toString());
-			bookmarkNode.addChild(refNode);
-			refNode.setParent(bookmarkNode);
-		}
+		TreeNode refNode = new TreeNode(t);
+		bookmarkNode.addChild(refNode);
+		refNode.setParent(bookmarkNode);
 		model.getModelRoot().addChild(bookmarkNode);
 		viewer.refresh();
 		viewer.setExpandedTreePaths(treeExpansion);
@@ -197,8 +330,8 @@ public class TreeDropListener implements DropTargetListener {
 		return (node instanceof TreeNode && targetNode != null);
 	}
 
-	private void createNewNodeAndAddAsChildToTargetNode(String data) {
-		TreeNode newNode = new TreeNode(data);
+	private void createNewNodeAndAddAsChildToTargetNode(Object t) {
+		TreeNode newNode = new TreeNode(t);
 		newNode.setParent(targetNode);
 		targetNode.addChild(newNode);
 

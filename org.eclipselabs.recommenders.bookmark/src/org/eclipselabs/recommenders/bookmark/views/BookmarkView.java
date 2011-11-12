@@ -31,6 +31,10 @@ public class BookmarkView extends ViewPart {
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
+		
+//		viewer.setContentProvider(new StandardJavaElementContentProvider(true));
+//		viewer.setLabelProvider(new JavaElementLabelProvider());
+//		viewer.setInput(JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()));
 
 		viewer.getTree().addListener(SWT.MouseDoubleClick,
 				new SWTNodeEditListener(viewer));

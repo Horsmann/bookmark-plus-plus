@@ -13,5 +13,6 @@ Import-Package: org.eclipse.core.resources,
 Export-Package: org.eclipselabs.recommenders.bookmark
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
- org.eclipse.jdt.ui
+ org.eclipse.jdt.ui,
+ org.eclipse.jdt.core;bundle-version="3.7.0"
 Bundle-ActivationPolicy: lazy
