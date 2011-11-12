@@ -53,7 +53,7 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean isValidDrop(DropTargetEvent event) {
-
+		//TODO: Nicht länger korrekt
 		// Iterate the selected items that are being droped
 		List<IStructuredSelection> selectedList = getTreeSelections();
 		for (int i = 0; i < selectedList.size(); i++) {

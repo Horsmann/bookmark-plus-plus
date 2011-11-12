@@ -19,7 +19,6 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final String ICON_DEFAULT = "default";
 	public static final String ICON_BOOKMARK = "bookmark";
-	public static final String ICON_JAVAFILE = "java";
 
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
@@ -43,10 +42,6 @@ public class Activator extends AbstractUIPlugin {
 		ImageDescriptor imgDesc = ImageDescriptor.createFromURL(FileLocator
 				.find(bundle, new Path("icons/sample.gif"), null));
 		registry.put(ICON_DEFAULT, imgDesc);
-
-		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
-				new Path("icons/jcu_obj.gif"), null));
-		registry.put(ICON_JAVAFILE, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
 				new Path("icons/bookmark.gif"), null));
