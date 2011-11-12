@@ -106,9 +106,8 @@ public class TreeDropListener implements DropTargetListener {
 		if (getTarget(event) != null && getTarget(event) instanceof TreeNode) {
 			targetNode = (TreeNode) getTarget(event);
 
-			// Get the bookmark node, any drop must be added to a bookmark
-			// while (!targetNode.isBookmarkNode())
-			// targetNode = targetNode.getParent();
+			while (!targetNode.isBookmarkNode())
+				targetNode = targetNode.getParent();
 		}
 
 		TreeSelection treeSelection = null;
@@ -119,11 +118,9 @@ public class TreeDropListener implements DropTargetListener {
 
 		if (isInsideViewDrop(event))
 			processDropEventWithDragFromWithinTheView();
-		else {
-			for (int i = 0; i < treePath.length; i++) {
+		else
+			for (int i = 0; i < treePath.length; i++)
 				processDropEventWithDragInitiatedFromOutsideTheView(treePath[i]);
-			}
-		}
 
 		targetNode = null;
 
@@ -182,6 +179,26 @@ public class TreeDropListener implements DropTargetListener {
 	private void createNewNodeAndAddAsChildToTargetNode(TreePath path) {
 
 		TreeNode node = buildTreeStructure(path);
+
+		for (TreeNode bmChild : targetNode.getChildren()) {
+			for (TreeNode nChild : node.getChildren()) {
+				if (bmChild.getValue().equals(nChild.getValue())) {
+					System.err
+							.println("bookmarks child equal to generated nodes childs");
+				}
+			}
+			if (bmChild.getValue().equals(node.getValue()))
+				System.err.println("bookmarks child equal to generated node");
+		}
+
+		// if (bmChild.getValue().equals(node.getValue())) {
+		// System.err.println("child is equal with node");
+		// if (bmChild.getParent().getValue()
+		// .equals(targetNode.getValue())) {
+		// int a = 3;
+		// }
+		// }
+
 		if (node == null)
 			return;
 
