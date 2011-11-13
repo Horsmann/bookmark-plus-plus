@@ -13,15 +13,18 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeDropListener implements DropTargetListener {
 
 	private final TreeViewer viewer;
 	private TreeModel model;
-	private TreeNode targetNode = null;
+	private TreeNode bookmarkNode = null;
 
 	public TreeDropListener(TreeViewer viewer, TreeModel model) {
 		// super(viewer);
@@ -54,8 +57,8 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean isValidDrop(DropTargetEvent event) {
-		// TODO: Nicht länger korrekt
 		// Iterate the selected items that are being droped
+		// viewer.getTree().get
 		List<IStructuredSelection> selectedList = getTreeSelections();
 		for (int i = 0; i < selectedList.size(); i++) {
 			TreeNode node = (TreeNode) selectedList.get(i);
@@ -105,10 +108,10 @@ public class TreeDropListener implements DropTargetListener {
 	public void drop(DropTargetEvent event) {
 
 		if (getTarget(event) != null && getTarget(event) instanceof TreeNode) {
-			targetNode = (TreeNode) getTarget(event);
+			bookmarkNode = (TreeNode) getTarget(event);
 
-			while (!targetNode.isBookmarkNode())
-				targetNode = targetNode.getParent();
+			while (!bookmarkNode.isBookmarkNode())
+				bookmarkNode = bookmarkNode.getParent();
 		}
 
 		TreeSelection treeSelection = null;
@@ -118,44 +121,57 @@ public class TreeDropListener implements DropTargetListener {
 			treePath = treeSelection.getPaths();
 		}
 
-		if (isInsideViewDrop(event))
+		// isInsideViewDrop(event);
+		// if (isInsideViewDrop(event)) {
+		// // processDropEventWithDragFromWithinTheView();
+		// } else {
+		if (treePath != null)
+			processDropEventWithDragInitiatedFromOutsideTheView(treePath);
+		else
 			processDropEventWithDragFromWithinTheView();
-		else {
-			if (treePath != null)
-				for (int i = 0; i < treePath.length; i++)
-					processDropEventWithDragInitiatedFromOutsideTheView(treePath[i]);
-		}
+		// }
 
-		targetNode = null;
+		bookmarkNode = null;
 
-	}
-
-	private boolean isInsideViewDrop(DropTargetEvent event) {
-		return event.data == null;
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
-			TreePath path) {
+			TreePath[] treePath) {
 
-		if (targetNode != null)
-			createNewNodeAndAddAsChildToTargetNode(path);
+		if (bookmarkNode != null)
+			for (int i = 0; i < treePath.length; i++)
+				createNewNodeAndAddAsChild(treePath[i]);
 		else
-			createNewTopLevelNode(path);
+			createNewTopLevelNode(treePath);
 
 	}
 
-	private void createNewTopLevelNode(TreePath path) {
+	private void createNewTopLevelNode(TreePath[] treePath) {
 
 		TreeNode bookmarkNode = new TreeNode("New Bookmark", true);
 
-		TreeNode node = buildTreeStructure(path);
+		for (int i = 0; i < treePath.length; i++) {
+			TreeNode node = buildTreeStructure(treePath[i]);
 
-		if (node == null)
-			return;
+			if (node == null)
+				return;
 
-		bookmarkNode = linkNodes(bookmarkNode, node);
-		model.getModelRoot().addChild(bookmarkNode);
+			TreeNode mergeSource = findAndFollowEqualPathsUntilInequalty(
+					bookmarkNode, node);
+			TreeNode mergeTarget = findAndFollowEqualPathsUntilInequalty(node,
+					bookmarkNode);
+
+			if (mergeSource != null && mergeTarget != null) {
+				for (TreeNode c : mergeSource.getChildren())
+					linkNodes(mergeTarget, c);
+			} else
+				linkNodes(bookmarkNode, node);
+
+		}
+		linkNodes(model.getModelRoot(), bookmarkNode);
+		// model.getModelRoot().addChild(bookmarkNode);
 		refreshTree();
+
 	}
 
 	private void processDropEventWithDragFromWithinTheView() {
@@ -163,43 +179,49 @@ public class TreeDropListener implements DropTargetListener {
 		for (int i = 0; i < selections.size(); i++) {
 			TreeNode node = (TreeNode) selections.get(i);
 
-			if (isValidSourceAndTarget(node)) {
-				TreeNode sourceNode = (TreeNode) node;
+			if (bookmarkNode != null) {
+				// // Source und Target??????
+				TreeNode mergeSource = findAndFollowEqualPathsUntilInequalty(
+						bookmarkNode, node);
+				TreeNode mergeTarget = findAndFollowEqualPathsUntilInequalty(
+						node, bookmarkNode);
 
-				TreeNode mergeSource = checkForAndMergeTreeStructure(
-						targetNode, sourceNode);
-				TreeNode mergeTarget = checkForAndMergeTreeStructure(
-						sourceNode, targetNode);
-
-				if (mergeSource != null) {
+				if (mergeSource != null && mergeTarget != null) {
 					for (TreeNode c : mergeSource.getChildren())
 						linkNodes(mergeTarget, c);
-				}
-				else
-					linkNodes(targetNode, sourceNode);
+				} else
+					linkNodes(bookmarkNode, node);
 			}
 		}
+		refreshTree();
 	}
 
 	private boolean isValidSourceAndTarget(TreeNode node) {
-		return (node instanceof TreeNode && targetNode != null);
+		return (node instanceof TreeNode && bookmarkNode != null);
 	}
 
-	private void createNewNodeAndAddAsChildToTargetNode(TreePath path) {
+	private void createNewNodeAndAddAsChild(TreePath path) {
 
 		TreeNode node = buildTreeStructure(path);
 
 		if (node == null)
 			return;
 
-		TreeNode mergeSource = checkForAndMergeTreeStructure(targetNode, node);
-		TreeNode mergeTarget = checkForAndMergeTreeStructure(node, targetNode);
+		TreeNode mergeSource = findAndFollowEqualPathsUntilInequalty(
+				bookmarkNode, node);
+		TreeNode mergeTarget = findAndFollowEqualPathsUntilInequalty(node,
+				bookmarkNode);
 
-		if (mergeSource != null)
-			for (TreeNode c : mergeSource.getChildren())
+		if (mergeSource != null && mergeTarget != null)
+			for (TreeNode c : mergeSource.getChildren()) {
+				/*
+				 * Implication: If an equal path already exist it won't have
+				 * children and thus creation of duplicates is prevented
+				 */
 				linkNodes(mergeTarget, c);
+			}
 		else
-			targetNode = linkNodes(targetNode, node);
+			bookmarkNode = linkNodes(bookmarkNode, node);
 
 		refreshTree();
 
@@ -211,25 +233,35 @@ public class TreeDropListener implements DropTargetListener {
 		viewer.setExpandedTreePaths(treeExpansion);
 	}
 
+	// /**
+	// * Prevents the creation of duplicate entries for a bookmark and performs
+	// a
+	// * merge of nodes if possible
+	// *
+	// * @param node
+	// * @return boolean, true if no duplicates were found and no merge could be
+	// * performed; false otherwise
+	// */
+	// private boolean checkForDuplicatesAndPerformNodeMergeIfPossible(
+	// TreeNode node) {
+	//
+	// if (isDuplicateEntry(node))
+	// return true;
+	// return false;
+	// // return checkForAndMergeTreeStructure(targetNode, node);
+	// }
+
 	/**
-	 * Prevents the creation of duplicate entries for a bookmark and performs a
-	 * merge of nodes if possible
+	 * Seeks an equal path in the tree structure of the first parameters
+	 * TreeNode The return value is the last point of equality for the 2nd
+	 * parameters TreeNode or null if the path are unequal
 	 * 
-	 * @param node
-	 * @return boolean, true if no duplicates were found and no merge could be
-	 *         performed; false otherwise
+	 * @param existingStructure
+	 * @param newStructure
+	 * @return
 	 */
-	private boolean checkForDuplicatesAndPerformNodeMergeIfPossible(
-			TreeNode node) {
-
-		if (isDuplicateEntry(node))
-			return true;
-		return false;
-		// return checkForAndMergeTreeStructure(targetNode, node);
-	}
-
-	private TreeNode checkForAndMergeTreeStructure(TreeNode existingStructure,
-			TreeNode newStructure) {
+	private TreeNode findAndFollowEqualPathsUntilInequalty(
+			TreeNode existingStructure, TreeNode newStructure) {
 
 		TreeNode link = null;
 
@@ -237,13 +269,15 @@ public class TreeDropListener implements DropTargetListener {
 			link = newStructure;
 
 		for (TreeNode ns : newStructure.getChildren()) {
-			TreeNode ret = checkForAndMergeTreeStructure(existingStructure, ns);
+			TreeNode ret = findAndFollowEqualPathsUntilInequalty(
+					existingStructure, ns);
 			if (ret != null)
 				link = ret;
 		}
 
 		for (TreeNode ex : existingStructure.getChildren()) {
-			TreeNode ret = checkForAndMergeTreeStructure(ex, newStructure);
+			TreeNode ret = findAndFollowEqualPathsUntilInequalty(ex,
+					newStructure);
 			if (ret != null)
 				link = ret;
 		}
@@ -255,16 +289,17 @@ public class TreeDropListener implements DropTargetListener {
 		return nodeA.getValue().equals(nodeB.getValue());
 	}
 
-	private boolean isDuplicateEntry(TreeNode node) {
-		for (TreeNode bmChild : targetNode.getChildren()) {
-			for (TreeNode nChild : node.getChildren()) {
-				if (bmChild.getValue().equals(nChild.getValue())) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+	//
+	// private boolean isDuplicateEntry(TreeNode node) {
+	// for (TreeNode bmChild : targetNode.getChildren()) {
+	// for (TreeNode nChild : node.getChildren()) {
+	// if (bmChild.getValue().equals(nChild.getValue())) {
+	// return true;
+	// }
+	// }
+	// }
+	// return false;
+	// }
 
 	private TreeNode buildTreeStructure(TreePath path) {
 		int segNr = path.getSegmentCount() - 1;
