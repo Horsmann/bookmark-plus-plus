@@ -13,11 +13,8 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeDropListener implements DropTargetListener {
@@ -121,15 +118,10 @@ public class TreeDropListener implements DropTargetListener {
 			treePath = treeSelection.getPaths();
 		}
 
-		// isInsideViewDrop(event);
-		// if (isInsideViewDrop(event)) {
-		// // processDropEventWithDragFromWithinTheView();
-		// } else {
 		if (treePath != null)
 			processDropEventWithDragInitiatedFromOutsideTheView(treePath);
 		else
-			processDropEventWithDragFromWithinTheView();
-		// }
+			processDropEventWithDragFromWithinTheView(event);
 
 		bookmarkNode = null;
 
@@ -169,35 +161,23 @@ public class TreeDropListener implements DropTargetListener {
 
 		}
 		linkNodes(model.getModelRoot(), bookmarkNode);
-		// model.getModelRoot().addChild(bookmarkNode);
 		refreshTree();
 
 	}
 
-	private void processDropEventWithDragFromWithinTheView() {
+	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event) {
 		List<IStructuredSelection> selections = getTreeSelections();
 		for (int i = 0; i < selections.size(); i++) {
 			TreeNode node = (TreeNode) selections.get(i);
 
-			if (bookmarkNode != null) {
-				// // Source und Target??????
-				TreeNode mergeSource = findAndFollowEqualPathsUntilInequalty(
-						bookmarkNode, node);
-				TreeNode mergeTarget = findAndFollowEqualPathsUntilInequalty(
-						node, bookmarkNode);
+			if ((TreeNode) getTarget(event) != null) {
+				TreeNode target = (TreeNode) getTarget(event);
+				node.getParent().removeChild(node);
+				linkNodes(target, node);
 
-				if (mergeSource != null && mergeTarget != null) {
-					for (TreeNode c : mergeSource.getChildren())
-						linkNodes(mergeTarget, c);
-				} else
-					linkNodes(bookmarkNode, node);
 			}
 		}
 		refreshTree();
-	}
-
-	private boolean isValidSourceAndTarget(TreeNode node) {
-		return (node instanceof TreeNode && bookmarkNode != null);
 	}
 
 	private void createNewNodeAndAddAsChild(TreePath path) {
@@ -232,24 +212,6 @@ public class TreeDropListener implements DropTargetListener {
 		viewer.refresh();
 		viewer.setExpandedTreePaths(treeExpansion);
 	}
-
-	// /**
-	// * Prevents the creation of duplicate entries for a bookmark and performs
-	// a
-	// * merge of nodes if possible
-	// *
-	// * @param node
-	// * @return boolean, true if no duplicates were found and no merge could be
-	// * performed; false otherwise
-	// */
-	// private boolean checkForDuplicatesAndPerformNodeMergeIfPossible(
-	// TreeNode node) {
-	//
-	// if (isDuplicateEntry(node))
-	// return true;
-	// return false;
-	// // return checkForAndMergeTreeStructure(targetNode, node);
-	// }
 
 	/**
 	 * Seeks an equal path in the tree structure of the first parameters
@@ -289,24 +251,13 @@ public class TreeDropListener implements DropTargetListener {
 		return nodeA.getValue().equals(nodeB.getValue());
 	}
 
-	//
-	// private boolean isDuplicateEntry(TreeNode node) {
-	// for (TreeNode bmChild : targetNode.getChildren()) {
-	// for (TreeNode nChild : node.getChildren()) {
-	// if (bmChild.getValue().equals(nChild.getValue())) {
-	// return true;
-	// }
-	// }
-	// }
-	// return false;
-	// }
-
 	private TreeNode buildTreeStructure(TreePath path) {
 		int segNr = path.getSegmentCount() - 1;
 		TreeNode node = null;
 
 		// Fall through, several instanceof may succeed, take the most specific
 		// one
+
 		if (path.getSegment(segNr) instanceof IJavaElement)
 			node = new TreeNode(path.getSegment(segNr));
 
