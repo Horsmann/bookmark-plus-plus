@@ -36,11 +36,11 @@ public class TreeDragListener implements DragSourceListener {
 		}
 
 		if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
-			event.data = dragNode.getText();
+			event.data = dragNode.getValue();
 			dropPerformed = true;
 		} else if (ResourceTransfer.getInstance().isSupportedType(
 				event.dataType)) {
-			event.data = dragNode.getText();
+			event.data = dragNode.getValue();
 			dropPerformed = true;
 		}
 

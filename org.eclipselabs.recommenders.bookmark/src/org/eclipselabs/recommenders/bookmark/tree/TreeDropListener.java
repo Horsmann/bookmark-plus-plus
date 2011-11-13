@@ -3,6 +3,7 @@ package org.eclipselabs.recommenders.bookmark.tree;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -53,7 +54,7 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean isValidDrop(DropTargetEvent event) {
-		//TODO: Nicht länger korrekt
+		// TODO: Nicht länger korrekt
 		// Iterate the selected items that are being droped
 		List<IStructuredSelection> selectedList = getTreeSelections();
 		for (int i = 0; i < selectedList.size(); i++) {
@@ -111,23 +112,26 @@ public class TreeDropListener implements DropTargetListener {
 		}
 
 		TreeSelection treeSelection = null;
-		if (event.data instanceof TreeSelection)
+		TreePath[] treePath = null;
+		if (event.data instanceof TreeSelection) {
 			treeSelection = (TreeSelection) event.data;
-
-		TreePath[] treePath = treeSelection.getPaths();
+			treePath = treeSelection.getPaths();
+		}
 
 		if (isInsideViewDrop(event))
 			processDropEventWithDragFromWithinTheView();
-		else
-			for (int i = 0; i < treePath.length; i++)
-				processDropEventWithDragInitiatedFromOutsideTheView(treePath[i]);
+		else {
+			if (treePath != null)
+				for (int i = 0; i < treePath.length; i++)
+					processDropEventWithDragInitiatedFromOutsideTheView(treePath[i]);
+		}
 
 		targetNode = null;
 
 	}
 
 	private boolean isInsideViewDrop(DropTargetEvent event) {
-		return event.data instanceof TreeNode;
+		return event.data == null;
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
@@ -141,7 +145,6 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private void createNewTopLevelNode(TreePath path) {
-		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
 
 		TreeNode bookmarkNode = new TreeNode("New Bookmark", true);
 
@@ -152,8 +155,7 @@ public class TreeDropListener implements DropTargetListener {
 
 		bookmarkNode = linkNodes(bookmarkNode, node);
 		model.getModelRoot().addChild(bookmarkNode);
-		viewer.refresh();
-		viewer.setExpandedTreePaths(treeExpansion);
+		refreshTree();
 	}
 
 	private void processDropEventWithDragFromWithinTheView() {
@@ -164,10 +166,17 @@ public class TreeDropListener implements DropTargetListener {
 			if (isValidSourceAndTarget(node)) {
 				TreeNode sourceNode = (TreeNode) node;
 
-				sourceNode.getParent().removeChild(sourceNode);
+				TreeNode mergeSource = checkForAndMergeTreeStructure(
+						targetNode, sourceNode);
+				TreeNode mergeTarget = checkForAndMergeTreeStructure(
+						sourceNode, targetNode);
 
-				sourceNode.setParent(targetNode);
-				targetNode.addChild(sourceNode);
+				if (mergeSource != null) {
+					for (TreeNode c : mergeSource.getChildren())
+						linkNodes(mergeTarget, c);
+				}
+				else
+					linkNodes(targetNode, sourceNode);
 			}
 		}
 	}
@@ -180,34 +189,81 @@ public class TreeDropListener implements DropTargetListener {
 
 		TreeNode node = buildTreeStructure(path);
 
-		for (TreeNode bmChild : targetNode.getChildren()) {
-			for (TreeNode nChild : node.getChildren()) {
-				if (bmChild.getValue().equals(nChild.getValue())) {
-					System.err
-							.println("bookmarks child equal to generated nodes childs");
-				}
-			}
-			if (bmChild.getValue().equals(node.getValue()))
-				System.err.println("bookmarks child equal to generated node");
-		}
-
-		// if (bmChild.getValue().equals(node.getValue())) {
-		// System.err.println("child is equal with node");
-		// if (bmChild.getParent().getValue()
-		// .equals(targetNode.getValue())) {
-		// int a = 3;
-		// }
-		// }
-
 		if (node == null)
 			return;
 
-		targetNode = linkNodes(targetNode, node);
+		TreeNode mergeSource = checkForAndMergeTreeStructure(targetNode, node);
+		TreeNode mergeTarget = checkForAndMergeTreeStructure(node, targetNode);
 
+		if (mergeSource != null)
+			for (TreeNode c : mergeSource.getChildren())
+				linkNodes(mergeTarget, c);
+		else
+			targetNode = linkNodes(targetNode, node);
+
+		refreshTree();
+
+	}
+
+	private void refreshTree() {
 		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
 		viewer.refresh();
 		viewer.setExpandedTreePaths(treeExpansion);
+	}
 
+	/**
+	 * Prevents the creation of duplicate entries for a bookmark and performs a
+	 * merge of nodes if possible
+	 * 
+	 * @param node
+	 * @return boolean, true if no duplicates were found and no merge could be
+	 *         performed; false otherwise
+	 */
+	private boolean checkForDuplicatesAndPerformNodeMergeIfPossible(
+			TreeNode node) {
+
+		if (isDuplicateEntry(node))
+			return true;
+		return false;
+		// return checkForAndMergeTreeStructure(targetNode, node);
+	}
+
+	private TreeNode checkForAndMergeTreeStructure(TreeNode existingStructure,
+			TreeNode newStructure) {
+
+		TreeNode link = null;
+
+		if (isNodesValueEqual(existingStructure, newStructure))
+			link = newStructure;
+
+		for (TreeNode ns : newStructure.getChildren()) {
+			TreeNode ret = checkForAndMergeTreeStructure(existingStructure, ns);
+			if (ret != null)
+				link = ret;
+		}
+
+		for (TreeNode ex : existingStructure.getChildren()) {
+			TreeNode ret = checkForAndMergeTreeStructure(ex, newStructure);
+			if (ret != null)
+				link = ret;
+		}
+
+		return link;
+	}
+
+	private boolean isNodesValueEqual(TreeNode nodeA, TreeNode nodeB) {
+		return nodeA.getValue().equals(nodeB.getValue());
+	}
+
+	private boolean isDuplicateEntry(TreeNode node) {
+		for (TreeNode bmChild : targetNode.getChildren()) {
+			for (TreeNode nChild : node.getChildren()) {
+				if (bmChild.getValue().equals(nChild.getValue())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private TreeNode buildTreeStructure(TreePath path) {
@@ -224,6 +280,9 @@ public class TreeDropListener implements DropTargetListener {
 
 		if (path.getSegment(segNr) instanceof IType)
 			node = buildTreeForType(path);
+
+		if (path.getSegment(segNr) instanceof IField)
+			node = null;
 
 		return node;
 	}

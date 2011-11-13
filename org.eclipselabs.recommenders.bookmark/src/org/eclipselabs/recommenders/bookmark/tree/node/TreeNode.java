@@ -31,6 +31,10 @@ public class TreeNode {
 		return isBookmarkNode;
 	}
 	
+	public void setValue(Object value) {
+		this.value = value;
+	}
+	
 	public Object getValue() {
 		return value;
 	}
@@ -55,14 +59,6 @@ public class TreeNode {
 
 	public boolean hasChildren() {
 		return children.size() > 0;
-	}
-
-	public void setText(Object value) {
-		this.value = value;
-	}
-
-	public Object getText() {
-		return value;
 	}
 
 	public void setParent(TreeNode parent) {
