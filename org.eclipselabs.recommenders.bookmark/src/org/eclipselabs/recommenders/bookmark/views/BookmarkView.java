@@ -3,6 +3,10 @@ package org.eclipselabs.recommenders.bookmark.views;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -13,7 +17,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
@@ -57,7 +63,15 @@ public class BookmarkView extends ViewPart {
 	private void createActions() {
 		openBookmarks = new Action("Open Bookmarks") {
 			public void run() {
-				openBookmarks();
+				try {
+					openBookmarks();
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JavaModelException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		};
 
@@ -71,12 +85,20 @@ public class BookmarkView extends ViewPart {
 		mgr.add(openBookmarks);
 	}
 
-	private void openBookmarks() {
+	private void openBookmarks() throws PartInitException, JavaModelException {
 		
 		List<IStructuredSelection> selectedList = getTreeSelections();
 		for (int i = 0; i < selectedList.size(); i++) {
 			TreeNode node = (TreeNode) selectedList.get(i);
 			System.err.println("Open: " + node.getValue());
+			
+			IJavaElement ele = (IJavaElement) Platform.getAdapterManager().getAdapter(node.getValue(), IJavaElement.class);
+			int a = 0;
+			a++;
+			//Speichern der Objektkopie beim droppen und dann ein ggf. reduziertes return?
+//			Platform.getAdapterManager().
+			IEditorPart part = JavaUI.openInEditor((IJavaElement) node.getValue());
+			JavaUI.revealInEditor(part, (IJavaElement) node.getValue());
 		}
 		
 		System.err.println("****END*****");

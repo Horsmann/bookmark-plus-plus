@@ -277,18 +277,21 @@ public class TreeDropListener implements DropTargetListener {
 		if (path.getSegment(segNr) instanceof IJavaElement) {
 			IJavaElement element = (IJavaElement) path.getSegment(segNr);
 			node = new TreeNode(element.getPath().toString());
+			
+			node = new TreeNode(path.getSegment(segNr));
 		}
 		//
-		if (path.getSegment(segNr) instanceof IMethod) {
-			IMethod method = (IMethod) path.getSegment(segNr);
-			String methodString = method.getPath().toString() + "#"
-					+ method.getElementName().toString();
+//		if (path.getSegment(segNr) instanceof IMethod) {
+//			IMethod method = (IMethod) path.getSegment(segNr);
+//			String methodString = method.getPath().toString() + "#"
+//					+ method.getElementName().toString();
+//
+//			methodString += ">" + method.getSignature();
+//			node = new TreeNode(methodString);
 
-			methodString += ">" + method.getSignature();
-
-
-			node = new TreeNode(methodString);
-		}
+			
+			
+//		}
 		//
 		// if (path.getSegment(segNr) instanceof IType)
 		// node = buildTreeForType(path);
