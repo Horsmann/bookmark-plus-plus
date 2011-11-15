@@ -25,8 +25,7 @@ public class TreeLabelProvider extends LabelProvider {
 			if (text.compareTo("") != 0)
 				return text;
 
-			if (node.isBookmarkNode())
-				return (String) node.getValue();
+			return (String) node.getValue();
 
 		}
 

@@ -19,6 +19,7 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final String ICON_DEFAULT = "default";
 	public static final String ICON_BOOKMARK = "bookmark";
+	public static final String ICON_OPEN_BOOKMARK = "openBookmarks";
 
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
@@ -33,7 +34,7 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
-
+	
 	@Override
 	protected void initializeImageRegistry(ImageRegistry registry) {
 		super.initializeImageRegistry(registry);
@@ -46,6 +47,10 @@ public class Activator extends AbstractUIPlugin {
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
 				new Path("icons/bookmark.gif"), null));
 		registry.put(ICON_BOOKMARK, imgDesc);
+		
+		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
+				new Path("icons/openBookmarks.gif"), null));
+		registry.put(ICON_OPEN_BOOKMARK, imgDesc);
 
 	}
 }
