@@ -259,9 +259,9 @@ public class TreeDropListener implements DropTargetListener {
 	// return link;
 	// }
 
-//	private boolean isNodesValueEqual(TreeNode nodeA, TreeNode nodeB) {
-//		return nodeA.getValue().equals(nodeB.getValue());
-//	}
+	// private boolean isNodesValueEqual(TreeNode nodeA, TreeNode nodeB) {
+	// return nodeA.getValue().equals(nodeB.getValue());
+	// }
 
 	private TreeNode buildTreeStructure(TreePath path)
 			throws JavaModelException {
@@ -275,23 +275,30 @@ public class TreeDropListener implements DropTargetListener {
 		// node = new TreeNode(path.getSegment(segNr));
 
 		if (path.getSegment(segNr) instanceof IJavaElement) {
+
 			IJavaElement element = (IJavaElement) path.getSegment(segNr);
-			node = new TreeNode(element.getPath().toString());
+
+			IJavaElement test = (IJavaElement) ((IJavaElement) path
+					.getSegment(segNr)).getAdapter(IJavaElement.class);
 			
+			if (element.equals(test)){
+				int a = 0;
+			}
+
+			node = new TreeNode(element.getPath().toString());
+
 			node = new TreeNode(path.getSegment(segNr));
 		}
 		//
-//		if (path.getSegment(segNr) instanceof IMethod) {
-//			IMethod method = (IMethod) path.getSegment(segNr);
-//			String methodString = method.getPath().toString() + "#"
-//					+ method.getElementName().toString();
-//
-//			methodString += ">" + method.getSignature();
-//			node = new TreeNode(methodString);
+		// if (path.getSegment(segNr) instanceof IMethod) {
+		// IMethod method = (IMethod) path.getSegment(segNr);
+		// String methodString = method.getPath().toString() + "#"
+		// + method.getElementName().toString();
+		//
+		// methodString += ">" + method.getSignature();
+		// node = new TreeNode(methodString);
 
-			
-			
-//		}
+		// }
 		//
 		// if (path.getSegment(segNr) instanceof IType)
 		// node = buildTreeForType(path);
@@ -350,5 +357,4 @@ public class TreeDropListener implements DropTargetListener {
 	private Object getTarget(DropTargetEvent event) {
 		return ((event.item == null) ? null : event.item.getData());
 	}
-
 }
