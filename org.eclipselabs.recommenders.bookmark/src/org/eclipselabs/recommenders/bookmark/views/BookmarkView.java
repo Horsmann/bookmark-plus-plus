@@ -124,16 +124,16 @@ public class BookmarkView extends ViewPart {
 			e.printStackTrace();
 		}
 
-		 Gson gson = new Gson();
-		 Type typeOfSrc = new TypeToken<TreeNode>(){}.getType();
-		 TreeNode rootNode = gson.fromJson(readline, typeOfSrc);
-		 
-		 TreeNode deSerializedRoot =
-		 TreeDeSerializer.deSerializeTree(rootNode);
-		 
-		 model.setRootNode(deSerializedRoot);
-		 viewer.setInput(model.getModelRoot());
-//		 viewer.refresh();
+		Gson gson = new Gson();
+		Type typeOfSrc = new TypeToken<TreeNode>() {
+		}.getType();
+		TreeNode rootNode = gson.fromJson(readline, typeOfSrc);
+
+		TreeNode deSerializedRoot = TreeDeSerializer.deSerializeTree(rootNode);
+
+		model.setRootNode(deSerializedRoot);
+		viewer.setInput(model.getModelRoot());
+		// viewer.refresh();
 		//
 		// String test = "";
 		//
@@ -158,20 +158,21 @@ public class BookmarkView extends ViewPart {
 
 	private void saveBookmarks() {
 
-		TreeNode headNode = TreeDeSerializer.serializeTree(model
-				.getModelRoot());
+		TreeNode headNode = TreeDeSerializer
+				.serializeTree(model.getModelRoot());
 
-//		headNode = new TreeNode("sdfsd");
-//		 TreeNode bm = new TreeNode("xxx", true);
-//		 headNode.addChild(bm);
+		// headNode = new TreeNode("sdfsd");
+		// TreeNode bm = new TreeNode("xxx", true);
+		// headNode.addChild(bm);
 
-//		GsonBuilder gsonbuilder = new GsonBuilder().serializeNulls();
+		// GsonBuilder gsonbuilder = new GsonBuilder().serializeNulls();
 		Gson gson = new Gson();
-		Type typeOfSrc = new TypeToken<TreeNode>(){}.getType();
-//		 JsonElement gsonTree = gson.toJsonTree(preSerializedModel,typeOfSrc);
-//		 String gsonTreeString = gsonTree.getAsString();
-	
-		String gsonTreeString = gson.toJson(headNode,typeOfSrc);
+		Type typeOfSrc = new TypeToken<TreeNode>() {
+		}.getType();
+		// JsonElement gsonTree = gson.toJsonTree(preSerializedModel,typeOfSrc);
+		// String gsonTreeString = gsonTree.getAsString();
+
+		String gsonTreeString = gson.toJson(headNode, typeOfSrc);
 
 		try {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
@@ -269,15 +270,17 @@ public class BookmarkView extends ViewPart {
 			// Speichern der Objektkopie beim droppen und dann ein ggf.
 			// reduziertes return?
 			// Platform.getAdapterManager().
-			// IEditorPart part = JavaUI.openInEditor((IJavaElement) node
-			// .getValue());
 
-			// JavaUI.revealInEditor(part, (IJavaElement) node.getValue());
+			if (node.getValue() instanceof IJavaElement) {
+				IEditorPart part = JavaUI.openInEditor((IJavaElement) node
+						.getValue());
+				JavaUI.revealInEditor(part, (IJavaElement) node.getValue());
+				return;
+			}
 
 			IFile file = (IFile) Platform.getAdapterManager()
 					.getAdapter(((IJavaElement) node.getValue()).getResource(),
 							IFile.class);
-			// IEditorPart part = EditorUtility.openInEditor(file);
 
 			IDE.openEditor(this.getViewSite().getWorkbenchWindow()
 					.getActivePage(), file);
