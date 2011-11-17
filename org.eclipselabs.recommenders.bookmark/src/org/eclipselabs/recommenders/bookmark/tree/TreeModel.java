@@ -42,4 +42,8 @@ public class TreeModel {
 
 		return root;
 	}
+
+	public void setRootNode(TreeNode newRoot) {
+		root = newRoot;
+	}
 }

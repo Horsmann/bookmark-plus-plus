@@ -69,6 +69,10 @@ public class TreeNode {
 		return parent;
 	}
 
+	public void setBookmark(boolean isBookmark) {
+		this.isBookmarkNode = isBookmark;
+	}
+
 //	public String getProject() {
 //		int posFirstSlash = text.indexOf("/");
 //		int posSecondSlash = 0;
