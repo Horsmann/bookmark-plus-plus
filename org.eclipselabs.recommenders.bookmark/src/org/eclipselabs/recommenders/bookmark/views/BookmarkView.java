@@ -39,6 +39,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.SWTNodeEditListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeContentProvider;
+import org.eclipselabs.recommenders.bookmark.tree.TreeDeSerializer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeDragListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeDropListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeLabelProvider;

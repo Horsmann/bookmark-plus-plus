@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.views;
+package org.eclipselabs.recommenders.bookmark.tree;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
