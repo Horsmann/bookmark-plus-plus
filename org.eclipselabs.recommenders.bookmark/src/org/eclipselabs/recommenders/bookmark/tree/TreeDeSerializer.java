@@ -1,31 +1,29 @@
 package org.eclipselabs.recommenders.bookmark.tree;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class TreeDeSerializer {
 
+	/**
+	 * The values of the TreeNodes are transformed to a string representation,
+	 * the parent<-->child relationship is reduced to parent-->child (removing
+	 * circles)
+	 * 
+	 * @return
+	 */
 	public static TreeNode serializeTree(TreeNode treeRootNode) {
 
 		TreeNode newRootNode = serializeSubTree(treeRootNode);
-		
+
 		for (TreeNode rootChilds : newRootNode.getChildren())
 			rootChilds.setBookmark(true);
 
@@ -57,12 +55,8 @@ public class TreeDeSerializer {
 				newSubTreeNode.addChild(newSubTreeChildNode);
 				newSubTreeChildNode.setParent(null);
 			}
-			// linkNodes(newSubTreeNode, newSubTreeChildNode);
 		}
 
-		
-
-		// newSubTreeNode.setValue("DUMMY");
 		return newSubTreeNode;
 	}
 
@@ -94,8 +88,7 @@ public class TreeDeSerializer {
 				// file.createLink(location, IResource.NONE, null);
 				newSubTreeNode = new TreeNode(file);
 			} catch (JsonSyntaxException e) {
-				// It might not be an Fie
-				System.err.println("Json exception");
+				e.printStackTrace();
 			}
 		}
 

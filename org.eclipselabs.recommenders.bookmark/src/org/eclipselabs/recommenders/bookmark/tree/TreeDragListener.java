@@ -12,7 +12,9 @@ public class TreeDragListener implements DragSourceListener {
 
 	private final TreeViewer viewer;
 	private TreeNode dragNode;
-	private boolean dropPerformed;
+	private boolean refreshView;
+	
+	private boolean isDragInProgress;
 
 	public TreeDragListener(TreeViewer viewer) {
 		this.viewer = viewer;
@@ -20,8 +22,9 @@ public class TreeDragListener implements DragSourceListener {
 
 	@Override
 	public void dragFinished(DragSourceEvent event) {
-		if (dropPerformed)
+		if (refreshView)
 			viewer.refresh();
+		isDragInProgress = false;
 	}
 
 	@Override
@@ -37,17 +40,21 @@ public class TreeDragListener implements DragSourceListener {
 
 		if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 			event.data = dragNode.getValue();
-			dropPerformed = true;
+			refreshView = true;
 		} else if (ResourceTransfer.getInstance().isSupportedType(
 				event.dataType)) {
 			event.data = dragNode.getValue();
-			dropPerformed = true;
+			refreshView = true;
 		}
+	}
 
+	public boolean isDragInProgress() {
+		return isDragInProgress;
 	}
 
 	@Override
 	public void dragStart(DragSourceEvent event) {
-		dropPerformed = false;
+		refreshView = false;
+		isDragInProgress = true;
 	}
 }

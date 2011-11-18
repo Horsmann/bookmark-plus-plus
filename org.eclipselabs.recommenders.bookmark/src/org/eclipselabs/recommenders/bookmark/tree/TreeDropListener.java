@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.ISelection;
@@ -23,10 +22,19 @@ public class TreeDropListener implements DropTargetListener {
 	private TreeModel model;
 	private TreeNode bookmarkNode = null;
 
-	public TreeDropListener(TreeViewer viewer, TreeModel model) {
-		// super(viewer);
+	/**
+	 * The drag listener of the <b>same</b> view the drop listener is listening
+	 * for. By having access to the corresponding drag listener a drag action
+	 * triggered within the view can be distinguished from a drag action started
+	 * in a foreign view
+	 */
+	private TreeDragListener dragListener = null;
+
+	public TreeDropListener(TreeViewer viewer, TreeModel model,
+			TreeDragListener localViewsDragListener) {
 		this.viewer = viewer;
 		this.model = model;
+		dragListener = localViewsDragListener;
 	}
 
 	@Override
@@ -54,22 +62,18 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean isValidDrop(DropTargetEvent event) {
-		// Iterate the selected items that are being droped
-		// viewer.getTree().get
-		List<IStructuredSelection> selectedList = getTreeSelections();
-		for (int i = 0; i < selectedList.size(); i++) {
-			TreeNode node = (TreeNode) selectedList.get(i);
+		if (dragListener.isDragInProgress()) {
+			List<IStructuredSelection> selectedList = getTreeSelections();
+			for (int i = 0; i < selectedList.size(); i++) {
+				TreeNode node = (TreeNode) selectedList.get(i);
 
-			// TODO: Kein drop ausfŸhren, wenn knoten im selben baum landen
-			// wŸrde
-			TreeNode target = (TreeNode) getTarget(event);
-			if (causesRecursion(node, target)) {
-				return false;
+				TreeNode target = (TreeNode) getTarget(event);
+				if (causesRecursion(node, target))
+					return false;
+
+				if (node == target)
+					return false;
 			}
-
-			if (node == target)
-				return false;
-
 		}
 		return true;
 	}
@@ -117,22 +121,19 @@ public class TreeDropListener implements DropTargetListener {
 			treeSelection = (TreeSelection) event.data;
 			treePath = treeSelection.getPaths();
 		}
-		
-//		IResource [] resources=null;
-//		if (event.data instanceof IResource[]){
-//			resources = (IResource[])event.data;
-//		}
+
+		// IResource [] resources=null;
+		// if (event.data instanceof IResource[]){
+		// resources = (IResource[])event.data;
+		// }
 
 		try {
-			if (treePath != null)
-				processDropEventWithDragInitiatedFromOutsideTheView(treePath);
-//			else if (resources != null){
-//				System.err.println("Ress");
-//			}
-			else
+			if (dragListener.isDragInProgress())
 				processDropEventWithDragFromWithinTheView(event);
+			else
+				processDropEventWithDragInitiatedFromOutsideTheView(treePath);
+
 		} catch (JavaModelException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		bookmarkNode = null;
@@ -276,9 +277,9 @@ public class TreeDropListener implements DropTargetListener {
 
 		// if (path.getSegment(segNr) instanceof IJavaElement)
 		// node = new TreeNode(path.getSegment(segNr));
-		
-		if (path.getSegment(segNr) instanceof IFile ||
-				path.getSegment(segNr) instanceof IJavaElement	) {
+
+		if (path.getSegment(segNr) instanceof IFile
+				|| path.getSegment(segNr) instanceof IJavaElement) {
 			node = new TreeNode(path.getSegment(segNr));
 		}
 
