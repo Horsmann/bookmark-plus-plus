@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -190,7 +192,7 @@ public class TreeDropListener implements DropTargetListener {
 			if ((TreeNode) getTarget(event) != null) {
 				TreeNode target = (TreeNode) getTarget(event);
 				node.getParent().removeChild(node);
-//				target.setParent(node);
+				// target.setParent(node);
 				target.addChild(node);
 
 			}
@@ -278,41 +280,42 @@ public class TreeDropListener implements DropTargetListener {
 			return null;
 
 		Object value = path.getSegment(segNr);
-		TreeNode leaf = new TreeNode(value);
+		// TreeNode leaf = new TreeNode(value);
 
-		if (value instanceof IMethod) {
-			IJavaElement javaEle = (IJavaElement) value;
+		if (value instanceof IMethod || value instanceof IType) {
 
-			// Get the type that declares the method
-			IJavaElement type = javaEle.getParent();
-			TreeNode typeNode = new TreeNode(type);
-			typeNode.addChild(leaf);
+			TreeNode tmpChild = new TreeNode(value);
+			TreeNode tmpParent = null;
 
-			// Get the source file that declares the type and the method
-			IJavaElement file = javaEle.getParent().getParent();
-			TreeNode fileNode = new TreeNode(file);
-			fileNode.addChild(typeNode);
-			return fileNode;
+			while (true) {
+				IJavaElement javaEle = (IJavaElement) value;
+
+				// Get the type that declares the method
+				IJavaElement element = javaEle.getParent();
+				tmpParent = new TreeNode(element);
+				tmpParent.addChild(tmpChild);
+
+				if (implementsNeededInterfaces(element.getParent())) {
+
+					tmpChild = tmpParent;
+					value = element;
+				} else
+					break;
+			}
+
+			return tmpParent;
 		}
 
-		if (value instanceof IType) {
-			IJavaElement javaEle = (IJavaElement) value;
-
-			IJavaElement file = javaEle.getParent();
-			TreeNode fileNode = new TreeNode(file);
-			fileNode.addChild(leaf);
-
-			return fileNode;
-		}
-
-		if (path.getSegment(segNr) instanceof IFile
-				|| path.getSegment(segNr) instanceof IJavaElement) {
+		if (value instanceof IFile || value instanceof ICompilationUnit) {
 			return new TreeNode(path.getSegment(segNr));
 		}
 
 		return null;
 	}
 
+	private boolean implementsNeededInterfaces(Object value) {
+		return (value instanceof IType || value instanceof IMethod);
+	}
 
 	private Object getTarget(DropTargetEvent event) {
 		return ((event.item == null) ? null : event.item.getData());
