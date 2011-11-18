@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -188,7 +190,8 @@ public class TreeDropListener implements DropTargetListener {
 			if ((TreeNode) getTarget(event) != null) {
 				TreeNode target = (TreeNode) getTarget(event);
 				node.getParent().removeChild(node);
-				target.setParent(node);
+//				target.setParent(node);
+				target.addChild(node);
 
 			}
 		}
@@ -269,77 +272,47 @@ public class TreeDropListener implements DropTargetListener {
 
 	private TreeNode buildTreeStructure(TreePath path)
 			throws JavaModelException {
+
 		int segNr = path.getSegmentCount() - 1;
-		TreeNode node = null;
+		if (segNr < 0)
+			return null;
 
-		// Fall through, several instanceof may succeed, take the most specific
-		// one
+		Object value = path.getSegment(segNr);
+		TreeNode leaf = new TreeNode(value);
 
-		// if (path.getSegment(segNr) instanceof IJavaElement)
-		// node = new TreeNode(path.getSegment(segNr));
+		if (value instanceof IMethod) {
+			IJavaElement javaEle = (IJavaElement) value;
+
+			// Get the type that declares the method
+			IJavaElement type = javaEle.getParent();
+			TreeNode typeNode = new TreeNode(type);
+			typeNode.addChild(leaf);
+
+			// Get the source file that declares the type and the method
+			IJavaElement file = javaEle.getParent().getParent();
+			TreeNode fileNode = new TreeNode(file);
+			fileNode.addChild(typeNode);
+			return fileNode;
+		}
+
+		if (value instanceof IType) {
+			IJavaElement javaEle = (IJavaElement) value;
+
+			IJavaElement file = javaEle.getParent();
+			TreeNode fileNode = new TreeNode(file);
+			fileNode.addChild(leaf);
+
+			return fileNode;
+		}
 
 		if (path.getSegment(segNr) instanceof IFile
 				|| path.getSegment(segNr) instanceof IJavaElement) {
-			node = new TreeNode(path.getSegment(segNr));
+			return new TreeNode(path.getSegment(segNr));
 		}
 
-		//
-		// if (path.getSegment(segNr) instanceof IMethod) {
-		// IMethod method = (IMethod) path.getSegment(segNr);
-		// String methodString = method.getPath().toString() + "#"
-		// + method.getElementName().toString();
-		//
-		// methodString += ">" + method.getSignature();
-		// node = new TreeNode(methodString);
-
-		// }
-		//
-		// if (path.getSegment(segNr) instanceof IType)
-		// node = buildTreeForType(path);
-		//
-		// if (path.getSegment(segNr) instanceof IField)
-		// node = null;
-
-		return node;
+		return null;
 	}
 
-	// private TreeNode buildTreeForType(TreePath path) {
-	// int segNr = path.getSegmentCount() - 1;
-	//
-	// if (segNr < 0)
-	// return null;
-	// TreeNode typeNode = new TreeNode(path.getSegment(segNr));
-	//
-	// segNr = segNr - 1;
-	// if (segNr < 0)
-	// return typeNode;
-	// TreeNode fileNode = new TreeNode(path.getSegment(segNr));
-	//
-	// fileNode = linkNodes(fileNode, typeNode);
-	// return fileNode;
-	// }
-	//
-	// private TreeNode buildTreeForMethod(TreePath path) {
-	// int segNr = path.getSegmentCount() - 1;
-	//
-	// if (segNr < 0)
-	// return null;
-	// TreeNode methodNode = new TreeNode(path.getSegment(segNr));
-	//
-	// segNr = segNr - 1;
-	// if (segNr < 0)
-	// return methodNode;
-	// TreeNode typeNode = new TreeNode(path.getSegment(segNr));
-	// typeNode = linkNodes(typeNode, methodNode);
-	//
-	// segNr = segNr - 1;
-	// if (segNr < 0)
-	// return typeNode;
-	// TreeNode fileNode = new TreeNode(path.getSegment(segNr));
-	// fileNode = linkNodes(fileNode, typeNode);
-	//
-	// return fileNode;
-	// }
 
 	private Object getTarget(DropTargetEvent event) {
 		return ((event.item == null) ? null : event.item.getData());
