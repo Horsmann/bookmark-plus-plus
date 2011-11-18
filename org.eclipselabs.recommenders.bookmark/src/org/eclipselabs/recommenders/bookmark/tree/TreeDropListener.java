@@ -3,12 +3,9 @@ package org.eclipselabs.recommenders.bookmark.tree;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IField;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.ILocalVariable;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -120,12 +117,18 @@ public class TreeDropListener implements DropTargetListener {
 			treeSelection = (TreeSelection) event.data;
 			treePath = treeSelection.getPaths();
 		}
+		
+//		IResource [] resources=null;
+//		if (event.data instanceof IResource[]){
+//			resources = (IResource[])event.data;
+//		}
 
 		try {
 			if (treePath != null)
-
 				processDropEventWithDragInitiatedFromOutsideTheView(treePath);
-
+//			else if (resources != null){
+//				System.err.println("Ress");
+//			}
 			else
 				processDropEventWithDragFromWithinTheView(event);
 		} catch (JavaModelException e) {
@@ -168,10 +171,10 @@ public class TreeDropListener implements DropTargetListener {
 			// for (TreeNode c : mergeSource.getChildren())
 			// linkNodes(mergeTarget, c);
 			// } else
-			linkNodes(bookmarkNode, node);
+			bookmarkNode.addChild(node);
 
 		}
-		linkNodes(model.getModelRoot(), bookmarkNode);
+		model.getModelRoot().addChild(bookmarkNode);
 		refreshTree();
 
 	}
@@ -184,7 +187,7 @@ public class TreeDropListener implements DropTargetListener {
 			if ((TreeNode) getTarget(event) != null) {
 				TreeNode target = (TreeNode) getTarget(event);
 				node.getParent().removeChild(node);
-				linkNodes(target, node);
+				target.setParent(node);
 
 			}
 		}
@@ -213,7 +216,7 @@ public class TreeDropListener implements DropTargetListener {
 		// linkNodes(mergeTarget, c);
 		// }
 		// else
-		bookmarkNode = linkNodes(bookmarkNode, node);
+		bookmarkNode.addChild(node);
 
 		refreshTree();
 
@@ -273,22 +276,12 @@ public class TreeDropListener implements DropTargetListener {
 
 		// if (path.getSegment(segNr) instanceof IJavaElement)
 		// node = new TreeNode(path.getSegment(segNr));
-
-		if (path.getSegment(segNr) instanceof IJavaElement) {
-
-			IJavaElement element = (IJavaElement) path.getSegment(segNr);
-
-			IJavaElement test = (IJavaElement) ((IJavaElement) path
-					.getSegment(segNr)).getAdapter(IJavaElement.class);
-			
-			if (element.equals(test)){
-				int a = 0;
-			}
-
-			node = new TreeNode(element.getPath().toString());
-
+		
+		if (path.getSegment(segNr) instanceof IFile ||
+				path.getSegment(segNr) instanceof IJavaElement	) {
 			node = new TreeNode(path.getSegment(segNr));
 		}
+
 		//
 		// if (path.getSegment(segNr) instanceof IMethod) {
 		// IMethod method = (IMethod) path.getSegment(segNr);
@@ -346,13 +339,6 @@ public class TreeDropListener implements DropTargetListener {
 	//
 	// return fileNode;
 	// }
-
-	private TreeNode linkNodes(TreeNode parent, TreeNode child) {
-		child.setParent(parent);
-		parent.addChild(child);
-
-		return parent;
-	}
 
 	private Object getTarget(DropTargetEvent event) {
 		return ((event.item == null) ? null : event.item.getData());

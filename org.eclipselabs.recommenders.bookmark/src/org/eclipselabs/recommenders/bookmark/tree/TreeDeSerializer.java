@@ -5,6 +5,14 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
@@ -17,6 +25,9 @@ public class TreeDeSerializer {
 	public static TreeNode serializeTree(TreeNode treeRootNode) {
 
 		TreeNode newRootNode = serializeSubTree(treeRootNode);
+		
+		for (TreeNode rootChilds : newRootNode.getChildren())
+			rootChilds.setBookmark(true);
 
 		return newRootNode;
 
@@ -27,8 +38,9 @@ public class TreeDeSerializer {
 		TreeNode newSubTreeNode = null;
 
 		if (subTreeNode.getValue() instanceof IFile) {
-			Gson gson = new Gson();
-			newSubTreeNode = new TreeNode(gson.toJson(subTreeNode.getValue()));
+			IFile file = (IFile) subTreeNode.getValue();
+			String path = file.getLocationURI().getPath();
+			newSubTreeNode = new TreeNode(path);
 		}
 
 		if (subTreeNode.getValue() instanceof IJavaElement) {
@@ -47,9 +59,8 @@ public class TreeDeSerializer {
 			}
 			// linkNodes(newSubTreeNode, newSubTreeChildNode);
 		}
+
 		
-		if(newSubTreeNode != null)
-			newSubTreeNode.setBookmark(true);
 
 		// newSubTreeNode.setValue("DUMMY");
 		return newSubTreeNode;
@@ -75,15 +86,17 @@ public class TreeDeSerializer {
 		if (element != null)
 			newSubTreeNode = new TreeNode(element);
 
-		if (newSubTreeNode == null) {
-			Gson gson = new Gson();
+		if (newSubTreeNode == null && !subTreeNode.isBookmarkNode()) {
 			try {
-				IFile file = gson.fromJson((String) value, IFile.class);
+				IWorkspace workspace = ResourcesPlugin.getWorkspace();
+				IPath location = Path.fromOSString((String) value);
+				IFile file = workspace.getRoot().getFileForLocation(location);
+				// file.createLink(location, IResource.NONE, null);
 				newSubTreeNode = new TreeNode(file);
-			} catch (Exception e) {
-				System.err.println("IFile failed");
+			} catch (JsonSyntaxException e) {
+				// It might not be an Fie
+				System.err.println("Json exception");
 			}
-
 		}
 
 		if (newSubTreeNode == null)

@@ -17,7 +17,6 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
@@ -47,8 +46,6 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 public class BookmarkView extends ViewPart {
@@ -278,12 +275,15 @@ public class BookmarkView extends ViewPart {
 				return;
 			}
 
-			IFile file = (IFile) Platform.getAdapterManager()
-					.getAdapter(((IJavaElement) node.getValue()).getResource(),
-							IFile.class);
+			if (node.getValue() instanceof IFile) {
+				IFile file = (IFile) node.getValue();
+				IDE.openEditor(this.getViewSite().getWorkbenchWindow()
+						.getActivePage(), file);
+			}
 
-			IDE.openEditor(this.getViewSite().getWorkbenchWindow()
-					.getActivePage(), file);
+			// IFile file = (IFile) Platform.getAdapterManager()
+			// .getAdapter(((IJavaElement) node.getValue()).getResource(),
+			// IFile.class);
 
 		}
 
