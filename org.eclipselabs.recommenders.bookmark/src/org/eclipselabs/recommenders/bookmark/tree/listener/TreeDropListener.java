@@ -1,6 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.tree.listener;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -150,13 +151,21 @@ public class TreeDropListener implements DropTargetListener {
 
 		if (bookmarkNode != null)
 			for (int i = 0; i < treePath.length; i++)
-				createNewNodeAndAddAsChild(treePath[i]);
+				addToExistingBookmark(treePath[i]);
 		else
-			createNewTopLevelNode(treePath);
+			createNewBookmarkAddAsNode(treePath);
 
 	}
 
-	private void createNewTopLevelNode(TreePath[] treePath)
+	private void addToExistingBookmark(TreePath treePath)
+			throws JavaModelException {
+		TreeNode node = buildTreeStructure(treePath);
+		boolean isDuplicate = isNodeADupblicate(node);
+		if (!isDuplicate)
+			mergeAddNodeToBookmark(node);
+	}
+
+	private void createNewBookmarkAddAsNode(TreePath[] treePath)
 			throws JavaModelException {
 
 		TreeNode bookmarkNode = new TreeNode("New Bookmark", true);
@@ -201,13 +210,8 @@ public class TreeDropListener implements DropTargetListener {
 		refreshTree();
 	}
 
-	private void createNewNodeAndAddAsChild(TreePath path)
+	private void mergeAddNodeToBookmark(TreeNode node)
 			throws JavaModelException {
-
-		TreeNode node = buildTreeStructure(path);
-
-		if (node == null)
-			return;
 
 		// TreeNode mergeSource = findAndFollowEqualPathsUntilInequalty(
 		// bookmarkNode, node);
@@ -227,6 +231,65 @@ public class TreeDropListener implements DropTargetListener {
 
 		refreshTree();
 
+	}
+
+	private boolean isNodeADupblicate(TreeNode node) {
+
+		LinkedList<TreeNode> nodeHierarchyReversed = reverseHierachy(node);
+
+		for (TreeNode listEntry : nodeHierarchyReversed) {
+			String representation = getStringRepresentation(listEntry
+					.getValue());
+
+			for (TreeNode child : bookmarkNode.getChildren()) {
+				boolean duplicateFound = isNodeADupblicate(child,
+						representation);
+				if (duplicateFound)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	private LinkedList<TreeNode> reverseHierachy(TreeNode node) {
+
+		LinkedList<TreeNode> nodeHierarchyReversed = new LinkedList<TreeNode>();
+
+		if (node.hasChildren())
+			for (TreeNode child : node.getChildren()) 
+				nodeHierarchyReversed.addAll(reverseHierachy(child));
+		else
+			nodeHierarchyReversed.add(node);
+		return nodeHierarchyReversed;
+	}
+
+	private String getStringRepresentation(Object value) {
+		String representation = null;
+		if (value instanceof IJavaElement) {
+			representation = ((IJavaElement) value).getHandleIdentifier();
+		} else if (value instanceof IFile)
+			representation = ((IFile) value).getFullPath().toOSString();
+
+		return representation;
+	}
+
+	private boolean isNodeADupblicate(TreeNode node, String representation) {
+
+//		if (node.getChildren().length == 0) {
+			String leafStringRepresentation = getStringRepresentation(node
+					.getValue());
+			if (leafStringRepresentation.compareTo(representation) == 0)
+				return true;
+//		}
+
+		for (TreeNode child : node.getChildren()) {
+			boolean duplicateFound = isNodeADupblicate(child, representation);
+			if (duplicateFound)
+				return true;
+		}
+
+		return false;
 	}
 
 	private void refreshTree() {
@@ -315,7 +378,7 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean implementsNeededInterfaces(Object value) {
-		return (value instanceof IType || value instanceof IMethod);
+		return (value instanceof IType || value instanceof IMethod || value instanceof ICompilationUnit);
 	}
 
 	private Object getTarget(DropTargetEvent event) {
