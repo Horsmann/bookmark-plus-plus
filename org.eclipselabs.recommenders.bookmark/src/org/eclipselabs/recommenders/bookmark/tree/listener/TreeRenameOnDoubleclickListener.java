@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree;
+package org.eclipselabs.recommenders.bookmark.tree.listener;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -20,7 +20,7 @@ import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
  * http://dev.eclipse.org/viewcvs/viewvc.cgi/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet111.java?view=co
  * */
 
-public class SWTNodeEditListener implements Listener {
+public class TreeRenameOnDoubleclickListener implements Listener {
 
 	private TreeViewer viewer;
 	private Tree tree;
@@ -28,7 +28,7 @@ public class SWTNodeEditListener implements Listener {
 
 	private Color black = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
 
-	public SWTNodeEditListener(TreeViewer viewer) {
+	public TreeRenameOnDoubleclickListener(TreeViewer viewer) {
 		this.viewer = viewer;
 		this.tree = viewer.getTree();
 		this.editor = new TreeEditor(tree);

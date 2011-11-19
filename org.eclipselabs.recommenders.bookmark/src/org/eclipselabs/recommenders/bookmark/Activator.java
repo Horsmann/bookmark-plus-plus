@@ -20,6 +20,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final String ICON_DEFAULT = "default";
 	public static final String ICON_BOOKMARK = "bookmark";
 	public static final String ICON_SHOW_IN_EDITOR = "openBookmarksInEditor";
+	public static final String ICON_CLOSE_ALL_OPEN_EDITORS = "closeAllOpenEditors";
 	public static final String ICON_SAVE_BOOKMARKS = "saveBookmarks";
 	public static final String ICON_LOAD_BOOKMARKS = "loadBookmarks";
 
@@ -36,7 +37,7 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
-	
+
 	@Override
 	protected void initializeImageRegistry(ImageRegistry registry) {
 		super.initializeImageRegistry(registry);
@@ -49,11 +50,11 @@ public class Activator extends AbstractUIPlugin {
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
 				new Path("icons/bookmark.gif"), null));
 		registry.put(ICON_BOOKMARK, imgDesc);
-		
+
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
 				new Path("icons/openBookmarkInEditor.png"), null));
 		registry.put(ICON_SHOW_IN_EDITOR, imgDesc);
-		
+
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
 				new Path("icons/filesave.gif"), null));
 		registry.put(ICON_SAVE_BOOKMARKS, imgDesc);
@@ -61,6 +62,10 @@ public class Activator extends AbstractUIPlugin {
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
 				new Path("icons/loadBookmarks.gif"), null));
 		registry.put(ICON_LOAD_BOOKMARKS, imgDesc);
+
+		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
+				new Path("icons/closeWindows.png"), null));
+		registry.put(ICON_CLOSE_ALL_OPEN_EDITORS, imgDesc);
 
 	}
 }

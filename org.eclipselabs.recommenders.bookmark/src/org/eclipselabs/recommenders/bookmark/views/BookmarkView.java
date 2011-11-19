@@ -11,21 +11,27 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.actions.CloseAllOpenEditors;
 import org.eclipselabs.recommenders.bookmark.actions.LoadBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.actions.SaveBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.actions.ShowBookmarksInEditorAction;
-import org.eclipselabs.recommenders.bookmark.tree.SWTNodeEditListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeContentProvider;
-import org.eclipselabs.recommenders.bookmark.tree.TreeDragListener;
-import org.eclipselabs.recommenders.bookmark.tree.TreeDropListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.listener.TreeDoubleclickListener;
+import org.eclipselabs.recommenders.bookmark.tree.listener.TreeDragListener;
+import org.eclipselabs.recommenders.bookmark.tree.listener.TreeDropListener;
+import org.eclipselabs.recommenders.bookmark.tree.listener.TreeKeyListener;
+import org.eclipselabs.recommenders.bookmark.tree.listener.TreeRenameOnDoubleclickListener;
 
 public class BookmarkView extends ViewPart {
 
-	private TreeViewer viewer;
+	private TreeViewer viewer = null;
 	private TreeModel model;
-	private Action showInEditor, saveBookmarks, loadBookmarks;
+	private Action showInEditor = null;
+	private Action saveBookmarks = null;
+	private Action loadBookmarks = null;
+	private Action closeAllOpenEditors = null;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -39,11 +45,17 @@ public class BookmarkView extends ViewPart {
 		viewer.setInput(model.getModelRoot());
 
 		viewer.getTree().addListener(SWT.MouseDoubleClick,
-				new SWTNodeEditListener(viewer));
+				new TreeRenameOnDoubleclickListener(viewer));
 
 		createActions();
 		setUpToolbar();
 
+		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
+		viewer.getTree().addKeyListener(new TreeKeyListener(viewer));
+	}
+
+	public final Action getShowInEditorAction() {
+		return showInEditor;
 	}
 
 	private void createActions() {
@@ -51,6 +63,7 @@ public class BookmarkView extends ViewPart {
 		showInEditor = new ShowBookmarksInEditorAction(this, viewer);
 		saveBookmarks = new SaveBookmarksAction(model);
 		loadBookmarks = new LoadBookmarksAction(viewer, model);
+		closeAllOpenEditors = new CloseAllOpenEditors();
 
 	}
 
@@ -58,6 +71,7 @@ public class BookmarkView extends ViewPart {
 
 		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
 		mgr.add(showInEditor);
+		mgr.add(closeAllOpenEditors);
 		mgr.add(saveBookmarks);
 		mgr.add(loadBookmarks);
 	}
