@@ -33,4 +33,12 @@ public class Util {
 		return id;
 	}
 	
+	public static TreeNode getBookmarkNode(TreeNode node){
+		
+		if(node.isBookmarkNode())
+			return node;
+
+		return getBookmarkNode(node.getParent());
+	}
+	
 }
