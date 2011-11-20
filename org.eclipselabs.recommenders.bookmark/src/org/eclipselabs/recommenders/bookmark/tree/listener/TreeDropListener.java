@@ -85,38 +85,39 @@ public class TreeDropListener implements DropTargetListener {
 		return true;
 	}
 
-//	private boolean checkForDropWithDragInitiatedOutsideOurView(
-//			DropTargetEvent event) {
-//		
-//		if (!dragListener.isDragInProgress()){
-//			boolean x =  (event.data instanceof IFile
-//					|| event.data instanceof ICompilationUnit
-//					|| event.data instanceof IType || event.data instanceof IMethod);
-//			
-//			boolean y = (event.data instanceof IFile[]
-//					|| event.data instanceof ICompilationUnit[]
-//					|| event.data instanceof IType[] || event.data instanceof IMethod);
-//		}
-//
-//		return true;
-//	}
-//
-//	private boolean checkForDropWithDragInitiatedInOurView(DropTargetEvent event) {
-//		if (dragListener.isDragInProgress()) {
-//			List<IStructuredSelection> selectedList = getTreeSelections();
-//			for (int i = 0; i < selectedList.size(); i++) {
-//				TreeNode node = (TreeNode) selectedList.get(i);
-//
-//				TreeNode target = (TreeNode) getTarget(event);
-//				if (causesRecursion(node, target))
-//					return false;
-//
-//				if (node == target)
-//					return false;
-//			}
-//		}
-//		return true;
-//	}
+	// private boolean checkForDropWithDragInitiatedOutsideOurView(
+	// DropTargetEvent event) {
+	//
+	// if (!dragListener.isDragInProgress()){
+	// boolean x = (event.data instanceof IFile
+	// || event.data instanceof ICompilationUnit
+	// || event.data instanceof IType || event.data instanceof IMethod);
+	//
+	// boolean y = (event.data instanceof IFile[]
+	// || event.data instanceof ICompilationUnit[]
+	// || event.data instanceof IType[] || event.data instanceof IMethod);
+	// }
+	//
+	// return true;
+	// }
+	//
+	// private boolean checkForDropWithDragInitiatedInOurView(DropTargetEvent
+	// event) {
+	// if (dragListener.isDragInProgress()) {
+	// List<IStructuredSelection> selectedList = getTreeSelections();
+	// for (int i = 0; i < selectedList.size(); i++) {
+	// TreeNode node = (TreeNode) selectedList.get(i);
+	//
+	// TreeNode target = (TreeNode) getTarget(event);
+	// if (causesRecursion(node, target))
+	// return false;
+	//
+	// if (node == target)
+	// return false;
+	// }
+	// }
+	// return true;
+	// }
 
 	@SuppressWarnings("unchecked")
 	private List<IStructuredSelection> getTreeSelections() {
@@ -155,18 +156,11 @@ public class TreeDropListener implements DropTargetListener {
 				bookmarkNode = bookmarkNode.getParent();
 		}
 
-		TreeSelection treeSelection = null;
-		TreePath[] treePath = null;
-		if (event.data instanceof TreeSelection) {
-			treeSelection = (TreeSelection) event.data;
-			treePath = treeSelection.getPaths();
-		}
-
 		try {
 			if (dragListener.isDragInProgress())
 				processDropEventWithDragFromWithinTheView(event);
 			else
-				processDropEventWithDragInitiatedFromOutsideTheView(treePath);
+				processDropEventWithDragInitiatedFromOutsideTheView(event);
 
 		} catch (JavaModelException e) {
 			e.printStackTrace();
@@ -176,7 +170,9 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
-			TreePath[] treePath) throws JavaModelException {
+			DropTargetEvent event) throws JavaModelException {
+
+		TreePath[] treePath = getTreePath(event);
 
 		if (bookmarkNode != null)
 			for (int i = 0; i < treePath.length; i++)
@@ -186,10 +182,20 @@ public class TreeDropListener implements DropTargetListener {
 
 	}
 
+	private TreePath[] getTreePath(DropTargetEvent event) {
+		TreeSelection treeSelection = null;
+		TreePath[] treePath = null;
+		if (event.data instanceof TreeSelection) {
+			treeSelection = (TreeSelection) event.data;
+			treePath = treeSelection.getPaths();
+		}
+		return treePath;
+	}
+
 	private void addToExistingBookmark(TreePath treePath)
 			throws JavaModelException {
 		TreeNode node = buildTreeStructure(treePath);
-		if (node==null)
+		if (node == null)
 			return;
 		boolean isDuplicate = isNodeADupblicate(node);
 		if (!isDuplicate)
@@ -199,27 +205,11 @@ public class TreeDropListener implements DropTargetListener {
 	private void createNewBookmarkAddAsNode(TreePath[] treePath)
 			throws JavaModelException {
 
-		TreeNode bookmarkNode = new TreeNode("New Bookmark", true);
+		bookmarkNode = new TreeNode("New Bookmark", true);
 
-		for (int i = 0; i < treePath.length; i++) {
-			TreeNode node = buildTreeStructure(treePath[i]);
+		for (int i = 0; i < treePath.length; i++)
+			addToExistingBookmark(treePath[i]);
 
-			if (node == null)
-				return;
-			//
-			// TreeNode mergeSource = findAndFollowEqualPathsUntilInequalty(
-			// bookmarkNode, node);
-			// TreeNode mergeTarget =
-			// findAndFollowEqualPathsUntilInequalty(node,
-			// bookmarkNode);
-			//
-			// if (mergeSource != null && mergeTarget != null) {
-			// for (TreeNode c : mergeSource.getChildren())
-			// linkNodes(mergeTarget, c);
-			// } else
-			bookmarkNode.addChild(node);
-
-		}
 		model.getModelRoot().addChild(bookmarkNode);
 		refreshTree();
 
