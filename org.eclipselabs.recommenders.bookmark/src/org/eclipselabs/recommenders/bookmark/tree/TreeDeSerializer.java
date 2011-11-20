@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipselabs.recommenders.bookmark.Util;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 import com.google.gson.JsonSyntaxException;
@@ -34,20 +35,23 @@ public class TreeDeSerializer {
 	private static TreeNode serializeSubTree(TreeNode subTreeNode) {
 
 		TreeNode newSubTreeNode = null;
-
-		if (subTreeNode.getValue() instanceof IFile) {
-			IFile file = (IFile) subTreeNode.getValue();
-			String path = file.getLocationURI().getPath();
-			newSubTreeNode = new TreeNode(path);
-		}
-
-		if (subTreeNode.getValue() instanceof IJavaElement) {
-			IJavaElement element = (IJavaElement) subTreeNode.getValue();
-			newSubTreeNode = new TreeNode(element.getHandleIdentifier());
-		}
-
-		if (subTreeNode.getValue() instanceof String)
-			newSubTreeNode = new TreeNode(subTreeNode.getValue());
+		Object value = subTreeNode.getValue();
+		
+		String id = Util.getStringIdentification(value);
+		newSubTreeNode = new TreeNode(id);
+//		if (value instanceof IFile) {
+//			IFile file = (IFile) value;
+//			String path = file.getLocationURI().getPath();
+//			newSubTreeNode = new TreeNode(path);
+//		}
+//
+//		if (value instanceof IJavaElement) {
+//			IJavaElement element = (IJavaElement) value;
+//			newSubTreeNode = new TreeNode(element.getHandleIdentifier());
+//		}
+//
+//		if (value instanceof String)
+//			newSubTreeNode = new TreeNode(value);
 
 		for (TreeNode child : subTreeNode.getChildren()) {
 			TreeNode newSubTreeChildNode = serializeSubTree(child);

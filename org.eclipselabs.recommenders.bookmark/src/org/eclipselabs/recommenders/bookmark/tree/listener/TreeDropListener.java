@@ -7,7 +7,6 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -19,6 +18,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipselabs.recommenders.bookmark.Util;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
@@ -68,6 +68,7 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean isValidDrop(DropTargetEvent event) {
+
 		if (dragListener.isDragInProgress()) {
 			List<IStructuredSelection> selectedList = getTreeSelections();
 			for (int i = 0; i < selectedList.size(); i++) {
@@ -83,6 +84,39 @@ public class TreeDropListener implements DropTargetListener {
 		}
 		return true;
 	}
+
+//	private boolean checkForDropWithDragInitiatedOutsideOurView(
+//			DropTargetEvent event) {
+//		
+//		if (!dragListener.isDragInProgress()){
+//			boolean x =  (event.data instanceof IFile
+//					|| event.data instanceof ICompilationUnit
+//					|| event.data instanceof IType || event.data instanceof IMethod);
+//			
+//			boolean y = (event.data instanceof IFile[]
+//					|| event.data instanceof ICompilationUnit[]
+//					|| event.data instanceof IType[] || event.data instanceof IMethod);
+//		}
+//
+//		return true;
+//	}
+//
+//	private boolean checkForDropWithDragInitiatedInOurView(DropTargetEvent event) {
+//		if (dragListener.isDragInProgress()) {
+//			List<IStructuredSelection> selectedList = getTreeSelections();
+//			for (int i = 0; i < selectedList.size(); i++) {
+//				TreeNode node = (TreeNode) selectedList.get(i);
+//
+//				TreeNode target = (TreeNode) getTarget(event);
+//				if (causesRecursion(node, target))
+//					return false;
+//
+//				if (node == target)
+//					return false;
+//			}
+//		}
+//		return true;
+//	}
 
 	@SuppressWarnings("unchecked")
 	private List<IStructuredSelection> getTreeSelections() {
@@ -128,11 +162,6 @@ public class TreeDropListener implements DropTargetListener {
 			treePath = treeSelection.getPaths();
 		}
 
-		// IResource [] resources=null;
-		// if (event.data instanceof IResource[]){
-		// resources = (IResource[])event.data;
-		// }
-
 		try {
 			if (dragListener.isDragInProgress())
 				processDropEventWithDragFromWithinTheView(event);
@@ -160,6 +189,8 @@ public class TreeDropListener implements DropTargetListener {
 	private void addToExistingBookmark(TreePath treePath)
 			throws JavaModelException {
 		TreeNode node = buildTreeStructure(treePath);
+		if (node==null)
+			return;
 		boolean isDuplicate = isNodeADupblicate(node);
 		if (!isDuplicate)
 			mergeAddNodeToBookmark(node);
@@ -202,7 +233,6 @@ public class TreeDropListener implements DropTargetListener {
 			if ((TreeNode) getTarget(event) != null) {
 				TreeNode target = (TreeNode) getTarget(event);
 				node.getParent().removeChild(node);
-				// target.setParent(node);
 				target.addChild(node);
 
 			}
@@ -213,37 +243,86 @@ public class TreeDropListener implements DropTargetListener {
 	private void mergeAddNodeToBookmark(TreeNode node)
 			throws JavaModelException {
 
-		// TreeNode mergeSource = findAndFollowEqualPathsUntilInequalty(
-		// bookmarkNode, node);
-		// TreeNode mergeTarget = findAndFollowEqualPathsUntilInequalty(node,
-		// bookmarkNode);
-		//
-		// if (mergeSource != null && mergeTarget != null)
-		// for (TreeNode c : mergeSource.getChildren()) {
-		// /*
-		// * Implication: If an equal path already exist it won't have
-		// * children and thus creation of duplicates is prevented
-		// */
-		// linkNodes(mergeTarget, c);
-		// }
-		// else
-		bookmarkNode.addChild(node);
+		if (!attemptMerge(node))
+			bookmarkNode.addChild(node);
 
 		refreshTree();
 
 	}
 
+	/**
+	 * Takes a node (tree path) that shall be added, determines the leaf of it
+	 * and seeks equal nodes in the existing tree that are equal to the leafs
+	 * <b>parent</b>. If such an equal parent node is found, the leaf is
+	 * attached to it as child and <code>true</code> is returned
+	 * 
+	 * @param node
+	 * @return
+	 */
+	private boolean attemptMerge(TreeNode node) {
+		LinkedList<TreeNode> leafs = Util.getLeafs(node);
+
+		for (TreeNode leaf : leafs) {
+			TreeNode parent = leaf.getParent();
+
+			while (parent != null) {
+				String id = Util.getStringIdentification(parent.getValue());
+				TreeNode mergeTargetExistingTree = locateNodeWithEqualID(id);
+
+				if (mergeTargetExistingTree != null) {
+
+					// TreeNode x2 = locateNodeWithEqualID(id, node);
+					// x2 = x2.getChildren()[0];
+					for (TreeNode child : parent.getChildren())
+						mergeTargetExistingTree.addChild(child);
+					return true;
+				}
+
+				parent = parent.getParent();
+			}
+		}
+
+		return false;
+	}
+
+	// Starting from the bookmark node compare all childs to the provided id
+	private TreeNode locateNodeWithEqualID(String id) {
+		for (TreeNode child : bookmarkNode.getChildren()) {
+			TreeNode node = locateNodeWithEqualID(id, child);
+			if (node != null)
+				return node;
+		}
+		return null;
+	}
+
+	private TreeNode locateNodeWithEqualID(String id, TreeNode node) {
+
+		if (doesNodeMatchesId(id, node))
+			return node;
+		else
+			for (TreeNode child : node.getChildren()) {
+				TreeNode located = locateNodeWithEqualID(id, child);
+				if (located != null)
+					return located;
+			}
+
+		return null;
+	}
+
+	private boolean doesNodeMatchesId(String id, TreeNode node) {
+		String compareID = Util.getStringIdentification(node.getValue());
+		return (id.compareTo(compareID) == 0);
+	}
+
 	private boolean isNodeADupblicate(TreeNode node) {
 
-		LinkedList<TreeNode> nodeHierarchyReversed = reverseHierachy(node);
+		LinkedList<TreeNode> leafs = Util.getLeafs(node);
 
-		for (TreeNode listEntry : nodeHierarchyReversed) {
-			String representation = getStringRepresentation(listEntry
-					.getValue());
+		for (TreeNode leaf : leafs) {
+			String id = Util.getStringIdentification(leaf.getValue());
 
 			for (TreeNode child : bookmarkNode.getChildren()) {
-				boolean duplicateFound = isNodeADupblicate(child,
-						representation);
+				boolean duplicateFound = isNodeADupblicate(child, id);
 				if (duplicateFound)
 					return true;
 			}
@@ -252,36 +331,14 @@ public class TreeDropListener implements DropTargetListener {
 		return false;
 	}
 
-	private LinkedList<TreeNode> reverseHierachy(TreeNode node) {
-
-		LinkedList<TreeNode> nodeHierarchyReversed = new LinkedList<TreeNode>();
-
-		if (node.hasChildren())
-			for (TreeNode child : node.getChildren()) 
-				nodeHierarchyReversed.addAll(reverseHierachy(child));
-		else
-			nodeHierarchyReversed.add(node);
-		return nodeHierarchyReversed;
-	}
-
-	private String getStringRepresentation(Object value) {
-		String representation = null;
-		if (value instanceof IJavaElement) {
-			representation = ((IJavaElement) value).getHandleIdentifier();
-		} else if (value instanceof IFile)
-			representation = ((IFile) value).getFullPath().toOSString();
-
-		return representation;
-	}
-
 	private boolean isNodeADupblicate(TreeNode node, String representation) {
 
-//		if (node.getChildren().length == 0) {
-			String leafStringRepresentation = getStringRepresentation(node
-					.getValue());
-			if (leafStringRepresentation.compareTo(representation) == 0)
-				return true;
-//		}
+		// if (node.getChildren().length == 0) {
+		String leafStringRepresentation = Util.getStringIdentification(node
+				.getValue());
+		if (leafStringRepresentation.compareTo(representation) == 0)
+			return true;
+		// }
 
 		for (TreeNode child : node.getChildren()) {
 			boolean duplicateFound = isNodeADupblicate(child, representation);

@@ -1,5 +1,6 @@
 package org.eclipselabs.recommenders.bookmark.tree.listener;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -10,13 +11,27 @@ import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeKeyListener implements KeyListener {
 	private TreeViewer viewer = null;
+	private Action showInEditor = null;
 
-	public TreeKeyListener(TreeViewer viewer) {
+	public TreeKeyListener(TreeViewer viewer, Action showInEditor) {
 		this.viewer = viewer;
+		this.showInEditor = showInEditor;
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+
+		checkForNodeDeletion(e);
+		checkForOpenNodeInEditor(e);
+
+	}
+
+	private void checkForOpenNodeInEditor(KeyEvent e) {
+		if (e.keyCode == SWT.CR)
+			showInEditor.run();
+	}
+
+	private void checkForNodeDeletion(KeyEvent e) {
 		if (isDeleteNodeEvent(e.keyCode, e.stateMask)) {
 			if (e.getSource() instanceof Tree) {
 				Tree tree = (Tree) e.getSource();
@@ -40,7 +55,7 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private boolean isDelete(int key) {
-		return false;
+		return (key == SWT.DEL);
 	}
 
 	private boolean isBackSpace(int key) {

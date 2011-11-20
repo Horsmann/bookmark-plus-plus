@@ -51,11 +51,7 @@ public class BookmarkView extends ViewPart {
 		setUpToolbar();
 
 		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
-		viewer.getTree().addKeyListener(new TreeKeyListener(viewer));
-	}
-
-	public final Action getShowInEditorAction() {
-		return showInEditor;
+		viewer.getTree().addKeyListener(new TreeKeyListener(viewer, showInEditor));
 	}
 
 	private void createActions() {
