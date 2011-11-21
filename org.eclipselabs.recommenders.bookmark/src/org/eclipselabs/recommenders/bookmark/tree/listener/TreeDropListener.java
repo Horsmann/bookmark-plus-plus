@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
@@ -158,14 +159,16 @@ public class TreeDropListener implements DropTargetListener {
 			return;
 
 		boolean isDuplicate = isNodeADuplicate(bookmark, node);
-		if (!isDuplicate)
+		if (!isDuplicate){
 			mergeAddNodeToBookmark(bookmark, node);
+//			viewer.expandToLevel(bookmark, AbstractTreeViewer.ALL_LEVELS);
+		}
 	}
 
 	private void createNewBookmarkAddAsNode(TreePath[] treePath)
 			throws JavaModelException {
 
-		TreeNode bookmark = new TreeNode("New Bookmark", true);
+		TreeNode bookmark = makeBookmarkNode();
 
 		for (int i = 0; i < treePath.length; i++)
 			addToExistingBookmark(bookmark, treePath[i]);
@@ -173,6 +176,10 @@ public class TreeDropListener implements DropTargetListener {
 		model.getModelRoot().addChild(bookmark);
 		refreshTree();
 
+	}
+	
+	private TreeNode makeBookmarkNode() {
+		return new TreeNode("New Bookmark", true);
 	}
 
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
@@ -186,6 +193,19 @@ public class TreeDropListener implements DropTargetListener {
 
 			TreeNode dropTarget = (TreeNode) getTarget(event);
 			TreeNode targetBookmark = Util.getBookmarkNode(dropTarget);
+			
+			if(targetBookmark == null){
+				TreeNode bookmark = makeBookmarkNode();
+				
+				while(nodeCopy.getParent() != null)
+					nodeCopy = nodeCopy.getParent();
+				
+				bookmark.addChild(nodeCopy);
+				model.getModelRoot().addChild(bookmark);
+				node.getParent().removeChild(node);
+				node.setParent(null);
+				continue;
+			}
 
 			if (isNodeADuplicate(targetBookmark, node))
 				continue;
@@ -197,15 +217,12 @@ public class TreeDropListener implements DropTargetListener {
 				continue;
 			}
 
-			// TODO: Auch IFields zulassen
 			// TODO: Auto-Expand des tree bei droppen
 			// TODO: Auto-Expand mit speichern und beim laden šffnen
 			// TODO: Leeres Bookmark wird erstellt, wenn ein Package gedropt
 			// wird
 			// TODO: Logic/GUI entzerren --> Unittests
 			// TODO: Doppelklick auch auf Kopfknoten
-			// TODO: Beim herausziehen eines Knoten aus einem BM ins leere-->
-			// exception
 
 			if ((TreeNode) getTarget(event) != null) {
 				TreeNode target = (TreeNode) getTarget(event);

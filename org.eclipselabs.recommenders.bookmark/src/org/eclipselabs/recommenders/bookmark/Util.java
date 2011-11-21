@@ -63,7 +63,7 @@ public class Util {
 
 	private static TreeNode copyTreePathNodeToBookmark(TreeNode node) {
 		if (node.isBookmarkNode())
-			return new TreeNode(null);
+			return null;
 
 		TreeNode newNode = new TreeNode(node.getValue());
 		TreeNode parent = node.getParent();
