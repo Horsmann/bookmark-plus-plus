@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.internal.ui.preferences.formatter.NewLinesTabPage;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class Util {
@@ -46,7 +45,7 @@ public class Util {
 	 * @param node
 	 * @return
 	 */
-	public static TreeNode copyTreePathOfLeafExclusiveBookmarkNode(TreeNode node) {
+	public static TreeNode copyTreePath(TreeNode node) {
 
 		LinkedList<TreeNode> newChilds = new LinkedList<TreeNode>();
 		for (TreeNode child : node.getChildren())
@@ -99,7 +98,7 @@ public class Util {
 
 	public static TreeNode locateNodeWithEqualID(String id, TreeNode node) {
 
-		if (doesNodeMatchesId(id, node))
+		if (doesNodeMatchId(id, node))
 			return node;
 		for (TreeNode child : node.getChildren()) {
 			TreeNode located = locateNodeWithEqualID(id, child);
@@ -110,12 +109,45 @@ public class Util {
 		return null;
 	}
 
-	private static boolean doesNodeMatchesId(String id, TreeNode node) {
+	private static boolean doesNodeMatchId(String id, TreeNode node) {
 		Object value = node.getValue();
 		if (value == null || id == null)
 			return false;
 		String compareID = Util.getStringIdentification(value);
 		return (id.compareTo(compareID) == 0);
+	}
+	
+	public static boolean isDuplicate(TreeNode bookmark, TreeNode node) {
+
+		LinkedList<TreeNode> leafs = Util.getLeafs(node);
+
+		for (TreeNode leaf : leafs) {
+			String id = Util.getStringIdentification(leaf.getValue());
+
+//			for (TreeNode child : bookmark.getChildren()) {
+				boolean duplicateFound = Util.isDuplicate(bookmark, id);
+				if (duplicateFound)
+					return true;
+//			}
+		}
+
+		return false;
+	}
+
+	public static boolean isDuplicate(TreeNode node, String masterID) {
+
+		String compareID = Util.getStringIdentification(node
+				.getValue());
+		if (compareID.compareTo(masterID) == 0)
+			return true;
+
+		for (TreeNode child : node.getChildren()) {
+			boolean duplicateFound = Util.isDuplicate(child, masterID);
+			if (duplicateFound)
+				return true;
+		}
+
+		return false;
 	}
 
 }

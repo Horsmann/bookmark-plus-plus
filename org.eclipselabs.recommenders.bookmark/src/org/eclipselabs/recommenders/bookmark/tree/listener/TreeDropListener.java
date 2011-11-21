@@ -11,7 +11,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
@@ -72,10 +71,11 @@ public class TreeDropListener implements DropTargetListener {
 
 		if (dragListener.isDragInProgress()) {
 			List<IStructuredSelection> selectedList = getTreeSelections();
+			TreeNode target = (TreeNode) getTarget(event);
+
 			for (int i = 0; i < selectedList.size(); i++) {
 				TreeNode node = (TreeNode) selectedList.get(i);
 
-				TreeNode target = (TreeNode) getTarget(event);
 				if (causesRecursion(node, target))
 					return false;
 
@@ -158,10 +158,10 @@ public class TreeDropListener implements DropTargetListener {
 		if (node == null)
 			return;
 
-		boolean isDuplicate = isNodeADuplicate(bookmark, node);
-		if (!isDuplicate){
+		boolean isDuplicate = Util.isDuplicate(bookmark, node);
+		if (!isDuplicate) {
 			mergeAddNodeToBookmark(bookmark, node);
-//			viewer.expandToLevel(bookmark, AbstractTreeViewer.ALL_LEVELS);
+			// viewer.expandToLevel(bookmark, AbstractTreeViewer.ALL_LEVELS);
 		}
 	}
 
@@ -177,7 +177,7 @@ public class TreeDropListener implements DropTargetListener {
 		refreshTree();
 
 	}
-	
+
 	private TreeNode makeBookmarkNode() {
 		return new TreeNode("New Bookmark", true);
 	}
@@ -186,34 +186,23 @@ public class TreeDropListener implements DropTargetListener {
 			throws JavaModelException {
 		List<IStructuredSelection> selections = getTreeSelections();
 		for (int i = 0; i < selections.size(); i++) {
-			TreeNode node = (TreeNode) selections.get(i);
 
-			TreeNode nodeCopy = Util
-					.copyTreePathOfLeafExclusiveBookmarkNode(node);
+			TreeNode node = (TreeNode) selections.get(i);
+			TreeNode nodeCopy = Util.copyTreePath(node);
 
 			TreeNode dropTarget = (TreeNode) getTarget(event);
 			TreeNode targetBookmark = Util.getBookmarkNode(dropTarget);
-			
-			if(targetBookmark == null){
-				TreeNode bookmark = makeBookmarkNode();
-				
-				while(nodeCopy.getParent() != null)
-					nodeCopy = nodeCopy.getParent();
-				
-				bookmark.addChild(nodeCopy);
-				model.getModelRoot().addChild(bookmark);
-				node.getParent().removeChild(node);
-				node.setParent(null);
+
+			if (didDropOccurInEmptyArea(targetBookmark)) {
+				createNewBookmarkAndAdd(node, nodeCopy);
 				continue;
 			}
 
-			if (isNodeADuplicate(targetBookmark, node))
+			if (Util.isDuplicate(targetBookmark, node))
 				continue;
 
 			if (attemptMerge(targetBookmark, nodeCopy)) {
-				node.getParent().removeChild(node);
-				node.setParent(null);
-				refreshTree();
+				unlink(node);
 				continue;
 			}
 
@@ -224,14 +213,31 @@ public class TreeDropListener implements DropTargetListener {
 			// TODO: Logic/GUI entzerren --> Unittests
 			// TODO: Doppelklick auch auf Kopfknoten
 
-			if ((TreeNode) getTarget(event) != null) {
-				TreeNode target = (TreeNode) getTarget(event);
-				node.getParent().removeChild(node);
-				target.addChild(node);
+			node.getParent().removeChild(node);
+			dropTarget.addChild(node);
 
-			}
 		}
 		refreshTree();
+	}
+
+	private void unlink(TreeNode node) {
+		node.getParent().removeChild(node);
+		node.setParent(null);
+	}
+
+	private boolean didDropOccurInEmptyArea(TreeNode targetBookmark) {
+		return targetBookmark == null;
+	}
+
+	private void createNewBookmarkAndAdd(TreeNode node, TreeNode nodeCopy) {
+		TreeNode bookmark = makeBookmarkNode();
+
+		while (nodeCopy.getParent() != null)
+			nodeCopy = nodeCopy.getParent();
+
+		bookmark.addChild(nodeCopy);
+		model.getModelRoot().addChild(bookmark);
+		unlink(node);
 	}
 
 	private void mergeAddNodeToBookmark(TreeNode bookmark, TreeNode node)
@@ -258,58 +264,38 @@ public class TreeDropListener implements DropTargetListener {
 
 		for (TreeNode leaf : leafs) {
 			TreeNode parent = leaf.getParent();
-
-			while (parent != null) {
-				String id = Util.getStringIdentification(parent.getValue());
-				TreeNode mergeTargetExistingTree = Util.locateNodeWithEqualID(
-						id, bookmark);
-
-				if (mergeTargetExistingTree != null) {
-
-					for (TreeNode child : parent.getChildren()) {
-						mergeTargetExistingTree.addChild(child);
-					}
-					return true;
-				}
-
-				parent = parent.getParent();
-			}
-		}
-
-		return false;
-	}
-
-	private boolean isNodeADuplicate(TreeNode bookmark, TreeNode node) {
-
-		LinkedList<TreeNode> leafs = Util.getLeafs(node);
-
-		for (TreeNode leaf : leafs) {
-			String id = Util.getStringIdentification(leaf.getValue());
-
-			for (TreeNode child : bookmark.getChildren()) {
-				boolean duplicateFound = isNodeADuplicate(child, id);
-				if (duplicateFound)
-					return true;
-			}
-		}
-
-		return false;
-	}
-
-	private boolean isNodeADuplicate(TreeNode node, String id) {
-
-		String leafStringRepresentation = Util.getStringIdentification(node
-				.getValue());
-		if (leafStringRepresentation.compareTo(id) == 0)
-			return true;
-
-		for (TreeNode child : node.getChildren()) {
-			boolean duplicateFound = isNodeADuplicate(child, id);
-			if (duplicateFound)
+			if (climbUpTreeHierarchyMergeIfIDMatches(bookmark, parent))
 				return true;
 		}
 
 		return false;
+	}
+
+	private boolean climbUpTreeHierarchyMergeIfIDMatches(TreeNode bookmark,
+			TreeNode parent) {
+		while (parent != null) {
+			String id = Util.getStringIdentification(parent.getValue());
+			TreeNode mergeTargetExistingTree = Util.locateNodeWithEqualID(id,
+					bookmark);
+
+			if (isMergeTargetFound(mergeTargetExistingTree)) {
+				merge(mergeTargetExistingTree, parent);
+
+				return true;
+			}
+
+			parent = parent.getParent();
+		}
+		return false;
+	}
+
+	private void merge(TreeNode mergeTargetExistingTree, TreeNode parent) {
+		for (TreeNode child : parent.getChildren())
+			mergeTargetExistingTree.addChild(child);
+	}
+
+	private boolean isMergeTargetFound(TreeNode mergeTargetExistingTree) {
+		return mergeTargetExistingTree != null;
 	}
 
 	private void refreshTree() {
