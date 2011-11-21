@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.internal.ui.preferences.formatter.NewLinesTabPage;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class Util {
@@ -37,21 +38,36 @@ public class Util {
 		return id;
 	}
 
-//	public static TreeNode copyTreePathOfLeafExclusiveBookmarkNode(TreeNode node) {
-//
-//		if (node.isBookmarkNode())
-//			return new TreeNode(null);
-//
-//		TreeNode newNode = new TreeNode(node.getValue());
-//		TreeNode parent = node.getParent();
-//		TreeNode newParent = copyTreePathOfLeafExclusiveBookmarkNode(parent);
-//		if (newParent != null)
-//			newParent.addChild(newNode);
-//		return newNode;
-//	}
+	// public static TreeNode copyTreePathOfLeafExclusiveBookmarkNode(TreeNode
+	// node) {
+	//
+	// if (node.isBookmarkNode())
+	// return new TreeNode(null);
+	//
+	// TreeNode newNode = new TreeNode(node.getValue());
+	// TreeNode parent = node.getParent();
+	// TreeNode newParent = copyTreePathOfLeafExclusiveBookmarkNode(parent);
+	// if (newParent != null)
+	// newParent.addChild(newNode);
+	// return newNode;
+	// }
 
 	public static TreeNode copyTreePathOfLeafExclusiveBookmarkNode(TreeNode node) {
 
+		LinkedList<TreeNode> newChilds = new LinkedList<TreeNode>();
+		for (TreeNode child : node.getChildren())
+			newChilds.add(copyTreePathNodeToLeafs(child));
+
+		TreeNode newNode = copyTreePathNodeToBookmark(node);
+
+		for(TreeNode child : newChilds)
+			newNode.addChild(child);
+				
+		return newNode;
+
+	}
+
+	private static TreeNode copyTreePathNodeToBookmark(TreeNode node) {
 		if (node.isBookmarkNode())
 			return new TreeNode(null);
 
@@ -62,7 +78,7 @@ public class Util {
 			newParent.addChild(newNode);
 		return newNode;
 	}
-	
+
 	private static TreeNode copyTreePathNodeToLeafs(TreeNode node) {
 
 		Object value = node.getValue();

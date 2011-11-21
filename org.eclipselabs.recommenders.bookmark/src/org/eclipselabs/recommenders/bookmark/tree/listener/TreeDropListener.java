@@ -203,6 +203,7 @@ public class TreeDropListener implements DropTargetListener {
 			// wird
 			// TODO: Logic/GUI entzerren --> Unittests
 			// TODO: Doppelklick auch auf Kopfknoten
+			// TODO: Beim herausziehen eines Knoten aus einem BM ins leere--> exception
 
 			if ((TreeNode) getTarget(event) != null) {
 				TreeNode target = (TreeNode) getTarget(event);
