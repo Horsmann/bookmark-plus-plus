@@ -3,6 +3,10 @@ package org.eclipselabs.recommenders.bookmark.tree.listener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TreeEditor;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Text;
@@ -35,12 +39,57 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private void checkForBookmarkAndChangeName(KeyEvent e) {
-		TreeItem [] items = getSelections(e);
+		TreeItem[] items = getSelections(e);
 		performRenameForBookmarks(items);
 	}
 
 	private void performRenameForBookmarks(TreeItem[] items) {
-//		Text text = new Text(viewer, SWT.NONE);
+		// Text text = new Text(, SWT.NONE);
+		final TreeEditor editor = new TreeEditor(viewer.getTree());
+		 editor.horizontalAlignment = SWT.LEFT;
+		 editor.minimumWidth=50;
+//		    editor.grabHorizontal = true;
+
+		TreeItem item = items[0];
+
+		final TreeNode node = (TreeNode) item.getData();
+		if (!node.isBookmarkNode())
+			return;
+
+		// System.err.println("F2");
+
+		final Text text = new Text(viewer.getTree(), SWT.NONE);
+		text.setText((String) node.getValue());
+		text.selectAll();
+		text.setFocus();
+
+		// If the text field loses focus, set its text into the tree
+		// and end the editing session
+		text.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent event) {
+				node.setValue(text.getText());
+				text.dispose();
+			}
+		});
+
+		text.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent event) {
+				switch (event.keyCode) {
+				case SWT.CR:
+					// Enter hit--set the text into the tree and drop
+					// through
+					node.setValue(text.getText());
+				case SWT.ESC:
+					// End editing session
+					text.dispose();
+					break;
+				}
+			}
+		});
+
+		// Set the text field into the editor
+		editor.setEditor(text, item);
+		viewer.refresh();
 	}
 
 	private void checkForOpenNodeInEditor(KeyEvent e) {

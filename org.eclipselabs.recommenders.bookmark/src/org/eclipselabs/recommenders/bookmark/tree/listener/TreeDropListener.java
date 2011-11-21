@@ -274,19 +274,21 @@ public class TreeDropListener implements DropTargetListener {
 	private boolean climbUpTreeHierarchyMergeIfIDMatches(TreeNode bookmark,
 			TreeNode parent) {
 		while (parent != null) {
-			String id = Util.getStringIdentification(parent.getValue());
-			TreeNode mergeTargetExistingTree = Util.locateNodeWithEqualID(id,
-					bookmark);
+			TreeNode mergeTargetExistingTree = getNodeThatMatchesID(bookmark,
+					parent);
 
 			if (isMergeTargetFound(mergeTargetExistingTree)) {
 				merge(mergeTargetExistingTree, parent);
-
 				return true;
 			}
-
 			parent = parent.getParent();
 		}
 		return false;
+	}
+
+	private TreeNode getNodeThatMatchesID(TreeNode bookmark, TreeNode parent) {
+		String id = Util.getStringIdentification(parent.getValue());
+		return Util.locateNodeWithEqualID(id, bookmark);
 	}
 
 	private void merge(TreeNode mergeTargetExistingTree, TreeNode parent) {
@@ -312,30 +314,9 @@ public class TreeDropListener implements DropTargetListener {
 			return null;
 
 		Object value = path.getSegment(segNr);
-		// TreeNode leaf = new TreeNode(value);
 
 		if (isValueInTypeHierarchyBelowICompilationUnit(value)) {
-
-			TreeNode tmpChild = new TreeNode(value);
-			TreeNode tmpParent = null;
-
-			while (true) {
-				IJavaElement javaEle = (IJavaElement) value;
-
-				// Get the type that declares the method
-				IJavaElement element = javaEle.getParent();
-				tmpParent = new TreeNode(element);
-				tmpParent.addChild(tmpChild);
-
-				if (implementsRequiredInterfaces(element.getParent())) {
-
-					tmpChild = tmpParent;
-					value = element;
-				} else
-					break;
-			}
-
-			return tmpParent;
+			return createHierarchyUpToCompilationUnitLevel(value);
 		}
 
 		if (value instanceof IFile || value instanceof ICompilationUnit) {
@@ -343,6 +324,28 @@ public class TreeDropListener implements DropTargetListener {
 		}
 
 		return null;
+	}
+
+	private TreeNode createHierarchyUpToCompilationUnitLevel(Object value) {
+		TreeNode tmpChild = new TreeNode(value);
+		TreeNode tmpParent = null;
+
+		while (true) {
+			IJavaElement javaEle = (IJavaElement) value;
+
+			IJavaElement element = javaEle.getParent();
+			tmpParent = new TreeNode(element);
+			tmpParent.addChild(tmpChild);
+
+			if (implementsRequiredInterfaces(element.getParent())) {
+				tmpChild = tmpParent;
+				value = element;
+			} else {
+				break;
+			}
+		}
+
+		return tmpParent;
 	}
 
 	private boolean implementsRequiredInterfaces(Object value) {
