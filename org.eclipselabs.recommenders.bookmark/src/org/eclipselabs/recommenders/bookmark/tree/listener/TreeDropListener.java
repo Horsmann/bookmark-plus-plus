@@ -156,6 +156,7 @@ public class TreeDropListener implements DropTargetListener {
 		TreeNode node = buildTreeStructure(treePath);
 		if (node == null)
 			return;
+
 		boolean isDuplicate = isNodeADuplicate(bookmark, node);
 		if (!isDuplicate)
 			mergeAddNodeToBookmark(bookmark, node);
@@ -179,21 +180,21 @@ public class TreeDropListener implements DropTargetListener {
 		List<IStructuredSelection> selections = getTreeSelections();
 		for (int i = 0; i < selections.size(); i++) {
 			TreeNode node = (TreeNode) selections.get(i);
-			
-			TreeNode nodeCopy = Util.copyTreePathOfLeafExclusiveBookmarkNode(node);
-			
+
+			TreeNode nodeCopy = Util
+					.copyTreePathOfLeafExclusiveBookmarkNode(node);
+
 			TreeNode dropTarget = (TreeNode) getTarget(event);
 			TreeNode targetBookmark = Util.getBookmarkNode(dropTarget);
-			
-			if (isNodeADuplicate(targetBookmark, node))
-				return;
-			
 
-			if (attemptMerge(targetBookmark, nodeCopy)){
+			if (isNodeADuplicate(targetBookmark, node))
+				continue;
+
+			if (attemptMerge(targetBookmark, nodeCopy)) {
 				node.getParent().removeChild(node);
 				node.setParent(null);
 				refreshTree();
-				return;
+				continue;
 			}
 
 			// TODO: Auch IFields zulassen
@@ -203,7 +204,8 @@ public class TreeDropListener implements DropTargetListener {
 			// wird
 			// TODO: Logic/GUI entzerren --> Unittests
 			// TODO: Doppelklick auch auf Kopfknoten
-			// TODO: Beim herausziehen eines Knoten aus einem BM ins leere--> exception
+			// TODO: Beim herausziehen eines Knoten aus einem BM ins leere-->
+			// exception
 
 			if ((TreeNode) getTarget(event) != null) {
 				TreeNode target = (TreeNode) getTarget(event);
@@ -242,12 +244,12 @@ public class TreeDropListener implements DropTargetListener {
 
 			while (parent != null) {
 				String id = Util.getStringIdentification(parent.getValue());
-				TreeNode mergeTargetExistingTree = Util.locateNodeWithEqualID(id,
-						bookmark);
+				TreeNode mergeTargetExistingTree = Util.locateNodeWithEqualID(
+						id, bookmark);
 
 				if (mergeTargetExistingTree != null) {
 
-					for (TreeNode child : parent.getChildren()){
+					for (TreeNode child : parent.getChildren()) {
 						mergeTargetExistingTree.addChild(child);
 					}
 					return true;
@@ -259,7 +261,6 @@ public class TreeDropListener implements DropTargetListener {
 
 		return false;
 	}
-
 
 	private boolean isNodeADuplicate(TreeNode bookmark, TreeNode node) {
 
@@ -310,7 +311,7 @@ public class TreeDropListener implements DropTargetListener {
 		Object value = path.getSegment(segNr);
 		// TreeNode leaf = new TreeNode(value);
 
-		if (value instanceof IMethod || value instanceof IType) {
+		if (isValueInTypeHierarchyBelowICompilationUnit(value)) {
 
 			TreeNode tmpChild = new TreeNode(value);
 			TreeNode tmpParent = null;
@@ -323,7 +324,7 @@ public class TreeDropListener implements DropTargetListener {
 				tmpParent = new TreeNode(element);
 				tmpParent.addChild(tmpChild);
 
-				if (implementsNeededInterfaces(element.getParent())) {
+				if (implementsRequiredInterfaces(element.getParent())) {
 
 					tmpChild = tmpParent;
 					value = element;
@@ -341,9 +342,14 @@ public class TreeDropListener implements DropTargetListener {
 		return null;
 	}
 
-	private boolean implementsNeededInterfaces(Object value) {
+	private boolean implementsRequiredInterfaces(Object value) {
 		return (value instanceof IField || value instanceof IType
 				|| value instanceof IMethod || value instanceof ICompilationUnit);
+	}
+
+	private boolean isValueInTypeHierarchyBelowICompilationUnit(Object value) {
+		return value instanceof IMethod || value instanceof IType
+				|| value instanceof IField;
 	}
 
 	private Object getTarget(DropTargetEvent event) {

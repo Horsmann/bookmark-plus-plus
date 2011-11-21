@@ -38,20 +38,14 @@ public class Util {
 		return id;
 	}
 
-	// public static TreeNode copyTreePathOfLeafExclusiveBookmarkNode(TreeNode
-	// node) {
-	//
-	// if (node.isBookmarkNode())
-	// return new TreeNode(null);
-	//
-	// TreeNode newNode = new TreeNode(node.getValue());
-	// TreeNode parent = node.getParent();
-	// TreeNode newParent = copyTreePathOfLeafExclusiveBookmarkNode(parent);
-	// if (newParent != null)
-	// newParent.addChild(newNode);
-	// return newNode;
-	// }
 
+	/**
+	 * Creates a copy of a provided node that includes all leafs, but without the
+	 * bookmark nodes the node belongs to. The bookmark node is <code>null</code>
+	 * for each copy
+	 * @param node
+	 * @return
+	 */
 	public static TreeNode copyTreePathOfLeafExclusiveBookmarkNode(TreeNode node) {
 
 		LinkedList<TreeNode> newChilds = new LinkedList<TreeNode>();
@@ -73,7 +67,7 @@ public class Util {
 
 		TreeNode newNode = new TreeNode(node.getValue());
 		TreeNode parent = node.getParent();
-		TreeNode newParent = copyTreePathOfLeafExclusiveBookmarkNode(parent);
+		TreeNode newParent = copyTreePathNodeToBookmark(parent);
 		if (newParent != null)
 			newParent.addChild(newNode);
 		return newNode;
