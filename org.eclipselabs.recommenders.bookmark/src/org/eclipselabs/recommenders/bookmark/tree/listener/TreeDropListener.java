@@ -189,10 +189,13 @@ public class TreeDropListener implements DropTargetListener {
 		List<IStructuredSelection> selections = getTreeSelections();
 		for (int i = 0; i < selections.size(); i++) {
 			TreeNode node = (TreeNode) selections.get(i);
+			
+//			TreeNode targetBookmark = Util.getBookmarkNode(node);
 
 			//TODO: Aufruf der merge routine
 			//TODO: globalen Handle BookmarkNode entfernen
 			//TODO: Auto-Expand des tree bei droppen
+			//TODO: Leeres Bookmark wird erstellt, wenn ein Package gedropt wird
 			while (true) {
 				if (node.getParent().isBookmarkNode())
 					break;
@@ -236,7 +239,8 @@ public class TreeDropListener implements DropTargetListener {
 
 			while (parent != null) {
 				String id = Util.getStringIdentification(parent.getValue());
-				TreeNode mergeTargetExistingTree = locateNodeWithEqualID(id);
+//				TreeNode mergeTargetExistingTree = locateNodeWithEqualID(id);
+				TreeNode mergeTargetExistingTree = locateNodeWithEqualID(id,bookmarkNode);
 
 				if (mergeTargetExistingTree != null) {
 

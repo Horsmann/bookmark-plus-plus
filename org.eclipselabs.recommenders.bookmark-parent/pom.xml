@@ -19,6 +19,11 @@
 			<layout>p2</layout>
 			<url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/helios/</url>
 		</repository>
+		<repository>
+			<id>Gson</id>
+			<layout>p2</layout>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd-head</url>
+		</repository>
 	</repositories>
   
   	<profiles>
