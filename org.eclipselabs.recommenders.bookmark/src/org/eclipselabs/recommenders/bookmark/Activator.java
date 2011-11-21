@@ -48,7 +48,7 @@ public class Activator extends AbstractUIPlugin {
 		registry.put(ICON_DEFAULT, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
-				new Path("icons/bookmark.gif"), null));
+				new Path("icons/bkmrk_nav.gif"), null));
 		registry.put(ICON_BOOKMARK, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
@@ -56,7 +56,7 @@ public class Activator extends AbstractUIPlugin {
 		registry.put(ICON_SHOW_IN_EDITOR, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
-				new Path("icons/filesave.gif"), null));
+				new Path("icons/saveas_edit.gif"), null));
 		registry.put(ICON_SAVE_BOOKMARKS, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
@@ -64,7 +64,7 @@ public class Activator extends AbstractUIPlugin {
 		registry.put(ICON_LOAD_BOOKMARKS, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
-				new Path("icons/closeWindows.png"), null));
+				new Path("icons/clear_co.gif"), null));
 		registry.put(ICON_CLOSE_ALL_OPEN_EDITORS, imgDesc);
 
 	}

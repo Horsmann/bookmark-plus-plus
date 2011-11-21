@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
@@ -23,29 +24,57 @@ public class TreeKeyListener implements KeyListener {
 
 		checkForNodeDeletion(e);
 		checkForOpenNodeInEditor(e);
+		checkForRename(e);
 
 	}
 
+	private void checkForRename(KeyEvent e) {
+		if (e.keyCode == SWT.F2 && !isShiftOrAltOrCrtlPressed(e.stateMask))
+			checkForBookmarkAndChangeName(e);
+
+	}
+
+	private void checkForBookmarkAndChangeName(KeyEvent e) {
+		TreeItem [] items = getSelections(e);
+		performRenameForBookmarks(items);
+	}
+
+	private void performRenameForBookmarks(TreeItem[] items) {
+//		Text text = new Text(viewer, SWT.NONE);
+	}
+
 	private void checkForOpenNodeInEditor(KeyEvent e) {
-		if (e.keyCode == SWT.CR)
+		if (e.keyCode == SWT.CR && !isShiftOrAltOrCrtlPressed(e.stateMask))
 			showInEditor.run();
 	}
 
 	private void checkForNodeDeletion(KeyEvent e) {
 		if (isDeleteNodeEvent(e.keyCode, e.stateMask)) {
-			if (e.getSource() instanceof Tree) {
-				Tree tree = (Tree) e.getSource();
-				TreeItem[] items = tree.getSelection();
-				for (TreeItem item : items) {
-					if (item.getData() instanceof TreeNode) {
-						TreeNode node = (TreeNode) item.getData();
-						node.getParent().removeChild(node);
-						node.setParent(null);
-					}
-				}
-				viewer.refresh();
-			}
+			TreeItem[] items = getSelections(e);
+			performDeletion(items);
+			viewer.refresh();
 		}
+	}
+
+	private void performDeletion(TreeItem[] items) {
+		if (items == null || items.length == 0)
+			return;
+		for (TreeItem item : items) {
+			TreeNode node = (TreeNode) item.getData();
+			node.getParent().removeChild(node);
+			node.setParent(null);
+		}
+
+	}
+
+	private TreeItem[] getSelections(KeyEvent e) {
+		TreeItem[] items = null;
+		if (e.getSource() instanceof Tree) {
+			Tree tree = (Tree) e.getSource();
+			items = tree.getSelection();
+		}
+
+		return items;
 	}
 
 	private boolean isDeleteNodeEvent(int key, int state) {

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -26,7 +27,6 @@ public class TreeDropListener implements DropTargetListener {
 
 	private final TreeViewer viewer;
 	private TreeModel model;
-	private TreeNode bookmarkNode = null;
 
 	/**
 	 * The drag listener of the <b>same</b> view the drop listener is listening
@@ -115,8 +115,6 @@ public class TreeDropListener implements DropTargetListener {
 	@Override
 	public void drop(DropTargetEvent event) {
 
-		tryToSetTargetBookmark(event);
-
 		try {
 			if (dragListener.isDragInProgress())
 				processDropEventWithDragFromWithinTheView(event);
@@ -126,27 +124,18 @@ public class TreeDropListener implements DropTargetListener {
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
-		bookmarkNode = null;
-
-	}
-
-	private void tryToSetTargetBookmark(DropTargetEvent event) {
-		if (getTarget(event) != null && getTarget(event) instanceof TreeNode) {
-			bookmarkNode = (TreeNode) getTarget(event);
-
-			while (!bookmarkNode.isBookmarkNode())
-				bookmarkNode = bookmarkNode.getParent();
-		}
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
 			DropTargetEvent event) throws JavaModelException {
 
 		TreePath[] treePath = getTreePath(event);
+		TreeNode target = (TreeNode) getTarget(event);
+		TreeNode bookmark = Util.getBookmarkNode(target);
 
-		if (bookmarkNode != null)
+		if (bookmark != null)
 			for (int i = 0; i < treePath.length; i++)
-				addToExistingBookmark(treePath[i]);
+				addToExistingBookmark(bookmark, treePath[i]);
 		else
 			createNewBookmarkAddAsNode(treePath);
 
@@ -162,45 +151,58 @@ public class TreeDropListener implements DropTargetListener {
 		return treePath;
 	}
 
-	private void addToExistingBookmark(TreePath treePath)
+	private void addToExistingBookmark(TreeNode bookmark, TreePath treePath)
 			throws JavaModelException {
 		TreeNode node = buildTreeStructure(treePath);
 		if (node == null)
 			return;
-		boolean isDuplicate = isNodeADupblicate(node);
+		boolean isDuplicate = isNodeADuplicate(bookmark, node);
 		if (!isDuplicate)
-			mergeAddNodeToBookmark(node);
+			mergeAddNodeToBookmark(bookmark, node);
 	}
 
 	private void createNewBookmarkAddAsNode(TreePath[] treePath)
 			throws JavaModelException {
 
-		bookmarkNode = new TreeNode("New Bookmark", true);
+		TreeNode bookmark = new TreeNode("New Bookmark", true);
 
 		for (int i = 0; i < treePath.length; i++)
-			addToExistingBookmark(treePath[i]);
+			addToExistingBookmark(bookmark, treePath[i]);
 
-		model.getModelRoot().addChild(bookmarkNode);
+		model.getModelRoot().addChild(bookmark);
 		refreshTree();
 
 	}
 
-	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event) {
+	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
+			throws JavaModelException {
 		List<IStructuredSelection> selections = getTreeSelections();
 		for (int i = 0; i < selections.size(); i++) {
 			TreeNode node = (TreeNode) selections.get(i);
 			
-//			TreeNode targetBookmark = Util.getBookmarkNode(node);
+			TreeNode nodeCopy = Util.copyTreePathOfLeafExclusiveBookmarkNode(node);
+			
+			TreeNode dropTarget = (TreeNode) getTarget(event);
+			TreeNode targetBookmark = Util.getBookmarkNode(dropTarget);
+			
+			if (isNodeADuplicate(targetBookmark, node))
+				return;
+			
 
-			//TODO: Aufruf der merge routine
-			//TODO: globalen Handle BookmarkNode entfernen
-			//TODO: Auto-Expand des tree bei droppen
-			//TODO: Leeres Bookmark wird erstellt, wenn ein Package gedropt wird
-			while (true) {
-				if (node.getParent().isBookmarkNode())
-					break;
-				node = node.getParent();
+			if (attemptMerge(targetBookmark, nodeCopy)){
+				node.getParent().removeChild(node);
+				node.setParent(null);
+				refreshTree();
+				return;
 			}
+
+			// TODO: Auch IFields zulassen
+			// TODO: Auto-Expand des tree bei droppen
+			// TODO: Auto-Expand mit speichern und beim laden šffnen
+			// TODO: Leeres Bookmark wird erstellt, wenn ein Package gedropt
+			// wird
+			// TODO: Logic/GUI entzerren --> Unittests
+			// TODO: Doppelklick auch auf Kopfknoten
 
 			if ((TreeNode) getTarget(event) != null) {
 				TreeNode target = (TreeNode) getTarget(event);
@@ -212,11 +214,11 @@ public class TreeDropListener implements DropTargetListener {
 		refreshTree();
 	}
 
-	private void mergeAddNodeToBookmark(TreeNode node)
+	private void mergeAddNodeToBookmark(TreeNode bookmark, TreeNode node)
 			throws JavaModelException {
 
-		if (!attemptMerge(node))
-			bookmarkNode.addChild(node);
+		if (!attemptMerge(bookmark, node))
+			bookmark.addChild(node);
 
 		refreshTree();
 
@@ -231,7 +233,7 @@ public class TreeDropListener implements DropTargetListener {
 	 * @param node
 	 * @return
 	 */
-	private boolean attemptMerge(TreeNode node) {
+	private boolean attemptMerge(TreeNode bookmark, TreeNode node) {
 		LinkedList<TreeNode> leafs = Util.getLeafs(node);
 
 		for (TreeNode leaf : leafs) {
@@ -239,13 +241,14 @@ public class TreeDropListener implements DropTargetListener {
 
 			while (parent != null) {
 				String id = Util.getStringIdentification(parent.getValue());
-//				TreeNode mergeTargetExistingTree = locateNodeWithEqualID(id);
-				TreeNode mergeTargetExistingTree = locateNodeWithEqualID(id,bookmarkNode);
+				TreeNode mergeTargetExistingTree = Util.locateNodeWithEqualID(id,
+						bookmark);
 
 				if (mergeTargetExistingTree != null) {
 
-					for (TreeNode child : parent.getChildren())
+					for (TreeNode child : parent.getChildren()){
 						mergeTargetExistingTree.addChild(child);
+					}
 					return true;
 				}
 
@@ -256,44 +259,16 @@ public class TreeDropListener implements DropTargetListener {
 		return false;
 	}
 
-	// Starting from the bookmark node compare all childs to the provided id
-	private TreeNode locateNodeWithEqualID(String id) {
-		for (TreeNode child : bookmarkNode.getChildren()) {
-			TreeNode node = locateNodeWithEqualID(id, child);
-			if (node != null)
-				return node;
-		}
-		return null;
-	}
 
-	private TreeNode locateNodeWithEqualID(String id, TreeNode node) {
-
-		if (doesNodeMatchesId(id, node))
-			return node;
-		else
-			for (TreeNode child : node.getChildren()) {
-				TreeNode located = locateNodeWithEqualID(id, child);
-				if (located != null)
-					return located;
-			}
-
-		return null;
-	}
-
-	private boolean doesNodeMatchesId(String id, TreeNode node) {
-		String compareID = Util.getStringIdentification(node.getValue());
-		return (id.compareTo(compareID) == 0);
-	}
-
-	private boolean isNodeADupblicate(TreeNode node) {
+	private boolean isNodeADuplicate(TreeNode bookmark, TreeNode node) {
 
 		LinkedList<TreeNode> leafs = Util.getLeafs(node);
 
 		for (TreeNode leaf : leafs) {
 			String id = Util.getStringIdentification(leaf.getValue());
 
-			for (TreeNode child : bookmarkNode.getChildren()) {
-				boolean duplicateFound = isNodeADupblicate(child, id);
+			for (TreeNode child : bookmark.getChildren()) {
+				boolean duplicateFound = isNodeADuplicate(child, id);
 				if (duplicateFound)
 					return true;
 			}
@@ -302,15 +277,15 @@ public class TreeDropListener implements DropTargetListener {
 		return false;
 	}
 
-	private boolean isNodeADupblicate(TreeNode node, String representation) {
+	private boolean isNodeADuplicate(TreeNode node, String id) {
 
 		String leafStringRepresentation = Util.getStringIdentification(node
 				.getValue());
-		if (leafStringRepresentation.compareTo(representation) == 0)
+		if (leafStringRepresentation.compareTo(id) == 0)
 			return true;
 
 		for (TreeNode child : node.getChildren()) {
-			boolean duplicateFound = isNodeADupblicate(child, representation);
+			boolean duplicateFound = isNodeADuplicate(child, id);
 			if (duplicateFound)
 				return true;
 		}
@@ -323,7 +298,6 @@ public class TreeDropListener implements DropTargetListener {
 		viewer.refresh();
 		viewer.setExpandedTreePaths(treeExpansion);
 	}
-
 
 	private TreeNode buildTreeStructure(TreePath path)
 			throws JavaModelException {
@@ -367,7 +341,8 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean implementsNeededInterfaces(Object value) {
-		return (value instanceof IType || value instanceof IMethod || value instanceof ICompilationUnit);
+		return (value instanceof IField || value instanceof IType
+				|| value instanceof IMethod || value instanceof ICompilationUnit);
 	}
 
 	private Object getTarget(DropTargetEvent event) {

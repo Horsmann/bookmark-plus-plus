@@ -37,12 +37,75 @@ public class Util {
 		return id;
 	}
 
+//	public static TreeNode copyTreePathOfLeafExclusiveBookmarkNode(TreeNode node) {
+//
+//		if (node.isBookmarkNode())
+//			return new TreeNode(null);
+//
+//		TreeNode newNode = new TreeNode(node.getValue());
+//		TreeNode parent = node.getParent();
+//		TreeNode newParent = copyTreePathOfLeafExclusiveBookmarkNode(parent);
+//		if (newParent != null)
+//			newParent.addChild(newNode);
+//		return newNode;
+//	}
+
+	public static TreeNode copyTreePathOfLeafExclusiveBookmarkNode(TreeNode node) {
+
+		if (node.isBookmarkNode())
+			return new TreeNode(null);
+
+		TreeNode newNode = new TreeNode(node.getValue());
+		TreeNode parent = node.getParent();
+		TreeNode newParent = copyTreePathOfLeafExclusiveBookmarkNode(parent);
+		if (newParent != null)
+			newParent.addChild(newNode);
+		return newNode;
+	}
+	
+	private static TreeNode copyTreePathNodeToLeafs(TreeNode node) {
+
+		Object value = node.getValue();
+		TreeNode newNode = new TreeNode(value);
+
+		for (TreeNode child : node.getChildren()) {
+			TreeNode newChild = copyTreePathNodeToLeafs(child);
+			newNode.addChild(newChild);
+		}
+
+		return newNode;
+	}
+
 	public static TreeNode getBookmarkNode(TreeNode node) {
+
+		if (node == null)
+			return null;
 
 		if (node.isBookmarkNode())
 			return node;
 
 		return getBookmarkNode(node.getParent());
+	}
+
+	public static TreeNode locateNodeWithEqualID(String id, TreeNode node) {
+
+		if (doesNodeMatchesId(id, node))
+			return node;
+		for (TreeNode child : node.getChildren()) {
+			TreeNode located = locateNodeWithEqualID(id, child);
+			if (located != null)
+				return located;
+		}
+
+		return null;
+	}
+
+	private static boolean doesNodeMatchesId(String id, TreeNode node) {
+		Object value = node.getValue();
+		if (value == null || id == null)
+			return false;
+		String compareID = Util.getStringIdentification(value);
+		return (id.compareTo(compareID) == 0);
 	}
 
 }
