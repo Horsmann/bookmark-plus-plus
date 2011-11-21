@@ -2,8 +2,6 @@ package org.eclipselabs.recommenders.bookmark.tree.node;
 
 import java.util.ArrayList;
 
-import org.eclipse.core.runtime.IAdaptable;
-
 public class TreeNode {
 	private TreeNode parent;
 	private ArrayList<TreeNode> children;
@@ -72,32 +70,5 @@ public class TreeNode {
 	public void setBookmark(boolean isBookmark) {
 		this.isBookmarkNode = isBookmark;
 	}
-
-//	public String getProject() {
-//		int posFirstSlash = text.indexOf("/");
-//		int posSecondSlash = 0;
-//		if (posFirstSlash > -1)
-//			posSecondSlash = text.indexOf("/", posFirstSlash + 1);
-//		else
-//			return text;
-//
-//		if (posSecondSlash > -1) {
-//			return text.substring(posFirstSlash + 1, posSecondSlash
-//					- posFirstSlash);
-//		}
-//		return text;
-//	}
-//
-//	public String getName() {
-//		int posLastSlash = text.lastIndexOf("/");
-//		int posDot = text.lastIndexOf(".");
-//
-//		if (posDot == -1 || posLastSlash == -1)
-//			return text;
-//
-//		String name = text.substring(posLastSlash + 1);
-//
-//		return name;
-//	}
 
 }

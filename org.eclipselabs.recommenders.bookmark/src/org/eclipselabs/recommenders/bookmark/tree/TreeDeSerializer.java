@@ -1,7 +1,6 @@
 package org.eclipselabs.recommenders.bookmark.tree;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -36,22 +35,9 @@ public class TreeDeSerializer {
 
 		TreeNode newSubTreeNode = null;
 		Object value = subTreeNode.getValue();
-		
+
 		String id = Util.getStringIdentification(value);
 		newSubTreeNode = new TreeNode(id);
-//		if (value instanceof IFile) {
-//			IFile file = (IFile) value;
-//			String path = file.getLocationURI().getPath();
-//			newSubTreeNode = new TreeNode(path);
-//		}
-//
-//		if (value instanceof IJavaElement) {
-//			IJavaElement element = (IJavaElement) value;
-//			newSubTreeNode = new TreeNode(element.getHandleIdentifier());
-//		}
-//
-//		if (value instanceof String)
-//			newSubTreeNode = new TreeNode(value);
 
 		for (TreeNode child : subTreeNode.getChildren()) {
 			TreeNode newSubTreeChildNode = serializeSubTree(child);
@@ -86,10 +72,9 @@ public class TreeDeSerializer {
 
 		if (newSubTreeNode == null && !subTreeNode.isBookmarkNode()) {
 			try {
-				IWorkspace workspace = ResourcesPlugin.getWorkspace();
 				IPath location = Path.fromOSString((String) value);
-				IFile file = workspace.getRoot().getFileForLocation(location);
-				// file.createLink(location, IResource.NONE, null);
+				IFile file = ResourcesPlugin.getWorkspace().getRoot()
+						.getFile(location);
 				newSubTreeNode = new TreeNode(file);
 			} catch (JsonSyntaxException e) {
 				e.printStackTrace();

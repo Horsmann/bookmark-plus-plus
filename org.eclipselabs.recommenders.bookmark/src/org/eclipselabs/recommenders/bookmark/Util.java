@@ -25,20 +25,24 @@ public class Util {
 		if (value instanceof IJavaElement)
 			id = ((IJavaElement) value).getHandleIdentifier();
 		else if (value instanceof IFile) {
+
 			IFile file = (IFile) value;
-			id = file.getLocationURI().getPath();
+
+			id = file.getFullPath()
+					.makeRelativeTo(file.getProjectRelativePath()).toOSString();
+
 		} else if (value instanceof String)
 			id = (String) value;
 
 		return id;
 	}
-	
-	public static TreeNode getBookmarkNode(TreeNode node){
-		
-		if(node.isBookmarkNode())
+
+	public static TreeNode getBookmarkNode(TreeNode node) {
+
+		if (node.isBookmarkNode())
 			return node;
 
 		return getBookmarkNode(node.getParent());
 	}
-	
+
 }
