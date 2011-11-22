@@ -218,10 +218,11 @@ public class TreeDropListener implements DropTargetListener {
 			// TODO: Doppelklick auch auf Kopfknoten
 
 			node.getParent().removeChild(node);
-			dropTarget.addChild(node);
+			TreeNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
+			targetBookmark.addChild(head);
 
 		}
-		refreshTree();
+		refreshTree(); 
 	}
 
 	private void unlink(TreeNode node) {
@@ -250,6 +251,8 @@ public class TreeDropListener implements DropTargetListener {
 		if (!attemptMerge(bookmark, node))
 			bookmark.addChild(node);
 
+//		viewer.expandToLevel(node, AbstractTreeViewer.ALL_LEVELS);
+//		viewer.refresh();
 		refreshTree();
 
 	}
