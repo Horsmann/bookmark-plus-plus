@@ -2,8 +2,6 @@ package org.eclipselabs.recommenders.bookmark.tree;
 
 import java.util.LinkedList;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeUtil {
@@ -20,32 +18,18 @@ public class TreeUtil {
 		return leafs;
 	}
 
-	public static String getStringIdentification(Object value) {
-		String id = null;
-		if (value instanceof IJavaElement)
-			id = ((IJavaElement) value).getHandleIdentifier();
-		else if (value instanceof IFile) {
-
-			IFile file = (IFile) value;
-
-			id = file.getFullPath()
-					.makeRelativeTo(file.getProjectRelativePath()).toOSString();
-
-		} else if (value instanceof String)
-			id = (String) value;
-
-		return id;
-	}
-
-
 	/**
-	 * Creates a copy of a provided node that includes all leafs, but without the
-	 * bookmark nodes the node belongs to. The bookmark node is <code>null</code>
-	 * for each copy
+	 * Creates a copy of a provided node that includes all leafs, but without
+	 * the bookmark nodes the node belongs to. The bookmark node is
+	 * <code>null</code> for each copy
+	 * 
 	 * @param node
 	 * @return
 	 */
 	public static TreeNode copyTreePath(TreeNode node) {
+
+		if (node == null)
+			return null;
 
 		LinkedList<TreeNode> newChilds = new LinkedList<TreeNode>();
 		for (TreeNode child : node.getChildren())
@@ -53,9 +37,12 @@ public class TreeUtil {
 
 		TreeNode newNode = copyTreePathNodeToBookmark(node);
 
-		for(TreeNode child : newChilds)
+		if (newNode == null)
+			return null;
+
+		for (TreeNode child : newChilds)
 			newNode.addChild(child);
-				
+
 		return newNode;
 
 	}
@@ -113,22 +100,21 @@ public class TreeUtil {
 		Object value = node.getValue();
 		if (value == null || id == null)
 			return false;
-		String compareID = TreeUtil.getStringIdentification(value);
+		String compareID = TreeValueConverter.getStringIdentification(value);
 		return (id.compareTo(compareID) == 0);
 	}
-	
+
 	public static boolean isDuplicate(TreeNode bookmark, TreeNode node) {
 
 		LinkedList<TreeNode> leafs = TreeUtil.getLeafs(node);
 
 		for (TreeNode leaf : leafs) {
-			String id = TreeUtil.getStringIdentification(leaf.getValue());
+			String id = TreeValueConverter.getStringIdentification(leaf
+					.getValue());
 
-//			for (TreeNode child : bookmark.getChildren()) {
-				boolean duplicateFound = TreeUtil.isDuplicate(bookmark, id);
-				if (duplicateFound)
-					return true;
-//			}
+			boolean duplicateFound = TreeUtil.isDuplicate(bookmark, id);
+			if (duplicateFound)
+				return true;
 		}
 
 		return false;
@@ -136,7 +122,7 @@ public class TreeUtil {
 
 	public static boolean isDuplicate(TreeNode node, String masterID) {
 
-		String compareID = TreeUtil.getStringIdentification(node
+		String compareID = TreeValueConverter.getStringIdentification(node
 				.getValue());
 		if (compareID.compareTo(masterID) == 0)
 			return true;

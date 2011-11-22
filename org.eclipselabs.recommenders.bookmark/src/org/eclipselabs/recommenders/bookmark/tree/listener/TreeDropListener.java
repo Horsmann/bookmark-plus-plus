@@ -21,6 +21,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.tree.TreeValueConverter;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 import org.eclipselabs.recommenders.bookmark.views.SaveModelToLocalDefaultFile;
 
@@ -294,7 +295,7 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private TreeNode getNodeThatMatchesID(TreeNode bookmark, TreeNode parent) {
-		String id = TreeUtil.getStringIdentification(parent.getValue());
+		String id = TreeValueConverter.getStringIdentification(parent.getValue());
 		return TreeUtil.locateNodeWithEqualID(id, bookmark);
 	}
 
