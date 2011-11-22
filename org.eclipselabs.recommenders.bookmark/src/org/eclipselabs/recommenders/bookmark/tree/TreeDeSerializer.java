@@ -1,18 +1,36 @@
 package org.eclipselabs.recommenders.bookmark.tree;
 
+import java.lang.reflect.Type;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipselabs.recommenders.bookmark.Util;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
 public class TreeDeSerializer {
+	
+	
+	public static String serializeTreeToGson(TreeNode root){
+		
+		TreeNode preSerialized = copyTreeAndSerializeTreeValues(root);
+		
+		Gson gson = new Gson();
+		Type typeOfSrc = new TypeToken<TreeNode>() {
+		}.getType();
+		String gsonTreeString = gson.toJson(preSerialized, typeOfSrc);
+		
+		return gsonTreeString;
+	}
 
+	
+	
 	/**
 	 * The values of the TreeNodes are transformed to a string representation,
 	 * the parent<-->child relationship is reduced to parent-->child (removing
@@ -20,9 +38,9 @@ public class TreeDeSerializer {
 	 * 
 	 * @return
 	 */
-	public static TreeNode serializeTree(TreeNode treeRootNode) {
+	private static TreeNode copyTreeAndSerializeTreeValues(TreeNode treeRootNode) {
 
-		TreeNode newRootNode = serializeSubTree(treeRootNode);
+		TreeNode newRootNode = copyTreeAndSerializeTreeValuesForAllChildren(treeRootNode);
 
 		for (TreeNode rootChilds : newRootNode.getChildren())
 			rootChilds.setBookmark(true);
@@ -31,16 +49,16 @@ public class TreeDeSerializer {
 
 	}
 
-	private static TreeNode serializeSubTree(TreeNode subTreeNode) {
+	private static TreeNode copyTreeAndSerializeTreeValuesForAllChildren(TreeNode subTreeNode) {
 
 		TreeNode newSubTreeNode = null;
 		Object value = subTreeNode.getValue();
 
-		String id = Util.getStringIdentification(value);
+		String id = TreeUtil.getStringIdentification(value);
 		newSubTreeNode = new TreeNode(id);
 
 		for (TreeNode child : subTreeNode.getChildren()) {
-			TreeNode newSubTreeChildNode = serializeSubTree(child);
+			TreeNode newSubTreeChildNode = copyTreeAndSerializeTreeValuesForAllChildren(child);
 			if (newSubTreeChildNode != null) {
 				newSubTreeNode.addChild(newSubTreeChildNode);
 				newSubTreeChildNode.setParent(null);
@@ -49,17 +67,27 @@ public class TreeDeSerializer {
 
 		return newSubTreeNode;
 	}
+	
+	public static TreeNode deSerializeTreeFromGSonString(String gsonSerialized){
+		Gson gson = new Gson();
+		Type typeOfSrc = new TypeToken<TreeNode>() {
+		}.getType();
+		TreeNode rootNode = gson.fromJson(gsonSerialized, typeOfSrc);
 
-	public static TreeNode deSerializeTree(TreeNode treeRootNode) {
+		TreeNode deSerializedTreesRoot = TreeDeSerializer.deSerializeTreeValues(rootNode);
+		return deSerializedTreesRoot;
+	}
+	
+	private static TreeNode deSerializeTreeValues(TreeNode treeRootNode) {
 
-		TreeNode newRootNode = deSerializeSubTree(treeRootNode);
+		TreeNode newRootNode = deSeralizeTreeValuesForChildren(treeRootNode);
 		newRootNode.setValue("");
 
 		return newRootNode;
 
 	}
 
-	private static TreeNode deSerializeSubTree(TreeNode subTreeNode) {
+	private static TreeNode deSeralizeTreeValuesForChildren(TreeNode subTreeNode) {
 
 		TreeNode newSubTreeNode = null;
 
@@ -86,7 +114,7 @@ public class TreeDeSerializer {
 
 		if (newSubTreeNode != null) {
 			for (TreeNode child : subTreeNode.getChildren()) {
-				TreeNode newSubTreeChildNode = deSerializeSubTree(child);
+				TreeNode newSubTreeChildNode = deSeralizeTreeValuesForChildren(child);
 				if (newSubTreeChildNode != null)
 					newSubTreeNode.addChild(newSubTreeChildNode);
 			}

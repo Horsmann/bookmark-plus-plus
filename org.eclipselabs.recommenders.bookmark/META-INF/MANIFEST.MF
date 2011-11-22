@@ -17,5 +17,6 @@ Export-Package: org.eclipselabs.recommenders.bookmark
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.jdt.ui,
- org.eclipse.jdt.core
+ org.eclipse.jdt.core,
+ org.junit
 Bundle-ActivationPolicy: lazy

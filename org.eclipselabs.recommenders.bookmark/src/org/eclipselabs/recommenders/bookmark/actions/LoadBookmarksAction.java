@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -19,9 +18,6 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeDeSerializer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 public class LoadBookmarksAction extends Action {
 
@@ -45,34 +41,27 @@ public class LoadBookmarksAction extends Action {
 			String filecontent = readSelectedFile(file);
 			if (filecontent != null) {
 
-				TreeNode root = deSerializeString(filecontent);
+				TreeNode root = TreeDeSerializer
+						.deSerializeTreeFromGSonString(filecontent);
 
-				if (root != null) {
-					model.setRootNode(root);
-					viewer.setInput(root);
-				}
+				model.setRootNode(root);
+				viewer.setInput(root);
 			}
 		}
 
 	}
 
-	private TreeNode deSerializeString(String filecontent) {
-		Gson gson = new Gson();
-		Type typeOfSrc = new TypeToken<TreeNode>() {
-		}.getType();
-		TreeNode rootNode = gson.fromJson(filecontent, typeOfSrc);
-
-		TreeNode deSerializedRoot = TreeDeSerializer.deSerializeTree(rootNode);
-		return deSerializedRoot;
-	}
-
 	private String readSelectedFile(File file) {
 		BufferedReader reader = null;
-		String readline = null;
+		String content = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(
 					new FileInputStream(file), "UTF-8"));
-			readline = reader.readLine();
+
+			String readline = null;
+			while ((readline = reader.readLine()) != null)
+				content = (content == null) ? readline : (content = content
+						+ "\n" + readline);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -83,7 +72,7 @@ public class LoadBookmarksAction extends Action {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return readline;
+		return content;
 	}
 
 	private File showFileOpenDialog() {

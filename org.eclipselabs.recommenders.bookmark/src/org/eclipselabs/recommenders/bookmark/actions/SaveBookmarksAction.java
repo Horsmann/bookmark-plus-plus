@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
@@ -17,15 +16,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeDeSerializer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 public class SaveBookmarksAction extends Action {
 
 	private TreeModel model;
-	
+
 	public SaveBookmarksAction(TreeModel model) {
 		this.model = model;
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
@@ -38,22 +33,12 @@ public class SaveBookmarksAction extends Action {
 		File file = showFileSaveDialog();
 
 		if (file != null) {
-
-			TreeNode root = createPreSerializedTree();
-			if (root != null) {
-				String serializedTree = serializeTreeToString(root);
-				if (serializedTree != null) {
-					writeStringToFile(file, serializedTree);
-				}
+			String serializedTree = TreeDeSerializer.serializeTreeToGson(model
+					.getModelRoot());
+			if (serializedTree != null) {
+				writeStringToFile(file, serializedTree);
 			}
-
 		}
-
-		// headNode = new TreeNode("sdfsd");
-		// TreeNode bm = new TreeNode("xxx", true);
-		// headNode.addChild(bm);
-
-		// GsonBuilder gsonbuilder = new GsonBuilder().serializeNulls();
 
 	}
 
@@ -75,26 +60,6 @@ public class SaveBookmarksAction extends Action {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	private String serializeTreeToString(TreeNode root) {
-		Gson gson = new Gson();
-		Type typeOfSrc = new TypeToken<TreeNode>() {
-		}.getType();
-		String gsonTreeString = gson.toJson(root, typeOfSrc);
-		return gsonTreeString;
-	}
-
-	/**
-	 * The values of the TreeNodes are transformed to a string representation,
-	 * the parent<->child relationship is reduced to parent->child (removing
-	 * circles)
-	 * 
-	 * @return
-	 */
-	private TreeNode createPreSerializedTree() {
-		
-		return TreeDeSerializer.serializeTree(model.getModelRoot());
 	}
 
 	private File showFileSaveDialog() {

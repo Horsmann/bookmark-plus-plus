@@ -23,6 +23,8 @@ public class Activator extends AbstractUIPlugin {
 	public static final String ICON_CLOSE_ALL_OPEN_EDITORS = "closeAllOpenEditors";
 	public static final String ICON_SAVE_BOOKMARKS = "saveBookmarks";
 	public static final String ICON_LOAD_BOOKMARKS = "loadBookmarks";
+	
+	public static final String AUTOSAVE_FILE = "bookmarkModel.bm";
 
 	public void start(BundleContext context) throws Exception {
 		super.start(context);

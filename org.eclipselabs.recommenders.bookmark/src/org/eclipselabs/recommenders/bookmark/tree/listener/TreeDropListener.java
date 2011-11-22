@@ -19,14 +19,16 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipselabs.recommenders.bookmark.Util;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
+import org.eclipselabs.recommenders.bookmark.views.SaveModelToLocalDefaultFile;
 
 public class TreeDropListener implements DropTargetListener {
 
 	private final TreeViewer viewer;
 	private TreeModel model;
+
 
 	/**
 	 * The drag listener of the <b>same</b> view the drop listener is listening
@@ -41,6 +43,23 @@ public class TreeDropListener implements DropTargetListener {
 		this.viewer = viewer;
 		this.model = model;
 		dragListener = localViewsDragListener;
+	}
+	
+	
+	@Override
+	public void drop(DropTargetEvent event) {
+
+		try {
+			if (dragListener.isDragInProgress())
+				processDropEventWithDragFromWithinTheView(event);
+			else
+				processDropEventWithDragInitiatedFromOutsideTheView(event);
+			
+			new SaveModelToLocalDefaultFile(model).saveChanges();
+
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -113,26 +132,14 @@ public class TreeDropListener implements DropTargetListener {
 
 	}
 
-	@Override
-	public void drop(DropTargetEvent event) {
 
-		try {
-			if (dragListener.isDragInProgress())
-				processDropEventWithDragFromWithinTheView(event);
-			else
-				processDropEventWithDragInitiatedFromOutsideTheView(event);
-
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
 			DropTargetEvent event) throws JavaModelException {
 
 		TreePath[] treePath = getTreePath(event);
 		TreeNode target = (TreeNode) getTarget(event);
-		TreeNode bookmark = Util.getBookmarkNode(target);
+		TreeNode bookmark = TreeUtil.getBookmarkNode(target);
 
 		if (bookmark != null)
 			for (int i = 0; i < treePath.length; i++)
@@ -158,7 +165,7 @@ public class TreeDropListener implements DropTargetListener {
 		if (node == null)
 			return;
 
-		boolean isDuplicate = Util.isDuplicate(bookmark, node);
+		boolean isDuplicate = TreeUtil.isDuplicate(bookmark, node);
 		if (!isDuplicate) {
 			mergeAddNodeToBookmark(bookmark, node);
 			// viewer.expandToLevel(bookmark, AbstractTreeViewer.ALL_LEVELS);
@@ -188,17 +195,17 @@ public class TreeDropListener implements DropTargetListener {
 		for (int i = 0; i < selections.size(); i++) {
 
 			TreeNode node = (TreeNode) selections.get(i);
-			TreeNode nodeCopy = Util.copyTreePath(node);
+			TreeNode nodeCopy = TreeUtil.copyTreePath(node);
 
 			TreeNode dropTarget = (TreeNode) getTarget(event);
-			TreeNode targetBookmark = Util.getBookmarkNode(dropTarget);
+			TreeNode targetBookmark = TreeUtil.getBookmarkNode(dropTarget);
 
 			if (didDropOccurInEmptyArea(targetBookmark)) {
 				createNewBookmarkAndAdd(node, nodeCopy);
 				continue;
 			}
 
-			if (Util.isDuplicate(targetBookmark, node))
+			if (TreeUtil.isDuplicate(targetBookmark, node))
 				continue;
 
 			if (attemptMerge(targetBookmark, nodeCopy)) {
@@ -260,7 +267,7 @@ public class TreeDropListener implements DropTargetListener {
 	 * @return
 	 */
 	private boolean attemptMerge(TreeNode bookmark, TreeNode node) {
-		LinkedList<TreeNode> leafs = Util.getLeafs(node);
+		LinkedList<TreeNode> leafs = TreeUtil.getLeafs(node);
 
 		for (TreeNode leaf : leafs) {
 			TreeNode parent = leaf.getParent();
@@ -287,8 +294,8 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private TreeNode getNodeThatMatchesID(TreeNode bookmark, TreeNode parent) {
-		String id = Util.getStringIdentification(parent.getValue());
-		return Util.locateNodeWithEqualID(id, bookmark);
+		String id = TreeUtil.getStringIdentification(parent.getValue());
+		return TreeUtil.locateNodeWithEqualID(id, bookmark);
 	}
 
 	private void merge(TreeNode mergeTargetExistingTree, TreeNode parent) {

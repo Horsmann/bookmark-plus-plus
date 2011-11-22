@@ -17,7 +17,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.Util;
+import org.eclipselabs.recommenders.bookmark.tree.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class ShowBookmarksInEditorAction extends Action {
@@ -50,7 +50,7 @@ public class ShowBookmarksInEditorAction extends Action {
 
 	private void openAllEntriesOfBookmark(TreeNode bookmark) {
 		for (TreeNode child : bookmark.getChildren()) {
-			LinkedList<TreeNode> leafs = Util.getLeafs(child);
+			LinkedList<TreeNode> leafs = TreeUtil.getLeafs(child);
 			for (TreeNode leaf : leafs)
 				openInEditor(leaf);
 		}
