@@ -300,8 +300,10 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private void merge(TreeNode mergeTargetExistingTree, TreeNode parent) {
-		for (TreeNode child : parent.getChildren())
+		for (TreeNode child : parent.getChildren()){
 			mergeTargetExistingTree.addChild(child);
+			viewer.expandToLevel(mergeTargetExistingTree, AbstractTreeViewer.ALL_LEVELS);
+		}
 	}
 
 	private boolean isMergeTargetFound(TreeNode mergeTargetExistingTree) {
