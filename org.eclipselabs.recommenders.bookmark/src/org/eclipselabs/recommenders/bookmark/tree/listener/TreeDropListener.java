@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
@@ -30,7 +31,6 @@ public class TreeDropListener implements DropTargetListener {
 	private final TreeViewer viewer;
 	private TreeModel model;
 
-
 	/**
 	 * The drag listener of the <b>same</b> view the drop listener is listening
 	 * for. By having access to the corresponding drag listener a drag action
@@ -45,8 +45,7 @@ public class TreeDropListener implements DropTargetListener {
 		this.model = model;
 		dragListener = localViewsDragListener;
 	}
-	
-	
+
 	@Override
 	public void drop(DropTargetEvent event) {
 
@@ -55,7 +54,7 @@ public class TreeDropListener implements DropTargetListener {
 				processDropEventWithDragFromWithinTheView(event);
 			else
 				processDropEventWithDragInitiatedFromOutsideTheView(event);
-			
+
 			new SaveModelToLocalDefaultFile(model).saveChanges();
 
 		} catch (JavaModelException e) {
@@ -133,8 +132,6 @@ public class TreeDropListener implements DropTargetListener {
 
 	}
 
-
-
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
 			DropTargetEvent event) throws JavaModelException {
 
@@ -169,7 +166,6 @@ public class TreeDropListener implements DropTargetListener {
 		boolean isDuplicate = TreeUtil.isDuplicate(bookmark, node);
 		if (!isDuplicate) {
 			mergeAddNodeToBookmark(bookmark, node);
-			// viewer.expandToLevel(bookmark, AbstractTreeViewer.ALL_LEVELS);
 		}
 	}
 
@@ -295,7 +291,8 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private TreeNode getNodeThatMatchesID(TreeNode bookmark, TreeNode parent) {
-		String id = TreeValueConverter.getStringIdentification(parent.getValue());
+		String id = TreeValueConverter.getStringIdentification(parent
+				.getValue());
 		return TreeUtil.locateNodeWithEqualID(id, bookmark);
 	}
 

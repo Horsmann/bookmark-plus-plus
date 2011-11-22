@@ -13,7 +13,9 @@ Import-Package: com.google.gson,
  org.eclipse.ui.ide,
  org.eclipse.ui.part,
  org.osgi.framework;version="1.5.0"
-Export-Package: org.eclipselabs.recommenders.bookmark
+Export-Package: org.eclipselabs.recommenders.bookmark,
+ org.eclipselabs.recommenders.bookmark.tree,
+ org.eclipselabs.recommenders.bookmark.tree.node
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.jdt.ui,

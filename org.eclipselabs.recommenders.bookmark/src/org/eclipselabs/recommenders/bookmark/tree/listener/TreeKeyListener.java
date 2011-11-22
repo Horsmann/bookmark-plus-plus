@@ -47,10 +47,10 @@ public class TreeKeyListener implements KeyListener {
 		// Text text = new Text(, SWT.NONE);
 		final TreeEditor editor = new TreeEditor(viewer.getTree());
 		 editor.horizontalAlignment = SWT.LEFT;
-		 editor.minimumWidth=50;
-//		    editor.grabHorizontal = true;
+		 editor.minimumWidth=100;
+//		  editor.grabHorizontal = true;
 
-		TreeItem item = items[0];
+		final TreeItem item = items[0];
 
 		final TreeNode node = (TreeNode) item.getData();
 		if (!node.isBookmarkNode())
@@ -69,6 +69,7 @@ public class TreeKeyListener implements KeyListener {
 			public void focusLost(FocusEvent event) {
 				node.setValue(text.getText());
 				text.dispose();
+				setFocusAndSelection(item);
 			}
 		});
 
@@ -78,10 +79,12 @@ public class TreeKeyListener implements KeyListener {
 				case SWT.CR:
 					// Enter hit--set the text into the tree and drop
 					// through
-					node.setValue(text.getText());
+					String newValue = text.getText();
+					node.setValue(newValue);
 				case SWT.ESC:
 					// End editing session
 					text.dispose();
+					setFocusAndSelection(item);
 					break;
 				}
 			}
@@ -89,7 +92,6 @@ public class TreeKeyListener implements KeyListener {
 
 		// Set the text field into the editor
 		editor.setEditor(text, item);
-		viewer.refresh();
 	}
 
 	private void checkForOpenNodeInEditor(KeyEvent e) {
@@ -150,4 +152,9 @@ public class TreeKeyListener implements KeyListener {
 
 	};
 
+	private void setFocusAndSelection(TreeItem item) {
+		viewer.refresh();
+		viewer.getTree().setSelection(item);
+		viewer.getTree().setFocus();
+	}
 }

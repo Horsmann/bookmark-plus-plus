@@ -17,11 +17,6 @@ public class TreeDoubleclickListener implements IDoubleClickListener {
 	@Override
 	public void doubleClick(DoubleClickEvent event) {
 
-		IStructuredSelection selection = (IStructuredSelection) event
-				.getSelection();
-		if (((TreeNode) selection.getFirstElement()).isBookmarkNode())
-			return;
-
 		action.run();
 	}
 }

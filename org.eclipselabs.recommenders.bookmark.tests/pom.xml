@@ -11,6 +11,8 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>eclipse-test-plugin</packaging>	
 	
+	<dependencies>
+	</dependencies>
 	<properties>
 		<eclemma.instrument.bundles>org.eclipselabs.recommenders.bookmark</eclemma.instrument.bundles>
 	</properties>

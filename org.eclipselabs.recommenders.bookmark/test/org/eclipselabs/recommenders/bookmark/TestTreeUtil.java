@@ -232,15 +232,34 @@ public class TestTreeUtil {
 	}
 
 	@Test
-	public void testDetectionOfDuplicateValues() {
+	public void testDetectionOfPartiallyOrFullDuplicateValues() {
 		TreeNode tree = createTree();
-		TreeNode subset = createPathThatIsFullSubsetOfTree();
-		TreeNode extended = createPathThatNotSubsetOfTree();
+		TreeNode contained = createFullyContainedInTree();
+		TreeNode partially = createPartiallyContaintedInTree();
+		TreeNode notContained = createNotContainedInTree();
+
+		boolean isDuplicate = TreeUtil.isDuplicate(tree, contained);
+		assertTrue(isDuplicate);
+
+		isDuplicate = TreeUtil.isDuplicate(tree, partially);
+		assertTrue(isDuplicate);
 		
-		assertTrue(false);
+		isDuplicate = TreeUtil.isDuplicate(tree, notContained);
+		assertFalse(isDuplicate);
 	}
 
-	private TreeNode createPathThatNotSubsetOfTree() {
+	private TreeNode createNotContainedInTree() {
+		
+		TreeNode a = new TreeNode("X");
+		TreeNode aa = new TreeNode("XY");
+		TreeNode bb = new TreeNode("XZ");
+		a.addChild(aa);
+		a.addChild(bb);
+		
+		return a;
+	}
+
+	private TreeNode createPartiallyContaintedInTree() {
 		TreeNode a = new TreeNode("A");
 		TreeNode aa = new TreeNode("AA");
 		TreeNode bb = new TreeNode("BB");
@@ -251,14 +270,14 @@ public class TestTreeUtil {
 		TreeNode aab = new TreeNode("AAB");
 		aa.addChild(aaa);
 		aa.addChild(aab);
-		
+
 		TreeNode aaaa = new TreeNode("AAAA");
 		aaa.addChild(aaaa);
 
 		return a;
 	}
 
-	private TreeNode createPathThatIsFullSubsetOfTree() {
+	private TreeNode createFullyContainedInTree() {
 		TreeNode a = new TreeNode("A");
 		TreeNode aa = new TreeNode("AA");
 		TreeNode bb = new TreeNode("BB");
@@ -284,7 +303,7 @@ public class TestTreeUtil {
 		TreeNode aab = new TreeNode("AAB");
 		aa.addChild(aaa);
 		aa.addChild(aab);
-		
+
 		TreeNode bba = new TreeNode("BBA");
 		TreeNode bbb = new TreeNode("BBB");
 		bb.addChild(bba);

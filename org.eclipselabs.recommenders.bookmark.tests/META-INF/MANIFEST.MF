@@ -7,3 +7,4 @@ Bundle-Vendor: Eclipse Code Recommenders
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit,
  org.eclipselabs.recommenders.bookmark
+Import-Package: org.eclipse.core.runtime

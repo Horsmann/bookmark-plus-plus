@@ -22,7 +22,6 @@ import org.eclipselabs.recommenders.bookmark.tree.listener.TreeDoubleclickListen
 import org.eclipselabs.recommenders.bookmark.tree.listener.TreeDragListener;
 import org.eclipselabs.recommenders.bookmark.tree.listener.TreeDropListener;
 import org.eclipselabs.recommenders.bookmark.tree.listener.TreeKeyListener;
-import org.eclipselabs.recommenders.bookmark.tree.listener.TreeRenameOnDoubleclickListener;
 
 public class BookmarkView extends ViewPart {
 
@@ -43,9 +42,6 @@ public class BookmarkView extends ViewPart {
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
-
-		viewer.getTree().addListener(SWT.MouseDoubleClick,
-				new TreeRenameOnDoubleclickListener(viewer));
 
 		createActions();
 		setUpToolbar();
