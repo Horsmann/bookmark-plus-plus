@@ -17,14 +17,15 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeDeSerializer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 
-public class SaveBookmarksAction extends Action {
+public class ExportBookmarksAction extends Action {
 
 	private TreeModel model;
 
-	public SaveBookmarksAction(TreeModel model) {
+	public ExportBookmarksAction(TreeModel model) {
 		this.model = model;
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_SAVE_BOOKMARKS));
+		this.setToolTipText("Exports the collection of bookmarks");
 	}
 
 	@Override

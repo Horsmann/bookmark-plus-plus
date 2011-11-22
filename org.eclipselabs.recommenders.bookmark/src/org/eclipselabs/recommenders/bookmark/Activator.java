@@ -58,7 +58,7 @@ public class Activator extends AbstractUIPlugin {
 		registry.put(ICON_SHOW_IN_EDITOR, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
-				new Path("icons/saveas_edit.gif"), null));
+				new Path("icons/export_wiz.gif"), null));
 		registry.put(ICON_SAVE_BOOKMARKS, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
