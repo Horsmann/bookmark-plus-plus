@@ -1,10 +1,10 @@
-package org.eclipselabs.recommenders.bookmark.tree;
+package org.eclipselabs.recommenders.bookmark.tree.util;
 
 import java.lang.reflect.Type;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

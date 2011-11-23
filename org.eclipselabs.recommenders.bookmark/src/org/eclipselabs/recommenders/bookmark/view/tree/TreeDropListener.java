@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree.listener;
+package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -21,10 +21,9 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.TreeUtil;
-import org.eclipselabs.recommenders.bookmark.tree.TreeValueConverter;
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
-import org.eclipselabs.recommenders.bookmark.views.SaveModelToLocalDefaultFile;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 
 public class TreeDropListener implements DropTargetListener {
 
@@ -157,16 +156,20 @@ public class TreeDropListener implements DropTargetListener {
 		return treePath;
 	}
 
-	private void addToExistingBookmark(TreeNode bookmark, TreePath treePath)
+	private TreeNode addToExistingBookmark(TreeNode bookmark, TreePath treePath)
 			throws JavaModelException {
 		TreeNode node = buildTreeStructure(treePath);
 		if (node == null)
-			return;
+			return null;
 
 		boolean isDuplicate = TreeUtil.isDuplicate(bookmark, node);
 		if (!isDuplicate) {
 			mergeAddNodeToBookmark(bookmark, node);
+			viewer.expandToLevel(node, AbstractTreeViewer.ALL_LEVELS);
+			return node;
 		}
+
+		return null;
 	}
 
 	private void createNewBookmarkAddAsNode(TreePath[] treePath)
@@ -174,10 +177,19 @@ public class TreeDropListener implements DropTargetListener {
 
 		TreeNode bookmark = makeBookmarkNode();
 
-		for (int i = 0; i < treePath.length; i++)
-			addToExistingBookmark(bookmark, treePath[i]);
+		LinkedList<TreeNode> addedNodes = new LinkedList<TreeNode>();
+
+		for (int i = 0; i < treePath.length; i++) {
+			TreeNode node = addToExistingBookmark(bookmark, treePath[i]);
+			if (node != null)
+				addedNodes.add(node);
+		}
 
 		model.getModelRoot().addChild(bookmark);
+		
+		for (TreeNode added : addedNodes)
+			viewer.expandToLevel(added, AbstractTreeViewer.ALL_LEVELS);
+		
 		refreshTree();
 
 	}
@@ -215,14 +227,13 @@ public class TreeDropListener implements DropTargetListener {
 			// TODO: Leeres Bookmark wird erstellt, wenn ein Package gedropt
 			// wird
 			// TODO: Logic/GUI entzerren --> Unittests
-			// TODO: Doppelklick auch auf Kopfknoten
 
 			node.getParent().removeChild(node);
 			TreeNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
 			targetBookmark.addChild(head);
 
 		}
-		refreshTree(); 
+		refreshTree();
 	}
 
 	private void unlink(TreeNode node) {
@@ -251,8 +262,8 @@ public class TreeDropListener implements DropTargetListener {
 		if (!attemptMerge(bookmark, node))
 			bookmark.addChild(node);
 
-//		viewer.expandToLevel(node, AbstractTreeViewer.ALL_LEVELS);
-//		viewer.refresh();
+		// viewer.expandToLevel(node, AbstractTreeViewer.ALL_LEVELS);
+		// viewer.refresh();
 		refreshTree();
 
 	}
@@ -300,9 +311,10 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private void merge(TreeNode mergeTargetExistingTree, TreeNode parent) {
-		for (TreeNode child : parent.getChildren()){
+		for (TreeNode child : parent.getChildren()) {
 			mergeTargetExistingTree.addChild(child);
-			viewer.expandToLevel(mergeTargetExistingTree, AbstractTreeViewer.ALL_LEVELS);
+			viewer.expandToLevel(mergeTargetExistingTree,
+					AbstractTreeViewer.ALL_LEVELS);
 		}
 	}
 

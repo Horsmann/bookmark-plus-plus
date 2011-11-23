@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.actions;
+package org.eclipselabs.recommenders.bookmark.view.actions;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,8 +14,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.TreeDeSerializer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
 
 public class ExportBookmarksAction extends Action {
 

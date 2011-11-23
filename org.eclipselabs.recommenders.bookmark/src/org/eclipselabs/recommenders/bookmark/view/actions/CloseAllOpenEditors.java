@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.actions;
+package org.eclipselabs.recommenders.bookmark.view.actions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.IWorkbenchPage;

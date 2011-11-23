@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree;
+package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
 public class TreeLabelProvider extends LabelProvider {
 

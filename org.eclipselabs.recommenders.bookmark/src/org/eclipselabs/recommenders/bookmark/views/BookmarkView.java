@@ -11,17 +11,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipselabs.recommenders.bookmark.actions.CloseAllOpenEditors;
-import org.eclipselabs.recommenders.bookmark.actions.LoadBookmarksAction;
-import org.eclipselabs.recommenders.bookmark.actions.ExportBookmarksAction;
-import org.eclipselabs.recommenders.bookmark.actions.ShowBookmarksInEditorAction;
-import org.eclipselabs.recommenders.bookmark.tree.TreeContentProvider;
-import org.eclipselabs.recommenders.bookmark.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.listener.TreeDoubleclickListener;
-import org.eclipselabs.recommenders.bookmark.tree.listener.TreeDragListener;
-import org.eclipselabs.recommenders.bookmark.tree.listener.TreeDropListener;
-import org.eclipselabs.recommenders.bookmark.tree.listener.TreeKeyListener;
+import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditors;
+import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.LoadBookmarksAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeDropListener;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 
 public class BookmarkView extends ViewPart {
 

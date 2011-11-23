@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree;
+package org.eclipselabs.recommenders.bookmark.tree.util;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;

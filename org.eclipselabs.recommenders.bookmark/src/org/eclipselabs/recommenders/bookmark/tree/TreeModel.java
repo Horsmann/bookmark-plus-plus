@@ -1,6 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.tree;
 
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
 
 public class TreeModel {
 

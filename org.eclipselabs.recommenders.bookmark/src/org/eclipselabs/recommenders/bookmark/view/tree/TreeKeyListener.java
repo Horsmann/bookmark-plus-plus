@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree.listener;
+package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -12,7 +12,7 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
 public class TreeKeyListener implements KeyListener {
 	private TreeViewer viewer = null;

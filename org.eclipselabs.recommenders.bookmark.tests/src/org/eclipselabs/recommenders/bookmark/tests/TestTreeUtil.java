@@ -15,9 +15,9 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipselabs.recommenders.bookmark.tree.TreeUtil;
-import org.eclipselabs.recommenders.bookmark.tree.TreeValueConverter;
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 import org.junit.Test;
 
 public class TestTreeUtil {
@@ -408,6 +408,27 @@ public class TestTreeUtil {
 		levelOneRight.addChild(levelOneRightTwoRight);
 
 		return bookmark;
+	}
+	
+	@Test
+	public void testClimbUpInHierarchyUntilLevelBelowBookmark( ){
+		TreeNode leaf = getTreeUpsideDown();
+		
+		TreeNode node = TreeUtil.climbUpUntilLevelBelowBookmark(leaf);
+		
+		assertEquals("node", node.getValue());
+		assertTrue(node.getParent().isBookmarkNode());
+	}
+
+	private TreeNode getTreeUpsideDown() {
+		
+		TreeNode leaf = new TreeNode("leaf");
+		TreeNode node = new TreeNode("node");
+		node.addChild(leaf);
+		TreeNode bookmark = new TreeNode("Bookmark", true);
+		bookmark.addChild(node);
+		
+		return leaf;
 	}
 
 }

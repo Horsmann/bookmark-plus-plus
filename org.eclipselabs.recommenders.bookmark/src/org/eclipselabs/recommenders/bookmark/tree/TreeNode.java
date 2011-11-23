@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree.node;
+package org.eclipselabs.recommenders.bookmark.tree;
 
 import java.util.ArrayList;
 

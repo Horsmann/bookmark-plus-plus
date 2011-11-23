@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree.listener;
+package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -6,7 +6,7 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.ui.part.ResourceTransfer;
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
 public class TreeDragListener implements DragSourceListener {
 

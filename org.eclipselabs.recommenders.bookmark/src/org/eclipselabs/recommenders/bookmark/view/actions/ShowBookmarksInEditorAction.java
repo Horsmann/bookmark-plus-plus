@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.actions;
+package org.eclipselabs.recommenders.bookmark.view.actions;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -17,8 +17,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.TreeUtil;
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
 public class ShowBookmarksInEditorAction extends Action {
 

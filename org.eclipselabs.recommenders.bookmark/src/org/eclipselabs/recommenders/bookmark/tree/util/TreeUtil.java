@@ -1,8 +1,9 @@
-package org.eclipselabs.recommenders.bookmark.tree;
+package org.eclipselabs.recommenders.bookmark.tree.util;
 
 import java.util.LinkedList;
 
-import org.eclipselabs.recommenders.bookmark.tree.node.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+
 
 public class TreeUtil {
 
