@@ -1,8 +1,10 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -59,6 +61,86 @@ public class TreeDropListener implements DropTargetListener {
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
+
+	}
+
+	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
+			throws JavaModelException {
+		List<IStructuredSelection> selections = getTreeSelections();
+		for (int i = 0; i < selections.size(); i++) {
+
+			TreeNode node = (TreeNode) selections.get(i);
+			TreeNode nodeCopy = TreeUtil.copyTreePath(node);
+
+			TreeNode dropTarget = (TreeNode) getTarget(event);
+			TreeNode targetBookmark = TreeUtil.getBookmarkNode(dropTarget);
+
+			if (didDropOccurInEmptyArea(targetBookmark)) {
+				createNewBookmarkAndAdd(node, nodeCopy);
+				continue;
+			}
+
+			if (TreeUtil.isDuplicate(targetBookmark, node))
+				continue;
+
+			if (attemptMerge(targetBookmark, nodeCopy)) {
+				unlink(node);
+				continue;
+			}
+
+			// TODO: Auto-Expand des tree bei droppen
+			// TODO: Auto-Expand mit speichern und beim laden šffnen
+			// TODO: Leeres Bookmark wird erstellt, wenn ein Package gedropt
+			// wird
+			// TODO: Logic/GUI entzerren --> Unittests
+
+			node.getParent().removeChild(node);
+			TreeNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
+			targetBookmark.addChild(head);
+
+		}
+		// refreshTree();
+	}
+
+	private void processDropEventWithDragInitiatedFromOutsideTheView(
+			DropTargetEvent event) throws JavaModelException {
+
+		TreePath[] treePath = getTreePath(event);
+		TreeNode target = (TreeNode) getTarget(event);
+		TreeNode bookmark = TreeUtil.getBookmarkNode(target);
+
+		if (bookmark != null) {
+			addToExistingBookmark(bookmark, treePath);
+		} else {
+			createNewBookmarkAddAsNode(treePath);
+		}
+
+	}
+
+	private void addToExistingBookmark(TreeNode bookmark, TreePath[] treePath)
+			throws JavaModelException {
+		for (int i = 0; i < treePath.length; i++) {
+			TreeNode added = addNodesSeparatlyToExistingBookmark(bookmark,
+					treePath[i]);
+
+			showNodeExpanded(added);
+
+		}
+	}
+
+	private TreeNode addNodesSeparatlyToExistingBookmark(TreeNode bookmark,
+			TreePath treePath) throws JavaModelException {
+		TreeNode node = buildTreeStructure(treePath);
+		if (node == null)
+			return null;
+
+		boolean isDuplicate = TreeUtil.isDuplicate(bookmark, node);
+		if (!isDuplicate) {
+			mergeAddNodeToBookmark(bookmark, node);
+			return node;
+		}
+
+		return null;
 	}
 
 	@Override
@@ -131,28 +213,14 @@ public class TreeDropListener implements DropTargetListener {
 
 	}
 
-	private void processDropEventWithDragInitiatedFromOutsideTheView(
-			DropTargetEvent event) throws JavaModelException {
+	private void showNodeExpanded(TreeNode node) {
+		viewer.refresh();
+		TreeNode leaf = TreeUtil.getLeafOfTreePath((node));
 
-		TreePath[] treePath = getTreePath(event);
-		TreeNode target = (TreeNode) getTarget(event);
-		TreeNode bookmark = TreeUtil.getBookmarkNode(target);
+		viewer.expandToLevel(leaf, AbstractTreeViewer.ALL_LEVELS);
+		viewer.update(leaf, null);
 
-		if (bookmark != null)
-			for (int i = 0; i < treePath.length; i++) {
-				TreeNode added = addToExistingBookmark(bookmark, treePath[i]);
-
-				//Wenn unter BM mehrere Knoten hŠngen, werden alle expandet
-				TreeNode leaf = TreeUtil
-						.getLeafOfTreePath((added));
-//				TreeNode val = TreeUtil.climbUpUntilLevelBelowBookmark(leaf);
-				viewer.expandToLevel(leaf, AbstractTreeViewer.ALL_LEVELS);
-				viewer.refresh( );
-//				viewer.update(added, null);
-			}
-		else
-			createNewBookmarkAddAsNode(treePath);
-
+		viewer.refresh();
 	}
 
 	private TreePath[] getTreePath(DropTargetEvent event) {
@@ -165,87 +233,23 @@ public class TreeDropListener implements DropTargetListener {
 		return treePath;
 	}
 
-	private TreeNode addToExistingBookmark(TreeNode bookmark, TreePath treePath)
-			throws JavaModelException {
-		TreeNode node = buildTreeStructure(treePath);
-		if (node == null)
-			return null;
-
-		boolean isDuplicate = TreeUtil.isDuplicate(bookmark, node);
-		if (!isDuplicate) {
-			mergeAddNodeToBookmark(bookmark, node);
-			return node;
-		}
-
-		return null;
-	}
-
 	private void createNewBookmarkAddAsNode(TreePath[] treePath)
 			throws JavaModelException {
 
 		TreeNode bookmark = makeBookmarkNode();
 
-		LinkedList<TreeNode> addedNodes = new LinkedList<TreeNode>();
-
-		for (int i = 0; i < treePath.length; i++) {
-			TreeNode node = addToExistingBookmark(bookmark, treePath[i]);
-			if (node != null)
-				addedNodes.add(node);
-		}
-
 		model.getModelRoot().addChild(bookmark);
 
-//		for (TreeNode added : addedNodes) {
-//			TreeNode leaf = TreeUtil.getLeafOfTreePath(added);
-//			viewer.expandToLevel(leaf, AbstractTreeViewer.ALL_LEVELS);
-//			viewer.refresh();
-//		}
-//		viewer.expandToLevel(bookmark, AbstractTreeViewer.ALL_LEVELS);
-		viewer.refresh();
-		// refreshTree();
+		for (int i = 0; i < treePath.length; i++) {
+			TreeNode node = addNodesSeparatlyToExistingBookmark(bookmark,
+					treePath[i]);
+			showNodeExpanded(node);
+		}
 
 	}
 
 	private TreeNode makeBookmarkNode() {
 		return new TreeNode("New Bookmark", true);
-	}
-
-	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
-			throws JavaModelException {
-		List<IStructuredSelection> selections = getTreeSelections();
-		for (int i = 0; i < selections.size(); i++) {
-
-			TreeNode node = (TreeNode) selections.get(i);
-			TreeNode nodeCopy = TreeUtil.copyTreePath(node);
-
-			TreeNode dropTarget = (TreeNode) getTarget(event);
-			TreeNode targetBookmark = TreeUtil.getBookmarkNode(dropTarget);
-
-			if (didDropOccurInEmptyArea(targetBookmark)) {
-				createNewBookmarkAndAdd(node, nodeCopy);
-				continue;
-			}
-
-			if (TreeUtil.isDuplicate(targetBookmark, node))
-				continue;
-
-			if (attemptMerge(targetBookmark, nodeCopy)) {
-				unlink(node);
-				continue;
-			}
-
-			// TODO: Auto-Expand des tree bei droppen
-			// TODO: Auto-Expand mit speichern und beim laden šffnen
-			// TODO: Leeres Bookmark wird erstellt, wenn ein Package gedropt
-			// wird
-			// TODO: Logic/GUI entzerren --> Unittests
-
-			node.getParent().removeChild(node);
-			TreeNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
-			targetBookmark.addChild(head);
-
-		}
-		// refreshTree();
 	}
 
 	private void unlink(TreeNode node) {
@@ -273,11 +277,6 @@ public class TreeDropListener implements DropTargetListener {
 
 		if (!attemptMerge(bookmark, node))
 			bookmark.addChild(node);
-
-		// viewer.expandToLevel(node, AbstractTreeViewer.ALL_LEVELS);
-		// viewer.refresh();
-		// refreshTree();
-
 	}
 
 	/**
@@ -325,20 +324,12 @@ public class TreeDropListener implements DropTargetListener {
 	private void merge(TreeNode mergeTargetExistingTree, TreeNode parent) {
 		for (TreeNode child : parent.getChildren()) {
 			mergeTargetExistingTree.addChild(child);
-//			viewer.expandToLevel(mergeTargetExistingTree,
-//					AbstractTreeViewer.ALL_LEVELS);
 		}
 	}
 
 	private boolean isMergeTargetFound(TreeNode mergeTargetExistingTree) {
 		return mergeTargetExistingTree != null;
 	}
-
-	// private void refreshTree() {
-	// TreePath[] treeExpansion = viewer.getExpandedTreePaths();
-	// viewer.refresh();
-	// viewer.setExpandedTreePaths(treeExpansion);
-	// }
 
 	private TreeNode buildTreeStructure(TreePath path)
 			throws JavaModelException {
