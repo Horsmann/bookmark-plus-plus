@@ -88,7 +88,6 @@ public class TreeDropListener implements DropTargetListener {
 				continue;
 			}
 
-			// TODO: Auto-Expand des tree bei droppen
 			// TODO: Auto-Expand mit speichern und beim laden šffnen
 			// TODO: Leeres Bookmark wird erstellt, wenn ein Package gedropt
 			// wird
@@ -100,7 +99,6 @@ public class TreeDropListener implements DropTargetListener {
 			showNodeExpanded(head);
 
 		}
-		// refreshTree();
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
