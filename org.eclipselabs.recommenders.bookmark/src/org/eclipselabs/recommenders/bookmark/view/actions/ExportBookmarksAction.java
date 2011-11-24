@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -20,9 +21,11 @@ import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
 public class ExportBookmarksAction extends Action {
 
 	private TreeModel model;
+	private TreeViewer viewer;
 
-	public ExportBookmarksAction(TreeModel model) {
+	public ExportBookmarksAction(TreeViewer viewer, TreeModel model) {
 		this.model = model;
+		this.viewer = viewer;
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_SAVE_BOOKMARKS));
 		this.setToolTipText("Exports the collection of bookmarks");
@@ -35,7 +38,7 @@ public class ExportBookmarksAction extends Action {
 
 		if (file != null) {
 			String serializedTree = TreeDeSerializer.serializeTreeToGson(model
-					.getModelRoot());
+					.getModelRoot(), viewer.getExpandedElements());
 			if (serializedTree != null) {
 				writeStringToFile(file, serializedTree);
 			}

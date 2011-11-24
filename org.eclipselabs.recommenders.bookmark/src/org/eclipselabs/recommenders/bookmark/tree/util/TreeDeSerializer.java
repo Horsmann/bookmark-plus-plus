@@ -1,9 +1,11 @@
 package org.eclipselabs.recommenders.bookmark.tree.util;
 
 import java.lang.reflect.Type;
+import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
 import com.google.gson.Gson;
@@ -11,7 +13,7 @@ import com.google.gson.reflect.TypeToken;
 
 public class TreeDeSerializer {
 
-	public static String serializeTreeToGson(TreeNode root) {
+	public static String serializeTreeToGson(TreeNode root, Object [] expandedNodes) {
 
 		TreeNode preSerialized = copyTreeAndSerializeTreeValues(root);
 
@@ -19,6 +21,17 @@ public class TreeDeSerializer {
 		Type typeOfSrc = new TypeToken<TreeNode>() {
 		}.getType();
 		String gsonTreeString = gson.toJson(preSerialized, typeOfSrc);
+		
+		if (expandedNodes.length > 0)
+			gsonTreeString += "\n";
+		
+		for (int i=0; i < expandedNodes.length; i++) {
+			TreeNode node = (TreeNode) expandedNodes[i];
+			String id = TreeValueConverter.getStringIdentification(node.getValue());
+			gsonTreeString += id;
+			if (i+1 < expandedNodes.length)
+				gsonTreeString += ";";
+		}
 
 		return gsonTreeString;
 	}

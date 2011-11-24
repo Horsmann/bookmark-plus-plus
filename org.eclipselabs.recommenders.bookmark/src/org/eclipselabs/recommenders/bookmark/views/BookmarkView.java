@@ -28,8 +28,8 @@ public class BookmarkView extends ViewPart {
 	private TreeViewer viewer = null;
 	private TreeModel model;
 	private Action showInEditor = null;
-	private Action saveBookmarks = null;
-	private Action loadBookmarks = null;
+	private Action exportBookmarks = null;
+	private Action importBookmarks = null;
 	private Action closeAllOpenEditors = null;
 
 	@Override
@@ -54,8 +54,8 @@ public class BookmarkView extends ViewPart {
 	private void createActions() {
 
 		showInEditor = new ShowBookmarksInEditorAction(this, viewer);
-		saveBookmarks = new ExportBookmarksAction(model);
-		loadBookmarks = new ImportBookmarksAction(viewer, model);
+		exportBookmarks = new ExportBookmarksAction(viewer, model);
+		importBookmarks = new ImportBookmarksAction(viewer, model);
 		closeAllOpenEditors = new CloseAllOpenEditors();
 
 	}
@@ -65,8 +65,8 @@ public class BookmarkView extends ViewPart {
 		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
 		mgr.add(showInEditor);
 		mgr.add(closeAllOpenEditors);
-		mgr.add(saveBookmarks);
-		mgr.add(loadBookmarks);
+		mgr.add(exportBookmarks);
+		mgr.add(importBookmarks);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class TreeDropListener implements DropTargetListener {
 			TreeDragListener localViewsDragListener) {
 		this.viewer = viewer;
 		this.model = model;
-		dragListener = localViewsDragListener;
+		this.dragListener = localViewsDragListener;
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class TreeDropListener implements DropTargetListener {
 			else
 				processDropEventWithDragInitiatedFromOutsideTheView(event);
 
-			new SaveModelToLocalDefaultFile(model).saveChanges();
+			new SaveModelToLocalDefaultFile(viewer, model).saveChanges();
 
 		} catch (JavaModelException e) {
 			e.printStackTrace();

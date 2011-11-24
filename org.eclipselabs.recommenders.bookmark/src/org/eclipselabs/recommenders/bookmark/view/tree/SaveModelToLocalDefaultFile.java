@@ -9,21 +9,26 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
 
 public class SaveModelToLocalDefaultFile {
 
 	private TreeModel model;
+	private TreeViewer viewer;
 
-	public SaveModelToLocalDefaultFile(TreeModel model) {
+	public SaveModelToLocalDefaultFile(TreeViewer viewer, TreeModel model) {
+		this.viewer = viewer;
 		this.model = model;
 	}
 
 	public void saveChanges() {
-		String serializedString = TreeDeSerializer.serializeTreeToGson(model
-				.getModelRoot());
+		TreeNode root = model.getModelRoot();
+		Object [] expanded = viewer.getExpandedElements();
+		String serializedString = TreeDeSerializer.serializeTreeToGson(root, expanded);
 		saveInMetaData(serializedString);
 	}
 
