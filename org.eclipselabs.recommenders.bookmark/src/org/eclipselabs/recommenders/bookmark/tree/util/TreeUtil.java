@@ -4,8 +4,16 @@ import java.util.LinkedList;
 
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
-
 public class TreeUtil {
+
+	public static TreeNode getLeafOfTreePath(TreeNode node) {
+
+		if (node.hasChildren()) {
+			TreeNode child = node.getChildren()[0];
+			return getLeafOfTreePath(child);
+		} else
+			return node;
+	}
 
 	public static LinkedList<TreeNode> getLeafs(TreeNode node) {
 
@@ -139,7 +147,7 @@ public class TreeUtil {
 
 	public static TreeNode climbUpUntilLevelBelowBookmark(TreeNode node) {
 		TreeNode climber = null;
-		while (node.getParent() != null && !node.getParent().isBookmarkNode()){
+		while (node.getParent() != null && !node.getParent().isBookmarkNode()) {
 			node = node.getParent();
 			climber = node;
 		}

@@ -139,8 +139,17 @@ public class TreeDropListener implements DropTargetListener {
 		TreeNode bookmark = TreeUtil.getBookmarkNode(target);
 
 		if (bookmark != null)
-			for (int i = 0; i < treePath.length; i++)
-				addToExistingBookmark(bookmark, treePath[i]);
+			for (int i = 0; i < treePath.length; i++) {
+				TreeNode added = addToExistingBookmark(bookmark, treePath[i]);
+
+				//Wenn unter BM mehrere Knoten hŠngen, werden alle expandet
+				TreeNode leaf = TreeUtil
+						.getLeafOfTreePath((added));
+//				TreeNode val = TreeUtil.climbUpUntilLevelBelowBookmark(leaf);
+				viewer.expandToLevel(leaf, AbstractTreeViewer.ALL_LEVELS);
+				viewer.refresh( );
+//				viewer.update(added, null);
+			}
 		else
 			createNewBookmarkAddAsNode(treePath);
 
@@ -165,7 +174,6 @@ public class TreeDropListener implements DropTargetListener {
 		boolean isDuplicate = TreeUtil.isDuplicate(bookmark, node);
 		if (!isDuplicate) {
 			mergeAddNodeToBookmark(bookmark, node);
-			viewer.expandToLevel(node, AbstractTreeViewer.ALL_LEVELS);
 			return node;
 		}
 
@@ -186,11 +194,15 @@ public class TreeDropListener implements DropTargetListener {
 		}
 
 		model.getModelRoot().addChild(bookmark);
-		
-		for (TreeNode added : addedNodes)
-			viewer.expandToLevel(added, AbstractTreeViewer.ALL_LEVELS);
-		
-		refreshTree();
+
+//		for (TreeNode added : addedNodes) {
+//			TreeNode leaf = TreeUtil.getLeafOfTreePath(added);
+//			viewer.expandToLevel(leaf, AbstractTreeViewer.ALL_LEVELS);
+//			viewer.refresh();
+//		}
+//		viewer.expandToLevel(bookmark, AbstractTreeViewer.ALL_LEVELS);
+		viewer.refresh();
+		// refreshTree();
 
 	}
 
@@ -233,7 +245,7 @@ public class TreeDropListener implements DropTargetListener {
 			targetBookmark.addChild(head);
 
 		}
-		refreshTree();
+		// refreshTree();
 	}
 
 	private void unlink(TreeNode node) {
@@ -264,7 +276,7 @@ public class TreeDropListener implements DropTargetListener {
 
 		// viewer.expandToLevel(node, AbstractTreeViewer.ALL_LEVELS);
 		// viewer.refresh();
-		refreshTree();
+		// refreshTree();
 
 	}
 
@@ -313,8 +325,8 @@ public class TreeDropListener implements DropTargetListener {
 	private void merge(TreeNode mergeTargetExistingTree, TreeNode parent) {
 		for (TreeNode child : parent.getChildren()) {
 			mergeTargetExistingTree.addChild(child);
-			viewer.expandToLevel(mergeTargetExistingTree,
-					AbstractTreeViewer.ALL_LEVELS);
+//			viewer.expandToLevel(mergeTargetExistingTree,
+//					AbstractTreeViewer.ALL_LEVELS);
 		}
 	}
 
@@ -322,11 +334,11 @@ public class TreeDropListener implements DropTargetListener {
 		return mergeTargetExistingTree != null;
 	}
 
-	private void refreshTree() {
-		TreePath[] treeExpansion = viewer.getExpandedTreePaths();
-		viewer.refresh();
-		viewer.setExpandedTreePaths(treeExpansion);
-	}
+	// private void refreshTree() {
+	// TreePath[] treeExpansion = viewer.getExpandedTreePaths();
+	// viewer.refresh();
+	// viewer.setExpandedTreePaths(treeExpansion);
+	// }
 
 	private TreeNode buildTreeStructure(TreePath path)
 			throws JavaModelException {

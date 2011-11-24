@@ -47,6 +47,20 @@ public class TestTreeUtil {
 	}
 
 	@Test
+	public void testGetLeafOfTreePath() {
+		TreeNode root = buildNodeWithTwoChildren();
+
+		TreeNode leaf = TreeUtil.getLeafOfTreePath(root);
+		assertEquals("child1", leaf.getValue());
+
+		root = TreeUtil
+				.climbUpUntilLevelBelowBookmark(buildTreeStructureAndReturnLeafNode());
+		leaf = TreeUtil.getLeafOfTreePath(root);
+		assertEquals("childChildChild", leaf.getValue());
+
+	}
+
+	@Test
 	public void testParentRelationshipForNodeWithTwoChildren() {
 		TreeNode root = buildNodeWithTwoChildren();
 
@@ -243,19 +257,19 @@ public class TestTreeUtil {
 
 		isDuplicate = TreeUtil.isDuplicate(tree, partially);
 		assertTrue(isDuplicate);
-		
+
 		isDuplicate = TreeUtil.isDuplicate(tree, notContained);
 		assertFalse(isDuplicate);
 	}
 
 	private TreeNode createNotContainedInTree() {
-		
+
 		TreeNode a = new TreeNode("X");
 		TreeNode aa = new TreeNode("XY");
 		TreeNode bb = new TreeNode("XZ");
 		a.addChild(aa);
 		a.addChild(bb);
-		
+
 		return a;
 	}
 
@@ -409,25 +423,25 @@ public class TestTreeUtil {
 
 		return bookmark;
 	}
-	
+
 	@Test
-	public void testClimbUpInHierarchyUntilLevelBelowBookmark( ){
+	public void testClimbUpInHierarchyUntilLevelBelowBookmark() {
 		TreeNode leaf = getTreeUpsideDown();
-		
+
 		TreeNode node = TreeUtil.climbUpUntilLevelBelowBookmark(leaf);
-		
+
 		assertEquals("node", node.getValue());
 		assertTrue(node.getParent().isBookmarkNode());
 	}
 
 	private TreeNode getTreeUpsideDown() {
-		
+
 		TreeNode leaf = new TreeNode("leaf");
 		TreeNode node = new TreeNode("node");
 		node.addChild(leaf);
 		TreeNode bookmark = new TreeNode("Bookmark", true);
 		bookmark.addChild(node);
-		
+
 		return leaf;
 	}
 
