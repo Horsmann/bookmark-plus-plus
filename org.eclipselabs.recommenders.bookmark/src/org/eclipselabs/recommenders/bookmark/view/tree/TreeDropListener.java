@@ -1,10 +1,8 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -83,8 +81,10 @@ public class TreeDropListener implements DropTargetListener {
 			if (TreeUtil.isDuplicate(targetBookmark, node))
 				continue;
 
-			if (attemptMerge(targetBookmark, nodeCopy)) {
+			TreeNode merged = null;
+			if ((merged = attemptMerge(targetBookmark, nodeCopy)) != null) {
 				unlink(node);
+				showNodeExpanded(merged);
 				continue;
 			}
 
@@ -97,6 +97,7 @@ public class TreeDropListener implements DropTargetListener {
 			node.getParent().removeChild(node);
 			TreeNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
 			targetBookmark.addChild(head);
+			showNodeExpanded(head);
 
 		}
 		// refreshTree();
@@ -269,13 +270,14 @@ public class TreeDropListener implements DropTargetListener {
 
 		bookmark.addChild(nodeCopy);
 		model.getModelRoot().addChild(bookmark);
+		showNodeExpanded(bookmark);
 		unlink(node);
 	}
 
 	private void mergeAddNodeToBookmark(TreeNode bookmark, TreeNode node)
 			throws JavaModelException {
 
-		if (!attemptMerge(bookmark, node))
+		if (attemptMerge(bookmark, node) == null)
 			bookmark.addChild(node);
 	}
 
@@ -288,16 +290,16 @@ public class TreeDropListener implements DropTargetListener {
 	 * @param node
 	 * @return
 	 */
-	private boolean attemptMerge(TreeNode bookmark, TreeNode node) {
+	private TreeNode attemptMerge(TreeNode bookmark, TreeNode node) {
 		LinkedList<TreeNode> leafs = TreeUtil.getLeafs(node);
 
 		for (TreeNode leaf : leafs) {
 			TreeNode parent = leaf.getParent();
 			if (climbUpTreeHierarchyMergeIfIDMatches(bookmark, parent))
-				return true;
+				return parent;
 		}
 
-		return false;
+		return null;
 	}
 
 	private boolean climbUpTreeHierarchyMergeIfIDMatches(TreeNode bookmark,
