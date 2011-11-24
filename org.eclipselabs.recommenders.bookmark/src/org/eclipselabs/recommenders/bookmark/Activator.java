@@ -21,8 +21,8 @@ public class Activator extends AbstractUIPlugin {
 	public static final String ICON_BOOKMARK = "bookmark";
 	public static final String ICON_SHOW_IN_EDITOR = "openBookmarksInEditor";
 	public static final String ICON_CLOSE_ALL_OPEN_EDITORS = "closeAllOpenEditors";
-	public static final String ICON_SAVE_BOOKMARKS = "saveBookmarks";
-	public static final String ICON_LOAD_BOOKMARKS = "loadBookmarks";
+	public static final String ICON_SAVE_BOOKMARKS = "exportBookmarks";
+	public static final String ICON_LOAD_BOOKMARKS = "importBookmarks";
 	
 	public static final String AUTOSAVE_FILE = "bookmarkModel.bm";
 
@@ -62,7 +62,7 @@ public class Activator extends AbstractUIPlugin {
 		registry.put(ICON_SAVE_BOOKMARKS, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
-				new Path("icons/loadBookmarks.gif"), null));
+				new Path("icons/import_wiz.gif"), null));
 		registry.put(ICON_LOAD_BOOKMARKS, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,

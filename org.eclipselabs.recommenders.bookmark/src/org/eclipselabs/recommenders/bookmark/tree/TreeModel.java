@@ -12,8 +12,4 @@ public class TreeModel {
 	public TreeNode getModelRoot() {
 		return root;
 	}
-
-	public void setRootNode(TreeNode newRoot) {
-		root = newRoot;
-	}
 }

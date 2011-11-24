@@ -37,9 +37,6 @@ public class TreeNode {
 		return value;
 	}
 
-	public void removeAllChildren() {
-		children = new ArrayList<TreeNode>();
-	}
 
 	public void addChild(TreeNode child) {
 		children.add(child);

@@ -19,12 +19,12 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
 
-public class LoadBookmarksAction extends Action {
+public class ImportBookmarksAction extends Action {
 
 	private TreeViewer viewer;
 	private TreeModel model;
 
-	public LoadBookmarksAction(TreeViewer viewer, TreeModel model) {
+	public ImportBookmarksAction(TreeViewer viewer, TreeModel model) {
 		super();
 		this.viewer = viewer;
 		this.model = model;
@@ -35,19 +35,21 @@ public class LoadBookmarksAction extends Action {
 
 	@Override
 	public void run() {
+		
+		System.err.println("Import called");
 
-		File file = showFileOpenDialog();
-		if (file != null) {
-			String filecontent = readSelectedFile(file);
-			if (filecontent != null) {
-
-				TreeNode root = TreeDeSerializer
-						.deSerializeTreeFromGSonString(filecontent);
-
-				model.setRootNode(root);
-				viewer.setInput(root);
-			}
-		}
+//		File file = showFileOpenDialog();
+//		if (file != null) {
+//			String filecontent = readSelectedFile(file);
+//			if (filecontent != null) {
+//
+//				TreeNode root = TreeDeSerializer
+//						.deSerializeTreeFromGSonString(filecontent);
+//
+//				model.setRootNode(root);
+//				viewer.setInput(root);
+//			}
+//		}
 
 	}
 

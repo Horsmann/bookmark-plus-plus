@@ -14,7 +14,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditors;
 import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
-import org.eclipselabs.recommenders.bookmark.view.actions.LoadBookmarksAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
@@ -55,7 +55,7 @@ public class BookmarkView extends ViewPart {
 
 		showInEditor = new ShowBookmarksInEditorAction(this, viewer);
 		saveBookmarks = new ExportBookmarksAction(model);
-		loadBookmarks = new LoadBookmarksAction(viewer, model);
+		loadBookmarks = new ImportBookmarksAction(viewer, model);
 		closeAllOpenEditors = new CloseAllOpenEditors();
 
 	}

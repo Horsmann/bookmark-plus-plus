@@ -146,10 +146,9 @@ public class TreeUtil {
 	}
 
 	public static TreeNode climbUpUntilLevelBelowBookmark(TreeNode node) {
-		TreeNode climber = null;
-		while (node.getParent() != null && !node.getParent().isBookmarkNode()) {
-			node = node.getParent();
-			climber = node;
+		TreeNode climber = node;
+		while (climber.getParent() != null && !climber.getParent().isBookmarkNode()) {
+			climber = climber.getParent();
 		}
 
 		return climber;
