@@ -1,5 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
+import java.io.IOException;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -16,6 +18,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditors;
 import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.LoadModelFromLocalDefaultFile;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
@@ -48,7 +51,18 @@ public class BookmarkView extends ViewPart {
 
 		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
 		viewer.getTree().addKeyListener(
-				new TreeKeyListener(viewer, showInEditor));
+				new TreeKeyListener(viewer, model, showInEditor));
+		
+		try {
+			restoreBookmarks();
+		} catch (IOException e) {
+			//Ignore silently
+//			e.printStackTrace();
+		}
+	}
+
+	private void restoreBookmarks() throws IOException {
+		new LoadModelFromLocalDefaultFile(viewer, model).load();
 	}
 
 	private void createActions() {

@@ -23,6 +23,10 @@ public class TreeValueConverter {
 		} else if (value instanceof String)
 			id = (String) value;
 
+		if (id == null) {
+			id = ""; // Should only be the case for the root of the model
+		}
+
 		return id;
 	}
 

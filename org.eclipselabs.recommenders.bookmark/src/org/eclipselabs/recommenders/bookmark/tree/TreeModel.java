@@ -12,4 +12,8 @@ public class TreeModel {
 	public TreeNode getModelRoot() {
 		return root;
 	}
+	
+	public void setModelRoot(TreeNode root) {
+		this.root = root;
+	}
 }

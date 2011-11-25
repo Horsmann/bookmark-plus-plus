@@ -12,14 +12,19 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveModelToLocalDefaultFile;
 
 public class TreeKeyListener implements KeyListener {
 	private TreeViewer viewer = null;
+	private TreeModel model = null;
 	private Action showInEditor = null;
 
-	public TreeKeyListener(TreeViewer viewer, Action showInEditor) {
+	public TreeKeyListener(TreeViewer viewer, TreeModel model,
+			Action showInEditor) {
 		this.viewer = viewer;
+		this.model = model;
 		this.showInEditor = showInEditor;
 	}
 
@@ -33,8 +38,9 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private void checkForRename(KeyEvent e) {
-		if (e.keyCode == SWT.F2 && !isShiftOrAltOrCrtlPressed(e.stateMask))
+		if (e.keyCode == SWT.F2 && !isShiftOrAltOrCrtlPressed(e.stateMask)) {
 			checkForBookmarkAndChangeName(e);
+		}
 
 	}
 
@@ -44,19 +50,15 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private void performRenameForBookmarks(TreeItem[] items) {
-		// Text text = new Text(, SWT.NONE);
 		final TreeEditor editor = new TreeEditor(viewer.getTree());
-		 editor.horizontalAlignment = SWT.LEFT;
-		 editor.minimumWidth=100;
-//		  editor.grabHorizontal = true;
+		editor.horizontalAlignment = SWT.LEFT;
+		editor.minimumWidth = 100;
 
 		final TreeItem item = items[0];
 
 		final TreeNode node = (TreeNode) item.getData();
 		if (!node.isBookmarkNode())
 			return;
-
-		// System.err.println("F2");
 
 		final Text text = new Text(viewer.getTree(), SWT.NONE);
 		text.setText((String) node.getValue());
@@ -77,14 +79,15 @@ public class TreeKeyListener implements KeyListener {
 			public void keyPressed(KeyEvent event) {
 				switch (event.keyCode) {
 				case SWT.CR:
-					// Enter hit--set the text into the tree and drop
-					// through
+					// drop through
 					String newValue = text.getText();
 					node.setValue(newValue);
 				case SWT.ESC:
 					// End editing session
 					text.dispose();
 					setFocusAndSelection(item);
+					new SaveModelToLocalDefaultFile(viewer, model)
+							.saveChanges();
 					break;
 				}
 			}
@@ -104,6 +107,8 @@ public class TreeKeyListener implements KeyListener {
 			TreeItem[] items = getSelections(e);
 			performDeletion(items);
 			viewer.refresh();
+
+			new SaveModelToLocalDefaultFile(viewer, model).saveChanges();
 		}
 	}
 

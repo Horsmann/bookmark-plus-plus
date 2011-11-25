@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveModelToLocalDefaultFile;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 

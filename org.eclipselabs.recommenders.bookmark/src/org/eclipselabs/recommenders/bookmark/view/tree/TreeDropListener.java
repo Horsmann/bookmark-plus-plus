@@ -24,6 +24,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveModelToLocalDefaultFile;
 
 public class TreeDropListener implements DropTargetListener {
 
@@ -87,11 +88,6 @@ public class TreeDropListener implements DropTargetListener {
 				showNodeExpanded(merged);
 				continue;
 			}
-
-			// TODO: Auto-Expand mit speichern und beim laden šffnen
-			// TODO: Leeres Bookmark wird erstellt, wenn ein Package gedropt
-			// wird
-			// TODO: Logic/GUI entzerren --> Unittests
 
 			node.getParent().removeChild(node);
 			TreeNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);

@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view.tree;
+package org.eclipselabs.recommenders.bookmark.view.save_restore;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,13 +27,13 @@ public class SaveModelToLocalDefaultFile {
 
 	public void saveChanges() {
 		TreeNode root = model.getModelRoot();
+		viewer.refresh();
 		Object [] expanded = viewer.getExpandedElements();
 		String serializedString = TreeDeSerializer.serializeTreeToGson(root, expanded);
-		saveInMetaData(serializedString);
+		saveSerializedTreeModel(serializedString);
 	}
 
-	private void saveInMetaData(String string) {
-		System.out.println("Save has been called");
+	private void saveSerializedTreeModel(String string) {
 
 		IPath stateLocation = Activator.getDefault().getStateLocation();
 		File stateFile = stateLocation.append(Activator.AUTOSAVE_FILE).toFile();

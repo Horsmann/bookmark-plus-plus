@@ -1,11 +1,9 @@
 package org.eclipselabs.recommenders.bookmark.tree.util;
 
 import java.lang.reflect.Type;
-import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
 import com.google.gson.Gson;
