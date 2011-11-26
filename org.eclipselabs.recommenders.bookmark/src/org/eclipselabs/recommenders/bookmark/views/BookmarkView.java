@@ -10,7 +10,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
@@ -19,6 +22,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.save_restore.LoadModelFromLocalDefaultFile;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveModelToLocalDefaultFile;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
@@ -52,17 +56,25 @@ public class BookmarkView extends ViewPart {
 		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
 		viewer.getTree().addKeyListener(
 				new TreeKeyListener(viewer, model, showInEditor));
-		
-		try {
-			restoreBookmarks();
-		} catch (IOException e) {
-			//Ignore silently
-//			e.printStackTrace();
-		}
+
+		restoreBookmarks();
+
+		addPartServiceListener();
+
 	}
 
-	private void restoreBookmarks() throws IOException {
-		new LoadModelFromLocalDefaultFile(viewer, model).load();
+	private void addPartServiceListener() {
+		IPartService service = (IPartService) getSite().getService(
+				IPartService.class);
+		service.addPartListener(new BookmarkViewPartListener(viewer, model));
+	}
+
+	private void restoreBookmarks() {
+		try {
+			new LoadModelFromLocalDefaultFile(viewer, model).load();
+		} catch (IOException e) {
+			// Ignore silently
+		}
 	}
 
 	private void createActions() {
