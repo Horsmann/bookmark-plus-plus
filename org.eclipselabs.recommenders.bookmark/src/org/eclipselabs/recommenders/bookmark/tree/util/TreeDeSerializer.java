@@ -11,29 +11,51 @@ import com.google.gson.reflect.TypeToken;
 
 public class TreeDeSerializer {
 
-	public static String serializeTreeToGson(TreeNode root, Object [] expandedNodes) {
+	public static String serializeTree(TreeNode root,
+			Object[] expandedNodes, ObjectConverter converter) {
 
 		TreeNode preSerialized = copyTreeAndSerializeTreeValues(root);
+		String serialized = converter.convertToString(preSerialized, expandedNodes);
 
-		Gson gson = new Gson();
-		Type typeOfSrc = new TypeToken<TreeNode>() {
-		}.getType();
-		String gsonTreeString = gson.toJson(preSerialized, typeOfSrc);
-		
-		if (expandedNodes.length > 0)
-			gsonTreeString += "\n";
-		
-		for (int i=0; i < expandedNodes.length; i++) {
-			TreeNode node = (TreeNode) expandedNodes[i];
-			String id = TreeValueConverter.getStringIdentification(node.getValue());
-			gsonTreeString += id;
-			if (i+1 < expandedNodes.length)
-				gsonTreeString += ";";
-		}
+//		Gson gson = new Gson();
+//		Type typeOfSrc = new TypeToken<TreeNode>() {
+//		}.getType();
+//		String gsonTreeString = gson.toJson(preSerialized, typeOfSrc);
+//
+//		if (expandedNodes != null && expandedNodes.length > 0) {
+//			gsonTreeString += "\n";
+//
+//			for (int i = 0; i < expandedNodes.length; i++) {
+//				TreeNode node = (TreeNode) expandedNodes[i];
+//				String id = TreeValueConverter.getStringIdentification(node
+//						.getValue());
+//				gsonTreeString += id;
+//				if (i + 1 < expandedNodes.length)
+//					gsonTreeString += ";";
+//			}
+//		}
 
-		return gsonTreeString;
+		return serialized;
 	}
 
+	
+
+	public static TreeNode deSerializeTree(String serialized, ObjectConverter converter) {
+		
+		Object [] deserialized = converter.convertToObject(serialized);
+		
+		TreeNode rootNode = (TreeNode) deserialized[0];
+		
+//		Gson gson = new Gson();
+//		Type typeOfSrc = new TypeToken<TreeNode>() {
+//		}.getType();
+//		TreeNode rootNode = gson.fromJson(gsonSerialized, typeOfSrc);
+
+//		TreeNode deSerializedTreesRoot = TreeDeSerializer
+//				.deSerializeTreeValues(rootNode);
+		return rootNode;
+	}
+	
 	/**
 	 * The values of the TreeNodes are transformed to a string representation,
 	 * the parent<-->child relationship is reduced to parent-->child (removing
@@ -72,18 +94,8 @@ public class TreeDeSerializer {
 		return newSubTreeNode;
 	}
 
-	public static TreeNode deSerializeTreeFromGSonString(String gsonSerialized) {
-		Gson gson = new Gson();
-		Type typeOfSrc = new TypeToken<TreeNode>() {
-		}.getType();
-		TreeNode rootNode = gson.fromJson(gsonSerialized, typeOfSrc);
 
-		TreeNode deSerializedTreesRoot = TreeDeSerializer
-				.deSerializeTreeValues(rootNode);
-		return deSerializedTreesRoot;
-	}
-
-	private static TreeNode deSerializeTreeValues(TreeNode treeRootNode) {
+	static TreeNode deSerializeTreeValues(TreeNode treeRootNode) {
 
 		TreeNode newRootNode = deSeralizeTreeValuesRecursive(treeRootNode);
 		newRootNode.setValue("");
@@ -110,18 +122,15 @@ public class TreeDeSerializer {
 
 	private static TreeNode createNodeWithRecoveredValue(String value,
 			boolean isBookmark) {
-		
+
 		IJavaElement element = TreeValueConverter
 				.attemptTransformationToIJavaElement(value);
 		if (element != null)
 			return new TreeNode(element, isBookmark);
 
-		
 		IFile file = TreeValueConverter.attemptTransformationToIFile(value);
 		if (file != null)
 			return new TreeNode(file, isBookmark);
-
-		
 
 		return new TreeNode(value, isBookmark);
 	}

@@ -117,8 +117,8 @@ public class BookmarkView extends ViewPart {
 	private void addListenerToTreeInView() {
 		viewer.getTree().addKeyListener(
 				new TreeKeyListener(viewer, model, showInEditor));
-		viewer.getTree().addTreeListener(
-				new TreeExpandCollapseListener(viewer, model));
+//		viewer.getTree().addTreeListener(
+//				new TreeExpandCollapseListener(viewer, model));
 	}
 
 	private void restoreBookmarks() {

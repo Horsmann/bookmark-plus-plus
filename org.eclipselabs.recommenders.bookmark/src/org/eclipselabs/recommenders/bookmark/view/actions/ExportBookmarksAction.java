@@ -16,6 +16,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.util.GsonConverter;
+import org.eclipselabs.recommenders.bookmark.tree.util.ObjectConverter;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
 
 public class ExportBookmarksAction extends Action {
@@ -37,8 +39,9 @@ public class ExportBookmarksAction extends Action {
 		File file = showFileSaveDialog();
 
 		if (file != null) {
-			String serializedTree = TreeDeSerializer.serializeTreeToGson(model
-					.getModelRoot(), viewer.getExpandedElements());
+			ObjectConverter converter = new GsonConverter();
+			String serializedTree = TreeDeSerializer.serializeTree(model
+					.getModelRoot(), viewer.getExpandedElements(), converter);
 			if (serializedTree != null) {
 				writeStringToFile(file, serializedTree);
 			}

@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.util.GsonConverter;
+import org.eclipselabs.recommenders.bookmark.tree.util.ObjectConverter;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.save_restore.BookmarkLoader;
@@ -65,8 +67,9 @@ public class ImportBookmarksAction extends Action {
 	}
 
 	private TreeNode deSerializeTreeAndImportBookmarks(String serializedTree) {
+		ObjectConverter converter = new GsonConverter();
 		TreeNode newRoot = TreeDeSerializer
-				.deSerializeTreeFromGSonString(serializedTree);
+				.deSerializeTree(serializedTree, converter);
 
 		TreeNode existingTreesRoot = model.getModelRoot();
 		for (TreeNode bookmarks : newRoot.getChildren())

@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.util.GsonConverter;
+import org.eclipselabs.recommenders.bookmark.tree.util.ObjectConverter;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
@@ -26,8 +28,9 @@ public class LoadBookmarksFromLocalDefaultFile {
 		String serializedTree = lines[0];
 		String expandedNodes = lines[1];
 
+		ObjectConverter converter = new GsonConverter();
 		TreeNode newRoot = TreeDeSerializer
-				.deSerializeTreeFromGSonString(serializedTree);
+				.deSerializeTree(serializedTree, converter);
 
 		model.setModelRoot(newRoot);
 		viewer.setInput(model.getModelRoot());
