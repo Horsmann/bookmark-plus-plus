@@ -10,10 +10,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
@@ -21,12 +21,12 @@ import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditors;
 import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.LoadModelFromLocalDefaultFile;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveModelToLocalDefaultFile;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.LoadBookmarksFromLocalDefaultFile;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDropListener;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeExpandCollapseListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 
@@ -44,34 +44,86 @@ public class BookmarkView extends ViewPart {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		model = new TreeModel();
 
-		addDragDropSupportToView(viewer, model);
+		createActions();
+		setUpToolbar();
 
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
 
-		createActions();
-		setUpToolbar();
+		addListenerToView();
+		addListenerToTreeInView();
+		
+//		IPartService service = (IPartService) getSite().getService(IPartService.class);
+//		service.addPartListener(new IPartListener2() {
+//			
+//			@Override
+//			public void partVisible(IWorkbenchPartReference partRef) {
+//				System.err.println("partVisible");
+//			}
+//			
+//			@Override
+//			public void partOpened(IWorkbenchPartReference partRef) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void partInputChanged(IWorkbenchPartReference partRef) {
+//				System.err.println("InputChanged");
+//			}
+//			
+//			@Override
+//			public void partHidden(IWorkbenchPartReference partRef) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void partDeactivated(IWorkbenchPartReference partRef) {
+//				System.err.println("deactivated");
+//			}
+//			
+//			@Override
+//			public void partClosed(IWorkbenchPartReference partRef) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void partBroughtToTop(IWorkbenchPartReference partRef) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void partActivated(IWorkbenchPartReference partRef) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
 
-		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
-		viewer.getTree().addKeyListener(
-				new TreeKeyListener(viewer, model, showInEditor));
 
 		restoreBookmarks();
 
-		addPartServiceListener();
+	}
+
+	private void addListenerToView() {
+		addDragDropSupportToView(viewer, model);
+		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
 
 	}
 
-	private void addPartServiceListener() {
-		IPartService service = (IPartService) getSite().getService(
-				IPartService.class);
-		service.addPartListener(new BookmarkViewPartListener(viewer, model));
+	private void addListenerToTreeInView() {
+		viewer.getTree().addKeyListener(
+				new TreeKeyListener(viewer, model, showInEditor));
+		viewer.getTree().addTreeListener(
+				new TreeExpandCollapseListener(viewer, model));
 	}
 
 	private void restoreBookmarks() {
 		try {
-			new LoadModelFromLocalDefaultFile(viewer, model).load();
+			new LoadBookmarksFromLocalDefaultFile(viewer, model).load();
 		} catch (IOException e) {
 			// Ignore silently
 		}

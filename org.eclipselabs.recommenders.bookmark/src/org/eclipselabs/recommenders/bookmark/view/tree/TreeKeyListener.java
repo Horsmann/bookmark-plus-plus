@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveModelToLocalDefaultFile;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveBookmarksToLocalDefaultFile;
 
 public class TreeKeyListener implements KeyListener {
 	private TreeViewer viewer = null;
@@ -86,8 +86,8 @@ public class TreeKeyListener implements KeyListener {
 					// End editing session
 					text.dispose();
 					setFocusAndSelection(item);
-					new SaveModelToLocalDefaultFile(viewer, model)
-							.saveChanges();
+					new SaveBookmarksToLocalDefaultFile(viewer, model)
+							.saveCurrentState();
 					break;
 				}
 			}
@@ -108,7 +108,7 @@ public class TreeKeyListener implements KeyListener {
 			performDeletion(items);
 			viewer.refresh();
 
-			new SaveModelToLocalDefaultFile(viewer, model).saveChanges();
+			new SaveBookmarksToLocalDefaultFile(viewer, model).saveCurrentState();
 		}
 	}
 

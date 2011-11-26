@@ -15,19 +15,19 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
 
-public class SaveModelToLocalDefaultFile {
+public class SaveBookmarksToLocalDefaultFile {
 
 	private TreeModel model;
 	private TreeViewer viewer;
 
-	public SaveModelToLocalDefaultFile(TreeViewer viewer, TreeModel model) {
+	public SaveBookmarksToLocalDefaultFile(TreeViewer viewer, TreeModel model) {
 		this.viewer = viewer;
 		this.model = model;
 	}
 
-	public void saveChanges() {
-		TreeNode root = model.getModelRoot();
+	public void saveCurrentState() {
 		viewer.refresh();
+		TreeNode root = model.getModelRoot();
 		Object [] expanded = viewer.getExpandedElements();
 		String serializedString = TreeDeSerializer.serializeTreeToGson(root, expanded);
 		saveSerializedTreeModel(serializedString);

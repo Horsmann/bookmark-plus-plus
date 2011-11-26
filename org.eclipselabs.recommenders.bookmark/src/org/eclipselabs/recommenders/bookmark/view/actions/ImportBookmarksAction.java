@@ -1,12 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.view.actions;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -16,6 +11,10 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.BookmarkLoader;
 
 public class ImportBookmarksAction extends Action {
 
@@ -33,46 +32,57 @@ public class ImportBookmarksAction extends Action {
 
 	@Override
 	public void run() {
-		
-		System.err.println("Import called");
 
-//		File file = showFileOpenDialog();
-//		if (file != null) {
-//			String filecontent = readSelectedFile(file);
-//			if (filecontent != null) {
-//
-//				TreeNode root = TreeDeSerializer
-//						.deSerializeTreeFromGSonString(filecontent);
-//
-//				model.setRootNode(root);
-//				viewer.setInput(root);
-//			}
-//		}
+		File file = showFileOpenDialog();
+		if (file != null) {
+
+			String[] lines = loadFile(file);
+
+			if (lines.length != 2)
+				return;
+
+			String serializedTree = lines[0];
+			String expandedNodes = lines[1];
+
+			TreeNode newRoot = deSerializeTreeAndImportBookmarks(serializedTree);
+
+			restoreExpandedStateOfAddedBookmarks(expandedNodes, newRoot);
+
+		}
 
 	}
 
-	private String readSelectedFile(File file) {
-		BufferedReader reader = null;
-		String content = null;
-		try {
-			reader = new BufferedReader(new InputStreamReader(
-					new FileInputStream(file), "UTF-8"));
+	private void restoreExpandedStateOfAddedBookmarks(String expandedNodes,
+			TreeNode newRoot) {
+		String[] idsExpandedNodes = expandedNodes.split(";");
+		for (String id : idsExpandedNodes) {
+			TreeNode node = TreeUtil.locateNodeWithEqualID(id, newRoot);
+			if (node != null)
+				viewer.setExpandedState(node, true);
+		}
 
-			String readline = null;
-			while ((readline = reader.readLine()) != null)
-				content = (content == null) ? readline : (content = content
-						+ "\n" + readline);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		viewer.refresh();
+	}
+
+	private TreeNode deSerializeTreeAndImportBookmarks(String serializedTree) {
+		TreeNode newRoot = TreeDeSerializer
+				.deSerializeTreeFromGSonString(serializedTree);
+
+		TreeNode existingTreesRoot = model.getModelRoot();
+		for (TreeNode bookmarks : newRoot.getChildren())
+			existingTreesRoot.addChild(bookmarks);
+
+		viewer.refresh();
+		return newRoot;
+	}
+
+	private String[] loadFile(File file) {
+		try {
+			return BookmarkLoader.loadFile(file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return content;
+		return null;
 	}
 
 	private File showFileOpenDialog() {

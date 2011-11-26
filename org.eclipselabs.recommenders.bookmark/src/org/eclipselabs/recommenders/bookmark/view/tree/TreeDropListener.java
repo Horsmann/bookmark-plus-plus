@@ -24,7 +24,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveModelToLocalDefaultFile;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveBookmarksToLocalDefaultFile;
 
 public class TreeDropListener implements DropTargetListener {
 
@@ -55,7 +55,7 @@ public class TreeDropListener implements DropTargetListener {
 			else
 				processDropEventWithDragInitiatedFromOutsideTheView(event);
 
-			new SaveModelToLocalDefaultFile(viewer, model).saveChanges();
+			new SaveBookmarksToLocalDefaultFile(viewer, model).saveCurrentState();
 
 		} catch (JavaModelException e) {
 			e.printStackTrace();

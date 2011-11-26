@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
 public class TreeUtil {
-
+	
 	public static TreeNode getLeafOfTreePath(TreeNode node) {
 
 		if (node.hasChildren()) {
