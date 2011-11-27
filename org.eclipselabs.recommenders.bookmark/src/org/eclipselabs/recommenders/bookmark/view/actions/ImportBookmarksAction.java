@@ -2,6 +2,7 @@ package org.eclipselabs.recommenders.bookmark.view.actions;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -14,9 +15,10 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.GsonConverter;
 import org.eclipselabs.recommenders.bookmark.tree.util.ObjectConverter;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.tree.util.RestoredTree;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeserializer;
 import org.eclipselabs.recommenders.bookmark.view.save_restore.BookmarkLoader;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveBookmarksToLocalDefaultFile;
 
 public class ImportBookmarksAction extends Action {
 
@@ -40,42 +42,40 @@ public class ImportBookmarksAction extends Action {
 
 			String[] lines = loadFile(file);
 
-			if (lines.length != 2)
-				return;
-
 			String serializedTree = lines[0];
-			String expandedNodes = lines[1];
 
-			TreeNode newRoot = deSerializeTreeAndImportBookmarks(serializedTree);
-
-			restoreExpandedStateOfAddedBookmarks(expandedNodes, newRoot);
-
+			deSerializeTreeAndImportBookmarks(serializedTree);
+			new SaveBookmarksToLocalDefaultFile(viewer, model)
+					.saveCurrentState();
 		}
 
-	}
-
-	private void restoreExpandedStateOfAddedBookmarks(String expandedNodes,
-			TreeNode newRoot) {
-		String[] idsExpandedNodes = expandedNodes.split(";");
-		for (String id : idsExpandedNodes) {
-			TreeNode node = TreeUtil.locateNodeWithEqualID(id, newRoot);
-			if (node != null)
-				viewer.setExpandedState(node, true);
-		}
-
-		viewer.refresh();
 	}
 
 	private TreeNode deSerializeTreeAndImportBookmarks(String serializedTree) {
 		ObjectConverter converter = new GsonConverter();
-		TreeNode newRoot = TreeDeSerializer
-				.deSerializeTree(serializedTree, converter);
+
+		RestoredTree rstTree = TreeDeserializer.deSerializeTree(serializedTree,
+				converter);
+		TreeNode newRoot = rstTree.getRoot();
 
 		TreeNode existingTreesRoot = model.getModelRoot();
-		for (TreeNode bookmarks : newRoot.getChildren())
-			existingTreesRoot.addChild(bookmarks);
 
+		for (TreeNode bookmarks : newRoot.getChildren()) {
+			existingTreesRoot.addChild(bookmarks);
+		}
+		
 		viewer.refresh();
+
+		LinkedList<TreeNode> exNodeList = new LinkedList<TreeNode>();
+		for (Object node : viewer.getExpandedElements())
+			exNodeList.add((TreeNode) node);
+
+		for (TreeNode node : rstTree.getExpanded())
+			exNodeList.add(node);
+
+
+		viewer.setExpandedElements(exNodeList.toArray());
+
 		return newRoot;
 	}
 

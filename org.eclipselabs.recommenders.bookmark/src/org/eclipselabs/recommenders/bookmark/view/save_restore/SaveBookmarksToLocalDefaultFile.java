@@ -15,7 +15,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.GsonConverter;
 import org.eclipselabs.recommenders.bookmark.tree.util.ObjectConverter;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeSerializer;
 
 public class SaveBookmarksToLocalDefaultFile {
 
@@ -30,9 +30,10 @@ public class SaveBookmarksToLocalDefaultFile {
 	public void saveCurrentState() {
 		viewer.refresh();
 		TreeNode root = model.getModelRoot();
-		Object [] expanded = viewer.getExpandedElements();
+		Object[] expanded = viewer.getExpandedElements();
 		ObjectConverter converter = new GsonConverter();
-		String serializedString = TreeDeSerializer.serializeTree(root, expanded, converter);
+		String serializedString = TreeSerializer.serializeTree(root,
+				expanded, converter);
 		saveSerializedTreeModel(serializedString);
 	}
 

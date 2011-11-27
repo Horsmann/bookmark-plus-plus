@@ -10,10 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IPartListener2;
-import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
@@ -117,8 +114,8 @@ public class BookmarkView extends ViewPart {
 	private void addListenerToTreeInView() {
 		viewer.getTree().addKeyListener(
 				new TreeKeyListener(viewer, model, showInEditor));
-//		viewer.getTree().addTreeListener(
-//				new TreeExpandCollapseListener(viewer, model));
+		viewer.getTree().addTreeListener(
+				new TreeExpandCollapseListener(viewer, model));
 	}
 
 	private void restoreBookmarks() {

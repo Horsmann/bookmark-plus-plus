@@ -7,8 +7,8 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.GsonConverter;
 import org.eclipselabs.recommenders.bookmark.tree.util.ObjectConverter;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeSerializer;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.tree.util.RestoredTree;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeserializer;
 
 public class LoadBookmarksFromLocalDefaultFile {
 	private TreeModel model;
@@ -22,26 +22,26 @@ public class LoadBookmarksFromLocalDefaultFile {
 	public void load() throws IOException {
 		String[] lines = BookmarkLoader.loadDefaultFile();
 
-		if (lines.length != 2)
-			return;
-
 		String serializedTree = lines[0];
-		String expandedNodes = lines[1];
 
 		ObjectConverter converter = new GsonConverter();
-		TreeNode newRoot = TreeDeSerializer
-				.deSerializeTree(serializedTree, converter);
+		RestoredTree rstTree = TreeDeserializer.deSerializeTree(serializedTree,
+				converter);
+		TreeNode newRoot = rstTree.getRoot();
 
 		model.setModelRoot(newRoot);
 		viewer.setInput(model.getModelRoot());
+		
+		viewer.setExpandedElements(rstTree.getExpanded());
 
-		String[] idsExpandedNodes = expandedNodes.split(";");
-		for (String id : idsExpandedNodes) {
-			TreeNode node = TreeUtil.locateNodeWithEqualID(id, newRoot);
-			if (node != null)
-				viewer.setExpandedState(node, true);
-		}
+//		for (TreeNode expanded : rstTree.getExpanded()){
+//			viewer.expandToLevel(expanded, AbstractTreeViewer.ALL_LEVELS);
+//			viewer.setExpandedState(expanded, true);
+//		}
+				
+		
 
-		viewer.refresh();
+//		viewer.getTree().redraw();
+//		viewer.refresh();
 	}
 }

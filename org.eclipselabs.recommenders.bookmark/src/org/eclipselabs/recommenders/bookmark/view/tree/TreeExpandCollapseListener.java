@@ -4,7 +4,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.events.TreeEvent;
 import org.eclipse.swt.events.TreeListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveBookmarksToLocalDefaultFile;
 
 public class TreeExpandCollapseListener implements TreeListener {
 
@@ -18,6 +17,7 @@ public class TreeExpandCollapseListener implements TreeListener {
 
 	@Override
 	public void treeCollapsed(TreeEvent e) {
+		
 //		viewer.getTree().redraw();
 //		viewer.getTree().update();
 //		new SaveBookmarksToLocalDefaultFile(viewer, model).saveCurrentState();
@@ -27,6 +27,8 @@ public class TreeExpandCollapseListener implements TreeListener {
 
 	@Override
 	public void treeExpanded(TreeEvent e) {
+//		TreeNode node = (TreeNode)e.data;
+//		Object [] x = viewer.getExpandedElements();
 //		viewer.getTree().redraw();
 //		viewer.getTree().update();
 //		new SaveBookmarksToLocalDefaultFile(viewer, model).saveCurrentState();
