@@ -7,10 +7,13 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.ImportContainer;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -381,13 +384,15 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean implementsRequiredInterfaces(Object value) {
-		return (value instanceof IField || value instanceof IType
-				|| value instanceof IMethod || value instanceof ICompilationUnit);
+		return (value instanceof ICompilationUnit);
 	}
 
 	private boolean isValueInTypeHierarchyBelowICompilationUnit(Object value) {
 		return value instanceof IMethod || value instanceof IType
-				|| value instanceof IField;
+				|| value instanceof IField
+				|| value instanceof IImportDeclaration
+				|| value instanceof ImportContainer
+				|| value instanceof IPackageDeclaration;
 	}
 
 	private Object getTarget(DropTargetEvent event) {
