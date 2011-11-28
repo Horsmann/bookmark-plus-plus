@@ -1,6 +1,9 @@
 package org.eclipselabs.recommenders.bookmark;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -38,6 +41,12 @@ public class Activator extends AbstractUIPlugin {
 
 	public static Activator getDefault() {
 		return plugin;
+	}
+	
+	public static File getDefaultLocationForStoringBookmark() {
+		IPath stateLocation = Activator.getDefault().getStateLocation();
+		File stateFile = stateLocation.append(Activator.AUTOSAVE_FILE).toFile();
+		return stateFile;
 	}
 
 	@Override

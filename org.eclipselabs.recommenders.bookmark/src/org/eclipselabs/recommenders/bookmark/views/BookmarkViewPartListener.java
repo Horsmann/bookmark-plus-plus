@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveBookmarksToLocalDefaultFile;
+import org.eclipselabs.recommenders.bookmark.tree.serialization.TreeSerializerFacade;
 
 public class BookmarkViewPartListener implements IPartListener2 {
 
@@ -28,7 +28,7 @@ public class BookmarkViewPartListener implements IPartListener2 {
 
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
-		new SaveBookmarksToLocalDefaultFile(viewer, model).saveCurrentState();
+		saveNewTreeModelState();
 	}
 
 	@Override
@@ -54,6 +54,10 @@ public class BookmarkViewPartListener implements IPartListener2 {
 	@Override
 	public void partInputChanged(IWorkbenchPartReference partRef) {
 
+	}
+	
+	private void saveNewTreeModelState() {
+		TreeSerializerFacade.serializeToDefaultLocation(viewer, model);		
 	}
 
 }

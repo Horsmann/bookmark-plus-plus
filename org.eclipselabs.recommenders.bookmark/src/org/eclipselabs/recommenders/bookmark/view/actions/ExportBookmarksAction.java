@@ -1,24 +1,13 @@
 package org.eclipselabs.recommenders.bookmark.view.actions;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.util.GsonConverter;
-import org.eclipselabs.recommenders.bookmark.tree.util.ObjectConverter;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeSerializer;
+import org.eclipselabs.recommenders.bookmark.tree.serialization.TreeSerializerFacade;
+import org.eclipselabs.recommenders.bookmark.view.dialogs.ExportDialog;
 
 public class ExportBookmarksAction extends Action {
 
@@ -36,48 +25,12 @@ public class ExportBookmarksAction extends Action {
 	@Override
 	public void run() {
 
-		File file = showFileSaveDialog();
+		File file = ExportDialog.showDialog();
 
 		if (file != null) {
-			ObjectConverter converter = new GsonConverter();
-			String serializedTree = TreeSerializer.serializeTree(model
-					.getModelRoot(), viewer.getExpandedElements(), converter);
-			if (serializedTree != null) {
-				writeStringToFile(file, serializedTree);
-			}
+			TreeSerializerFacade.serialize(viewer, model, file);
 		}
 
-	}
-
-	private void writeStringToFile(File file, String serializedTree) {
-		BufferedWriter writer;
-		try {
-			writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(file), "UTF-8"));
-
-			writer.write(serializedTree);
-			writer.close();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private File showFileSaveDialog() {
-		Shell shell = Display.getCurrent().getActiveShell();
-		FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
-		fileDialog.setFilterExtensions(new String[] { "*.bm" });
-		String fileName = fileDialog.open();
-		if (fileName != null)
-			return new File(fileName);
-
-		return null;
 	}
 
 }

@@ -1,7 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
-import java.io.IOException;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -15,11 +13,13 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.deserialization.RestoredTree;
+import org.eclipselabs.recommenders.bookmark.tree.deserialization.TreeDeserializerFacade;
+import org.eclipselabs.recommenders.bookmark.tree.serialization.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditors;
 import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.LoadBookmarksFromLocalDefaultFile;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
@@ -71,11 +71,16 @@ public class BookmarkView extends ViewPart {
 	}
 
 	private void restoreBookmarks() {
-		try {
-			new LoadBookmarksFromLocalDefaultFile(viewer, model).load();
-		} catch (IOException e) {
-			// Ignore silently
+		String[] lines = BookmarkFileIO.loadFromDefaultFile();
+		if (lines != null) {
+			RestoredTree restoredTree = TreeDeserializerFacade
+					.deserialize(lines[0]);
+			model.setModelRoot(restoredTree.getRoot());
+			viewer.setInput(model.getModelRoot());
+			TreeDeserializerFacade.setExpandedNodesForView(viewer,
+					restoredTree.getExpanded());
 		}
+
 	}
 
 	private void createActions() {

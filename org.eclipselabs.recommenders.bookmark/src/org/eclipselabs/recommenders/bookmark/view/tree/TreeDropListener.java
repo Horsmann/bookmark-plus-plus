@@ -22,9 +22,9 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveBookmarksToLocalDefaultFile;
 
 public class TreeDropListener implements DropTargetListener {
 
@@ -55,12 +55,19 @@ public class TreeDropListener implements DropTargetListener {
 			else
 				processDropEventWithDragInitiatedFromOutsideTheView(event);
 
-			new SaveBookmarksToLocalDefaultFile(viewer, model).saveCurrentState();
+			TreeSerializerFacade.serializeToDefaultLocation(viewer, model);
+			
+			saveNewTreeModelState();
 
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
 
+		viewer.refresh();
+	}
+	
+	private void saveNewTreeModelState() {
+		TreeSerializerFacade.serializeToDefaultLocation(viewer, model);		
 	}
 
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)

@@ -1,24 +1,17 @@
 package org.eclipselabs.recommenders.bookmark.view.actions;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-import org.eclipselabs.recommenders.bookmark.tree.util.GsonConverter;
-import org.eclipselabs.recommenders.bookmark.tree.util.ObjectConverter;
-import org.eclipselabs.recommenders.bookmark.tree.util.RestoredTree;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeDeserializer;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.BookmarkLoader;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveBookmarksToLocalDefaultFile;
+import org.eclipselabs.recommenders.bookmark.tree.deserialization.RestoredTree;
+import org.eclipselabs.recommenders.bookmark.tree.deserialization.TreeDeserializerFacade;
+import org.eclipselabs.recommenders.bookmark.tree.serialization.BookmarkFileIO;
+import org.eclipselabs.recommenders.bookmark.tree.serialization.TreeSerializerFacade;
+import org.eclipselabs.recommenders.bookmark.view.dialogs.ImportDialog;
 
 public class ImportBookmarksAction extends Action {
 
@@ -37,25 +30,27 @@ public class ImportBookmarksAction extends Action {
 	@Override
 	public void run() {
 
-		File file = showFileOpenDialog();
+		File file = ImportDialog.showDialog();
 		if (file != null) {
 
-			String[] lines = loadFile(file);
+			String[] lines = BookmarkFileIO.readFromFile(file);
 
 			String serializedTree = lines[0];
-
 			deSerializeTreeAndImportBookmarks(serializedTree);
-			new SaveBookmarksToLocalDefaultFile(viewer, model)
-					.saveCurrentState();
+			
+			saveNewTreeModelState();
 		}
 
 	}
 
-	private TreeNode deSerializeTreeAndImportBookmarks(String serializedTree) {
-		ObjectConverter converter = new GsonConverter();
+	private void saveNewTreeModelState() {
+		TreeSerializerFacade.serializeToDefaultLocation(viewer, model);		
+	}
 
-		RestoredTree rstTree = TreeDeserializer.deSerializeTree(serializedTree,
-				converter);
+	private TreeNode deSerializeTreeAndImportBookmarks(String serializedTree) {
+
+		RestoredTree rstTree = TreeDeserializerFacade
+				.deserialize(serializedTree);
 		TreeNode newRoot = rstTree.getRoot();
 
 		TreeNode existingTreesRoot = model.getModelRoot();
@@ -63,40 +58,12 @@ public class ImportBookmarksAction extends Action {
 		for (TreeNode bookmarks : newRoot.getChildren()) {
 			existingTreesRoot.addChild(bookmarks);
 		}
-		
+
 		viewer.refresh();
 
-		LinkedList<TreeNode> exNodeList = new LinkedList<TreeNode>();
-		for (Object node : viewer.getExpandedElements())
-			exNodeList.add((TreeNode) node);
-
-		for (TreeNode node : rstTree.getExpanded())
-			exNodeList.add(node);
-
-
-		viewer.setExpandedElements(exNodeList.toArray());
+		TreeDeserializerFacade.setExpandedNodesForView(viewer,
+				rstTree.getExpanded());
 
 		return newRoot;
 	}
-
-	private String[] loadFile(File file) {
-		try {
-			return BookmarkLoader.loadFile(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private File showFileOpenDialog() {
-		Shell shell = Display.getCurrent().getActiveShell();
-		FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-		fileDialog.setFilterExtensions(new String[] { "*.bm" });
-		String fileName = fileDialog.open();
-		if (fileName != null)
-			return new File(fileName);
-
-		return null;
-	}
-
 }

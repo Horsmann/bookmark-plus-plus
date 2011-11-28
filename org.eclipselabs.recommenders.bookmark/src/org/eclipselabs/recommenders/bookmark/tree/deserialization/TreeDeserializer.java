@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree.util;
+package org.eclipselabs.recommenders.bookmark.tree.deserialization;
 
 import java.util.HashMap;
 
@@ -6,6 +6,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipselabs.recommenders.bookmark.tree.SerializedTreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.serialization.ObjectConverter;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 
 public class TreeDeserializer {
 
