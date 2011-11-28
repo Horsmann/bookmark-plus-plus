@@ -12,12 +12,15 @@ public class TreeSerializer {
 
 		HashMap<Object, String> map = new HashMap<Object, String>();
 
-		for (Object o : expandedNodes)
-			map.put(o, "");
+		if (expandedNodes != null) {
+			for (Object o : expandedNodes)
+				map.put(o, "");
+		}
 
 		SerializedTreeNode preSerialized = copyTreeAndSerializeTreeValues(root,
 				map);
-		String serialized = converter.convertToString(new Object[]{preSerialized});
+		String serialized = converter
+				.convertToString(new Object[] { preSerialized });
 
 		return serialized;
 	}
