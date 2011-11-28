@@ -10,10 +10,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
@@ -22,7 +20,6 @@ import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.save_restore.LoadBookmarksFromLocalDefaultFile;
-import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveBookmarksToLocalDefaultFile;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
@@ -55,7 +52,6 @@ public class BookmarkView extends ViewPart {
 		addListenerToView();
 		addListenerToTreeInView();
 
-
 		restoreBookmarks();
 
 	}
@@ -63,7 +59,7 @@ public class BookmarkView extends ViewPart {
 	private void addListenerToView() {
 		addDragDropSupportToView(viewer, model);
 		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
-		
+
 		IPartService service = (IPartService) getSite().getService(
 				IPartService.class);
 		service.addPartListener(new BookmarkViewPartListener(viewer, model));
@@ -73,8 +69,6 @@ public class BookmarkView extends ViewPart {
 	private void addListenerToTreeInView() {
 		viewer.getTree().addKeyListener(
 				new TreeKeyListener(viewer, model, showInEditor));
-		viewer.getTree().addTreeListener(
-				new TreeExpandCollapseListener(viewer, model));
 	}
 
 	private void restoreBookmarks() {
