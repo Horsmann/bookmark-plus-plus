@@ -2,7 +2,6 @@ package org.eclipselabs.recommenders.bookmark.tree.serialization;
 
 import java.lang.reflect.Type;
 
-import org.eclipselabs.recommenders.bookmark.tree.SerializedTreeNode;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

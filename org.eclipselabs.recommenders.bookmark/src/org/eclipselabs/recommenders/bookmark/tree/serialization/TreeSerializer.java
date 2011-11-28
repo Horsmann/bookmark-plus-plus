@@ -2,7 +2,6 @@ package org.eclipselabs.recommenders.bookmark.tree.serialization;
 
 import java.util.HashMap;
 
-import org.eclipselabs.recommenders.bookmark.tree.SerializedTreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 
@@ -56,7 +55,7 @@ public class TreeSerializer {
 			SerializedTreeNode newSubTreeChildNode = copyTreeAndSerializeTreeValuesForAllChildren(
 					child, map);
 			if (newSubTreeChildNode != null) {
-				newSubTreeNode.addSerChild(newSubTreeChildNode);
+				newSubTreeNode.addChild(newSubTreeChildNode);
 			}
 		}
 
