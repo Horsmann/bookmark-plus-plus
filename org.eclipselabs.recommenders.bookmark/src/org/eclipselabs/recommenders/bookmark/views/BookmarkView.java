@@ -10,7 +10,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
@@ -19,6 +22,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.save_restore.LoadBookmarksFromLocalDefaultFile;
+import org.eclipselabs.recommenders.bookmark.view.save_restore.SaveBookmarksToLocalDefaultFile;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
@@ -50,55 +54,6 @@ public class BookmarkView extends ViewPart {
 
 		addListenerToView();
 		addListenerToTreeInView();
-		
-//		IPartService service = (IPartService) getSite().getService(IPartService.class);
-//		service.addPartListener(new IPartListener2() {
-//			
-//			@Override
-//			public void partVisible(IWorkbenchPartReference partRef) {
-//				System.err.println("partVisible");
-//			}
-//			
-//			@Override
-//			public void partOpened(IWorkbenchPartReference partRef) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			@Override
-//			public void partInputChanged(IWorkbenchPartReference partRef) {
-//				System.err.println("InputChanged");
-//			}
-//			
-//			@Override
-//			public void partHidden(IWorkbenchPartReference partRef) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			@Override
-//			public void partDeactivated(IWorkbenchPartReference partRef) {
-//				System.err.println("deactivated");
-//			}
-//			
-//			@Override
-//			public void partClosed(IWorkbenchPartReference partRef) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			@Override
-//			public void partBroughtToTop(IWorkbenchPartReference partRef) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			@Override
-//			public void partActivated(IWorkbenchPartReference partRef) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		});
 
 
 		restoreBookmarks();
@@ -108,6 +63,10 @@ public class BookmarkView extends ViewPart {
 	private void addListenerToView() {
 		addDragDropSupportToView(viewer, model);
 		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
+		
+		IPartService service = (IPartService) getSite().getService(
+				IPartService.class);
+		service.addPartListener(new BookmarkViewPartListener(viewer, model));
 
 	}
 
