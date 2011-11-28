@@ -24,7 +24,6 @@ import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDropListener;
-import org.eclipselabs.recommenders.bookmark.view.tree.TreeExpandCollapseListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 
