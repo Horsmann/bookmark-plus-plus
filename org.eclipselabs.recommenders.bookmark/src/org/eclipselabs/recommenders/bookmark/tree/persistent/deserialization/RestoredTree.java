@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree.deserialization;
+package org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization;
 
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 

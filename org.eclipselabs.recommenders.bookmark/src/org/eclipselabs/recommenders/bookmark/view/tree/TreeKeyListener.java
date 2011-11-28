@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-import org.eclipselabs.recommenders.bookmark.tree.serialization.TreeSerializerFacade;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 
 public class TreeKeyListener implements KeyListener {
 	private TreeViewer viewer = null;

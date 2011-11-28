@@ -15,10 +15,10 @@ public class TreeNode {
 		isBookmarkNode=false;
 	}
 	
-	public TreeNode(Object value, boolean isRoot) {
+	public TreeNode(Object value, boolean isBookmark) {
 		this.value = value;
 		children = new ArrayList<TreeNode>();
-		this.isBookmarkNode=isRoot;
+		this.isBookmarkNode=isBookmark;
 	}
 	
 	public boolean hasParent() {
@@ -62,10 +62,6 @@ public class TreeNode {
 
 	public TreeNode getParent() {
 		return parent;
-	}
-
-	public void setBookmark(boolean isBookmark) {
-		this.isBookmarkNode = isBookmark;
 	}
 
 }

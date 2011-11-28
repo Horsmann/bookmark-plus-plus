@@ -7,10 +7,10 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-import org.eclipselabs.recommenders.bookmark.tree.deserialization.RestoredTree;
-import org.eclipselabs.recommenders.bookmark.tree.deserialization.TreeDeserializerFacade;
-import org.eclipselabs.recommenders.bookmark.tree.serialization.BookmarkFileIO;
-import org.eclipselabs.recommenders.bookmark.tree.serialization.TreeSerializerFacade;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.view.dialogs.ImportDialog;
 
 public class ImportBookmarksAction extends Action {

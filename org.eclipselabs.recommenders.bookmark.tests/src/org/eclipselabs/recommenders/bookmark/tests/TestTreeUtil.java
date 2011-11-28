@@ -60,21 +60,6 @@ public class TestTreeUtil {
 
 	}
 
-	@Test
-	public void testParentRelationshipForNodeWithTwoChildren() {
-		TreeNode root = buildNodeWithTwoChildren();
-
-		LinkedList<TreeNode> leafList = TreeUtil.getLeafs(root);
-
-		assertEquals(2, leafList.size());
-
-		TreeNode node = leafList.remove();
-		assertEquals(root, node.getParent());
-
-		node = leafList.remove();
-		assertEquals(root, node.getParent());
-	}
-
 	private TreeNode buildNodeWithTwoChildren() {
 		TreeNode root = new TreeNode("");
 		TreeNode child1 = new TreeNode("child1");

@@ -1,10 +1,13 @@
-package org.eclipselabs.recommenders.bookmark.tree.serialization;
+package org.eclipselabs.recommenders.bookmark.tree.persistent.serialization;
 
 import java.io.File;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.GsonConverter;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.ObjectConverter;
 
 public class TreeSerializerFacade {
 

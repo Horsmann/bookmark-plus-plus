@@ -1,11 +1,11 @@
-package org.eclipselabs.recommenders.bookmark.tree.deserialization;
+package org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization;
 
 import java.util.LinkedList;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-import org.eclipselabs.recommenders.bookmark.tree.serialization.GsonConverter;
-import org.eclipselabs.recommenders.bookmark.tree.serialization.ObjectConverter;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.GsonConverter;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.ObjectConverter;
 
 public class TreeDeserializerFacade {
 

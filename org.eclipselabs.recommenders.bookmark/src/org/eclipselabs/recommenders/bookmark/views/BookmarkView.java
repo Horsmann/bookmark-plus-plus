@@ -1,5 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
+import java.io.FileNotFoundException;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.util.LocalSelectionTransfer;
@@ -13,9 +15,9 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.deserialization.RestoredTree;
-import org.eclipselabs.recommenders.bookmark.tree.deserialization.TreeDeserializerFacade;
-import org.eclipselabs.recommenders.bookmark.tree.serialization.BookmarkFileIO;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditors;
 import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;

@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree.serialization;
+package org.eclipselabs.recommenders.bookmark.tree.persistent.serialization;
 
 import java.util.ArrayList;
 

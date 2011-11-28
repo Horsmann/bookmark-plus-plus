@@ -1,8 +1,9 @@
-package org.eclipselabs.recommenders.bookmark.tree.serialization;
+package org.eclipselabs.recommenders.bookmark.tree.persistent.serialization;
 
 import java.util.HashMap;
 
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.ObjectConverter;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 
 public class TreeSerializer {

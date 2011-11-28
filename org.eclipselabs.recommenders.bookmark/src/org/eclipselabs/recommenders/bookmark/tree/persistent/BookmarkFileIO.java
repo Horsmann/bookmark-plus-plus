@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.tree.serialization;
+package org.eclipselabs.recommenders.bookmark.tree.persistent;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -33,7 +33,7 @@ public class BookmarkFileIO {
 		}
 	}
 
-	public static String[] readFromFile(File file){
+	public static String[] readFromFile(File file) {
 		return readFileContent(file);
 	}
 
@@ -60,15 +60,13 @@ public class BookmarkFileIO {
 				return new String[] {};
 
 			lines = serialized.split("\n");
-			
+
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Ignore silently
+			// There is no file at first start up
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
