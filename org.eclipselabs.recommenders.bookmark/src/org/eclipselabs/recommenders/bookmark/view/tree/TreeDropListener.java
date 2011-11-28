@@ -56,7 +56,7 @@ public class TreeDropListener implements DropTargetListener {
 				processDropEventWithDragInitiatedFromOutsideTheView(event);
 
 			TreeSerializerFacade.serializeToDefaultLocation(viewer, model);
-			
+
 			saveNewTreeModelState();
 
 		} catch (JavaModelException e) {
@@ -65,9 +65,9 @@ public class TreeDropListener implements DropTargetListener {
 
 		viewer.refresh();
 	}
-	
+
 	private void saveNewTreeModelState() {
-		TreeSerializerFacade.serializeToDefaultLocation(viewer, model);		
+		TreeSerializerFacade.serializeToDefaultLocation(viewer, model);
 	}
 
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
@@ -125,8 +125,9 @@ public class TreeDropListener implements DropTargetListener {
 			TreeNode added = addNodesSeparatlyToExistingBookmark(bookmark,
 					treePath[i]);
 
-			showNodeExpanded(added);
-
+			if (added != null) {
+				showNodeExpanded(added);
+			}
 		}
 	}
 
@@ -218,6 +219,9 @@ public class TreeDropListener implements DropTargetListener {
 	private void showNodeExpanded(TreeNode node) {
 		viewer.refresh();
 		TreeNode leaf = TreeUtil.getLeafOfTreePath((node));
+
+		if (leaf == null)
+			return;
 
 		viewer.expandToLevel(leaf, AbstractTreeViewer.ALL_LEVELS);
 		viewer.update(leaf, null);

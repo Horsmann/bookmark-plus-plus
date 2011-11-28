@@ -5,8 +5,11 @@ import java.util.LinkedList;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
 public class TreeUtil {
-	
+
 	public static TreeNode getLeafOfTreePath(TreeNode node) {
+
+		if (node == null)
+			return null;
 
 		if (node.hasChildren()) {
 			TreeNode child = node.getChildren()[0];
@@ -147,7 +150,8 @@ public class TreeUtil {
 
 	public static TreeNode climbUpUntilLevelBelowBookmark(TreeNode node) {
 		TreeNode climber = node;
-		while (climber.getParent() != null && !climber.getParent().isBookmarkNode()) {
+		while (climber.getParent() != null
+				&& !climber.getParent().isBookmarkNode()) {
 			climber = climber.getParent();
 		}
 
