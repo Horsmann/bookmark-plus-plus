@@ -26,6 +26,7 @@ public class OpenFileInSystemExplorerAction extends Action {
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_OPEN_IN_SYSTEM_EXPLORER));
 		this.setToolTipText("Opens a window in the OS file explorer to the selected objects");
+		this.setText("Show in Explorer");
 	}
 
 	@Override
