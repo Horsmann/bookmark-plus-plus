@@ -4,7 +4,7 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipselabs.recommenders</groupId>
-	<artifactId>org.eclipselabs.recommenders.bookmark.template.parent</artifactId>
+	<artifactId>org.eclipselabs.recommenders.bookmark.parent</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -13,9 +13,9 @@
 		<module>org.eclipselabs.recommenders.bookmark-parent</module>
 		<module>org.eclipselabs.recommenders.bookmark-test-parent</module>
 		
-		<module>org.eclipselabs.recommenders.feature.bookmark.template</module>
-		<module>org.eclipselabs.recommenders.feature.bookmark.template.source</module>
-		<module>org.eclipselabs.recommenders.repository.bookmark.template</module>
+		<module>org.eclipselabs.recommenders.feature.bookmark</module>
+		<module>org.eclipselabs.recommenders.feature.bookmark.source</module>
+		<module>org.eclipselabs.recommenders.repository.bookmark</module>
 	
 		<module>org.eclipselabs.recommenders.bookmark</module>
 		<module>org.eclipselabs.recommenders.bookmark.tests</module>

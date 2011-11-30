@@ -75,11 +75,9 @@ public class BookmarkView extends ViewPart {
                 }
         });
         
-        // Create menu.
      Menu menu = menuMgr.createContextMenu(viewer.getControl());
         viewer.getControl().setMenu(menu);
         
-        // Register menu for extension.
      getSite().registerContextMenu(menuMgr, viewer);		
 	}
 

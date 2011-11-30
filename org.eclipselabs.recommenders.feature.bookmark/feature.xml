@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipselabs.recommenders.feature.bookmark.template.source"
-      label="Template Feature"
+      id="org.eclipselabs.recommenders.bookmark.feature"
+      label="Bookmark Feature"
       version="0.1.0.qualifier"
       provider-name="Eclipse Code Recommenders">
 
@@ -17,11 +17,18 @@
       [Enter License Description here.]
    </license>
 
-  <!-- <plugin
-         id="org.eclipselabs.recommenders.feature.bookmark.template.source"
+   <plugin
+         id="org.eclipselabs.recommenders.bookmark"
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/> -->
+         unpack="false"/>
+
+   <plugin
+         id="com.google.gson"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
