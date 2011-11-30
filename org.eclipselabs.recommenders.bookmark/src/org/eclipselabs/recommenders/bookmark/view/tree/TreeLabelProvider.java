@@ -1,9 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -65,7 +63,7 @@ public class TreeLabelProvider extends LabelProvider {
 		Object value = node.getValue();
 		if (value instanceof IJavaElement) {
 			IJavaElement element = (IJavaElement) value;
-			IJavaProject project = element.getJavaProject();
+			IProject project = element.getJavaProject().getProject();
 			boolean doesExist = project.exists();
 			return doesExist;
 		}

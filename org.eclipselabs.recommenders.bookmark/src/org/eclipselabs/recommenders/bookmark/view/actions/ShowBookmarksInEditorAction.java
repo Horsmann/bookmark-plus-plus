@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
@@ -58,7 +59,7 @@ public class ShowBookmarksInEditorAction extends Action {
 		Object value = node.getValue();
 		if (value instanceof IJavaElement) {
 			IJavaElement element = (IJavaElement) value;
-			IJavaProject project = element.getJavaProject();
+			IProject project = element.getJavaProject().getProject();
 
 			return project.isOpen() && project.exists();
 		}

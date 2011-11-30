@@ -6,9 +6,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipselabs.recommenders.bookmark.Activator;
 
-public class CloseAllOpenEditors extends Action {
+public class CloseAllOpenEditorsAction extends Action {
 
-	public CloseAllOpenEditors() {
+	public CloseAllOpenEditorsAction() {
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_CLOSE_ALL_OPEN_EDITORS));
 	}

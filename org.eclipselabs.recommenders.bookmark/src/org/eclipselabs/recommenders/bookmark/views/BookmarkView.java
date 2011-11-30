@@ -1,8 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
-import java.io.FileNotFoundException;
-
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -18,9 +17,10 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
-import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditors;
+import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
@@ -37,6 +37,7 @@ public class BookmarkView extends ViewPart {
 	private Action exportBookmarks = null;
 	private Action importBookmarks = null;
 	private Action closeAllOpenEditors = null;
+	private Action refreshView = null;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -90,14 +91,15 @@ public class BookmarkView extends ViewPart {
 		showInEditor = new ShowBookmarksInEditorAction(this, viewer);
 		exportBookmarks = new ExportBookmarksAction(viewer, model);
 		importBookmarks = new ImportBookmarksAction(viewer, model);
-		closeAllOpenEditors = new CloseAllOpenEditors();
-
+		closeAllOpenEditors = new CloseAllOpenEditorsAction();
+		refreshView = new RefreshViewAction(viewer);
 	}
 
 	private void setUpToolbar() {
 
 		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
 		mgr.add(showInEditor);
+		mgr.add(refreshView);
 		mgr.add(closeAllOpenEditors);
 		mgr.add(exportBookmarks);
 		mgr.add(importBookmarks);

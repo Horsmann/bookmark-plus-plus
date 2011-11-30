@@ -11,7 +11,7 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
-import org.eclipselabs.recommenders.bookmark.view.dialogs.ImportDialog;
+import org.eclipselabs.recommenders.bookmark.view.dialog.ImportDialog;
 
 public class ImportBookmarksAction extends Action {
 
