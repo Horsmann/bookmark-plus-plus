@@ -25,6 +25,7 @@ public class TreeKeyListener implements KeyListener {
 			Action showInEditor) {
 		this.viewer = viewer;
 		this.model = model;
+
 		this.showInEditor = showInEditor;
 	}
 
@@ -38,7 +39,13 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private void checkForRename(KeyEvent e) {
-		if (e.keyCode == SWT.F2 && !isShiftOrAltOrCrtlPressed(e.stateMask)) {
+		boolean isShiftAltCrtlPressed = isShiftOrAltOrCrtlPressed(e.stateMask);
+
+		if (isShiftAltCrtlPressed) {
+			return;
+		}
+
+		if (e.keyCode == SWT.F2) {
 			checkForBookmarkAndChangeName(e);
 		}
 
@@ -102,8 +109,16 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private void checkForOpenNodeInEditor(KeyEvent e) {
-		if (e.keyCode == SWT.CR && !isShiftOrAltOrCrtlPressed(e.stateMask))
+		boolean isShiftAltCrtlPressed = isShiftOrAltOrCrtlPressed(e.stateMask);
+
+		if (isShiftAltCrtlPressed) {
+			return;
+		}
+		System.err.println(e.keyCode + " "+ (e.keyCode==SWT.CTRL));
+
+		if (e.keyCode == SWT.CR) {
 			showInEditor.run();
+		}
 	}
 
 	private void checkForNodeDeletion(KeyEvent e) {
@@ -139,8 +154,12 @@ public class TreeKeyListener implements KeyListener {
 
 	private boolean isDeleteNodeEvent(int key, int state) {
 
-		return (isBackSpace(key) || isDelete(key))
-				&& !isShiftOrAltOrCrtlPressed(state);
+		boolean isShiftAltCrtlPressed = isShiftOrAltOrCrtlPressed(state);
+		if (isShiftAltCrtlPressed) {
+			return false;
+		}
+
+		return isBackSpace(key) || isDelete(key);
 	}
 
 	private boolean isDelete(int key) {
@@ -152,7 +171,14 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private boolean isShiftOrAltOrCrtlPressed(int state) {
-		return ((state & SWT.ALT) != 0 || (state & SWT.CTRL) != 0 || (state & SWT.SHIFT) != 0);
+
+		int alt = state & SWT.ALT;
+		int crtl = state & SWT.CTRL;
+		int shift = state & SWT.SHIFT;
+
+		boolean result = alt != 0 || crtl != 0 || shift != 0;
+
+		return result;
 
 	}
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
@@ -40,11 +41,29 @@ public class ShowBookmarksInEditorAction extends Action {
 		for (int i = 0; i < selectedList.size(); i++) {
 			TreeNode node = (TreeNode) selectedList.get(i);
 
+			if (!isReferencedResourceAvailable(node)) {
+				continue;
+			}
+
 			if (node.isBookmarkNode())
 				openAllEntriesOfBookmark(node);
 			else
 				openSingleEntry(node);
 		}
+
+	}
+
+	private boolean isReferencedResourceAvailable(TreeNode node) {
+
+		Object value = node.getValue();
+		if (value instanceof IJavaElement) {
+			IJavaElement element = (IJavaElement) value;
+			IJavaProject project = element.getJavaProject();
+
+			return project.isOpen() && project.exists();
+		}
+
+		return false;
 
 	}
 

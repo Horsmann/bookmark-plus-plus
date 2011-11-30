@@ -1,5 +1,9 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -40,13 +44,45 @@ public class TreeLabelProvider extends LabelProvider {
 		ImageRegistry registry = plugin.getImageRegistry();
 
 		if (element instanceof TreeNode) {
-			image = jelp.getImage(((TreeNode) element).getValue());
-			if (image == null)
+			TreeNode node = (TreeNode) element;
+			image = jelp.getImage(node.getValue());
+
+			if (!isAssociatedProjectOpen(node))
+				image = registry.get(Activator.ICON_ASSOCIATED_PROJECT_CLOSED);
+			
+			if (!doesAssociatedProjectExists(node))
+				image = registry.get(Activator.ICON_ASSOCIATED_PROJECT_NOT_AVAILABLE);
+
+			if (image == null || node.isBookmarkNode())
 				image = registry.get(getImageKeyForType(element));
 		}
 
 		return image;
 
+	}
+	
+	private boolean doesAssociatedProjectExists(TreeNode node) {
+		Object value = node.getValue();
+		if (value instanceof IJavaElement) {
+			IJavaElement element = (IJavaElement) value;
+			IJavaProject project = element.getJavaProject();
+			boolean doesExist = project.exists();
+			return doesExist;
+		}
+
+		return false;
+	}
+
+	private boolean isAssociatedProjectOpen(TreeNode node) {
+		Object value = node.getValue();
+		if (value instanceof IJavaElement) {
+			IJavaElement element = (IJavaElement) value;
+			IProject project = element.getJavaProject().getProject();
+			boolean isOpen = project.isOpen();
+			return isOpen;
+		}
+
+		return false;
 	}
 
 	public String getImageKeyForType(Object element) {
