@@ -1,14 +1,17 @@
 package org.eclipselabs.recommenders.bookmark.views;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ResourceTransfer;
@@ -46,6 +49,7 @@ public class BookmarkView extends ViewPart {
 
 		createActions();
 		setUpToolbar();
+		addContextMenu();
 
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
@@ -56,6 +60,27 @@ public class BookmarkView extends ViewPart {
 
 		restoreBookmarks();
 
+	}
+
+	private void addContextMenu() {
+		final MenuManager menuMgr = new MenuManager();
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(new IMenuListener() {
+                public void menuAboutToShow(IMenuManager mgr) {
+                        menuMgr.add(showInEditor);
+                        menuMgr.add(refreshView);
+                        menuMgr.add(closeAllOpenEditors);
+                        menuMgr.add(exportBookmarks);
+                        menuMgr.add(importBookmarks);
+                }
+        });
+        
+        // Create menu.
+     Menu menu = menuMgr.createContextMenu(viewer.getControl());
+        viewer.getControl().setMenu(menu);
+        
+        // Register menu for extension.
+     getSite().registerContextMenu(menuMgr, viewer);		
 	}
 
 	private void addListenerToView() {

@@ -25,6 +25,7 @@ public class ImportBookmarksAction extends Action {
 
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_LOAD_BOOKMARKS));
+		this.setToolTipText("Imports bookmarks from an external source");
 	}
 
 	@Override

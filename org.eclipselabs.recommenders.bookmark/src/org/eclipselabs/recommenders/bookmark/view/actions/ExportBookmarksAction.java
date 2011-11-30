@@ -19,7 +19,7 @@ public class ExportBookmarksAction extends Action {
 		this.viewer = viewer;
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_SAVE_BOOKMARKS));
-		this.setToolTipText("Exports the collection of bookmarks");
+		this.setToolTipText("Exports all bookmarks");
 	}
 
 	@Override

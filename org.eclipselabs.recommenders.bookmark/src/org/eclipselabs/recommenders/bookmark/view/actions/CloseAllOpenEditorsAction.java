@@ -11,6 +11,7 @@ public class CloseAllOpenEditorsAction extends Action {
 	public CloseAllOpenEditorsAction() {
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_CLOSE_ALL_OPEN_EDITORS));
+		this.setToolTipText("Closes all currently opened editor windows");
 	}
 
 	@Override

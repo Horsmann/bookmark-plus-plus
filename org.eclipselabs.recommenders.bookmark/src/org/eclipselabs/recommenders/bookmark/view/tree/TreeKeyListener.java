@@ -114,7 +114,7 @@ public class TreeKeyListener implements KeyListener {
 		if (isShiftAltCrtlPressed) {
 			return;
 		}
-		System.err.println(e.keyCode + " "+ (e.keyCode==SWT.CTRL));
+//		System.err.println(e.keyCode + " "+ (e.keyCode==SWT.CTRL));
 
 		if (e.keyCode == SWT.CR) {
 			showInEditor.run();

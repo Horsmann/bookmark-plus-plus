@@ -10,11 +10,12 @@ public class RefreshViewAction extends Action {
 
 	public RefreshViewAction(TreeViewer viewer) {
 		this.viewer = viewer;
-		
+
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_REFRESH_VIEW));
+		this.setToolTipText("Refreshes the view and updates the labeling\n(available/closed/not available)");
 	}
-	
+
 	@Override
 	public void run() {
 		viewer.refresh(true);
