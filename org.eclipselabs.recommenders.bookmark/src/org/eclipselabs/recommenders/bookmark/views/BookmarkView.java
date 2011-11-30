@@ -5,6 +5,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -23,6 +24,7 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.Tre
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
@@ -41,6 +43,7 @@ public class BookmarkView extends ViewPart {
 	private Action importBookmarks = null;
 	private Action closeAllOpenEditors = null;
 	private Action refreshView = null;
+	private Action openInSystemFileExplorer = null;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -72,6 +75,8 @@ public class BookmarkView extends ViewPart {
                         menuMgr.add(closeAllOpenEditors);
                         menuMgr.add(exportBookmarks);
                         menuMgr.add(importBookmarks);
+                        menuMgr.add(new Separator());
+                        menuMgr.add(openInSystemFileExplorer);
                 }
         });
         
@@ -116,6 +121,8 @@ public class BookmarkView extends ViewPart {
 		importBookmarks = new ImportBookmarksAction(viewer, model);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(viewer);
+		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
+		
 	}
 
 	private void setUpToolbar() {
@@ -126,6 +133,8 @@ public class BookmarkView extends ViewPart {
 		mgr.add(closeAllOpenEditors);
 		mgr.add(exportBookmarks);
 		mgr.add(importBookmarks);
+		mgr.add(new Separator());
+		mgr.add(openInSystemFileExplorer);
 	}
 
 	@Override

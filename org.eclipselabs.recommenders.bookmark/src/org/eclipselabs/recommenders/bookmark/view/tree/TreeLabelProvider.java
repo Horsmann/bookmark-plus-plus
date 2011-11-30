@@ -1,7 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -9,10 +7,14 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
 public class TreeLabelProvider extends LabelProvider {
 
-	JavaElementLabelProvider jelp = new JavaElementLabelProvider(
+	private AbstractUIPlugin plugin = Activator.getDefault();
+	private ImageRegistry registry = plugin.getImageRegistry();
+
+	private JavaElementLabelProvider jelp = new JavaElementLabelProvider(
 			JavaElementLabelProvider.SHOW_RETURN_TYPE
 					| JavaElementLabelProvider.SHOW_SMALL_ICONS
 					| JavaElementLabelProvider.SHOW_DEFAULT);
@@ -38,49 +40,33 @@ public class TreeLabelProvider extends LabelProvider {
 	public Image getImage(Object element) {
 
 		Image image = null;
-		AbstractUIPlugin plugin = Activator.getDefault();
-		ImageRegistry registry = plugin.getImageRegistry();
 
-		if (element instanceof TreeNode) {
-			TreeNode node = (TreeNode) element;
-			image = jelp.getImage(node.getValue());
+		TreeNode node = (TreeNode) element;
 
-			if (!isAssociatedProjectOpen(node))
-				image = registry.get(Activator.ICON_ASSOCIATED_PROJECT_CLOSED);
-			
-			if (!doesAssociatedProjectExists(node))
-				image = registry.get(Activator.ICON_ASSOCIATED_PROJECT_NOT_AVAILABLE);
+		if (node.isBookmarkNode()) {
+			image = registry.get(getImageKeyForType(element));
+			return image;
+		}
 
-			if (image == null || node.isBookmarkNode())
-				image = registry.get(getImageKeyForType(element));
+		Object value = node.getValue();
+		image = jelp.getImage(value);
+
+		if (!ResourceAvailabilityValidator.doesAssociatedProjectExists(value)) {
+			image = registry
+					.get(Activator.ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE);
+		}
+
+		if (!ResourceAvailabilityValidator.isAssociatedProjectOpen(value)) {
+			image = registry.get(Activator.ICON_ASSOCIATED_PROJECT_CLOSED);
+		}
+
+		if (!ResourceAvailabilityValidator.doesReferecedObjectExists(value)) {
+			image = registry
+					.get(Activator.ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE);
 		}
 
 		return image;
 
-	}
-	
-	private boolean doesAssociatedProjectExists(TreeNode node) {
-		Object value = node.getValue();
-		if (value instanceof IJavaElement) {
-			IJavaElement element = (IJavaElement) value;
-			IProject project = element.getJavaProject().getProject();
-			boolean doesExist = project.exists();
-			return doesExist;
-		}
-
-		return false;
-	}
-
-	private boolean isAssociatedProjectOpen(TreeNode node) {
-		Object value = node.getValue();
-		if (value instanceof IJavaElement) {
-			IJavaElement element = (IJavaElement) value;
-			IProject project = element.getJavaProject().getProject();
-			boolean isOpen = project.isOpen();
-			return isOpen;
-		}
-
-		return false;
 	}
 
 	public String getImageKeyForType(Object element) {

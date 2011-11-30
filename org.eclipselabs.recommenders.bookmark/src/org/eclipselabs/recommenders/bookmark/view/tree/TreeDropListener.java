@@ -373,7 +373,8 @@ public class TreeDropListener implements DropTargetListener {
 			tmpParent = new TreeNode(element);
 			tmpParent.addChild(tmpChild);
 
-			if (implementsRequiredInterfaces(element.getParent())) {
+			IJavaElement nextParent = element.getParent();
+			if (nextParent != null && !implementsRequiredInterfaces(nextParent)) {
 				tmpChild = tmpParent;
 				value = element;
 			} else {

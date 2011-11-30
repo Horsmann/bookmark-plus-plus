@@ -1,16 +1,13 @@
 package org.eclipselabs.recommenders.bookmark.view.actions;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IEditorPart;
@@ -20,6 +17,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
 public class ShowBookmarksInEditorAction extends Action {
 
@@ -37,7 +35,8 @@ public class ShowBookmarksInEditorAction extends Action {
 	@Override
 	public void run() {
 
-		List<IStructuredSelection> selectedList = getTreeSelections();
+		List<IStructuredSelection> selectedList = TreeUtil
+				.getTreeSelections(viewer);
 		for (int i = 0; i < selectedList.size(); i++) {
 			TreeNode node = (TreeNode) selectedList.get(i);
 
@@ -55,16 +54,8 @@ public class ShowBookmarksInEditorAction extends Action {
 
 	private boolean isReferencedResourceAvailable(TreeNode node) {
 
-		Object value = node.getValue();
-		if (value instanceof IJavaElement) {
-			IJavaElement element = (IJavaElement) value;
-			IProject project = element.getJavaProject().getProject();
-
-			return project.isOpen() && project.exists();
-		}
-
-		return false;
-
+		return ResourceAvailabilityValidator.isResourceAvailable(node
+				.getValue());
 	}
 
 	private void openAllEntriesOfBookmark(TreeNode bookmark) {
@@ -97,17 +88,6 @@ public class ShowBookmarksInEditorAction extends Action {
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<IStructuredSelection> getTreeSelections() {
-		ISelection selection = viewer.getSelection();
-		if (selection == null)
-			return Collections.emptyList();
-		if (selection instanceof IStructuredSelection && !selection.isEmpty())
-			return ((IStructuredSelection) selection).toList();
-
-		return Collections.emptyList();
 	}
 
 }

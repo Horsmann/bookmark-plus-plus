@@ -27,8 +27,9 @@ public class Activator extends AbstractUIPlugin {
 	public static final String ICON_SAVE_BOOKMARKS = "exportBookmarks";
 	public static final String ICON_LOAD_BOOKMARKS = "importBookmarks";
 	public static final String ICON_ASSOCIATED_PROJECT_CLOSED = "projectClosed";
-	public static final String ICON_ASSOCIATED_PROJECT_NOT_AVAILABLE = "projectNotAvailable";
+	public static final String ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE = "projectNotAvailable";
 	public static final String ICON_REFRESH_VIEW = "refreshView";
+	public static final String ICON_OPEN_IN_SYSTEM_EXPLORER = "openInSystemExplorer";
 	
 	public static final String AUTOSAVE_FILE = "bookmarkModel.bm";
 
@@ -87,11 +88,15 @@ public class Activator extends AbstractUIPlugin {
 		
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
 				new Path("icons/errorwarning_tab.gif"), null));
-		registry.put(ICON_ASSOCIATED_PROJECT_NOT_AVAILABLE, imgDesc);
+		registry.put(ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE, imgDesc);
 		
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
 				new Path("icons/refresh_tab.gif"), null));
 		registry.put(ICON_REFRESH_VIEW, imgDesc);
+		
+		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
+				new Path("icons/opentype.gif"), null));
+		registry.put(ICON_OPEN_IN_SYSTEM_EXPLORER, imgDesc);
 
 	}
 }

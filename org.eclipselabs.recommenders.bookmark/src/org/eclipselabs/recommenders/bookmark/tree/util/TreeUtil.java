@@ -1,7 +1,12 @@
 package org.eclipselabs.recommenders.bookmark.tree.util;
 
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
 public class TreeUtil {
@@ -156,5 +161,16 @@ public class TreeUtil {
 		}
 
 		return climber;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<IStructuredSelection> getTreeSelections(TreeViewer viewer) {
+		ISelection selection = viewer.getSelection();
+		if (selection == null)
+			return Collections.emptyList();
+		if (selection instanceof IStructuredSelection && !selection.isEmpty())
+			return ((IStructuredSelection) selection).toList();
+
+		return Collections.emptyList();
 	}
 }
