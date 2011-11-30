@@ -374,7 +374,7 @@ public class TreeDropListener implements DropTargetListener {
 			tmpParent.addChild(tmpChild);
 
 			IJavaElement nextParent = element.getParent();
-			if (nextParent != null && !implementsRequiredInterfaces(nextParent)) {
+			if (nextParent != null && implementsRequiredInterfaces(nextParent)) {
 				tmpChild = tmpParent;
 				value = element;
 			} else {
@@ -386,7 +386,8 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private boolean implementsRequiredInterfaces(Object value) {
-		return (value instanceof ICompilationUnit);
+		return (value instanceof ICompilationUnit)
+				|| isValueInTypeHierarchyBelowICompilationUnit(value);
 	}
 
 	private boolean isValueInTypeHierarchyBelowICompilationUnit(Object value) {
