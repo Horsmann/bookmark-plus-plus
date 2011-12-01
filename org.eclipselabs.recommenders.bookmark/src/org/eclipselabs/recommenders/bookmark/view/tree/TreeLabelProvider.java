@@ -56,13 +56,13 @@ public class TreeLabelProvider extends LabelProvider {
 					.get(Activator.ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE);
 		}
 
-		if (!ResourceAvailabilityValidator.isAssociatedProjectOpen(value)) {
-			image = registry.get(Activator.ICON_ASSOCIATED_PROJECT_CLOSED);
-		}
-
 		if (!ResourceAvailabilityValidator.doesReferecedObjectExists(value)) {
 			image = registry
 					.get(Activator.ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE);
+		}
+
+		if (!ResourceAvailabilityValidator.isAssociatedProjectOpen(value)) {
+			image = registry.get(Activator.ICON_ASSOCIATED_PROJECT_CLOSED);
 		}
 
 		return image;

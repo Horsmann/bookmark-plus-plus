@@ -1,11 +1,12 @@
 package org.eclipselabs.recommenders.bookmark.util;
 
-import java.io.File;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 
 public class ResourceAvailabilityValidator {
 
@@ -53,31 +54,38 @@ public class ResourceAvailabilityValidator {
 
 	public static boolean doesReferecedObjectExists(Object value) {
 
+		if (value instanceof IField) {
+			IField field = (IField) value;
+			boolean exist = field.exists();
+			return exist;
+		}
+
+		if (value instanceof IMethod) {
+			IMethod method = (IMethod) value;
+			boolean exist = method.exists();
+			return exist;
+		}
+
+		if (value instanceof IType) {
+			IType type = (IType) value;
+			boolean exist = type.exists();
+			return exist;
+		}
+
 		if (value instanceof IJavaElement) {
 			IJavaElement element = (IJavaElement) value;
 			IResource resource = element.getResource();
-			boolean doesExist = resource.exists();
-			
-//			boolean x = element.getJavaModel().exists();
-
-			if (doesExist == false) {
-				File file = resource.getRawLocation().toFile();
-				if (file != null) {
-					doesExist = file.exists();
-				}
-			}
-
-			// boolean doesExist = element.exists();
-			return doesExist;
+			boolean exist = resource.exists();
+			return exist;
 		}
 
 		if (value instanceof IFile) {
 			IFile file = (IFile) value;
-			boolean doesExist = file.exists();
-			return doesExist;
+			boolean exist = file.exists();
+			return exist;
 		}
 
-		return true;
+		return false;
 	}
 
 }
