@@ -30,7 +30,7 @@ public class ShowBookmarksInEditorAction extends Action {
 
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_SHOW_IN_EDITOR));
-		this.setToolTipText("Opens the referenced Object in its default editr");
+		this.setToolTipText("Opens the referenced object in its default editor");
 		this.setText("Show in Editor");
 	}
 
