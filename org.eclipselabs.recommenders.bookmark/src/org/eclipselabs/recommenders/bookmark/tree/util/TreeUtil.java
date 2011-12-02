@@ -7,9 +7,32 @@ import java.util.List;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
 public class TreeUtil {
+
+	public static void deleteNodesReferencingToDeadResourcesUnderNode(
+			TreeNode node, final TreeModel model) {
+
+		for (TreeNode child : node.getChildren()) {
+			deleteNodesReferencingToDeadResourcesUnderNode(child, model);
+		}
+
+		boolean delete = ResourceAvailabilityValidator
+				.doesReferecedObjectExists(node.getValue());
+
+		if (delete && !isNodeModelRoot(node, model)) {
+			node.getParent().removeChild(node);
+			node.setParent(null);
+		}
+
+	}
+
+	private static boolean isNodeModelRoot(TreeNode node, TreeModel model) {
+		return (node == model.getModelRoot());
+	}
 
 	public static TreeNode getLeafOfTreePath(TreeNode node) {
 
@@ -162,7 +185,7 @@ public class TreeUtil {
 
 		return climber;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static List<IStructuredSelection> getTreeSelections(TreeViewer viewer) {
 		ISelection selection = viewer.getSelection();

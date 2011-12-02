@@ -52,6 +52,7 @@ public class ResourceAvailabilityValidator {
 		return false;
 	}
 
+	//an object in a closed project will always return false for .exists()!
 	public static boolean doesReferecedObjectExists(Object value) {
 
 		if (value instanceof IField) {

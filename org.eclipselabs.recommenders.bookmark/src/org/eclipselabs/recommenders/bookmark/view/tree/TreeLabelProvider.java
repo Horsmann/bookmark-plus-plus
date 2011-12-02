@@ -50,19 +50,23 @@ public class TreeLabelProvider extends LabelProvider {
 
 		Object value = node.getValue();
 		image = jelp.getImage(value);
-
+		
+		
 		if (!ResourceAvailabilityValidator.doesAssociatedProjectExists(value)) {
 			image = registry
 					.get(Activator.ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE);
+			return image;
 		}
-
+		
+		if (!ResourceAvailabilityValidator.isAssociatedProjectOpen(value)) {
+			image = registry.get(Activator.ICON_ASSOCIATED_PROJECT_CLOSED);
+			return image;
+		}
+		
 		if (!ResourceAvailabilityValidator.doesReferecedObjectExists(value)) {
 			image = registry
 					.get(Activator.ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE);
-		}
-
-		if (!ResourceAvailabilityValidator.isAssociatedProjectOpen(value)) {
-			image = registry.get(Activator.ICON_ASSOCIATED_PROJECT_CLOSED);
+			return image;
 		}
 
 		return image;

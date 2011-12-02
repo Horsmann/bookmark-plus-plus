@@ -6,6 +6,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -17,10 +18,12 @@ import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
@@ -67,23 +70,23 @@ public class BookmarkView extends ViewPart {
 
 	private void addContextMenu() {
 		final MenuManager menuMgr = new MenuManager();
-        menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(new IMenuListener() {
-                public void menuAboutToShow(IMenuManager mgr) {
-                        menuMgr.add(showInEditor);
-                        menuMgr.add(refreshView);
-                        menuMgr.add(closeAllOpenEditors);
-                        menuMgr.add(exportBookmarks);
-                        menuMgr.add(importBookmarks);
-                        menuMgr.add(new Separator());
-                        menuMgr.add(openInSystemFileExplorer);
-                }
-        });
-        
-     Menu menu = menuMgr.createContextMenu(viewer.getControl());
-        viewer.getControl().setMenu(menu);
-        
-     getSite().registerContextMenu(menuMgr, viewer);		
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager mgr) {
+				menuMgr.add(showInEditor);
+				menuMgr.add(refreshView);
+				menuMgr.add(closeAllOpenEditors);
+				menuMgr.add(exportBookmarks);
+				menuMgr.add(importBookmarks);
+				menuMgr.add(new Separator());
+				menuMgr.add(openInSystemFileExplorer);
+			}
+		});
+
+		Menu menu = menuMgr.createContextMenu(viewer.getControl());
+		viewer.getControl().setMenu(menu);
+
+		getSite().registerContextMenu(menuMgr, viewer);
 	}
 
 	private void addListenerToView() {
@@ -103,7 +106,7 @@ public class BookmarkView extends ViewPart {
 
 	private void restoreBookmarks() {
 		String[] lines = BookmarkFileIO.loadFromDefaultFile();
-		if (lines != null) {
+		if (lines != null && lines.length > 0) {
 			RestoredTree restoredTree = TreeDeserializerFacade
 					.deserialize(lines[0]);
 			model.setModelRoot(restoredTree.getRoot());
@@ -111,6 +114,22 @@ public class BookmarkView extends ViewPart {
 			TreeDeserializerFacade.setExpandedNodesForView(viewer,
 					restoredTree.getExpanded());
 		}
+
+//		checkPreferencesForDeletionOfDeadReferences();
+
+	}
+
+	private void checkPreferencesForDeletionOfDeadReferences() {
+		IPreferenceStore preferenceStore = Activator.getDefault()
+				.getPreferenceStore();
+		boolean removeDeadLinks = preferenceStore
+				.getBoolean(org.eclipselabs.recommenders.bookmark.preferences.PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES);
+
+		if (removeDeadLinks) {
+			TreeUtil.deleteNodesReferencingToDeadResourcesUnderNode(
+					model.getModelRoot(), model);
+		} else
+			System.err.println("keep");
 
 	}
 
@@ -122,7 +141,7 @@ public class BookmarkView extends ViewPart {
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(viewer);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
-		
+
 	}
 
 	private void setUpToolbar() {
