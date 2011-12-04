@@ -20,10 +20,18 @@ public class TreeUtil {
 			deleteNodesReferencingToDeadResourcesUnderNode(child, model);
 		}
 
-		boolean delete = ResourceAvailabilityValidator
-				.doesReferecedObjectExists(node.getValue());
+		if (node.isBookmarkNode() || isNodeModelRoot(node, model))
+			return;
 
-		if (delete && !isNodeModelRoot(node, model)) {
+		Object value = node.getValue();
+		boolean isProjectOpen = ResourceAvailabilityValidator
+				.isAssociatedProjectOpen(value);
+
+		boolean delete = ResourceAvailabilityValidator
+				.doesReferecedObjectExists(value);
+
+		if (!delete && isProjectOpen) {
+			
 			node.getParent().removeChild(node);
 			node.setParent(null);
 		}

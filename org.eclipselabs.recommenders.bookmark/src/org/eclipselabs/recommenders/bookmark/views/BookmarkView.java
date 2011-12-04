@@ -20,6 +20,7 @@ import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
@@ -115,21 +116,22 @@ public class BookmarkView extends ViewPart {
 					restoredTree.getExpanded());
 		}
 
-//		checkPreferencesForDeletionOfDeadReferences();
+		checkPreferencesForDeletionOfDeadReferences();
 
 	}
 
 	private void checkPreferencesForDeletionOfDeadReferences() {
 		IPreferenceStore preferenceStore = Activator.getDefault()
 				.getPreferenceStore();
-		boolean removeDeadLinks = preferenceStore
+		boolean removeDeadReferences = preferenceStore
 				.getBoolean(org.eclipselabs.recommenders.bookmark.preferences.PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES);
 
-		if (removeDeadLinks) {
-			TreeUtil.deleteNodesReferencingToDeadResourcesUnderNode(
-					model.getModelRoot(), model);
-		} else
-			System.err.println("keep");
+		if (removeDeadReferences) {
+			final TreeNode root = model.getModelRoot();
+
+			TreeUtil.deleteNodesReferencingToDeadResourcesUnderNode(root, model);
+			viewer.refresh();
+		}
 
 	}
 
