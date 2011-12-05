@@ -23,7 +23,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
 public class TreeUtil {
-	
+
 	public static TreeNode buildTreeStructure(TreePath path)
 			throws JavaModelException {
 
@@ -43,7 +43,72 @@ public class TreeUtil {
 
 		return null;
 	}
-	
+
+	public static void deleteNodesReferencingToDeadResourcesUnderNode(
+			TreeNode node, final TreeModel model) {
+
+		for (TreeNode child : node.getChildren()) {
+			deleteNodesReferencingToDeadResourcesUnderNode(child, model);
+		}
+
+		if (node.isBookmarkNode() || isNodeModelRoot(node, model))
+			return;
+
+		Object value = node.getValue();
+		boolean isProjectOpen = ResourceAvailabilityValidator
+				.isAssociatedProjectOpen(value);
+
+		boolean delete = ResourceAvailabilityValidator
+				.doesReferecedObjectExists(value);
+
+		if (!delete && isProjectOpen) {
+
+			node.getParent().removeChild(node);
+			node.setParent(null);
+		}
+
+	}
+
+	public static boolean isDuplicate(TreeNode bookmark, TreeNode node) {
+
+		LinkedList<TreeNode> leafs = TreeUtil.getLeafs(node);
+
+		for (TreeNode leaf : leafs) {
+			String id = TreeValueConverter.getStringIdentification(leaf
+					.getValue());
+
+			boolean duplicateFound = TreeUtil.isDuplicate(bookmark, id);
+			if (duplicateFound)
+				return true;
+		}
+
+		return false;
+	}
+
+	public static TreeNode getBookmarkNode(TreeNode node) {
+
+		if (node == null)
+			return null;
+
+		if (node.isBookmarkNode())
+			return node;
+
+		return getBookmarkNode(node.getParent());
+	}
+
+	public static TreeNode locateNodeWithEqualID(String id, TreeNode node) {
+
+		if (doesNodeMatchId(id, node))
+			return node;
+		for (TreeNode child : node.getChildren()) {
+			TreeNode located = locateNodeWithEqualID(id, child);
+			if (located != null)
+				return located;
+		}
+
+		return null;
+	}
+
 	private static TreeNode createHierarchyUpToCompilationUnitLevel(Object value) {
 		TreeNode tmpChild = new TreeNode(value);
 		TreeNode tmpParent = null;
@@ -71,38 +136,14 @@ public class TreeUtil {
 		return (value instanceof ICompilationUnit)
 				|| isValueInTypeHierarchyBelowICompilationUnit(value);
 	}
-	
-	private static boolean isValueInTypeHierarchyBelowICompilationUnit(Object value) {
+
+	private static boolean isValueInTypeHierarchyBelowICompilationUnit(
+			Object value) {
 		return value instanceof IMethod || value instanceof IType
 				|| value instanceof IField
 				|| value instanceof IImportDeclaration
 				|| value instanceof IImportContainer
 				|| value instanceof IPackageDeclaration;
-	}
-
-	public static void deleteNodesReferencingToDeadResourcesUnderNode(
-			TreeNode node, final TreeModel model) {
-
-		for (TreeNode child : node.getChildren()) {
-			deleteNodesReferencingToDeadResourcesUnderNode(child, model);
-		}
-
-		if (node.isBookmarkNode() || isNodeModelRoot(node, model))
-			return;
-
-		Object value = node.getValue();
-		boolean isProjectOpen = ResourceAvailabilityValidator
-				.isAssociatedProjectOpen(value);
-
-		boolean delete = ResourceAvailabilityValidator
-				.doesReferecedObjectExists(value);
-
-		if (!delete && isProjectOpen) {
-			
-			node.getParent().removeChild(node);
-			node.setParent(null);
-		}
-
 	}
 
 	private static boolean isNodeModelRoot(TreeNode node, TreeModel model) {
@@ -187,52 +228,12 @@ public class TreeUtil {
 		return newNode;
 	}
 
-	public static TreeNode getBookmarkNode(TreeNode node) {
-
-		if (node == null)
-			return null;
-
-		if (node.isBookmarkNode())
-			return node;
-
-		return getBookmarkNode(node.getParent());
-	}
-
-	public static TreeNode locateNodeWithEqualID(String id, TreeNode node) {
-
-		if (doesNodeMatchId(id, node))
-			return node;
-		for (TreeNode child : node.getChildren()) {
-			TreeNode located = locateNodeWithEqualID(id, child);
-			if (located != null)
-				return located;
-		}
-
-		return null;
-	}
-
 	private static boolean doesNodeMatchId(String id, TreeNode node) {
 		Object value = node.getValue();
 		if (value == null || id == null)
 			return false;
 		String compareID = TreeValueConverter.getStringIdentification(value);
 		return (id.compareTo(compareID) == 0);
-	}
-
-	public static boolean isDuplicate(TreeNode bookmark, TreeNode node) {
-
-		LinkedList<TreeNode> leafs = TreeUtil.getLeafs(node);
-
-		for (TreeNode leaf : leafs) {
-			String id = TreeValueConverter.getStringIdentification(leaf
-					.getValue());
-
-			boolean duplicateFound = TreeUtil.isDuplicate(bookmark, id);
-			if (duplicateFound)
-				return true;
-		}
-
-		return false;
 	}
 
 	public static boolean isDuplicate(TreeNode node, String masterID) {
@@ -271,4 +272,58 @@ public class TreeUtil {
 
 		return Collections.emptyList();
 	}
+
+	/**
+	 * Takes a node (tree path) that shall be added, determines the leaf of it
+	 * and seeks equal nodes in the existing tree that are equal to the leafs
+	 * <b>parent</b>. If such an equal parent node is found, the leaf is
+	 * attached to it as child and <code>true</code> is returned
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public static TreeNode attemptMerge(TreeNode bookmark, TreeNode node) {
+		LinkedList<TreeNode> leafs = TreeUtil.getLeafs(node);
+
+		for (TreeNode leaf : leafs) {
+			TreeNode parent = leaf.getParent();
+			if (climbUpTreeHierarchyMergeIfIDMatches(bookmark, parent))
+				return parent;
+		}
+
+		return null;
+	}
+
+	private static boolean climbUpTreeHierarchyMergeIfIDMatches(
+			TreeNode bookmark, TreeNode parent) {
+		while (parent != null) {
+			TreeNode mergeTargetExistingTree = getNodeThatMatchesID(bookmark,
+					parent);
+
+			if (isMergeTargetFound(mergeTargetExistingTree)) {
+				merge(mergeTargetExistingTree, parent);
+				return true;
+			}
+			parent = parent.getParent();
+		}
+		return false;
+	}
+
+	private static TreeNode getNodeThatMatchesID(TreeNode bookmark,
+			TreeNode parent) {
+		String id = TreeValueConverter.getStringIdentification(parent
+				.getValue());
+		return TreeUtil.locateNodeWithEqualID(id, bookmark);
+	}
+
+	private static void merge(TreeNode mergeTargetExistingTree, TreeNode parent) {
+		for (TreeNode child : parent.getChildren()) {
+			mergeTargetExistingTree.addChild(child);
+		}
+	}
+
+	private static boolean isMergeTargetFound(TreeNode mergeTargetExistingTree) {
+		return mergeTargetExistingTree != null;
+	}
+
 }

@@ -1,21 +1,9 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IImportContainer;
-import org.eclipse.jdt.core.IImportDeclaration;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IPackageDeclaration;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
@@ -27,7 +15,6 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 
 //@SuppressWarnings("restriction")
 public class TreeDropListener implements DropTargetListener {
@@ -69,6 +56,32 @@ public class TreeDropListener implements DropTargetListener {
 
 		viewer.refresh();
 	}
+	
+	@Override
+	public void dropAccept(DropTargetEvent event) {
+
+		if (!isValidDrop(event))
+			event.detail = DND.DROP_NONE;
+	}
+	
+	@Override
+	public void dragEnter(DropTargetEvent event) {
+		event.detail = DND.DROP_LINK;
+	}
+
+	@Override
+	public void dragLeave(DropTargetEvent event) {
+	}
+
+	@Override
+	public void dragOperationChanged(DropTargetEvent event) {
+	}
+
+	@Override
+	public void dragOver(DropTargetEvent event) {
+	}
+
+
 
 	private void saveNewTreeModelState() {
 		TreeSerializerFacade.serializeToDefaultLocation(viewer, model);
@@ -76,7 +89,7 @@ public class TreeDropListener implements DropTargetListener {
 
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
 			throws JavaModelException {
-		List<IStructuredSelection> selections = getTreeSelections();
+		List<IStructuredSelection> selections = TreeUtil.getTreeSelections(viewer);
 		for (int i = 0; i < selections.size(); i++) {
 
 			TreeNode node = (TreeNode) selections.get(i);
@@ -94,7 +107,7 @@ public class TreeDropListener implements DropTargetListener {
 				continue;
 
 			TreeNode merged = null;
-			if ((merged = attemptMerge(targetBookmark, nodeCopy)) != null) {
+			if ((merged = TreeUtil.attemptMerge(targetBookmark, nodeCopy)) != null) {
 				unlink(node);
 				showNodeExpanded(merged);
 				continue;
@@ -150,34 +163,12 @@ public class TreeDropListener implements DropTargetListener {
 		return null;
 	}
 
-	@Override
-	public void dragEnter(DropTargetEvent event) {
-		event.detail = DND.DROP_LINK;
-	}
-
-	@Override
-	public void dragLeave(DropTargetEvent event) {
-	}
-
-	@Override
-	public void dragOperationChanged(DropTargetEvent event) {
-	}
-
-	@Override
-	public void dragOver(DropTargetEvent event) {
-	}
-
-	@Override
-	public void dropAccept(DropTargetEvent event) {
-
-		if (!isValidDrop(event))
-			event.detail = DND.DROP_NONE;
-	}
+	
 
 	private boolean isValidDrop(DropTargetEvent event) {
 
 		if (dragListener.isDragInProgress()) {
-			List<IStructuredSelection> selectedList = getTreeSelections();
+			List<IStructuredSelection> selectedList = TreeUtil.getTreeSelections(viewer);
 			TreeNode target = (TreeNode) getTarget(event);
 
 			for (int i = 0; i < selectedList.size(); i++) {
@@ -193,16 +184,6 @@ public class TreeDropListener implements DropTargetListener {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<IStructuredSelection> getTreeSelections() {
-		ISelection selection = viewer.getSelection();
-		if (selection == null)
-			return Collections.emptyList();
-		if (selection instanceof IStructuredSelection && !selection.isEmpty())
-			return ((IStructuredSelection) selection).toList();
-
-		return Collections.emptyList();
-	}
 
 	private boolean causesRecursion(TreeNode source, TreeNode target) {
 
@@ -286,117 +267,11 @@ public class TreeDropListener implements DropTargetListener {
 	private void mergeAddNodeToBookmark(TreeNode bookmark, TreeNode node)
 			throws JavaModelException {
 
-		if (attemptMerge(bookmark, node) == null)
+		if (TreeUtil.attemptMerge(bookmark, node) == null)
 			bookmark.addChild(node);
 	}
 
-	/**
-	 * Takes a node (tree path) that shall be added, determines the leaf of it
-	 * and seeks equal nodes in the existing tree that are equal to the leafs
-	 * <b>parent</b>. If such an equal parent node is found, the leaf is
-	 * attached to it as child and <code>true</code> is returned
-	 * 
-	 * @param node
-	 * @return
-	 */
-	private TreeNode attemptMerge(TreeNode bookmark, TreeNode node) {
-		LinkedList<TreeNode> leafs = TreeUtil.getLeafs(node);
-
-		for (TreeNode leaf : leafs) {
-			TreeNode parent = leaf.getParent();
-			if (climbUpTreeHierarchyMergeIfIDMatches(bookmark, parent))
-				return parent;
-		}
-
-		return null;
-	}
-
-	private boolean climbUpTreeHierarchyMergeIfIDMatches(TreeNode bookmark,
-			TreeNode parent) {
-		while (parent != null) {
-			TreeNode mergeTargetExistingTree = getNodeThatMatchesID(bookmark,
-					parent);
-
-			if (isMergeTargetFound(mergeTargetExistingTree)) {
-				merge(mergeTargetExistingTree, parent);
-				return true;
-			}
-			parent = parent.getParent();
-		}
-		return false;
-	}
-
-	private TreeNode getNodeThatMatchesID(TreeNode bookmark, TreeNode parent) {
-		String id = TreeValueConverter.getStringIdentification(parent
-				.getValue());
-		return TreeUtil.locateNodeWithEqualID(id, bookmark);
-	}
-
-	private void merge(TreeNode mergeTargetExistingTree, TreeNode parent) {
-		for (TreeNode child : parent.getChildren()) {
-			mergeTargetExistingTree.addChild(child);
-		}
-	}
-
-	private boolean isMergeTargetFound(TreeNode mergeTargetExistingTree) {
-		return mergeTargetExistingTree != null;
-	}
-
-//	private TreeNode buildTreeStructure(TreePath path)
-//			throws JavaModelException {
-//
-//		int segNr = path.getSegmentCount() - 1;
-//		if (segNr < 0)
-//			return null;
-//
-//		Object value = path.getSegment(segNr);
-//
-//		if (isValueInTypeHierarchyBelowICompilationUnit(value)) {
-//			return createHierarchyUpToCompilationUnitLevel(value);
-//		}
-//
-//		if (value instanceof IFile || value instanceof ICompilationUnit) {
-//			return new TreeNode(path.getSegment(segNr));
-//		}
-//
-//		return null;
-//	}
-//
-//	private TreeNode createHierarchyUpToCompilationUnitLevel(Object value) {
-//		TreeNode tmpChild = new TreeNode(value);
-//		TreeNode tmpParent = null;
-//
-//		while (true) {
-//			IJavaElement javaEle = (IJavaElement) value;
-//
-//			IJavaElement element = javaEle.getParent();
-//			tmpParent = new TreeNode(element);
-//			tmpParent.addChild(tmpChild);
-//
-//			IJavaElement nextParent = element.getParent();
-//			if (nextParent != null && implementsRequiredInterfaces(nextParent)) {
-//				tmpChild = tmpParent;
-//				value = element;
-//			} else {
-//				break;
-//			}
-//		}
-//
-//		return tmpParent;
-//	}
-//
-//	private boolean implementsRequiredInterfaces(Object value) {
-//		return (value instanceof ICompilationUnit)
-//				|| isValueInTypeHierarchyBelowICompilationUnit(value);
-//	}
-//
-//	private boolean isValueInTypeHierarchyBelowICompilationUnit(Object value) {
-//		return value instanceof IMethod || value instanceof IType
-//				|| value instanceof IField
-//				|| value instanceof IImportDeclaration
-//				|| value instanceof IImportContainer
-//				|| value instanceof IPackageDeclaration;
-//	}
+	
 
 	private Object getTarget(DropTargetEvent event) {
 		return ((event.item == null) ? null : event.item.getData());
