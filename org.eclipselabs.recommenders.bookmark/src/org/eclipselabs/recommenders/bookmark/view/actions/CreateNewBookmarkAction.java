@@ -28,10 +28,4 @@ public class CreateNewBookmarkAction extends Action  {
 		viewer.refresh();
 	}
 
-	@Override
-	public void updateEnabledStatus() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

@@ -32,6 +32,7 @@ public class ShowBookmarksInEditorAction extends Action implements SelfEnabling 
 				.getDescriptor(Activator.ICON_SHOW_IN_EDITOR));
 		this.setToolTipText("Opens the referenced object in its default editor");
 		this.setText("Show in Editor");
+		this.setEnabled(false);
 	}
 
 	@Override

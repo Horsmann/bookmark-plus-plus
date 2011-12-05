@@ -34,10 +34,4 @@ public class ExportBookmarksAction extends Action  {
 
 	}
 
-	@Override
-	public void updateEnabledStatus() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

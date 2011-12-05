@@ -69,9 +69,4 @@ public class ImportBookmarksAction extends Action  {
 		return newRoot;
 	}
 
-	@Override
-	public void updateEnabledStatus() {
-		// TODO Auto-generated method stub
-		
-	}
 }
