@@ -30,6 +30,7 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.Res
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.CreateNewBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
@@ -54,6 +55,7 @@ public class BookmarkView extends ViewPart {
 	private Action refreshView = null;
 	private Action openInSystemFileExplorer = null;
 	private Action toggleLevel = null;
+	private Action newBookmark = null;
 	
 
 	@Override
@@ -109,6 +111,7 @@ public class BookmarkView extends ViewPart {
 				menuMgr.add(importBookmarks);
 				menuMgr.add(new Separator());
 				menuMgr.add(toggleLevel);
+				menuMgr.add(newBookmark);
 				menuMgr.add(new Separator());
 				menuMgr.add(openInSystemFileExplorer);
 			}
@@ -174,6 +177,7 @@ public class BookmarkView extends ViewPart {
 		refreshView = new RefreshViewAction(viewer);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
 		toggleLevel = new ToggleLevelAction(viewer, model);
+		newBookmark = new CreateNewBookmarkAction(viewer, model);
 
 	}
 
@@ -187,6 +191,7 @@ public class BookmarkView extends ViewPart {
 		mgr.add(importBookmarks);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
+		mgr.add(newBookmark);
 	}
 
 	@Override
