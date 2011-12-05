@@ -19,7 +19,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
-public class ShowBookmarksInEditorAction extends Action implements SelfEnabling{
+public class ShowBookmarksInEditorAction extends Action implements SelfEnabling {
 
 	private TreeViewer viewer;
 	private ViewPart part;
@@ -94,8 +94,13 @@ public class ShowBookmarksInEditorAction extends Action implements SelfEnabling{
 
 	@Override
 	public void updateEnabledStatus() {
-		// TODO Auto-generated method stub
-		
+		List<IStructuredSelection> list = TreeUtil.getTreeSelections(viewer);
+		if (list.size() == 0) {
+			this.setEnabled(false);
+			return;
+		}
+
+		this.setEnabled(true);
 	}
 
 }

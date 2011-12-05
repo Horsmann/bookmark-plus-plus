@@ -141,6 +141,7 @@ public class BookmarkView extends ViewPart {
 		
 		TreeSelectionListener selectionListener = new TreeSelectionListener();
 		selectionListener.add((SelfEnabling) openInSystemFileExplorer);
+		selectionListener.add((SelfEnabling) showInEditor);
 		viewer.getTree().addSelectionListener(selectionListener);
 	}
 

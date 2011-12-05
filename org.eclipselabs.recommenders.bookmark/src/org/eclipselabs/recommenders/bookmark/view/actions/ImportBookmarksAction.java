@@ -13,7 +13,7 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.Tre
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.view.dialog.ImportDialog;
 
-public class ImportBookmarksAction extends Action implements SelfEnabling {
+public class ImportBookmarksAction extends Action  {
 
 	private TreeViewer viewer;
 	private TreeModel model;

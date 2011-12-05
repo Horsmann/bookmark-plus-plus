@@ -6,7 +6,7 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
-public class CreateNewBookmarkAction extends Action implements SelfEnabling {
+public class CreateNewBookmarkAction extends Action  {
 	
 	private TreeViewer viewer;
 	private TreeModel model;
