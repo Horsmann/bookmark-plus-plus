@@ -30,6 +30,8 @@ public class Activator extends AbstractUIPlugin {
 	public static final String ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE = "projectNotAvailable";
 	public static final String ICON_REFRESH_VIEW = "refreshView";
 	public static final String ICON_OPEN_IN_SYSTEM_EXPLORER = "openInSystemExplorer";
+	public static final String ICON_TOGGLE_TO_LOWER_LEVEL = "toggleToLowerLevel";
+	public static final String ICON_TOGGLE_TO_HIGHER_LEVEL = "toggleToHigherLevel";
 	
 	public static final String AUTOSAVE_FILE = "bookmarkModel.bm";
 
@@ -97,6 +99,14 @@ public class Activator extends AbstractUIPlugin {
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
 				new Path("icons/opentype.gif"), null));
 		registry.put(ICON_OPEN_IN_SYSTEM_EXPLORER, imgDesc);
+		
+		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
+				new Path("icons/backward_nav.gif"), null));
+		registry.put(ICON_TOGGLE_TO_HIGHER_LEVEL, imgDesc);
+		
+		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
+				new Path("icons/forward_nav.gif"), null));
+		registry.put(ICON_TOGGLE_TO_LOWER_LEVEL, imgDesc);
 
 	}
 }

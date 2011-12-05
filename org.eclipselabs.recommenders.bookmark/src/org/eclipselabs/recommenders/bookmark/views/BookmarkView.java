@@ -31,6 +31,8 @@ import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.ToggleToHigherLevelAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.ToggleToLowerLevelAction;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
@@ -48,6 +50,8 @@ public class BookmarkView extends ViewPart {
 	private Action closeAllOpenEditors = null;
 	private Action refreshView = null;
 	private Action openInSystemFileExplorer = null;
+	private Action toggleToLowerLevel = null;
+	private Action toggleToHigherLevel = null;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -143,6 +147,8 @@ public class BookmarkView extends ViewPart {
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(viewer);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
+		toggleToLowerLevel = new ToggleToLowerLevelAction(viewer, model);
+		toggleToHigherLevel = new ToggleToHigherLevelAction(viewer, model);
 
 	}
 
@@ -154,6 +160,9 @@ public class BookmarkView extends ViewPart {
 		mgr.add(closeAllOpenEditors);
 		mgr.add(exportBookmarks);
 		mgr.add(importBookmarks);
+		mgr.add(new Separator());
+		mgr.add(toggleToLowerLevel);
+		mgr.add(toggleToHigherLevel);
 		mgr.add(new Separator());
 		mgr.add(openInSystemFileExplorer);
 	}
