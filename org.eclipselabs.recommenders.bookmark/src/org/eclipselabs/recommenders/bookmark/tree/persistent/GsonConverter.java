@@ -18,7 +18,8 @@ public class GsonConverter implements ObjectConverter {
 		Gson gson = new Gson();
 		Type typeOfSrc = new TypeToken<SerializedTreeNode>() {
 		}.getType();
-		String gsonTreeString = gson.toJson(preSerialized, typeOfSrc);
+//		String gsonTreeString = gson.toJson(preSerialized, typeOfSrc);
+		String gsonTreeString = gson.toJson(preSerialized, SerializedTreeNode.class);
 		return gsonTreeString;
 	}
 
@@ -27,7 +28,8 @@ public class GsonConverter implements ObjectConverter {
 		Gson gson = new Gson();
 		Type typeOfSrc = new TypeToken<SerializedTreeNode>() {
 		}.getType();
-		SerializedTreeNode rootNode = gson.fromJson(string, typeOfSrc);
+//		SerializedTreeNode rootNode = gson.fromJson(string, typeOfSrc);
+		SerializedTreeNode rootNode = gson.fromJson(string, SerializedTreeNode.class);
 
 		return new Object[]{rootNode};
 	}

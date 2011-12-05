@@ -10,6 +10,10 @@ public class SerializedTreeNode {
 	private ArrayList<SerializedTreeNode> children;
 	private Object value;
 	private boolean isBookmarkNode;
+	
+	protected SerializedTreeNode() {
+		
+	}
 
 	public SerializedTreeNode(Object value, boolean isBookmark,
 			boolean isExpanded) {

@@ -30,11 +30,11 @@ public class ToggleToHigherLevelAction extends Action {
 		TreeNode currentHead = model.getModelHead();
 		TreeNode higherLevel = currentHead.getParent();
 		model.setHeadNode(higherLevel);
-		Object [] expanded = viewer.getExpandedElements();
+//		Object [] expanded = viewer.getExpandedElements();
 		viewer.setInput(null);
 		viewer.setInput(model.getModelHead());
 //		viewer.refresh();
-		viewer.setExpandedElements(expanded);
+//		viewer.setExpandedElements(expanded);
 
 	}
 
