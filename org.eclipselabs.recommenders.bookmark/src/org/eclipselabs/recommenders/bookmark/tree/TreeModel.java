@@ -37,6 +37,7 @@ public class TreeModel {
 	
 	public void setModelRoot(TreeNode root) {
 		this.root = root;
+		this.head = this.root;
 	}
 	
 	public boolean isHeadEqualRoot() {
