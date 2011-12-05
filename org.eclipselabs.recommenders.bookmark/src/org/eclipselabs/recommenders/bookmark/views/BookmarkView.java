@@ -84,6 +84,9 @@ public class BookmarkView extends ViewPart {
 				menuMgr.add(exportBookmarks);
 				menuMgr.add(importBookmarks);
 				menuMgr.add(new Separator());
+				menuMgr.add(toggleToLowerLevel);
+				menuMgr.add(toggleToHigherLevel);
+				menuMgr.add(new Separator());
 				menuMgr.add(openInSystemFileExplorer);
 			}
 		});

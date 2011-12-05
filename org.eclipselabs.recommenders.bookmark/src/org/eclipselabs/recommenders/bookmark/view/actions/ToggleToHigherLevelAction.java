@@ -18,7 +18,7 @@ public class ToggleToHigherLevelAction extends Action {
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_TOGGLE_TO_HIGHER_LEVEL));
 		this.setToolTipText("Toggles the current view to see only the selection childs");
-		this.setText("Toggle to lower level");
+		this.setText("Toggle to higher level");
 	}
 
 	@Override
@@ -30,11 +30,11 @@ public class ToggleToHigherLevelAction extends Action {
 		TreeNode currentHead = model.getModelHead();
 		TreeNode higherLevel = currentHead.getParent();
 		model.setHeadNode(higherLevel);
-//		Object [] expanded = viewer.getExpandedElements();
+		Object [] expanded = viewer.getExpandedElements();
 		viewer.setInput(null);
 		viewer.setInput(model.getModelHead());
-		viewer.refresh();
-//		viewer.setExpandedElements(expanded);
+//		viewer.refresh();
+		viewer.setExpandedElements(expanded);
 
 	}
 

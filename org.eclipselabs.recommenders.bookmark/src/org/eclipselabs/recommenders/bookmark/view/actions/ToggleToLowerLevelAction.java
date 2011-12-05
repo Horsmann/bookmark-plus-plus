@@ -36,11 +36,11 @@ public class ToggleToLowerLevelAction extends Action{
 		if (object instanceof TreeNode) {
 			TreeNode node = (TreeNode) object;
 			model.setHeadNode(node);
-//			Object [] expanded = viewer.getExpandedElements();
+			Object [] expanded = viewer.getExpandedElements();
 			viewer.setInput(null);
 			viewer.setInput(node);
-			viewer.refresh();
-//			viewer.setExpandedElements(expanded);
+//			viewer.refresh();
+			viewer.setExpandedElements(expanded);
 		}
 		
 	}
