@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
@@ -43,6 +44,22 @@ public class TreeUtil {
 
 		return null;
 	}
+	
+	public static TreeNode addNodesToExistingBookmark(TreeNode bookmark,
+			TreePath treePath) throws JavaModelException {
+		TreeNode node = TreeUtil.buildTreeStructure(treePath);
+		if (node == null)
+			return null;
+
+		boolean isDuplicate = TreeUtil.isDuplicate(bookmark, node);
+		if (!isDuplicate) {
+			mergeAddNodeToBookmark(bookmark, node);
+			return node;
+		}
+
+		return null;
+	}
+
 
 	public static void deleteNodesReferencingToDeadResourcesUnderNode(
 			TreeNode node, final TreeModel model) {
@@ -108,6 +125,41 @@ public class TreeUtil {
 
 		return null;
 	}
+	
+	public static void showNodeExpanded(TreeViewer viewer, TreeNode node) {
+		viewer.refresh();
+		TreeNode leaf = TreeUtil.getLeafOfTreePath((node));
+
+		if (leaf == null)
+			return;
+
+		viewer.expandToLevel(leaf, AbstractTreeViewer.ALL_LEVELS);
+		viewer.update(leaf, null);
+
+		viewer.refresh();
+	}
+	
+	/**
+	 * Checks for recursion or cyclic connection if source is added to target
+	 * @param source
+	 * @param target
+	 * @return
+	 */
+	public static boolean causesRecursion(TreeNode source, TreeNode target) {
+
+		if (target == null)
+			return false;
+
+		TreeNode targetParent = target.getParent();
+
+		if (targetParent == null)
+			return false;
+		else if (targetParent == source)
+			return true;
+		else
+			return causesRecursion(source, targetParent);
+
+	}
 
 	private static TreeNode createHierarchyUpToCompilationUnitLevel(Object value) {
 		TreeNode tmpChild = new TreeNode(value);
@@ -132,6 +184,13 @@ public class TreeUtil {
 		return tmpParent;
 	}
 
+	private static void mergeAddNodeToBookmark(TreeNode bookmark, TreeNode node)
+			throws JavaModelException {
+
+		if (TreeUtil.attemptMerge(bookmark, node) == null)
+			bookmark.addChild(node);
+	}
+	
 	private static boolean implementsRequiredInterfaces(Object value) {
 		return (value instanceof ICompilationUnit)
 				|| isValueInTypeHierarchyBelowICompilationUnit(value);
