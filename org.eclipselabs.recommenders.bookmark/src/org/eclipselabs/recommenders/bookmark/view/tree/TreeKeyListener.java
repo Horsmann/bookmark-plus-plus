@@ -14,7 +14,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelectionCommand;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
 public class TreeKeyListener implements KeyListener {
 	private TreeViewer viewer = null;
@@ -109,23 +111,9 @@ public class TreeKeyListener implements KeyListener {
 
 	private void checkForNodeDeletion(KeyEvent e) {
 		if (isDeleteNodeEvent(e)) {
-			TreeItem[] items = getSelections(e);
-			performDeletion(items);
-			viewer.refresh();
-
+			new DeleteSelectionCommand(viewer).execute();
 			saveNewTreeModelState();
 		}
-	}
-
-	private void performDeletion(TreeItem[] items) {
-		if (items == null || items.length == 0)
-			return;
-		for (TreeItem item : items) {
-			TreeNode node = (TreeNode) item.getData();
-			node.getParent().removeChild(node);
-			node.setParent(null);
-		}
-
 	}
 
 	private TreeItem[] getSelections(KeyEvent e) {

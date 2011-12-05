@@ -31,6 +31,7 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.Tre
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.CreateNewBookmarkAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.DeleteAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
@@ -58,6 +59,7 @@ public class BookmarkView extends ViewPart {
 	private Action openInSystemFileExplorer = null;
 	private Action toggleLevel = null;
 	private Action newBookmark = null;
+	private Action deleteSelection = null;
 	
 
 	@Override
@@ -114,6 +116,7 @@ public class BookmarkView extends ViewPart {
 				menuMgr.add(new Separator());
 				menuMgr.add(toggleLevel);
 				menuMgr.add(newBookmark);
+				menuMgr.add(deleteSelection);
 				menuMgr.add(new Separator());
 				menuMgr.add(openInSystemFileExplorer);
 			}
@@ -142,6 +145,7 @@ public class BookmarkView extends ViewPart {
 		TreeSelectionListener selectionListener = new TreeSelectionListener();
 		selectionListener.add((SelfEnabling) openInSystemFileExplorer);
 		selectionListener.add((SelfEnabling) showInEditor);
+		selectionListener.add((SelfEnabling) deleteSelection);
 		viewer.getTree().addSelectionListener(selectionListener);
 	}
 
@@ -185,6 +189,7 @@ public class BookmarkView extends ViewPart {
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
 		toggleLevel = new ToggleLevelAction(viewer, model);
 		newBookmark = new CreateNewBookmarkAction(viewer, model);
+		deleteSelection = new DeleteAction(viewer);
 
 	}
 
@@ -199,6 +204,7 @@ public class BookmarkView extends ViewPart {
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
 		mgr.add(newBookmark);
+		mgr.add(deleteSelection);
 	}
 
 	@Override

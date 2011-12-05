@@ -164,6 +164,11 @@ public class TreeUtil {
 	public static TreeNode makeBookmarkNode() {
 		return new TreeNode("New Bookmark", true);
 	}
+	
+	public static void unlink(TreeNode node) {
+		node.getParent().removeChild(node);
+		node.setParent(null);
+	}
 
 	private static TreeNode createHierarchyUpToCompilationUnitLevel(Object value) {
 		TreeNode tmpChild = new TreeNode(value);

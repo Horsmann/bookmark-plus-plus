@@ -17,7 +17,6 @@ import org.eclipselabs.recommenders.bookmark.tree.commands.CreateNewBookmarkAddA
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
-//@SuppressWarnings("restriction")
 public class TreeDropListener implements DropTargetListener {
 
 	private final TreeViewer viewer;
@@ -108,7 +107,7 @@ public class TreeDropListener implements DropTargetListener {
 
 			TreeNode merged = null;
 			if ((merged = TreeUtil.attemptMerge(targetBookmark, nodeCopy)) != null) {
-				unlink(node);
+				TreeUtil.unlink(node);
 				TreeUtil.showNodeExpanded(viewer, merged);
 				continue;
 			}
@@ -174,10 +173,6 @@ public class TreeDropListener implements DropTargetListener {
 				.execute();
 	}
 
-	private void unlink(TreeNode node) {
-		node.getParent().removeChild(node);
-		node.setParent(null);
-	}
 
 	private boolean didDropOccurInEmptyArea(TreeNode targetBookmark) {
 		return targetBookmark == null;
@@ -192,7 +187,7 @@ public class TreeDropListener implements DropTargetListener {
 		bookmark.addChild(nodeCopy);
 		model.getModelRoot().addChild(bookmark);
 		TreeUtil.showNodeExpanded(viewer, bookmark);
-		unlink(node);
+		TreeUtil.unlink(node);
 	}
 
 	private Object getTarget(DropTargetEvent event) {
