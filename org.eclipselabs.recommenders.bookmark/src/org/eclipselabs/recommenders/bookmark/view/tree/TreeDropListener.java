@@ -7,13 +7,13 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IImportContainer;
 import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.core.ImportContainer;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -29,7 +29,7 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeS
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 
-@SuppressWarnings("restriction")
+//@SuppressWarnings("restriction")
 public class TreeDropListener implements DropTargetListener {
 
 	private final TreeViewer viewer;
@@ -394,7 +394,7 @@ public class TreeDropListener implements DropTargetListener {
 		return value instanceof IMethod || value instanceof IType
 				|| value instanceof IField
 				|| value instanceof IImportDeclaration
-				|| value instanceof ImportContainer
+				|| value instanceof IImportContainer
 				|| value instanceof IPackageDeclaration;
 	}
 

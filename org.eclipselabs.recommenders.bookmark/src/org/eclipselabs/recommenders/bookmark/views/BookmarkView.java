@@ -80,7 +80,6 @@ public class BookmarkView extends ViewPart {
 			public void menuAboutToShow(IMenuManager mgr) {
 				menuMgr.add(showInEditor);
 				menuMgr.add(refreshView);
-				menuMgr.add(closeAllOpenEditors);
 				menuMgr.add(exportBookmarks);
 				menuMgr.add(importBookmarks);
 				menuMgr.add(new Separator());
@@ -166,8 +165,6 @@ public class BookmarkView extends ViewPart {
 		mgr.add(new Separator());
 		mgr.add(toggleToLowerLevel);
 		mgr.add(toggleToHigherLevel);
-		mgr.add(new Separator());
-		mgr.add(openInSystemFileExplorer);
 	}
 
 	@Override
