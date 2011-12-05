@@ -4,14 +4,81 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IImportContainer;
+import org.eclipse.jdt.core.IImportDeclaration;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageDeclaration;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
 public class TreeUtil {
+	
+	public static TreeNode buildTreeStructure(TreePath path)
+			throws JavaModelException {
+
+		int segNr = path.getSegmentCount() - 1;
+		if (segNr < 0)
+			return null;
+
+		Object value = path.getSegment(segNr);
+
+		if (isValueInTypeHierarchyBelowICompilationUnit(value)) {
+			return createHierarchyUpToCompilationUnitLevel(value);
+		}
+
+		if (value instanceof IFile || value instanceof ICompilationUnit) {
+			return new TreeNode(path.getSegment(segNr));
+		}
+
+		return null;
+	}
+	
+	private static TreeNode createHierarchyUpToCompilationUnitLevel(Object value) {
+		TreeNode tmpChild = new TreeNode(value);
+		TreeNode tmpParent = null;
+
+		while (true) {
+			IJavaElement javaEle = (IJavaElement) value;
+
+			IJavaElement element = javaEle.getParent();
+			tmpParent = new TreeNode(element);
+			tmpParent.addChild(tmpChild);
+
+			IJavaElement nextParent = element.getParent();
+			if (nextParent != null && implementsRequiredInterfaces(nextParent)) {
+				tmpChild = tmpParent;
+				value = element;
+			} else {
+				break;
+			}
+		}
+
+		return tmpParent;
+	}
+
+	private static boolean implementsRequiredInterfaces(Object value) {
+		return (value instanceof ICompilationUnit)
+				|| isValueInTypeHierarchyBelowICompilationUnit(value);
+	}
+	
+	private static boolean isValueInTypeHierarchyBelowICompilationUnit(Object value) {
+		return value instanceof IMethod || value instanceof IType
+				|| value instanceof IField
+				|| value instanceof IImportDeclaration
+				|| value instanceof IImportContainer
+				|| value instanceof IPackageDeclaration;
+	}
 
 	public static void deleteNodesReferencingToDeadResourcesUnderNode(
 			TreeNode node, final TreeModel model) {

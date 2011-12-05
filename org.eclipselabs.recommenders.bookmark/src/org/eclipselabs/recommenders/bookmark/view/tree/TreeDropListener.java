@@ -137,7 +137,7 @@ public class TreeDropListener implements DropTargetListener {
 
 	private TreeNode addNodesSeparatlyToExistingBookmark(TreeNode bookmark,
 			TreePath treePath) throws JavaModelException {
-		TreeNode node = buildTreeStructure(treePath);
+		TreeNode node = TreeUtil.buildTreeStructure(treePath);
 		if (node == null)
 			return null;
 
@@ -342,61 +342,61 @@ public class TreeDropListener implements DropTargetListener {
 		return mergeTargetExistingTree != null;
 	}
 
-	private TreeNode buildTreeStructure(TreePath path)
-			throws JavaModelException {
-
-		int segNr = path.getSegmentCount() - 1;
-		if (segNr < 0)
-			return null;
-
-		Object value = path.getSegment(segNr);
-
-		if (isValueInTypeHierarchyBelowICompilationUnit(value)) {
-			return createHierarchyUpToCompilationUnitLevel(value);
-		}
-
-		if (value instanceof IFile || value instanceof ICompilationUnit) {
-			return new TreeNode(path.getSegment(segNr));
-		}
-
-		return null;
-	}
-
-	private TreeNode createHierarchyUpToCompilationUnitLevel(Object value) {
-		TreeNode tmpChild = new TreeNode(value);
-		TreeNode tmpParent = null;
-
-		while (true) {
-			IJavaElement javaEle = (IJavaElement) value;
-
-			IJavaElement element = javaEle.getParent();
-			tmpParent = new TreeNode(element);
-			tmpParent.addChild(tmpChild);
-
-			IJavaElement nextParent = element.getParent();
-			if (nextParent != null && implementsRequiredInterfaces(nextParent)) {
-				tmpChild = tmpParent;
-				value = element;
-			} else {
-				break;
-			}
-		}
-
-		return tmpParent;
-	}
-
-	private boolean implementsRequiredInterfaces(Object value) {
-		return (value instanceof ICompilationUnit)
-				|| isValueInTypeHierarchyBelowICompilationUnit(value);
-	}
-
-	private boolean isValueInTypeHierarchyBelowICompilationUnit(Object value) {
-		return value instanceof IMethod || value instanceof IType
-				|| value instanceof IField
-				|| value instanceof IImportDeclaration
-				|| value instanceof IImportContainer
-				|| value instanceof IPackageDeclaration;
-	}
+//	private TreeNode buildTreeStructure(TreePath path)
+//			throws JavaModelException {
+//
+//		int segNr = path.getSegmentCount() - 1;
+//		if (segNr < 0)
+//			return null;
+//
+//		Object value = path.getSegment(segNr);
+//
+//		if (isValueInTypeHierarchyBelowICompilationUnit(value)) {
+//			return createHierarchyUpToCompilationUnitLevel(value);
+//		}
+//
+//		if (value instanceof IFile || value instanceof ICompilationUnit) {
+//			return new TreeNode(path.getSegment(segNr));
+//		}
+//
+//		return null;
+//	}
+//
+//	private TreeNode createHierarchyUpToCompilationUnitLevel(Object value) {
+//		TreeNode tmpChild = new TreeNode(value);
+//		TreeNode tmpParent = null;
+//
+//		while (true) {
+//			IJavaElement javaEle = (IJavaElement) value;
+//
+//			IJavaElement element = javaEle.getParent();
+//			tmpParent = new TreeNode(element);
+//			tmpParent.addChild(tmpChild);
+//
+//			IJavaElement nextParent = element.getParent();
+//			if (nextParent != null && implementsRequiredInterfaces(nextParent)) {
+//				tmpChild = tmpParent;
+//				value = element;
+//			} else {
+//				break;
+//			}
+//		}
+//
+//		return tmpParent;
+//	}
+//
+//	private boolean implementsRequiredInterfaces(Object value) {
+//		return (value instanceof ICompilationUnit)
+//				|| isValueInTypeHierarchyBelowICompilationUnit(value);
+//	}
+//
+//	private boolean isValueInTypeHierarchyBelowICompilationUnit(Object value) {
+//		return value instanceof IMethod || value instanceof IType
+//				|| value instanceof IField
+//				|| value instanceof IImportDeclaration
+//				|| value instanceof IImportContainer
+//				|| value instanceof IPackageDeclaration;
+//	}
 
 	private Object getTarget(DropTargetEvent event) {
 		return ((event.item == null) ? null : event.item.getData());
