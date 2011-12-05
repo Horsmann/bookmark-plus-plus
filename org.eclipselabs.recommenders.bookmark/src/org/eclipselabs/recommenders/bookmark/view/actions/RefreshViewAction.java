@@ -13,7 +13,7 @@ public class RefreshViewAction extends Action {
 
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_REFRESH_VIEW));
-		this.setToolTipText("<html>Refreshes the view and updates the labeling<br>(available/closed/not available)</html>");
+		this.setToolTipText("Refreshes the view and updates the labeling (available/closed/not available)");
 		this.setText("Refresh");
 	}
 
