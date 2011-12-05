@@ -6,7 +6,7 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 
-public class CreateNewBookmarkAction extends Action {
+public class CreateNewBookmarkAction extends Action implements SelfEnabling {
 	
 	private TreeViewer viewer;
 	private TreeModel model;
@@ -26,6 +26,12 @@ public class CreateNewBookmarkAction extends Action {
 		TreeNode bookmark = new TreeNode("New Bookmark", true);
 		model.getModelRoot().addChild(bookmark);
 		viewer.refresh();
+	}
+
+	@Override
+	public void updateEnabledStatus() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

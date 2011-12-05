@@ -35,6 +35,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleLevelAction;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
@@ -43,6 +44,7 @@ import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
 
 public class BookmarkView extends ViewPart {
 
@@ -136,6 +138,10 @@ public class BookmarkView extends ViewPart {
 	private void addListenerToTreeInView() {
 		viewer.getTree().addKeyListener(
 				new TreeKeyListener(viewer, model, showInEditor));
+		
+		TreeSelectionListener selectionListener = new TreeSelectionListener();
+		selectionListener.add((SelfEnabling) openInSystemFileExplorer);
+		viewer.getTree().addSelectionListener(selectionListener);
 	}
 
 	private void restoreBookmarks() {

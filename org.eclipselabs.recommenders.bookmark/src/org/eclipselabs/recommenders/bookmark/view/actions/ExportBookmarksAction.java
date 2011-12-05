@@ -9,7 +9,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.view.dialog.ExportDialog;
 
-public class ExportBookmarksAction extends Action {
+public class ExportBookmarksAction extends Action implements SelfEnabling {
 
 	private TreeModel model;
 	private TreeViewer viewer;
@@ -32,6 +32,12 @@ public class ExportBookmarksAction extends Action {
 			TreeSerializerFacade.serialize(viewer, model, file);
 		}
 
+	}
+
+	@Override
+	public void updateEnabledStatus() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

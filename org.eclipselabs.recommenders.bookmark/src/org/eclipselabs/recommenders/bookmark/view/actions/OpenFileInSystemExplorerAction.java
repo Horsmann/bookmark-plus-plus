@@ -17,7 +17,8 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
-public class OpenFileInSystemExplorerAction extends Action {
+public class OpenFileInSystemExplorerAction extends Action implements
+		SelfEnabling {
 
 	private TreeViewer viewer = null;
 
@@ -40,7 +41,7 @@ public class OpenFileInSystemExplorerAction extends Action {
 			if (!ResourceAvailabilityValidator.isResourceAvailable(value)) {
 				return;
 			}
-			
+
 			File file = getOpenableFileHandle(value);
 
 			if (file != null) {
@@ -105,16 +106,27 @@ public class OpenFileInSystemExplorerAction extends Action {
 		return ele.getParent() != null;
 	}
 
-	// private IJavaElement getElementWithOpenableFileHandle(IJavaElement
-	// javValue) {
-	//
-	// IJavaElement compUnit = javValue;
-	//
-	// while (compUnit.getParent() != null
-	// && !(compUnit instanceof ICompilationUnit))
-	// compUnit = compUnit.getParent();
-	//
-	// return compUnit;
-	// }
+	@Override
+	public void updateEnabledStatus() {
+		List<IStructuredSelection> list = TreeUtil.getTreeSelections(viewer);
+
+		if (list.size() == 0) {
+			this.setEnabled(false);
+			return;
+		}
+
+		for (int i = 0; i < list.size(); i++) {
+			TreeNode node = (TreeNode) list.get(i);
+			// As soon we find a single non-bookmark node, the action
+			// shall be enabled
+			if (!node.isBookmarkNode()) {
+				this.setEnabled(true);
+				return;
+			}
+		}
+
+		this.setEnabled(false);
+
+	}
 
 }

@@ -19,7 +19,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
-public class ShowBookmarksInEditorAction extends Action {
+public class ShowBookmarksInEditorAction extends Action implements SelfEnabling{
 
 	private TreeViewer viewer;
 	private ViewPart part;
@@ -90,6 +90,12 @@ public class ShowBookmarksInEditorAction extends Action {
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void updateEnabledStatus() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

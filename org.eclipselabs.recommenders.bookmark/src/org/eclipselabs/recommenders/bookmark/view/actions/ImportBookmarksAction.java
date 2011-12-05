@@ -13,7 +13,7 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.Tre
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.view.dialog.ImportDialog;
 
-public class ImportBookmarksAction extends Action {
+public class ImportBookmarksAction extends Action implements SelfEnabling {
 
 	private TreeViewer viewer;
 	private TreeModel model;
@@ -67,5 +67,11 @@ public class ImportBookmarksAction extends Action {
 				rstTree.getExpanded());
 
 		return newRoot;
+	}
+
+	@Override
+	public void updateEnabledStatus() {
+		// TODO Auto-generated method stub
+		
 	}
 }

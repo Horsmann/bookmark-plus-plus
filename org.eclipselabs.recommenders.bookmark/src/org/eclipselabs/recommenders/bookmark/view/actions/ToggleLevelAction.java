@@ -11,7 +11,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
-public class ToggleLevelAction extends Action{
+public class ToggleLevelAction extends Action implements SelfEnabling{
 	
 	private TreeViewer viewer;
 	private TreeModel model;
@@ -72,6 +72,12 @@ public class ToggleLevelAction extends Action{
 	
 	private Object [] getExpandedNodes() {
 		return expandedNodes.keySet().toArray();
+	}
+
+	@Override
+	public void updateEnabledStatus() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -6,7 +6,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipselabs.recommenders.bookmark.Activator;
 
-public class CloseAllOpenEditorsAction extends Action {
+public class CloseAllOpenEditorsAction extends Action implements SelfEnabling{
 
 	public CloseAllOpenEditorsAction() {
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
@@ -24,6 +24,12 @@ public class CloseAllOpenEditorsAction extends Action {
 			for (IWorkbenchPage page : window.getPages())
 				page.closeAllEditors(true);
 		}
+	}
+
+	@Override
+	public void updateEnabledStatus() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

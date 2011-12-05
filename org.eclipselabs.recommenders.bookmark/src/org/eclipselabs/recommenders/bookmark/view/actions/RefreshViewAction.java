@@ -4,7 +4,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
 
-public class RefreshViewAction extends Action {
+public class RefreshViewAction extends Action implements SelfEnabling{
 
 	private TreeViewer viewer;
 
@@ -20,6 +20,12 @@ public class RefreshViewAction extends Action {
 	@Override
 	public void run() {
 		viewer.refresh(true);
+	}
+
+	@Override
+	public void updateEnabledStatus() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
