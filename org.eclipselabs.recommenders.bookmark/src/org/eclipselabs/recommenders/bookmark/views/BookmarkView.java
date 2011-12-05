@@ -12,6 +12,10 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IPartService;
@@ -50,10 +54,33 @@ public class BookmarkView extends ViewPart {
 	private Action refreshView = null;
 	private Action openInSystemFileExplorer = null;
 	private Action toggleLevel = null;
+	
 
 	@Override
 	public void createPartControl(Composite parent) {
+		
+//		GridLayout gridLayout = new GridLayout();
+//		gridLayout.numColumns = 1;
+//		parent.setLayout(gridLayout);
+////		
+////		
+//		GridData gridData = new GridData(SWT.FILL, SWT.FILL,true, true);
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+//		viewer.getControl().setLayoutData(gridData);
+//		
+//		Combo combo = new Combo(parent, SWT.SINGLE | SWT.V_SCROLL);
+//		combo.add("test");
+//		combo.add("test2");
+//		combo.add("test3");
+//		gridData = new GridData(SWT.FILL, SWT.VERTICAL,true, false);
+//		combo.setLayoutData(gridData);
+		
+//		List list = new List(composite, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
+//		list.add("test");
+//		list.add("test2");
+//		list.add("test3");
+		
+		
 		model = new TreeModel();
 
 		createActions();
