@@ -3,7 +3,6 @@ package org.eclipselabs.recommenders.bookmark.view.tree;
 import java.util.List;
 
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
@@ -14,6 +13,7 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddToExistingBookmarkCommand;
+import org.eclipselabs.recommenders.bookmark.tree.commands.CreateNewBookmarkAddAsNodeCommand;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
@@ -129,25 +129,13 @@ public class TreeDropListener implements DropTargetListener {
 		TreeNode bookmark = TreeUtil.getBookmarkNode(target);
 
 		if (bookmark != null) {
-//			addToExistingBookmark(bookmark, treePath);
-			new AddToExistingBookmarkCommand(viewer, bookmark, treePath).execute();
+			new AddToExistingBookmarkCommand(viewer, bookmark, treePath)
+					.execute();
 		} else {
 			createNewBookmarkAddAsNode(treePath);
 		}
 
 	}
-
-//	private void addToExistingBookmark(TreeNode bookmark, TreePath[] treePath)
-//			throws JavaModelException {
-//		for (int i = 0; i < treePath.length; i++) {
-//			TreeNode added = TreeUtil.addNodesToExistingBookmark(bookmark,
-//					treePath[i]);
-//
-//			if (added != null) {
-//				TreeUtil.showNodeExpanded(viewer, added);
-//			}
-//		}
-//	}
 
 	private boolean isValidDrop(DropTargetEvent event) {
 
@@ -169,10 +157,6 @@ public class TreeDropListener implements DropTargetListener {
 		return true;
 	}
 
-	
-
-
-
 	private TreePath[] getTreePath(DropTargetEvent event) {
 		TreeSelection treeSelection = null;
 		TreePath[] treePath = null;
@@ -186,20 +170,8 @@ public class TreeDropListener implements DropTargetListener {
 	private void createNewBookmarkAddAsNode(TreePath[] treePath)
 			throws JavaModelException {
 
-		TreeNode bookmark = makeBookmarkNode();
-
-		model.getModelRoot().addChild(bookmark);
-
-		for (int i = 0; i < treePath.length; i++) {
-			TreeNode node = TreeUtil.addNodesToExistingBookmark(bookmark,
-					treePath[i]);
-			TreeUtil.showNodeExpanded(viewer, node);
-		}
-
-	}
-
-	private TreeNode makeBookmarkNode() {
-		return new TreeNode("New Bookmark", true);
+		new CreateNewBookmarkAddAsNodeCommand(model, viewer, treePath)
+				.execute();
 	}
 
 	private void unlink(TreeNode node) {
@@ -212,7 +184,7 @@ public class TreeDropListener implements DropTargetListener {
 	}
 
 	private void createNewBookmarkAndAdd(TreeNode node, TreeNode nodeCopy) {
-		TreeNode bookmark = makeBookmarkNode();
+		TreeNode bookmark = TreeUtil.makeBookmarkNode();
 
 		while (nodeCopy.getParent() != null)
 			nodeCopy = nodeCopy.getParent();

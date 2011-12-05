@@ -160,6 +160,10 @@ public class TreeUtil {
 			return causesRecursion(source, targetParent);
 
 	}
+	
+	public static TreeNode makeBookmarkNode() {
+		return new TreeNode("New Bookmark", true);
+	}
 
 	private static TreeNode createHierarchyUpToCompilationUnitLevel(Object value) {
 		TreeNode tmpChild = new TreeNode(value);

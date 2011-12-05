@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
 public class CreateNewBookmarkAction extends Action  {
 	
@@ -23,7 +24,7 @@ public class CreateNewBookmarkAction extends Action  {
 	
 	@Override
 	public void run() {
-		TreeNode bookmark = new TreeNode("New Bookmark", true);
+		TreeNode bookmark = TreeUtil.makeBookmarkNode();
 		model.getModelRoot().addChild(bookmark);
 		viewer.refresh();
 	}
