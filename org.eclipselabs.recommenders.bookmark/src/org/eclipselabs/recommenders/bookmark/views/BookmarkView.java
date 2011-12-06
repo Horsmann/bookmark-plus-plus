@@ -104,11 +104,12 @@ public class BookmarkView extends ViewPart {
 		gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
 		combo.setLayoutData(gridData);
 		
-		setUpView(defaultView);
-		setUpView(viewWithDropDownTreeView);
+		setUpDefaultView(defaultView);
+		setUpToggledView(viewWithDropDownTreeView);
 		
 		stackLayout.topControl = defaultViewComp;
 		activeTreeViewer = defaultView;
+		setUpToolbarForDefaultView();
 
 		// stackLayout.topControl = treeView;
 		// stackLayout.topControl = dropDown;
@@ -140,11 +141,26 @@ public class BookmarkView extends ViewPart {
 		service.addPartListener(new BookmarkViewPartListener(activeTreeViewer, model));		
 	}
 
-	private void setUpView(TreeViewer view) {
+	private void setUpDefaultView(TreeViewer view) {
 		activeTreeViewer = view;
 		
 		createActions();
-		setUpToolbar();
+//		setUpToolbarForDefaultView();
+		addContextMenu();
+
+		activeTreeViewer.setContentProvider(new TreeContentProvider());
+		activeTreeViewer.setLabelProvider(new TreeLabelProvider());
+		activeTreeViewer.setInput(model.getModelRoot());
+
+		addListenerToView();
+		addListenerToTreeInView();		
+	}
+	
+	private void setUpToggledView(TreeViewer view) {
+		activeTreeViewer = view;
+		
+		createActions();
+//		setUpToolbarForDefaultView();
 		addContextMenu();
 
 		activeTreeViewer.setContentProvider(new TreeContentProvider());
@@ -162,12 +178,14 @@ public class BookmarkView extends ViewPart {
 	public void activateToggledView() {
 		stackLayout.topControl = viewWithdropDownComp;
 		activeTreeViewer = viewWithDropDownTreeView;
+		setUpToolbarForToggledView();
 		container.layout(true, true);
 	}
 	
 	public void activateDefaultView() {
 		stackLayout.topControl = defaultViewComp;
 		activeTreeViewer = defaultView;
+		setUpToolbarForDefaultView();
 		container.layout(true, true);
 	}
 
@@ -257,10 +275,26 @@ public class BookmarkView extends ViewPart {
 		deleteSelection = new DeleteAction(activeTreeViewer);
 
 	}
-
-	private void setUpToolbar() {
+	
+	private void setUpToolbarForToggledView() {
 
 		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
+		mgr.removeAll();
+		mgr.add(showInEditor);
+		mgr.add(refreshView);
+		mgr.add(closeAllOpenEditors);
+		mgr.add(new Separator());
+		mgr.add(toggleLevel);
+		mgr.add(deleteSelection);
+		
+		mgr.update(true);
+		
+	}
+
+	private void setUpToolbarForDefaultView() {
+
+		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
+		mgr.removeAll();
 		mgr.add(showInEditor);
 		mgr.add(refreshView);
 		mgr.add(closeAllOpenEditors);
@@ -270,6 +304,8 @@ public class BookmarkView extends ViewPart {
 		mgr.add(toggleLevel);
 		mgr.add(newBookmark);
 		mgr.add(deleteSelection);
+		
+		mgr.update(true);
 	}
 
 	@Override
