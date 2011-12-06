@@ -13,17 +13,18 @@ import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.views.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.views.ViewManager;
 
-public class ToggleLevelAction extends Action implements SelfEnabling{
-	
+public class ToggleLevelAction extends Action implements SelfEnabling {
+
 	private ViewManager manager;
-	private BookmarkView viewer;
+	private BookmarkView actionTriggeringView;
 	private TreeModel model;
-	
-	HashMap<Object, String> expandedNodes=null;
-	
-	public ToggleLevelAction(ViewManager manager, BookmarkView view, TreeModel model) {
+
+	HashMap<Object, String> expandedNodes = null;
+
+	public ToggleLevelAction(ViewManager manager, BookmarkView view,
+			TreeModel model) {
 		this.manager = manager;
-		this.viewer = view;
+		this.actionTriggeringView = view;
 		this.model = model;
 
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
@@ -31,62 +32,68 @@ public class ToggleLevelAction extends Action implements SelfEnabling{
 		this.setToolTipText("Toggles between the default view and the category the selected item is in");
 		this.setText("Toggle between levels");
 	}
-	
+
 	@Override
 	public void run() {
-		List<IStructuredSelection> selection = TreeUtil.getTreeSelections(viewer.getView());
-		
-		if (model.isHeadEqualRoot())
-		{
+		List<IStructuredSelection> selection = TreeUtil
+				.getTreeSelections(actionTriggeringView.getView());
+
+		if (model.isHeadEqualRoot()) {
 			if (selection.size() <= 0)
 				return;
-			
+
 			Object object = selection.get(0);
-			
+
 			TreeNode node = (TreeNode) object;
 			TreeNode bookmark = TreeUtil.getBookmarkNode(node);
 			model.setHeadNode(bookmark);
-			
-			Object [] expanded = viewer.getView().getExpandedElements();
+
+			TreeViewer view = manager.getActiveViewer();
+
+			Object[] expanded = view.getExpandedElements();
 			expandedNodes = new HashMap<Object, String>();
 			AddExpandedNodesToHashMap(expanded);
-			
-			manager.activateView(viewer);
-			
-			manager.getActiveViewer().setInput(null);
-			manager.getActiveViewer().setInput(bookmark);
-			manager.getActiveViewer().setExpandedElements(expanded);
+
+			manager.activateView(actionTriggeringView);
+
+			// get newly set view
+			view = manager.getActiveViewer();
+			view.setInput(null);
+			view.setInput(bookmark);
+			view.setExpandedElements(expanded);
+		} else {
+			TreeViewer view = manager.getActiveViewer();
+			Object[] expanded = view.getExpandedElements();
+			AddExpandedNodesToHashMap(expanded);
+			model.resetHeadToRoot();
+
+			manager.activateView(actionTriggeringView);
+
+			view.setInput(null);
+			view.setInput(model.getModelHead());
+			Object[] allExpanded = getExpandedNodes();
+			view.setExpandedElements(allExpanded);
 		}
-		else
-		{
-//			Object [] expanded = bm.getActiveViewer().getExpandedElements();
-//			AddExpandedNodesToHashMap(expanded);
-//			model.resetHeadToRoot();
-//			
-//			bm.activateDefaultView();
-//			
-//			bm.getActiveViewer().setInput(null);
-//			bm.getActiveViewer().setInput(model.getModelHead());
-//			Object [] allExpanded = getExpandedNodes();
-//			bm.getActiveViewer().setExpandedElements(allExpanded);
-		}
-		
+
 	}
 
 	private void AddExpandedNodesToHashMap(Object[] expanded) {
+
+		if (expandedNodes == null)
+			expandedNodes = new HashMap<Object, String>();
+
 		for (Object o : expanded)
-			if (expandedNodes.get(o)==null)
-				expandedNodes.put(o, "");		
+			if (expandedNodes.get(o) == null)
+				expandedNodes.put(o, "");
 	}
-	
-	private Object [] getExpandedNodes() {
+
+	private Object[] getExpandedNodes() {
 		return expandedNodes.keySet().toArray();
 	}
 
 	@Override
 	public void updateEnabledStatus() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 }

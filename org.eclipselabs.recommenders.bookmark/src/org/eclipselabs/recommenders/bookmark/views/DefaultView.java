@@ -15,7 +15,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
-import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.CreateNewBookmarkAction;
@@ -35,7 +34,7 @@ import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
 
-public class DefaultView implements BookmarkView{
+public class DefaultView implements BookmarkView {
 
 	TreeViewer viewer = null;
 	Composite composite = null;
@@ -107,7 +106,8 @@ public class DefaultView implements BookmarkView{
 	}
 
 	private void createActions() {
-		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(), viewer);
+		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
+				viewer);
 		exportBookmarks = new ExportBookmarksAction(viewer, model);
 		importBookmarks = new ImportBookmarksAction(viewer, model);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
@@ -120,8 +120,8 @@ public class DefaultView implements BookmarkView{
 
 	void setUpToolbarForViewPart() {
 
-		IToolBarManager mgr = manager.getViewPart().getViewSite().getActionBars()
-				.getToolBarManager();
+		IToolBarManager mgr = manager.getViewPart().getViewSite()
+				.getActionBars().getToolBarManager();
 		mgr.removeAll();
 		mgr.add(showInEditor);
 		mgr.add(refreshView);
