@@ -5,21 +5,25 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.views.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.views.ViewManager;
 
 public class ToggleLevelAction extends Action implements SelfEnabling{
 	
-	private BookmarkView bm;
+	private ViewManager manager;
+	private BookmarkView viewer;
 	private TreeModel model;
 	
 	HashMap<Object, String> expandedNodes=null;
 	
-	public ToggleLevelAction(BookmarkView bm, TreeModel model) {
-		this.bm = bm;
+	public ToggleLevelAction(ViewManager manager, BookmarkView view, TreeModel model) {
+		this.manager = manager;
+		this.viewer = view;
 		this.model = model;
 
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
@@ -30,7 +34,7 @@ public class ToggleLevelAction extends Action implements SelfEnabling{
 	
 	@Override
 	public void run() {
-		List<IStructuredSelection> selection = TreeUtil.getTreeSelections(bm.getActiveViewer());
+		List<IStructuredSelection> selection = TreeUtil.getTreeSelections(viewer.getView());
 		
 		if (model.isHeadEqualRoot())
 		{
@@ -43,28 +47,28 @@ public class ToggleLevelAction extends Action implements SelfEnabling{
 			TreeNode bookmark = TreeUtil.getBookmarkNode(node);
 			model.setHeadNode(bookmark);
 			
-			Object [] expanded = bm.getActiveViewer().getExpandedElements();
+			Object [] expanded = viewer.getView().getExpandedElements();
 			expandedNodes = new HashMap<Object, String>();
 			AddExpandedNodesToHashMap(expanded);
 			
-			bm.activateToggledView();
+			manager.activateView(viewer);
 			
-			bm.getActiveViewer().setInput(null);
-			bm.getActiveViewer().setInput(bookmark);
-			bm.getActiveViewer().setExpandedElements(expanded);
+			manager.getActiveViewer().setInput(null);
+			manager.getActiveViewer().setInput(bookmark);
+			manager.getActiveViewer().setExpandedElements(expanded);
 		}
 		else
 		{
-			Object [] expanded = bm.getActiveViewer().getExpandedElements();
-			AddExpandedNodesToHashMap(expanded);
-			model.resetHeadToRoot();
-			
-			bm.activateDefaultView();
-			
-			bm.getActiveViewer().setInput(null);
-			bm.getActiveViewer().setInput(model.getModelHead());
-			Object [] allExpanded = getExpandedNodes();
-			bm.getActiveViewer().setExpandedElements(allExpanded);
+//			Object [] expanded = bm.getActiveViewer().getExpandedElements();
+//			AddExpandedNodesToHashMap(expanded);
+//			model.resetHeadToRoot();
+//			
+//			bm.activateDefaultView();
+//			
+//			bm.getActiveViewer().setInput(null);
+//			bm.getActiveViewer().setInput(model.getModelHead());
+//			Object [] allExpanded = getExpandedNodes();
+//			bm.getActiveViewer().setExpandedElements(allExpanded);
 		}
 		
 	}
