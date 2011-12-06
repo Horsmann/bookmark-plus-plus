@@ -43,8 +43,6 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 	private DefaultView defaultView = null;
 	private ToggledView toggledView = null;
 
-	// viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-
 	@Override
 	public void createPartControl(Composite parent) {
 		model = new TreeModel();
@@ -54,53 +52,11 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		container.setLayout(stackLayout);
 		// //
 		defaultView = new DefaultView(this, container, model);
-		// defaultViewComp = new Composite(container, SWT.NONE);
-		// defaultViewComp.setLayout(new FillLayout());
-		// defaultView = new TreeViewer(defaultViewComp, SWT.MULTI |
-		// SWT.H_SCROLL
-		// | SWT.V_SCROLL);
-		// /
-
 		toggledView = new ToggledView(this, container, model);
-		// viewWithdropDownComp = new Composite(container, SWT.NONE);
-		// GridLayout gridLayout = new GridLayout();
-		// gridLayout.numColumns = 1;
-		// viewWithdropDownComp.setLayout(gridLayout);
-		//
-		// viewWithDropDownTreeView = new TreeViewer(viewWithdropDownComp,
-		// SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		//
-		// GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		// viewWithDropDownTreeView.getControl().setLayoutData(gridData);
-		//
-		// Combo combo = new Combo(viewWithdropDownComp, SWT.SINGLE |
-		// SWT.V_SCROLL);
-		// combo.add("test");
-		// combo.add("test2");
-		// combo.add("test3");
-		// gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
-		// combo.setLayoutData(gridData);
-
-		// setUpDefaultView(defaultView);
-		// setUpToggledView(viewWithDropDownTreeView);
 
 		stackLayout.topControl = defaultView.composite;
 		activeView = defaultView;
 		defaultView.setUpToolbarForViewPart();
-
-		// stackLayout.topControl = treeView;
-		// stackLayout.topControl = dropDown;
-
-		// createActions();
-		// setUpToolbar();
-		// addContextMenu();
-		//
-		// activeTreeViewer.setContentProvider(new TreeContentProvider());
-		// activeTreeViewer.setLabelProvider(new TreeLabelProvider());
-		// activeTreeViewer.setInput(model.getModelRoot());
-		//
-		// addListenerToView();
-		// addListenerToTreeInView();
 
 		addPartViewFeatures();
 		restoreBookmarks();
@@ -110,8 +66,7 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 	private void addPartViewFeatures() {
 		IPartService service = (IPartService) getSite().getService(
 				IPartService.class);
-		service.addPartListener(new BookmarkViewPartListener(activeView
-				.getView(), model));
+		service.addPartListener(new BookmarkViewPartListener(getActiveViewer(), model));
 	}
 
 	// private void setUpDefaultView(TreeViewer view) {
