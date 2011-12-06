@@ -10,16 +10,17 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.views.BookmarkView;
 
 public class ToggleLevelAction extends Action implements SelfEnabling{
 	
-	private TreeViewer viewer;
+	private BookmarkView bm;
 	private TreeModel model;
 	
 	HashMap<Object, String> expandedNodes=null;
 	
-	public ToggleLevelAction(TreeViewer viewer, TreeModel model) {
-		this.viewer = viewer;
+	public ToggleLevelAction(BookmarkView bm, TreeModel model) {
+		this.bm = bm;
 		this.model = model;
 
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
@@ -30,7 +31,7 @@ public class ToggleLevelAction extends Action implements SelfEnabling{
 	
 	@Override
 	public void run() {
-		List<IStructuredSelection> selection = TreeUtil.getTreeSelections(viewer);
+		List<IStructuredSelection> selection = TreeUtil.getTreeSelections(bm.getActiveViewer());
 		
 		if (model.isHeadEqualRoot())
 		{
@@ -43,23 +44,28 @@ public class ToggleLevelAction extends Action implements SelfEnabling{
 			TreeNode bookmark = TreeUtil.getBookmarkNode(node);
 			model.setHeadNode(bookmark);
 			
-			Object [] expanded = viewer.getExpandedElements();
+			Object [] expanded = bm.getActiveViewer().getExpandedElements();
 			expandedNodes = new HashMap<Object, String>();
 			AddExpandedNodesToHashMap(expanded);
 			
-			viewer.setInput(null);
-			viewer.setInput(bookmark);
-			viewer.setExpandedElements(expanded);
+			bm.activateToggledView();
+			
+			bm.getActiveViewer().setInput(null);
+			bm.getActiveViewer().setInput(bookmark);
+			bm.getActiveViewer().setExpandedElements(expanded);
 		}
 		else
 		{
-			Object [] expanded = viewer.getExpandedElements();
+			Object [] expanded = bm.getActiveViewer().getExpandedElements();
 			AddExpandedNodesToHashMap(expanded);
 			model.resetHeadToRoot();
-			viewer.setInput(null);
-			viewer.setInput(model.getModelHead());
+			
+			bm.activateDefaultView();
+			
+			bm.getActiveViewer().setInput(null);
+			bm.getActiveViewer().setInput(model.getModelHead());
 			Object [] allExpanded = getExpandedNodes();
-			viewer.setExpandedElements(allExpanded);
+			bm.getActiveViewer().setExpandedElements(allExpanded);
 		}
 		
 	}
