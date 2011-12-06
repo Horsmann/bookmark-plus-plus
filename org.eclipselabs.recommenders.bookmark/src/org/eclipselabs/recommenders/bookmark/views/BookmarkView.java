@@ -146,7 +146,7 @@ public class BookmarkView extends ViewPart {
 		
 		createActions();
 //		setUpToolbarForDefaultView();
-		addContextMenu();
+		setUpContextMenuForDefaultView();
 
 		activeTreeViewer.setContentProvider(new TreeContentProvider());
 		activeTreeViewer.setLabelProvider(new TreeLabelProvider());
@@ -161,7 +161,7 @@ public class BookmarkView extends ViewPart {
 		
 		createActions();
 //		setUpToolbarForDefaultView();
-		addContextMenu();
+		setUpContextMenuForToggledView();
 
 		activeTreeViewer.setContentProvider(new TreeContentProvider());
 		activeTreeViewer.setLabelProvider(new TreeLabelProvider());
@@ -189,9 +189,10 @@ public class BookmarkView extends ViewPart {
 		container.layout(true, true);
 	}
 
-	private void addContextMenu() {
+	private void setUpContextMenuForDefaultView() {
 		final MenuManager menuMgr = new MenuManager();
 		menuMgr.setRemoveAllWhenShown(true);
+		
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager mgr) {
 				menuMgr.add(showInEditor);
@@ -206,13 +207,41 @@ public class BookmarkView extends ViewPart {
 				menuMgr.add(openInSystemFileExplorer);
 			}
 		});
+		
+		menuMgr.update(true);
 
 		Menu menu = menuMgr.createContextMenu(activeTreeViewer.getControl());
 		activeTreeViewer.getControl().setMenu(menu);
+		
 
 		getSite().registerContextMenu(menuMgr, activeTreeViewer);
 	}
 
+	private void setUpContextMenuForToggledView() {
+		final MenuManager menuMgr = new MenuManager();
+		menuMgr.setRemoveAllWhenShown(true);
+		
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager mgr) {
+				menuMgr.add(showInEditor);
+				menuMgr.add(refreshView);
+				menuMgr.add(new Separator());
+				menuMgr.add(toggleLevel);
+				menuMgr.add(deleteSelection);
+				menuMgr.add(new Separator());
+				menuMgr.add(openInSystemFileExplorer);
+			}
+		});
+		
+		menuMgr.update(true);
+
+		Menu menu = menuMgr.createContextMenu(activeTreeViewer.getControl());
+		activeTreeViewer.getControl().setMenu(menu);
+		
+
+		getSite().registerContextMenu(menuMgr, activeTreeViewer);
+	}
+	
 	private void addListenerToView() {
 		addDragDropSupportToView(activeTreeViewer, model);
 		activeTreeViewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
