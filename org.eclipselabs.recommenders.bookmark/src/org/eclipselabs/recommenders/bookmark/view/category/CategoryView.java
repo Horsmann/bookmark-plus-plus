@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.views;
+package org.eclipselabs.recommenders.bookmark.view.category;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.DeleteAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;

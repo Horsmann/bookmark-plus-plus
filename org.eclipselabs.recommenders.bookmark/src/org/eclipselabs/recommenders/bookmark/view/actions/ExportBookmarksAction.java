@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
-import org.eclipselabs.recommenders.bookmark.view.dialog.ExportDialog;
+import org.eclipselabs.recommenders.dialog.ExportDialog;
 
 public class ExportBookmarksAction extends Action  {
 

@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view.dialog;
+package org.eclipselabs.recommenders.dialog;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.views;
+package org.eclipselabs.recommenders.bookmark.view;
 
 import org.eclipse.jface.viewers.TreeViewer;
 

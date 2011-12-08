@@ -10,8 +10,8 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
-import org.eclipselabs.recommenders.bookmark.views.BookmarkView;
-import org.eclipselabs.recommenders.bookmark.views.ViewManager;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class ToggleViewAction extends Action implements SelfEnabling {
 

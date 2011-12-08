@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.views;
+package org.eclipselabs.recommenders.bookmark.view;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -15,6 +15,8 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.view.category.CategoryView;
+import org.eclipselabs.recommenders.bookmark.view.general.DefaultView;
 
 public class BookmarkViewManager extends ViewPart implements ViewManager {
 
