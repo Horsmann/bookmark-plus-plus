@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view.subview;
+package org.eclipselabs.recommenders.bookmark.view;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.events.SelectionEvent;

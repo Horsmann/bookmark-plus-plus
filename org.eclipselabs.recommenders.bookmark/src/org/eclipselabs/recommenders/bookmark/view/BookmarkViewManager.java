@@ -15,8 +15,6 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
-import org.eclipselabs.recommenders.bookmark.view.subview.CategoryView;
-import org.eclipselabs.recommenders.bookmark.view.subview.DefaultView;
 
 public class BookmarkViewManager extends ViewPart implements ViewManager {
 
