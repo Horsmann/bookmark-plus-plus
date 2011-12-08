@@ -62,6 +62,7 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		stackLayout.topControl = toggledView.composite;
 		activeView = toggledView;
 		toggledView.setUpToolbarForViewPart();
+		toggledView.refreshCategories();
 		container.layout(true, true);
 	}
 

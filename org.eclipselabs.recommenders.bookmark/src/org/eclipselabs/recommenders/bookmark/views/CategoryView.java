@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.DeleteAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
@@ -37,7 +38,7 @@ public class CategoryView implements BookmarkView {
 
 	TreeViewer viewer = null;
 	Composite composite = null;
-	private Combo combo=null;
+	private Combo combo = null;
 
 	private TreeModel model = null;
 
@@ -50,13 +51,15 @@ public class CategoryView implements BookmarkView {
 
 	private ViewManager manager = null;
 
+	private GridLayout gridLayout = null;
+
 	public CategoryView(ViewManager manager, Composite parent, TreeModel model) {
 
 		this.manager = manager;
 		this.model = model;
 
 		composite = new Composite(parent, SWT.NONE);
-		GridLayout gridLayout = new GridLayout();
+		gridLayout = new GridLayout();
 		gridLayout.numColumns = 1;
 		composite.setLayout(gridLayout);
 
@@ -66,10 +69,9 @@ public class CategoryView implements BookmarkView {
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		viewer.getControl().setLayoutData(gridData);
 
-		combo = new Combo(composite, SWT.SINGLE | SWT.V_SCROLL);
-		combo.add("test");
-		combo.add("test2");
-		combo.add("test3");
+		combo = new Combo(composite, SWT.SINGLE | SWT.V_SCROLL | SWT.DROP_DOWN);
+		combo.addSelectionListener(new ComboSelectionListener(combo, model,
+				viewer));
 		gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
 		combo.setLayoutData(gridData);
 
@@ -82,6 +84,24 @@ public class CategoryView implements BookmarkView {
 
 		addListenerToView();
 		addListenerToTreeInView();
+	}
+
+	public void refreshCategories() {
+		combo.removeAll();
+
+		String currentHead = (String) model.getModelHead().getValue();
+		int selectIndex = 0;
+		TreeNode[] bookmarks = model.getModelRoot().getChildren();
+		for (int i = 0; i < bookmarks.length; i++) {
+			String name = (String) bookmarks[i].getValue();
+			combo.add(name);
+
+			if (currentHead.equals(name)) {
+				selectIndex = i;
+			}
+		}
+
+		combo.select(selectIndex);
 	}
 
 	private void createActions() {
