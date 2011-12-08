@@ -25,7 +25,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplor
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
-import org.eclipselabs.recommenders.bookmark.view.actions.ToggleLevelAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.ToggleViewAction;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
@@ -113,7 +113,7 @@ public class DefaultView implements BookmarkView {
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(viewer);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
-		toggleLevel = new ToggleLevelAction(manager, this, model);
+		toggleLevel = new ToggleViewAction(manager, this, model);
 		newBookmark = new CreateNewBookmarkAction(viewer, model);
 		deleteSelection = new DeleteAction(viewer);
 	}

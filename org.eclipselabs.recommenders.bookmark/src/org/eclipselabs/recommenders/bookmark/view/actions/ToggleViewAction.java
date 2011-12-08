@@ -13,7 +13,7 @@ import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.views.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.views.ViewManager;
 
-public class ToggleLevelAction extends Action implements SelfEnabling {
+public class ToggleViewAction extends Action implements SelfEnabling {
 
 	private ViewManager manager;
 	private BookmarkView actionTriggeringView;
@@ -21,7 +21,7 @@ public class ToggleLevelAction extends Action implements SelfEnabling {
 
 	HashMap<Object, String> expandedNodes = null;
 
-	public ToggleLevelAction(ViewManager manager, BookmarkView view,
+	public ToggleViewAction(ViewManager manager, BookmarkView view,
 			TreeModel model) {
 		this.manager = manager;
 		this.actionTriggeringView = view;
