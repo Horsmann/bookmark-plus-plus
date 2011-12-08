@@ -115,7 +115,7 @@ public class DefaultView implements BookmarkView {
 		refreshView = new RefreshViewAction(viewer);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
 		toggleLevel = new ToggleViewAction(manager, this, model);
-		newBookmark = new CreateNewBookmarkAction(viewer, model);
+		newBookmark = new CreateNewBookmarkAction(this, model);
 		deleteSelection = new DeleteAction(viewer);
 	}
 
@@ -172,6 +172,11 @@ public class DefaultView implements BookmarkView {
 	@Override
 	public boolean requiresSelectionForToggle() {
 		return true;
+	}
+
+	@Override
+	public void updateControls() {
+		viewer.refresh(true);
 	}
 
 }

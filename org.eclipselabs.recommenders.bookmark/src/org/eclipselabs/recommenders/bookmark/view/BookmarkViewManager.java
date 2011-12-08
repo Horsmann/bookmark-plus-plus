@@ -66,15 +66,20 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		stackLayout.topControl = toggledView.composite;
 		activeView = toggledView;
 		toggledView.setUpToolbarForViewPart();
-		toggledView.refreshCategories();
+		
 		container.layout(true, true);
+		
+		toggledView.updateControls();
 	}
 
 	public void activateDefaultView() {
 		stackLayout.topControl = defaultView.composite;
 		activeView = defaultView;
 		defaultView.setUpToolbarForViewPart();
+		
 		container.layout(true, true);
+		
+		toggledView.updateControls();
 	}
 
 	private void restoreBookmarks() {
@@ -124,18 +129,19 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 	}
 
 	@Override
-	public void activateNextView() {
+	public BookmarkView activateNextView() {
 
 		if (activeView == defaultView) {
 			activateToggledView();
-			return;
+			return activeView;
 		}
 
 		if (activeView == toggledView) {
 			activateDefaultView();
-			return;
+			return activeView;
 		}
 
+		return null;
 	}
 
 	public void addCurrentlyExpandedNodesToStorage() {

@@ -7,7 +7,7 @@ public interface ViewManager {
 
 	public ViewPart getViewPart();
 
-	public void activateNextView();
+	public BookmarkView activateNextView();
 
 	public TreeViewer getActiveViewer();
 

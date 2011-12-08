@@ -8,4 +8,6 @@ public interface BookmarkView {
 	
 	public boolean requiresSelectionForToggle();
 	
+	public void updateControls();
+	
 }

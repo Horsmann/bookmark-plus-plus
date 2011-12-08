@@ -20,6 +20,7 @@ import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.CreateNewBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.DeleteAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
@@ -48,6 +49,7 @@ public class CategoryView implements BookmarkView {
 	private Action openInSystemFileExplorer = null;
 	private Action toggleLevel = null;
 	private Action deleteSelection = null;
+	private Action newBookmark = null;
 
 	private ViewManager manager = null;
 
@@ -100,7 +102,6 @@ public class CategoryView implements BookmarkView {
 				selectIndex = i;
 			}
 		}
-
 		combo.select(selectIndex);
 	}
 
@@ -113,6 +114,7 @@ public class CategoryView implements BookmarkView {
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
 		toggleLevel = new ToggleViewAction(manager, this, model);
 		deleteSelection = new DeleteAction(viewer);
+		newBookmark = new CreateNewBookmarkAction(this, model);
 
 	}
 
@@ -138,6 +140,7 @@ public class CategoryView implements BookmarkView {
 		mgr.add(closeAllOpenEditors);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
+		mgr.add(newBookmark);
 		mgr.add(deleteSelection);
 
 		mgr.update(true);
@@ -173,6 +176,7 @@ public class CategoryView implements BookmarkView {
 				menuMgr.add(refreshView);
 				menuMgr.add(new Separator());
 				menuMgr.add(toggleLevel);
+				menuMgr.add(newBookmark);
 				menuMgr.add(deleteSelection);
 				menuMgr.add(new Separator());
 				menuMgr.add(openInSystemFileExplorer);
@@ -195,6 +199,12 @@ public class CategoryView implements BookmarkView {
 	@Override
 	public boolean requiresSelectionForToggle() {
 		return false;
+	}
+
+	@Override
+	public void updateControls() {
+		refreshCategories();
+		viewer.refresh(true);
 	}
 
 }

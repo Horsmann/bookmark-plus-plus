@@ -49,18 +49,16 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 			manager.reinitializeExpandedStorage();
 			manager.addCurrentlyExpandedNodesToStorage();
 
-			manager.activateNextView();
+			BookmarkView activatedView = manager.activateNextView();
 
 			// get newly set view
-			TreeViewer view = manager.getActiveViewer();
-			view.setInput(null);
-			view.setInput(bookmark);
-
+			activatedView.getView().setInput(null);
+			activatedView.getView().setInput(bookmark);
 			manager.setStoredExpandedNodesForActiveView();
 
-		} else {
-			TreeViewer view = manager.getActiveViewer();
+			activatedView.updateControls();
 
+		} else {
 			// Get and remove all nodes that are currently visible from the
 			// storage
 			Object[] currentlyVisibleNodes = TreeUtil.getAllChildsOfNode(model
@@ -76,12 +74,14 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 
 			model.resetHeadToRoot();
 
-			manager.activateNextView();
+			BookmarkView activatedView = manager.activateNextView();
 
-			view.setInput(null);
-			view.setInput(model.getModelHead());
+			activatedView.getView().setInput(null);
+			activatedView.getView().setInput(model.getModelHead());
 
 			manager.setStoredExpandedNodesForActiveView();
+
+			activatedView.updateControls();
 		}
 
 	}
@@ -92,7 +92,7 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 		setEnabledStatus();
 
 	}
-	
+
 	public void setEnabledStatus() {
 		if (actionTriggeringView.requiresSelectionForToggle()) {
 			if (TreeUtil.getTreeSelections(actionTriggeringView.getView())
