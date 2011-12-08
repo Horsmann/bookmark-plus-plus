@@ -89,6 +89,8 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		}
 
 		checkPreferencesForDeletionOfDeadReferences();
+		
+		addCurrentlyExpandedNodesToStorage();
 
 	}
 

@@ -28,6 +28,7 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 				.getDescriptor(Activator.ICON_TOGGLE_LEVEL));
 		this.setToolTipText("Toggles between the default view and the category the selected item is in");
 		this.setText("Toggle between levels");
+		setEnabledStatus();
 	}
 
 	@Override
@@ -88,6 +89,21 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 	@Override
 	public void updateEnabledStatus() {
 
+		setEnabledStatus();
+
+	}
+	
+	public void setEnabledStatus() {
+		if (actionTriggeringView.requiresSelectionForToggle()) {
+			if (TreeUtil.getTreeSelections(actionTriggeringView.getView())
+					.size() > 0) {
+				this.setEnabled(true);
+			} else {
+				this.setEnabled(false);
+			}
+		} else {
+			this.setEnabled(true);
+		}
 	}
 
 }

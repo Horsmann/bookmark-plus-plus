@@ -82,6 +82,7 @@ public class DefaultView implements BookmarkView {
 		selectionListener.add((SelfEnabling) openInSystemFileExplorer);
 		selectionListener.add((SelfEnabling) showInEditor);
 		selectionListener.add((SelfEnabling) deleteSelection);
+		selectionListener.add((SelfEnabling) toggleLevel);
 		viewer.getTree().addSelectionListener(selectionListener);
 	}
 
@@ -166,6 +167,11 @@ public class DefaultView implements BookmarkView {
 	@Override
 	public TreeViewer getView() {
 		return viewer;
+	}
+
+	@Override
+	public boolean requiresSelectionForToggle() {
+		return true;
 	}
 
 }

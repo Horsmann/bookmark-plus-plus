@@ -6,4 +6,6 @@ public interface BookmarkView {
 	
 	public TreeViewer getView();
 	
+	public boolean requiresSelectionForToggle();
+	
 }

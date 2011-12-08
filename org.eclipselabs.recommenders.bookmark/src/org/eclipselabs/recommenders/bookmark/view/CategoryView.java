@@ -124,6 +124,7 @@ public class CategoryView implements BookmarkView {
 		selectionListener.add((SelfEnabling) openInSystemFileExplorer);
 		selectionListener.add((SelfEnabling) showInEditor);
 		selectionListener.add((SelfEnabling) deleteSelection);
+		selectionListener.add((SelfEnabling) toggleLevel);
 		viewer.getTree().addSelectionListener(selectionListener);
 	}
 
@@ -189,6 +190,11 @@ public class CategoryView implements BookmarkView {
 	@Override
 	public TreeViewer getView() {
 		return viewer;
+	}
+
+	@Override
+	public boolean requiresSelectionForToggle() {
+		return false;
 	}
 
 }
