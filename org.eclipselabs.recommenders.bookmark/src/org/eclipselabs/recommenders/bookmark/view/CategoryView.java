@@ -71,7 +71,7 @@ public class CategoryView implements BookmarkView {
 
 		combo = new Combo(composite, SWT.SINGLE | SWT.V_SCROLL | SWT.DROP_DOWN);
 		combo.addSelectionListener(new ComboSelectionListener(combo, model,
-				viewer));
+				manager));
 		gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
 		combo.setLayoutData(gridData);
 

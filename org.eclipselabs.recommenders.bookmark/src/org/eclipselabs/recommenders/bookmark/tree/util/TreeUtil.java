@@ -24,6 +24,29 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
 public class TreeUtil {
+	
+	public static TreeNode [] getAllChildsOfNode(TreeNode node) {
+		
+		LinkedList<TreeNode> children = new LinkedList<TreeNode>();
+		
+		for (TreeNode child : node.getChildren()) {
+			children.add(child);
+			children.addAll(getAllChildrenOfNodes(child));
+		}
+		
+		return children.toArray(new TreeNode[0]);
+	}
+	
+	private static LinkedList<TreeNode> getAllChildrenOfNodes(TreeNode node) {
+		LinkedList<TreeNode> children = new LinkedList<TreeNode>();
+		
+		for (TreeNode child : node.getChildren()) {
+			children.add(child);
+			children.addAll(getAllChildrenOfNodes(child));
+		}
+		
+		return children;
+	}
 
 	public static TreeNode buildTreeStructure(TreePath path)
 			throws JavaModelException {

@@ -1,6 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.view.actions;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -18,8 +17,6 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 	private ViewManager manager;
 	private BookmarkView actionTriggeringView;
 	private TreeModel model;
-
-	HashMap<Object, String> expandedNodes = null;
 
 	public ToggleViewAction(ViewManager manager, BookmarkView view,
 			TreeModel model) {
@@ -48,47 +45,44 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 			TreeNode bookmark = TreeUtil.getBookmarkNode(node);
 			model.setHeadNode(bookmark);
 
-			TreeViewer view = manager.getActiveViewer();
-
-			Object[] expanded = view.getExpandedElements();
-			expandedNodes = new HashMap<Object, String>();
-			AddExpandedNodesToHashMap(expanded);
+			manager.reinitializeExpandedStorage();
+			manager.addCurrentlyExpandedNodesToStorage();
 
 			manager.activateNextView();
 
 			// get newly set view
-			view = manager.getActiveViewer();
+			TreeViewer view = manager.getActiveViewer();
 			view.setInput(null);
 			view.setInput(bookmark);
-			view.setExpandedElements(expanded);
+
+			manager.setStoredExpandedNodesForActiveView();
+
 		} else {
 			TreeViewer view = manager.getActiveViewer();
-			Object[] expanded = view.getExpandedElements();
-			AddExpandedNodesToHashMap(expanded);
+
+			// Get and remove all nodes that are currently visible from the
+			// storage
+			Object[] currentlyVisibleNodes = TreeUtil.getAllChildsOfNode(model
+					.getModelHead());
+			for (Object o : currentlyVisibleNodes) {
+				manager.deleteExpandedNodeFromStorage(o);
+			}
+
+			// Add those to the storage which are truly expanded since expanded
+			// state may have change
+			// for any visible node
+			manager.addCurrentlyExpandedNodesToStorage();
+
 			model.resetHeadToRoot();
 
 			manager.activateNextView();
 
 			view.setInput(null);
 			view.setInput(model.getModelHead());
-			Object[] allExpanded = getExpandedNodes();
-			view.setExpandedElements(allExpanded);
+
+			manager.setStoredExpandedNodesForActiveView();
 		}
 
-	}
-
-	private void AddExpandedNodesToHashMap(Object[] expanded) {
-
-		if (expandedNodes == null)
-			expandedNodes = new HashMap<Object, String>();
-
-		for (Object o : expanded)
-			if (expandedNodes.get(o) == null)
-				expandedNodes.put(o, "");
-	}
-
-	private Object[] getExpandedNodes() {
-		return expandedNodes.keySet().toArray();
 	}
 
 	@Override

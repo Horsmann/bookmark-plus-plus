@@ -1,5 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.view;
 
+import java.util.HashMap;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -26,6 +28,8 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 	private BookmarkView activeView = null;
 	private DefaultView defaultView = null;
 	private CategoryView toggledView = null;
+
+	private HashMap<Object, String> expandedNodes = new HashMap<Object, String>();
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -130,6 +134,28 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 			return;
 		}
 
+	}
+
+	public void addCurrentlyExpandedNodesToStorage() {
+		Object[] expanded = activeView.getView().getExpandedElements();
+		for (Object o : expanded) {
+			expandedNodes.put(o, "");
+		}
+	}
+
+	public void setStoredExpandedNodesForActiveView() {
+		Object[] expanded = expandedNodes.keySet().toArray();
+		activeView.getView().setExpandedElements(expanded);
+	}
+
+	@Override
+	public void deleteExpandedNodeFromStorage(Object node) {
+		expandedNodes.remove(node);
+	}
+
+	@Override
+	public void reinitializeExpandedStorage() {
+		expandedNodes = new HashMap<Object, String>();
 	}
 
 }
