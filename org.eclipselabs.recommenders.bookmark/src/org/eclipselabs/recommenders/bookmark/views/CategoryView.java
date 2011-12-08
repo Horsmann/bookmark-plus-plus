@@ -33,7 +33,7 @@ import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
 
-public class ToggledView implements BookmarkView {
+public class CategoryView implements BookmarkView {
 
 	TreeViewer viewer = null;
 	Composite composite = null;
@@ -50,7 +50,7 @@ public class ToggledView implements BookmarkView {
 
 	private ViewManager manager = null;
 
-	public ToggledView(ViewManager manager, Composite parent, TreeModel model) {
+	public CategoryView(ViewManager manager, Composite parent, TreeModel model) {
 
 		this.manager = manager;
 		this.model = model;

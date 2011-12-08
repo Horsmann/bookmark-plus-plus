@@ -41,7 +41,7 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 
 	private BookmarkView activeView = null;
 	private DefaultView defaultView = null;
-	private ToggledView toggledView = null;
+	private CategoryView toggledView = null;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -52,7 +52,7 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		container.setLayout(stackLayout);
 		// //
 		defaultView = new DefaultView(this, container, model);
-		toggledView = new ToggledView(this, container, model);
+		toggledView = new CategoryView(this, container, model);
 
 		stackLayout.topControl = defaultView.composite;
 		activeView = defaultView;
