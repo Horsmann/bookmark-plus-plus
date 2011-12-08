@@ -295,14 +295,16 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 	}
 
 	@Override
-	public void activateView(BookmarkView view) {
+	public void activateNextView() {
 
-		if (view == defaultView) {
+		if (activeView == defaultView) {
 			activateToggledView();
+			return;
 		}
 
-		if (view == toggledView) {
+		if (activeView == toggledView) {
 			activateDefaultView();
+			return;
 		}
 
 	}

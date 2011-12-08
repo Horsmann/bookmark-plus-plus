@@ -54,7 +54,7 @@ public class ToggleLevelAction extends Action implements SelfEnabling {
 			expandedNodes = new HashMap<Object, String>();
 			AddExpandedNodesToHashMap(expanded);
 
-			manager.activateView(actionTriggeringView);
+			manager.activateNextView();
 
 			// get newly set view
 			view = manager.getActiveViewer();
@@ -67,7 +67,7 @@ public class ToggleLevelAction extends Action implements SelfEnabling {
 			AddExpandedNodesToHashMap(expanded);
 			model.resetHeadToRoot();
 
-			manager.activateView(actionTriggeringView);
+			manager.activateNextView();
 
 			view.setInput(null);
 			view.setInput(model.getModelHead());
