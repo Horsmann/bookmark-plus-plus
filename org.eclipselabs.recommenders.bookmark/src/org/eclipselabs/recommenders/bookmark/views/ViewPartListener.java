@@ -6,12 +6,12 @@ import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 
-public class BookmarkViewPartListener implements IPartListener2 {
+public class ViewPartListener implements IPartListener2 {
 
 	private TreeViewer viewer;
 	private TreeModel model;
 
-	public BookmarkViewPartListener(TreeViewer viewer, TreeModel model) {
+	public ViewPartListener(TreeViewer viewer, TreeModel model) {
 		this.viewer = viewer;
 		this.model = model;
 	}

@@ -66,7 +66,7 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 	private void addPartViewFeatures() {
 		IPartService service = (IPartService) getSite().getService(
 				IPartService.class);
-		service.addPartListener(new BookmarkViewPartListener(getActiveViewer(), model));
+		service.addPartListener(new ViewPartListener(getActiveViewer(), model));
 	}
 
 	// private void setUpDefaultView(TreeViewer view) {
