@@ -16,7 +16,6 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelectionCommand;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
 public class TreeKeyListener implements KeyListener {
 	private TreeViewer viewer = null;
