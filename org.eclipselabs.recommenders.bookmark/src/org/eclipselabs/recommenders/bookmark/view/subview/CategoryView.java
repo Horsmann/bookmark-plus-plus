@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view.general;
+package org.eclipselabs.recommenders.bookmark.view.subview;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -11,18 +11,18 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
-import org.eclipselabs.recommenders.bookmark.view.actions.CreateNewBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.DeleteAction;
-import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
-import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
@@ -36,36 +36,48 @@ import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
 
-public class DefaultView implements BookmarkView {
+public class CategoryView implements BookmarkView {
 
 	TreeViewer viewer = null;
 	Composite composite = null;
+	private Combo combo = null;
+
 	private TreeModel model = null;
+
 	private Action showInEditor = null;
-	private Action exportBookmarks = null;
-	private Action importBookmarks = null;
 	private Action closeAllOpenEditors = null;
 	private Action refreshView = null;
 	private Action openInSystemFileExplorer = null;
 	private Action toggleLevel = null;
-	private Action newBookmark = null;
 	private Action deleteSelection = null;
 
 	private ViewManager manager = null;
 
-	public DefaultView(ViewManager manager, Composite parent, TreeModel model) {
-		this.model = model;
+	private GridLayout gridLayout = null;
+
+	public CategoryView(ViewManager manager, Composite parent, TreeModel model) {
+
 		this.manager = manager;
+		this.model = model;
 
 		composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new FillLayout());
+		gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
+		composite.setLayout(gridLayout);
+
 		viewer = new TreeViewer(composite, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		viewer.getControl().setLayoutData(gridData);
+
+		combo = new Combo(composite, SWT.SINGLE | SWT.V_SCROLL | SWT.DROP_DOWN);
+		combo.addSelectionListener(new ComboSelectionListener(combo, model,
+				viewer));
+		gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
+		combo.setLayoutData(gridData);
+
 		createActions();
-		// Changes are view part associated, need to be called separatly if
-		// needed
-		// setUpToolbar();
 		setUpContextMenu();
 
 		viewer.setContentProvider(new TreeContentProvider());
@@ -74,6 +86,36 @@ public class DefaultView implements BookmarkView {
 
 		addListenerToView();
 		addListenerToTreeInView();
+	}
+
+	public void refreshCategories() {
+		combo.removeAll();
+
+		String currentHead = (String) model.getModelHead().getValue();
+		int selectIndex = 0;
+		TreeNode[] bookmarks = model.getModelRoot().getChildren();
+		for (int i = 0; i < bookmarks.length; i++) {
+			String name = (String) bookmarks[i].getValue();
+			combo.add(name);
+
+			if (currentHead.equals(name)) {
+				selectIndex = i;
+			}
+		}
+
+		combo.select(selectIndex);
+	}
+
+	private void createActions() {
+
+		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
+				viewer);
+		closeAllOpenEditors = new CloseAllOpenEditorsAction();
+		refreshView = new RefreshViewAction(viewer);
+		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
+		toggleLevel = new ToggleViewAction(manager, this, model);
+		deleteSelection = new DeleteAction(viewer);
+
 	}
 
 	private void addListenerToTreeInView() {
@@ -85,6 +127,21 @@ public class DefaultView implements BookmarkView {
 		selectionListener.add((SelfEnabling) showInEditor);
 		selectionListener.add((SelfEnabling) deleteSelection);
 		viewer.getTree().addSelectionListener(selectionListener);
+	}
+
+	void setUpToolbarForViewPart() {
+
+		IToolBarManager mgr = manager.getViewPart().getViewSite()
+				.getActionBars().getToolBarManager();
+		mgr.removeAll();
+		mgr.add(showInEditor);
+		mgr.add(refreshView);
+		mgr.add(closeAllOpenEditors);
+		mgr.add(new Separator());
+		mgr.add(toggleLevel);
+		mgr.add(deleteSelection);
+
+		mgr.update(true);
 	}
 
 	private void addListenerToView() {
@@ -107,37 +164,6 @@ public class DefaultView implements BookmarkView {
 		viewer.addDragSupport(operations, transferTypes, dragListener);
 	}
 
-	private void createActions() {
-		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
-				viewer);
-		exportBookmarks = new ExportBookmarksAction(viewer, model);
-		importBookmarks = new ImportBookmarksAction(viewer, model);
-		closeAllOpenEditors = new CloseAllOpenEditorsAction();
-		refreshView = new RefreshViewAction(viewer);
-		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
-		toggleLevel = new ToggleViewAction(manager, this, model);
-		newBookmark = new CreateNewBookmarkAction(viewer, model);
-		deleteSelection = new DeleteAction(viewer);
-	}
-
-	void setUpToolbarForViewPart() {
-
-		IToolBarManager mgr = manager.getViewPart().getViewSite()
-				.getActionBars().getToolBarManager();
-		mgr.removeAll();
-		mgr.add(showInEditor);
-		mgr.add(refreshView);
-		mgr.add(closeAllOpenEditors);
-		mgr.add(exportBookmarks);
-		mgr.add(importBookmarks);
-		mgr.add(new Separator());
-		mgr.add(toggleLevel);
-		mgr.add(newBookmark);
-		mgr.add(deleteSelection);
-
-		mgr.update(true);
-	}
-
 	private void setUpContextMenu() {
 		final MenuManager menuMgr = new MenuManager();
 		menuMgr.setRemoveAllWhenShown(true);
@@ -146,11 +172,8 @@ public class DefaultView implements BookmarkView {
 			public void menuAboutToShow(IMenuManager mgr) {
 				menuMgr.add(showInEditor);
 				menuMgr.add(refreshView);
-				menuMgr.add(exportBookmarks);
-				menuMgr.add(importBookmarks);
 				menuMgr.add(new Separator());
 				menuMgr.add(toggleLevel);
-				menuMgr.add(newBookmark);
 				menuMgr.add(deleteSelection);
 				menuMgr.add(new Separator());
 				menuMgr.add(openInSystemFileExplorer);
