@@ -12,7 +12,8 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-import org.eclipselabs.recommenders.bookmark.tree.commands.AddToExistingBookmarkCommand;
+import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
+import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.tree.commands.CreateNewBookmarkAddAsNodeCommand;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
@@ -89,24 +90,49 @@ public class TreeDropListener implements DropTargetListener {
 			throws JavaModelException {
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer);
+
+		if (didDropOccurInEmptyArea(event)) {
+
+			if (selections.size() > 0) {
+
+				// TreeNode node = (TreeNode)selections.get(0);
+
+				// TreeNode nodeCopy = TreeUtil.copyTreePath(node);
+
+				// TreeNode dropTarget = (TreeNode) getTarget(event);
+				// TreeNode bookmarkOfDropTarget = TreeUtil
+				// .getBookmarkNode(dropTarget);
+
+				// if (didDropOccurInEmptyArea(bookmarkOfDropTarget)) {
+
+				new AddTreeNodesToExistingBookmark(viewer, model,
+						TreeUtil.makeBookmarkNode()).execute();
+				// createNewBookmarkAndAdd(node, nodeCopy);
+				// }
+
+			}
+			return;
+		}
+
 		for (int i = 0; i < selections.size(); i++) {
 
 			TreeNode node = (TreeNode) selections.get(i);
 			TreeNode nodeCopy = TreeUtil.copyTreePath(node);
 
 			TreeNode dropTarget = (TreeNode) getTarget(event);
-			TreeNode targetBookmark = TreeUtil.getBookmarkNode(dropTarget);
+			TreeNode bookmarkOfDropTarget = TreeUtil
+					.getBookmarkNode(dropTarget);
 
-			if (didDropOccurInEmptyArea(targetBookmark)) {
-				createNewBookmarkAndAdd(node, nodeCopy);
-				continue;
-			}
+			// if (didDropOccurInEmptyArea(bookmarkOfDropTarget)) {
+			// createNewBookmarkAndAdd(node, nodeCopy);
+			// continue;
+			// }
 
-			if (TreeUtil.isDuplicate(targetBookmark, node))
+			if (TreeUtil.isDuplicate(bookmarkOfDropTarget, node))
 				continue;
 
 			TreeNode merged = null;
-			if ((merged = TreeUtil.attemptMerge(targetBookmark, nodeCopy)) != null) {
+			if ((merged = TreeUtil.attemptMerge(bookmarkOfDropTarget, nodeCopy)) != null) {
 				TreeUtil.unlink(node);
 				TreeUtil.showNodeExpanded(viewer, merged);
 				continue;
@@ -114,7 +140,7 @@ public class TreeDropListener implements DropTargetListener {
 
 			node.getParent().removeChild(node);
 			TreeNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
-			targetBookmark.addChild(head);
+			bookmarkOfDropTarget.addChild(head);
 			TreeUtil.showNodeExpanded(viewer, head);
 
 		}
@@ -128,8 +154,8 @@ public class TreeDropListener implements DropTargetListener {
 		TreeNode bookmark = TreeUtil.getBookmarkNode(target);
 
 		if (bookmark != null) {
-			new AddToExistingBookmarkCommand(viewer, bookmark, treePath)
-					.execute();
+			new AddTreepathsToExistingBookmarkCommand(viewer, bookmark,
+					treePath).execute();
 		} else {
 			createNewBookmarkAddAsNode(treePath);
 		}
@@ -173,9 +199,11 @@ public class TreeDropListener implements DropTargetListener {
 				.execute();
 	}
 
+	private boolean didDropOccurInEmptyArea(DropTargetEvent event) {
+		TreeNode dropTarget = (TreeNode) getTarget(event);
+		TreeNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
 
-	private boolean didDropOccurInEmptyArea(TreeNode targetBookmark) {
-		return targetBookmark == null;
+		return bookmarkOfDropTarget == null;
 	}
 
 	private void createNewBookmarkAndAdd(TreeNode node, TreeNode nodeCopy) {

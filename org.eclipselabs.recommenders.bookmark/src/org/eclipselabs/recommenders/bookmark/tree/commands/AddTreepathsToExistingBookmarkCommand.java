@@ -6,13 +6,13 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
-public class AddToExistingBookmarkCommand implements TreeCommand {
+public class AddTreepathsToExistingBookmarkCommand implements TreeCommand {
 
 	private TreeViewer viewer = null;
 	private TreeNode bookmark = null;
 	private TreePath[] treePath = null;
 
-	public AddToExistingBookmarkCommand(TreeViewer viewer, TreeNode bookmark,
+	public AddTreepathsToExistingBookmarkCommand(TreeViewer viewer, TreeNode bookmark,
 			TreePath[] treePath) {
 
 		this.viewer = viewer;

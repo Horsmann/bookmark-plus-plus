@@ -18,7 +18,7 @@ public class CreateNewBookmarkAddAsNodeCommand implements TreeCommand {
 		this.model = model;
 		this.bookmark = TreeUtil.makeBookmarkNode();
 		
-		addToExistingBookmarkCommand = new AddToExistingBookmarkCommand(viewer,
+		addToExistingBookmarkCommand = new AddTreepathsToExistingBookmarkCommand(viewer,
 				this.bookmark, treePath);
 
 	}
