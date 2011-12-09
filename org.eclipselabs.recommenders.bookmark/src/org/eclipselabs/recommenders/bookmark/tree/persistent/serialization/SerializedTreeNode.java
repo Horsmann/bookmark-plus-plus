@@ -2,8 +2,6 @@ package org.eclipselabs.recommenders.bookmark.tree.persistent.serialization;
 
 import java.util.ArrayList;
 
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-
 public class SerializedTreeNode {
 
 	private boolean isExpanded;
