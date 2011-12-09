@@ -29,7 +29,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.ToggleViewAction;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
-import org.eclipselabs.recommenders.bookmark.view.tree.TreeDropListener;
+import org.eclipselabs.recommenders.bookmark.view.tree.DefaultTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
@@ -99,7 +99,7 @@ public class DefaultView implements BookmarkView {
 				LocalSelectionTransfer.getTransfer() };
 
 		TreeDragListener dragListener = new TreeDragListener(viewer);
-		TreeDropListener dropListener = new TreeDropListener(viewer, model,
+		DefaultTreeDropListener dropListener = new DefaultTreeDropListener(viewer, model,
 				dragListener);
 
 		viewer.addDropSupport(operations, transferTypes, dropListener);

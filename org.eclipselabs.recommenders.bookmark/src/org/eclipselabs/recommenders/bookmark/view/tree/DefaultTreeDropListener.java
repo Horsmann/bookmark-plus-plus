@@ -19,7 +19,7 @@ import org.eclipselabs.recommenders.bookmark.tree.commands.CreateNewBookmarkAddA
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
-public class TreeDropListener implements DropTargetListener {
+public class DefaultTreeDropListener implements DropTargetListener {
 
 	private final TreeViewer viewer;
 	private TreeModel model;
@@ -32,7 +32,7 @@ public class TreeDropListener implements DropTargetListener {
 	 */
 	private TreeDragListener dragListener = null;
 
-	public TreeDropListener(TreeViewer viewer, TreeModel model,
+	public DefaultTreeDropListener(TreeViewer viewer, TreeModel model,
 			TreeDragListener localViewsDragListener) {
 		this.viewer = viewer;
 		this.model = model;
@@ -43,12 +43,11 @@ public class TreeDropListener implements DropTargetListener {
 	public void drop(DropTargetEvent event) {
 
 		try {
-			if (dragListener.isDragInProgress())
+			if (dragListener.isDragInProgress()) {
 				processDropEventWithDragFromWithinTheView(event);
-			else
+			} else {
 				processDropEventWithDragInitiatedFromOutsideTheView(event);
-
-			TreeSerializerFacade.serializeToDefaultLocation(viewer, model);
+			}
 
 			saveNewTreeModelState();
 
@@ -170,7 +169,8 @@ public class TreeDropListener implements DropTargetListener {
 			new AddTreepathsToExistingBookmarkCommand(viewer, bookmark,
 					treePath).execute();
 		} else {
-			createNewBookmarkAddAsNode(treePath);
+			new CreateNewBookmarkAddAsNodeCommand(model, viewer, treePath)
+					.execute();
 		}
 
 	}
@@ -178,22 +178,23 @@ public class TreeDropListener implements DropTargetListener {
 	private boolean isValidDrop(DropTargetEvent event) {
 
 		if (dragListener.isDragInProgress()) {
-			List<IStructuredSelection> selectedList = TreeUtil
-					.getTreeSelections(viewer);
-			TreeNode target = (TreeNode) getTarget(event);
-
-			for (int i = 0; i < selectedList.size(); i++) {
-				TreeNode node = (TreeNode) selectedList.get(i);
-
-				if (TreeUtil.causesRecursion(node, target))
-					return false;
-
-				if (node == target)
-					return false;
-
-				if (node.isBookmarkNode())
-					return false;
-			}
+			return DropUtil.isValidDrop(viewer, event);
+			// List<IStructuredSelection> selectedList = TreeUtil
+			// .getTreeSelections(viewer);
+			// TreeNode target = (TreeNode) getTarget(event);
+			//
+			// for (int i = 0; i < selectedList.size(); i++) {
+			// TreeNode node = (TreeNode) selectedList.get(i);
+			//
+			// if (TreeUtil.causesRecursion(node, target))
+			// return false;
+			//
+			// if (node == target)
+			// return false;
+			//
+			// if (node.isBookmarkNode())
+			// return false;
+			// }
 		}
 		return true;
 	}
@@ -206,13 +207,6 @@ public class TreeDropListener implements DropTargetListener {
 			treePath = treeSelection.getPaths();
 		}
 		return treePath;
-	}
-
-	private void createNewBookmarkAddAsNode(TreePath[] treePath)
-			throws JavaModelException {
-
-		new CreateNewBookmarkAddAsNodeCommand(model, viewer, treePath)
-				.execute();
 	}
 
 	private boolean didDropOccurInEmptyArea(DropTargetEvent event) {

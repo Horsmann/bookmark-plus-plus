@@ -27,10 +27,10 @@ import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleViewAction;
+import org.eclipselabs.recommenders.bookmark.view.tree.CategoryTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
-import org.eclipselabs.recommenders.bookmark.view.tree.TreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
@@ -158,12 +158,10 @@ public class CategoryView implements BookmarkView {
 				ResourceTransfer.getInstance(),
 				LocalSelectionTransfer.getTransfer() };
 
-		TreeDragListener dragListener = new TreeDragListener(viewer);
-		TreeDropListener dropListener = new TreeDropListener(viewer, model,
-				dragListener);
+		CategoryTreeDropListener dropListener = new CategoryTreeDropListener(
+				viewer, model);
 
 		viewer.addDropSupport(operations, transferTypes, dropListener);
-		viewer.addDragSupport(operations, transferTypes, dragListener);
 	}
 
 	private void setUpContextMenu() {
