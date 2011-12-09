@@ -22,31 +22,31 @@ import org.junit.Test;
 
 public class TestTreeSerializer {
 	
-	@Test
-	public void testSerializationFacade() {
-		Display display = Display.getCurrent();
-		Shell shell = new Shell(display, SWT.NONE);
-		// org.eclipse.swt.widgets.Composite composite = new
-		// org.eclipse.swt.widgets.Composite(
-		// shell, SWT.NONE);
-		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
-		
-		TreeNode root = createTestTree();
-		TreeModel model = new TreeModel();
-		model.setModelRoot(root);
-		viewer.setContentProvider(new TreeContentProvider());
-		viewer.setInput(model.getModelRoot());
-		
-		File file = new File("file");
-		TreeSerializerFacade.serialize(viewer, model, file);
-		
-		String [] read = BookmarkFileIO.readFromFile(file);
-		
-		assertEquals(1, read.length);
-		
-		file.delete();
-	}
+//	@Test
+//	public void testSerializationFacade() {
+//		Display display = Display.getCurrent();
+//		Shell shell = new Shell(display, SWT.NONE);
+//		// org.eclipse.swt.widgets.Composite composite = new
+//		// org.eclipse.swt.widgets.Composite(
+//		// shell, SWT.NONE);
+//		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
+//				| SWT.V_SCROLL);
+//		
+//		TreeNode root = createTestTree();
+//		TreeModel model = new TreeModel();
+//		model.setModelRoot(root);
+//		viewer.setContentProvider(new TreeContentProvider());
+//		viewer.setInput(model.getModelRoot());
+//		
+//		File file = new File("file");
+//		TreeSerializerFacade.serialize(viewer, model, file);
+//		
+//		String [] read = BookmarkFileIO.readFromFile(file);
+//		
+//		assertEquals(1, read.length);
+//		
+//		file.delete();
+//	}
 	
 	@Test
 	public void testSerialization() {

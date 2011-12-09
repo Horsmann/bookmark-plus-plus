@@ -433,58 +433,59 @@ public class TestTreeUtil {
 
 	}
 
-	@Test
-	public void testShowNodeExpanded() {
-		Display display = Display.getCurrent();
-		Shell shell = new Shell(display, SWT.NONE);
-		// org.eclipse.swt.widgets.Composite composite = new
-		// org.eclipse.swt.widgets.Composite(
-		// shell, SWT.NONE);
-		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
-
-		TreeNode root = createTestTree();
-		viewer.setContentProvider(new TreeContentProvider());
-		viewer.setInput(root);
-		viewer.refresh();
-		TreeUtil.showNodeExpanded(viewer, root.getChildren()[0]);
-
-		Object[] expanded = viewer.getExpandedElements();
-		assertEquals(2, expanded.length);
-
-	}
-
-	@Test
-	public void testGetTreeViewerSelection() {
-		Display display = Display.getCurrent();
-		Shell shell = new Shell(display, SWT.NONE);
-		// org.eclipse.swt.widgets.Composite composite = new
-		// org.eclipse.swt.widgets.Composite(
-		// shell, SWT.NONE);
-		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
-
-		// No selection
-		List<IStructuredSelection> sel = TreeUtil.getTreeSelections(viewer);
-		assertEquals(0, sel.size());
-
-//		// Select one
+//	@Test
+//	public void testShowNodeExpanded() {
+//		Display display = Display.getCurrent();
+//		Shell shell = new Shell(display, SWT.NONE);
+//		// org.eclipse.swt.widgets.Composite composite = new
+//		// org.eclipse.swt.widgets.Composite(
+//		// shell, SWT.NONE);
+//		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
+//				| SWT.V_SCROLL);
+//
 //		TreeNode root = createTestTree();
 //		viewer.setContentProvider(new TreeContentProvider());
 //		viewer.setInput(root);
-//		viewer.getTree().update();
 //		viewer.refresh();
+//		TreeUtil.showNodeExpanded(viewer, root.getChildren()[0]);
 //
-//		viewer.expandAll();
-//		TreeItem[] items = viewer.getTree().getItems();
-//		viewer.getTree().setSelection(items[3]);
-//		viewer.refresh();
-//		viewer.getTree().update();
+//		Object[] expanded = viewer.getExpandedElements();
+//		assertEquals(2, expanded.length);
 //
-//		sel = TreeUtil.getTreeSelections(viewer);
-//		assertEquals(1, sel.size());
+//	}
 
-	}
+//	@Test
+//	public void testGetTreeViewerSelection() {
+//		Display display = Display.getCurrent();
+//		
+//		Shell shell = new Shell(display, SWT.NONE);
+//		// org.eclipse.swt.widgets.Composite composite = new
+//		// org.eclipse.swt.widgets.Composite(
+//		// shell, SWT.NONE);
+//		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
+//				| SWT.V_SCROLL);
+//
+//		// No selection
+//		List<IStructuredSelection> sel = TreeUtil.getTreeSelections(viewer);
+//		assertEquals(0, sel.size());
+//
+////		// Select one
+////		TreeNode root = createTestTree();
+////		viewer.setContentProvider(new TreeContentProvider());
+////		viewer.setInput(root);
+////		viewer.getTree().update();
+////		viewer.refresh();
+////
+////		viewer.expandAll();
+////		TreeItem[] items = viewer.getTree().getItems();
+////		viewer.getTree().setSelection(items[3]);
+////		viewer.refresh();
+////		viewer.getTree().update();
+////
+////		sel = TreeUtil.getTreeSelections(viewer);
+////		assertEquals(1, sel.size());
+//
+//	}
 
 	private TreeNode createTestTree() {
 		TreeNode root = new TreeNode("");
