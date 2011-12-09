@@ -386,20 +386,20 @@ public class TestTreeUtil {
 		TreeUtil.unlink(null);
 	}
 
-	@Test
-	public void testGetTreeViewerSelection() {
-		final Display display = Display.getCurrent();
-	    final Shell shell = new Shell(display, SWT.NO_TRIM | SWT.ON_TOP);
-		org.eclipse.swt.widgets.Composite composite = new org.eclipse.swt.widgets.Composite(
-				shell, SWT.NONE);
-		TreeViewer viewer = new TreeViewer(composite, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
-
-		//No selection
-		List<IStructuredSelection> sel = TreeUtil.getTreeSelections(viewer);
-		assertEquals(0, sel.size());
-		
-
+//	@Test
+//	public void testGetTreeViewerSelection() {
+//		final Display display = Display.getCurrent();
+//	    final Shell shell = new Shell(display, SWT.NO_TRIM | SWT.ON_TOP);
+//		org.eclipse.swt.widgets.Composite composite = new org.eclipse.swt.widgets.Composite(
+//				shell, SWT.NONE);
+//		TreeViewer viewer = new TreeViewer(composite, SWT.MULTI | SWT.H_SCROLL
+//				| SWT.V_SCROLL);
+//
+//		//No selection
+//		List<IStructuredSelection> sel = TreeUtil.getTreeSelections(viewer);
+//		assertEquals(0, sel.size());
+//		
+//
 //		//Select one
 //		TreeNode root = createTestTree();
 //		viewer.setContentProvider(new TreeNodeContentProvider());
@@ -415,8 +415,8 @@ public class TestTreeUtil {
 //		sel = TreeUtil.getTreeSelections(viewer);
 //		assertEquals(1, sel.size());
 //		
-
-	}
+//
+//	}
 
 	private TreeNode createTestTree() {
 		TreeNode root = new TreeNode("");
