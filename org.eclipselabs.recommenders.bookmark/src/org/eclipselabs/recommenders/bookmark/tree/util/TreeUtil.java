@@ -24,27 +24,27 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
 public class TreeUtil {
-	
-	public static TreeNode [] getAllChildsOfNode(TreeNode node) {
-		
+
+	public static TreeNode[] getAllChildsOfNode(TreeNode node) {
+
 		LinkedList<TreeNode> children = new LinkedList<TreeNode>();
-		
+
 		for (TreeNode child : node.getChildren()) {
 			children.add(child);
 			children.addAll(getAllChildrenOfNodes(child));
 		}
-		
+
 		return children.toArray(new TreeNode[0]);
 	}
-	
+
 	private static LinkedList<TreeNode> getAllChildrenOfNodes(TreeNode node) {
 		LinkedList<TreeNode> children = new LinkedList<TreeNode>();
-		
+
 		for (TreeNode child : node.getChildren()) {
 			children.add(child);
 			children.addAll(getAllChildrenOfNodes(child));
 		}
-		
+
 		return children;
 	}
 
@@ -67,7 +67,7 @@ public class TreeUtil {
 
 		return null;
 	}
-	
+
 	public static TreeNode addNodesToExistingBookmark(TreeNode bookmark,
 			TreePath treePath) throws JavaModelException {
 		TreeNode node = TreeUtil.buildTreeStructure(treePath);
@@ -82,7 +82,6 @@ public class TreeUtil {
 
 		return null;
 	}
-
 
 	public static void deleteNodesReferencingToDeadResourcesUnderNode(
 			TreeNode node, final TreeModel model) {
@@ -148,7 +147,7 @@ public class TreeUtil {
 
 		return null;
 	}
-	
+
 	public static void showNodeExpanded(TreeViewer viewer, TreeNode node) {
 		viewer.refresh();
 		TreeNode leaf = TreeUtil.getLeafOfTreePath((node));
@@ -161,9 +160,10 @@ public class TreeUtil {
 
 		viewer.refresh();
 	}
-	
+
 	/**
 	 * Checks for recursion or cyclic connection if source is added to target
+	 * 
 	 * @param source
 	 * @param target
 	 * @return
@@ -183,12 +183,16 @@ public class TreeUtil {
 			return causesRecursion(source, targetParent);
 
 	}
-	
+
 	public static TreeNode makeBookmarkNode() {
 		return new TreeNode("New Bookmark", true);
 	}
-	
+
 	public static void unlink(TreeNode node) {
+
+		if (node == null)
+			return;
+
 		node.getParent().removeChild(node);
 		node.setParent(null);
 	}
@@ -222,7 +226,7 @@ public class TreeUtil {
 		if (TreeUtil.attemptMerge(bookmark, node) == null)
 			bookmark.addChild(node);
 	}
-	
+
 	private static boolean implementsRequiredInterfaces(Object value) {
 		return (value instanceof ICompilationUnit)
 				|| isValueInTypeHierarchyBelowICompilationUnit(value);
@@ -295,7 +299,7 @@ public class TreeUtil {
 	}
 
 	private static TreeNode copyTreePathNodeToBookmark(TreeNode node) {
-		if (node.isBookmarkNode())
+		if (node == null || node.isBookmarkNode())
 			return null;
 
 		TreeNode newNode = new TreeNode(node.getValue());
