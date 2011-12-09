@@ -34,7 +34,7 @@ public class AddTreeNodesToNewBookmark implements TreeCommand {
 		for (int i = 0; i < selections.size(); i++) {
 			TreeNode node = (TreeNode) selections.get(i);
 
-			TreeNode nodeCopy = TreeUtil.copyTreePath(node);
+			TreeNode nodeCopy = TreeUtil.copyTreeBelowBookmark(node);
 
 			while (nodeCopy.getParent() != null)
 				nodeCopy = nodeCopy.getParent();

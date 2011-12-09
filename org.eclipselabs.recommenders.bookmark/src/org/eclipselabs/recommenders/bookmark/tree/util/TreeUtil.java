@@ -1,6 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.tree.util;
 
 import java.util.Collections;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,24 +26,24 @@ import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
 public class TreeUtil {
 
-	public static TreeNode[] getAllChildsOfNode(TreeNode node) {
+	public static TreeNode[] getTreeBelowNode(TreeNode node) {
 
 		LinkedList<TreeNode> children = new LinkedList<TreeNode>();
 
 		for (TreeNode child : node.getChildren()) {
 			children.add(child);
-			children.addAll(getAllChildrenOfNodes(child));
+			children.addAll(addChildrenOfNode(child));
 		}
 
 		return children.toArray(new TreeNode[0]);
 	}
 
-	private static LinkedList<TreeNode> getAllChildrenOfNodes(TreeNode node) {
+	private static LinkedList<TreeNode> addChildrenOfNode(TreeNode node) {
 		LinkedList<TreeNode> children = new LinkedList<TreeNode>();
 
 		for (TreeNode child : node.getChildren()) {
 			children.add(child);
-			children.addAll(getAllChildrenOfNodes(child));
+			children.addAll(addChildrenOfNode(child));
 		}
 
 		return children;
@@ -245,6 +246,12 @@ public class TreeUtil {
 		return (node == model.getModelRoot());
 	}
 
+	/**
+	 * Returns the leaf of a tree path. If a node as two or more children
+	 * the path of the first encountered children is followed.
+	 * @param node
+	 * @return
+	 */
 	public static TreeNode getLeafOfTreePath(TreeNode node) {
 
 		if (node == null)
@@ -270,16 +277,15 @@ public class TreeUtil {
 	}
 
 	/**
-	 * Creates a copy of a provided node that includes all leafs, but without
-	 * the bookmark nodes the node belongs to. The bookmark node is
-	 * <code>null</code> for each copy
-	 * 
+	 * Copies the tree structure of a node below the bookmark the node
+	 * belongs to. Calling this method with a node which is a bookmark or
+	 * root node returns null.
 	 * @param node
 	 * @return
 	 */
-	public static TreeNode copyTreePath(TreeNode node) {
+	public static TreeNode copyTreeBelowBookmark(TreeNode node) {
 
-		if (node == null)
+		if (node == null || isRootNode(node))
 			return null;
 
 		LinkedList<TreeNode> newChilds = new LinkedList<TreeNode>();
@@ -288,14 +294,18 @@ public class TreeUtil {
 
 		TreeNode newNode = copyTreePathNodeToBookmark(node);
 
-		if (newNode == null)
-			return null;
+//		if (newNode == null)
+//			return null;
 
 		for (TreeNode child : newChilds)
 			newNode.addChild(child);
 
 		return newNode;
 
+	}
+	
+	private static boolean isRootNode(TreeNode node){
+		return node.getParent() == null;
 	}
 
 	private static TreeNode copyTreePathNodeToBookmark(TreeNode node) {
@@ -360,8 +370,6 @@ public class TreeUtil {
 	@SuppressWarnings("unchecked")
 	public static List<IStructuredSelection> getTreeSelections(TreeViewer viewer) {
 		ISelection selection = viewer.getSelection();
-		if (selection == null)
-			return Collections.emptyList();
 		if (selection instanceof IStructuredSelection && !selection.isEmpty())
 			return ((IStructuredSelection) selection).toList();
 

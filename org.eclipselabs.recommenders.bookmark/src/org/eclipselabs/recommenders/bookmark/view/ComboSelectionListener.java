@@ -24,7 +24,7 @@ public class ComboSelectionListener implements SelectionListener {
 	@Override
 	public void widgetSelected(SelectionEvent e) {
 		
-		Object[] currentlyVisibleNodes = TreeUtil.getAllChildsOfNode(model
+		Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
 				.getModelHead());
 		for (Object o : currentlyVisibleNodes) {
 			manager.deleteExpandedNodeFromStorage(o);

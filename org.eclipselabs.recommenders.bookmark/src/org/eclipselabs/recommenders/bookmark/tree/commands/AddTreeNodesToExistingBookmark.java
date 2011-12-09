@@ -20,7 +20,7 @@ public class AddTreeNodesToExistingBookmark implements TreeCommand {
 	@Override
 	public void execute() {
 		
-		TreeNode nodeCopy = TreeUtil.copyTreePath(node);
+		TreeNode nodeCopy = TreeUtil.copyTreeBelowBookmark(node);
 
 		if (TreeUtil.isDuplicate(bookmark, nodeCopy))
 			return;

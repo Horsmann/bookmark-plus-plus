@@ -120,43 +120,43 @@ public class TreeDropListener implements DropTargetListener {
 		for (int i = 0; i < selections.size(); i++) {
 
 			TreeNode node = (TreeNode) selections.get(i);
-			
 
 			TreeNode dropTarget = (TreeNode) getTarget(event);
 			TreeNode bookmarkOfDropTarget = TreeUtil
 					.getBookmarkNode(dropTarget);
 
-			new AddTreeNodesToExistingBookmark(viewer, bookmarkOfDropTarget, node).execute();
+			new AddTreeNodesToExistingBookmark(viewer, bookmarkOfDropTarget,
+					node).execute();
 
 			// if (didDropOccurInEmptyArea(bookmarkOfDropTarget)) {
 			// createNewBookmarkAndAdd(node, nodeCopy);
 			// continue;
 			// }
 
-//			 if (TreeUtil.isDuplicate(bookmarkOfDropTarget, node))
-//			 continue;
-//			
-//			 TreeNode merged = null;
-//			 if ((merged = TreeUtil.attemptMerge(bookmarkOfDropTarget,
-//			 nodeCopy)) != null) {
-//			 TreeUtil.unlink(node);
-//			 TreeUtil.showNodeExpanded(viewer, merged);
-//			 continue;
-//			 }
-//			
-//			 node.getParent().removeChild(node);
-//			 TreeNode head =
-//			 TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
-//			 bookmarkOfDropTarget.addChild(head);
-//			 TreeUtil.showNodeExpanded(viewer, head);
+			// if (TreeUtil.isDuplicate(bookmarkOfDropTarget, node))
+			// continue;
+			//
+			// TreeNode merged = null;
+			// if ((merged = TreeUtil.attemptMerge(bookmarkOfDropTarget,
+			// nodeCopy)) != null) {
+			// TreeUtil.unlink(node);
+			// TreeUtil.showNodeExpanded(viewer, merged);
+			// continue;
+			// }
+			//
+			// node.getParent().removeChild(node);
+			// TreeNode head =
+			// TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
+			// bookmarkOfDropTarget.addChild(head);
+			// TreeUtil.showNodeExpanded(viewer, head);
 
 		}
-		
-//		for (int i = 0; i < selections.size(); i++) {
-//
-//			TreeNode node = (TreeNode) selections.get(i);
-//			TreeUtil.unlink(node);
-//		}
+
+		// for (int i = 0; i < selections.size(); i++) {
+		//
+		// TreeNode node = (TreeNode) selections.get(i);
+		// TreeUtil.unlink(node);
+		// }
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
@@ -189,6 +189,9 @@ public class TreeDropListener implements DropTargetListener {
 					return false;
 
 				if (node == target)
+					return false;
+
+				if (node.isBookmarkNode())
 					return false;
 			}
 		}

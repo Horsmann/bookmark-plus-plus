@@ -60,7 +60,7 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 		} else {
 			// Get and remove all nodes that are currently visible from the
 			// storage
-			Object[] currentlyVisibleNodes = TreeUtil.getAllChildsOfNode(model
+			Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
 					.getModelHead());
 			for (Object o : currentlyVisibleNodes) {
 				manager.deleteExpandedNodeFromStorage(o);
