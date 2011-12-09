@@ -11,10 +11,6 @@ public class SerializedTreeNode {
 	private Object value;
 	private boolean isBookmarkNode;
 	
-	protected SerializedTreeNode() {
-		
-	}
-
 	public SerializedTreeNode(Object value, boolean isBookmark,
 			boolean isExpanded) {
 		this.value = value;
@@ -39,17 +35,9 @@ public class SerializedTreeNode {
 		children.add(child);
 	}
 
-	public void removeChild(TreeNode child) {
-		children.remove(child);
-		child.setParent(null);
-	}
-
 	public SerializedTreeNode[] getChildren() {
 		return (SerializedTreeNode[]) children
 				.toArray(new SerializedTreeNode[children.size()]);
 	}
 
-	public boolean hasChildren() {
-		return children.size() > 0;
-	}
 }

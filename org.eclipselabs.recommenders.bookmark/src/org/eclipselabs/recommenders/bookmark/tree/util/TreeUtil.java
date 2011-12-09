@@ -335,8 +335,8 @@ public class TreeUtil {
 
 	private static boolean doesNodeMatchId(String id, TreeNode node) {
 		Object value = node.getValue();
-		if (value == null || id == null)
-			return false;
+//		if (value == null || id == null)
+//			return false;
 		String compareID = TreeValueConverter.getStringIdentification(value);
 		return (id.compareTo(compareID) == 0);
 	}
@@ -380,10 +380,10 @@ public class TreeUtil {
 	 * Takes a node (tree path) that shall be added, determines the leaf of it
 	 * and seeks equal nodes in the existing tree that are equal to the leafs
 	 * <b>parent</b>. If such an equal parent node is found, the leaf is
-	 * attached to it as child and <code>true</code> is returned
+	 * attached to it as child
 	 * 
 	 * @param node
-	 * @return
+	 * @return TreeNode - found merge target or null
 	 */
 	public static TreeNode attemptMerge(TreeNode bookmark, TreeNode node) {
 		LinkedList<TreeNode> leafs = TreeUtil.getLeafs(node);

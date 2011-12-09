@@ -17,15 +17,12 @@ public class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(Object element) {
-		if (element instanceof TreeNode)
-			return ((TreeNode) element).hasChildren();
-		return false;
+		return ((TreeNode) element).hasChildren();
 
 	}
 
 	@Override
 	public Object[] getElements(Object element) {
-
 		return getChildren(element);
 	}
 

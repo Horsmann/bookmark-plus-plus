@@ -18,17 +18,17 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TreeNodeContentProvider;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.junit.Test;
 
 public class TestTreeUtil {
@@ -386,37 +386,105 @@ public class TestTreeUtil {
 		TreeUtil.unlink(null);
 	}
 
-//	@Test
-//	public void testGetTreeViewerSelection() {
-//		final Display display = Display.getCurrent();
-//	    final Shell shell = new Shell(display, SWT.NO_TRIM | SWT.ON_TOP);
-//		org.eclipse.swt.widgets.Composite composite = new org.eclipse.swt.widgets.Composite(
-//				shell, SWT.NONE);
-//		TreeViewer viewer = new TreeViewer(composite, SWT.MULTI | SWT.H_SCROLL
-//				| SWT.V_SCROLL);
-//
-//		//No selection
-//		List<IStructuredSelection> sel = TreeUtil.getTreeSelections(viewer);
-//		assertEquals(0, sel.size());
-//		
-//
-//		//Select one
+	@Test
+	public void testMerge() {
+		TreeNode root = createTestTree();
+		TreeNode partlyContaintedPath = createPartiallyContaintedInTree();
+
+		TreeNode merge = TreeUtil.attemptMerge(root.getChildren()[0],
+				partlyContaintedPath);
+
+		assertNotNull(merge);
+		TreeNode bm1c1 = root.getChildren()[0].getChildren()[0];
+		assertEquals(merge.getValue(), bm1c1.getValue());
+		assertEquals(3, bm1c1.getChildren().length);
+
+		merge = TreeUtil.attemptMerge(root.getChildren()[0], new TreeNode(
+				"NotInTree"));
+		assertNull(merge);
+	}
+
+	@Test
+	public void testAddToExistingBookmark() throws JavaModelException {
+		TreeNode root = createTestTree();
+
+		String idOfCompilationUnit = "=LKJLD/src<test.project{IMy.java[IMy~add~I";
+		IJavaElement element = TreeValueConverter
+				.attemptTransformationToIJavaElement(idOfCompilationUnit);
+		TreePath path = new TreePath(new Object[] { element });
+
+		TreeNode added = TreeUtil.addNodesToExistingBookmark(
+				root.getChildren()[0], path);
+
+		assertNotNull(added);
+		assertTrue(added.getValue() instanceof ICompilationUnit);
+		assertTrue(added.getParent().isBookmarkNode());
+
+		// add the same again
+		added = TreeUtil
+				.addNodesToExistingBookmark(root.getChildren()[0], path);
+		assertNull(added);
+
+		// add empty tree structure
+		path = new TreePath(new Object[] {});
+		added = TreeUtil
+				.addNodesToExistingBookmark(root.getChildren()[0], path);
+		assertNull(added);
+
+	}
+
+	@Test
+	public void testShowNodeExpanded() {
+		Display display = Display.getCurrent();
+		Shell shell = new Shell(display, SWT.NONE);
+		// org.eclipse.swt.widgets.Composite composite = new
+		// org.eclipse.swt.widgets.Composite(
+		// shell, SWT.NONE);
+		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
+
+		TreeNode root = createTestTree();
+		viewer.setContentProvider(new TreeContentProvider());
+		viewer.setInput(root);
+		viewer.refresh();
+		TreeUtil.showNodeExpanded(viewer, root.getChildren()[0]);
+
+		Object[] expanded = viewer.getExpandedElements();
+		assertEquals(2, expanded.length);
+
+	}
+
+	@Test
+	public void testGetTreeViewerSelection() {
+		Display display = Display.getCurrent();
+		Shell shell = new Shell(display, SWT.NONE);
+		// org.eclipse.swt.widgets.Composite composite = new
+		// org.eclipse.swt.widgets.Composite(
+		// shell, SWT.NONE);
+		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
+
+		// No selection
+		List<IStructuredSelection> sel = TreeUtil.getTreeSelections(viewer);
+		assertEquals(0, sel.size());
+
+//		// Select one
 //		TreeNode root = createTestTree();
-//		viewer.setContentProvider(new TreeNodeContentProvider());
+//		viewer.setContentProvider(new TreeContentProvider());
 //		viewer.setInput(root);
 //		viewer.getTree().update();
 //		viewer.refresh();
-//		
-//		TreeItem [] items = viewer.getTree().getItems();
+//
+//		viewer.expandAll();
+//		TreeItem[] items = viewer.getTree().getItems();
 //		viewer.getTree().setSelection(items[3]);
 //		viewer.refresh();
 //		viewer.getTree().update();
-//		
+//
 //		sel = TreeUtil.getTreeSelections(viewer);
 //		assertEquals(1, sel.size());
-//		
-//
-//	}
+
+	}
 
 	private TreeNode createTestTree() {
 		TreeNode root = new TreeNode("");

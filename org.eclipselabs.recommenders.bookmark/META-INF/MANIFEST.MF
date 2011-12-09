@@ -14,8 +14,10 @@ Import-Package: org.eclipse.core.resources,
 Export-Package: org.eclipselabs.recommenders.bookmark,
  org.eclipselabs.recommenders.bookmark.tree,
  org.eclipselabs.recommenders.bookmark.tree.persistent,
+ org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization,
  org.eclipselabs.recommenders.bookmark.tree.persistent.serialization,
- org.eclipselabs.recommenders.bookmark.tree.util
+ org.eclipselabs.recommenders.bookmark.tree.util,
+ org.eclipselabs.recommenders.bookmark.view.tree
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.jdt.ui,
