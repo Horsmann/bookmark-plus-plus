@@ -47,26 +47,6 @@
             class="org.eclipselabs.recommenders.bookmark.preferences.PreferenceInitializer">
       </initializer>
    </extension>
-   <extension
-         point="org.eclipse.ui.exportWizards">
-   </extension>
-   <extension
-         point="org.eclipse.ui.importWizards">
-      <category
-            id="org.eclipselabs.recommenders.bookmark.importWizards.sampleCategory"
-            name="Bookmark++">
-      </category>
-      <wizard
-            category="org.eclipselabs.recommenders.bookmark.importWizards.sampleCategory"
-            class="org.eclipselabs.recommenders.bookmark.importWizards.ImportWizard"
-            icon="icons/sample.gif"
-            id="org.eclipselabs.recommenders.bookmark.importWizards.ImportWizard"
-            name="Import Bookmarks">
-         <description>
-            Import a file from the local file system into the workspace.
-         </description>
-      </wizard>
-   </extension>
 
 
 </plugin>
