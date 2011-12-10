@@ -322,12 +322,9 @@ public class TestTreeUtil {
 		TreeUtil.deleteNodesReferencingToDeadResourcesUnderNode(
 				model.getModelHead(), model);
 
-		/*
-		 * The IFile along with its 2 childs should have been deleted The
-		 * IJavaElement is referencing to another project, existens can only be
-		 * determined if a project exists and is opened, which is not the case
-		 * in this setup for the IJavaElement
-		 */
+		// Everything except for the boomarks should be deleted, because
+		// everything is referencing to non-existing projects or is just a
+		// string dummy
 		TreeNode root = model.getModelRoot();
 		assertEquals(2, root.getChildren().length);
 
