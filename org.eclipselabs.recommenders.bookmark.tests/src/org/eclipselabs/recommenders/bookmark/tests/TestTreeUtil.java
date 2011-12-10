@@ -6,29 +6,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
-import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
-import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.junit.Test;
 
 public class TestTreeUtil {
@@ -325,13 +315,12 @@ public class TestTreeUtil {
 	}
 
 	@Test
-	public void testDeletionOfDeadReferences() throws CoreException {
-		setUpDummyProject();
+	public void testDeletionOfDeadReferences() throws CoreException,
+			IOException {
 		TreeModel model = new TreeModel();
 		model.setModelRoot(createTestTree());
 		TreeUtil.deleteNodesReferencingToDeadResourcesUnderNode(
 				model.getModelHead(), model);
-		removeDummyProject();
 
 		/*
 		 * The IFile along with its 2 childs should have been deleted The
@@ -343,27 +332,11 @@ public class TestTreeUtil {
 		assertEquals(2, root.getChildren().length);
 
 		TreeNode bm1 = root.getChildren()[0];
-		assertEquals(1, bm1.getChildren().length);
+		assertEquals(0, bm1.getChildren().length);
 
 		TreeNode bm2 = root.getChildren()[1];
-		assertEquals(2, bm2.getChildren().length);
+		assertEquals(0, bm2.getChildren().length);
 
-	}
-
-	private void setUpDummyProject() throws CoreException {
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IProject project = root.getProject("TestProj");
-		project.create(null);
-		project.open(null);
-		// project.getFolder("resource");
-		// project.getFile("project.properties");
-
-	}
-
-	private void removeDummyProject() throws CoreException {
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IProject project = root.getProject("TestProj");
-		project.delete(true, true, null);
 	}
 
 	@Test
@@ -433,59 +406,59 @@ public class TestTreeUtil {
 
 	}
 
-//	@Test
-//	public void testShowNodeExpanded() {
-//		Display display = Display.getCurrent();
-//		Shell shell = new Shell(display, SWT.NONE);
-//		// org.eclipse.swt.widgets.Composite composite = new
-//		// org.eclipse.swt.widgets.Composite(
-//		// shell, SWT.NONE);
-//		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
-//				| SWT.V_SCROLL);
-//
-//		TreeNode root = createTestTree();
-//		viewer.setContentProvider(new TreeContentProvider());
-//		viewer.setInput(root);
-//		viewer.refresh();
-//		TreeUtil.showNodeExpanded(viewer, root.getChildren()[0]);
-//
-//		Object[] expanded = viewer.getExpandedElements();
-//		assertEquals(2, expanded.length);
-//
-//	}
+	// @Test
+	// public void testShowNodeExpanded() {
+	// Display display = Display.getCurrent();
+	// Shell shell = new Shell(display, SWT.NONE);
+	// // org.eclipse.swt.widgets.Composite composite = new
+	// // org.eclipse.swt.widgets.Composite(
+	// // shell, SWT.NONE);
+	// TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
+	// | SWT.V_SCROLL);
+	//
+	// TreeNode root = createTestTree();
+	// viewer.setContentProvider(new TreeContentProvider());
+	// viewer.setInput(root);
+	// viewer.refresh();
+	// TreeUtil.showNodeExpanded(viewer, root.getChildren()[0]);
+	//
+	// Object[] expanded = viewer.getExpandedElements();
+	// assertEquals(2, expanded.length);
+	//
+	// }
 
-//	@Test
-//	public void testGetTreeViewerSelection() {
-//		Display display = Display.getCurrent();
-//		
-//		Shell shell = new Shell(display, SWT.NONE);
-//		// org.eclipse.swt.widgets.Composite composite = new
-//		// org.eclipse.swt.widgets.Composite(
-//		// shell, SWT.NONE);
-//		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
-//				| SWT.V_SCROLL);
-//
-//		// No selection
-//		List<IStructuredSelection> sel = TreeUtil.getTreeSelections(viewer);
-//		assertEquals(0, sel.size());
-//
-////		// Select one
-////		TreeNode root = createTestTree();
-////		viewer.setContentProvider(new TreeContentProvider());
-////		viewer.setInput(root);
-////		viewer.getTree().update();
-////		viewer.refresh();
-////
-////		viewer.expandAll();
-////		TreeItem[] items = viewer.getTree().getItems();
-////		viewer.getTree().setSelection(items[3]);
-////		viewer.refresh();
-////		viewer.getTree().update();
-////
-////		sel = TreeUtil.getTreeSelections(viewer);
-////		assertEquals(1, sel.size());
-//
-//	}
+	// @Test
+	// public void testGetTreeViewerSelection() {
+	// Display display = Display.getCurrent();
+	//
+	// Shell shell = new Shell(display, SWT.NONE);
+	// // org.eclipse.swt.widgets.Composite composite = new
+	// // org.eclipse.swt.widgets.Composite(
+	// // shell, SWT.NONE);
+	// TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
+	// | SWT.V_SCROLL);
+	//
+	// // No selection
+	// List<IStructuredSelection> sel = TreeUtil.getTreeSelections(viewer);
+	// assertEquals(0, sel.size());
+	//
+	// // // Select one
+	// // TreeNode root = createTestTree();
+	// // viewer.setContentProvider(new TreeContentProvider());
+	// // viewer.setInput(root);
+	// // viewer.getTree().update();
+	// // viewer.refresh();
+	// //
+	// // viewer.expandAll();
+	// // TreeItem[] items = viewer.getTree().getItems();
+	// // viewer.getTree().setSelection(items[3]);
+	// // viewer.refresh();
+	// // viewer.getTree().update();
+	// //
+	// // sel = TreeUtil.getTreeSelections(viewer);
+	// // assertEquals(1, sel.size());
+	//
+	// }
 
 	private TreeNode createTestTree() {
 		TreeNode root = new TreeNode("");

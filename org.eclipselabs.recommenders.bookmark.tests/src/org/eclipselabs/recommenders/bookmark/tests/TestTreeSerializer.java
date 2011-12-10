@@ -2,22 +2,12 @@ package org.eclipselabs.recommenders.bookmark.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.GsonConverter;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializer;
-import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
-import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.junit.Test;
 
 public class TestTreeSerializer {
