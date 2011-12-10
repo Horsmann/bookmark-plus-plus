@@ -6,11 +6,9 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToNewBookmark;
@@ -18,25 +16,20 @@ import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistin
 import org.eclipselabs.recommenders.bookmark.tree.commands.CreateNewBookmarkAddAsNodeCommand;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 public class DefaultTreeDropListener implements DropTargetListener {
 
-	private final TreeViewer viewer;
-	private TreeModel model;
+	private final BookmarkView viewer;
 
-	/**
-	 * The drag listener of the <b>same</b> view the drop listener is listening
-	 * for. By having access to the corresponding drag listener a drag action
-	 * triggered within the view can be distinguished from a drag action started
-	 * in a foreign view
-	 */
 	private TreeDragListener dragListener = null;
+	private TreeKeyListener listener = null;
 
-	public DefaultTreeDropListener(TreeViewer viewer, TreeModel model,
-			TreeDragListener localViewsDragListener) {
+	public DefaultTreeDropListener(BookmarkView viewer,
+			TreeDragListener localViewsDragListener, TreeKeyListener listener) {
 		this.viewer = viewer;
-		this.model = model;
 		this.dragListener = localViewsDragListener;
+		this.listener = listener;
 	}
 
 	@Override
@@ -55,7 +48,7 @@ public class DefaultTreeDropListener implements DropTargetListener {
 			e.printStackTrace();
 		}
 
-		viewer.refresh();
+		viewer.getView().refresh();
 	}
 
 	@Override
@@ -83,36 +76,22 @@ public class DefaultTreeDropListener implements DropTargetListener {
 	}
 
 	private void saveNewTreeModelState() {
-		TreeSerializerFacade.serializeToDefaultLocation(viewer, model);
+		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
+				viewer.getModel());
 	}
 
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
 			throws JavaModelException {
-		List<IStructuredSelection> selections = TreeUtil
-				.getTreeSelections(viewer);
 
-		// Randbedingung wo der Drop beim internen droppen nicht korrekt die
-		// Struktur nach oben aufbaut
+		System.err.println(listener.isCtrlPressed());
+
+		List<IStructuredSelection> selections = TreeUtil
+				.getTreeSelections(viewer.getView());
 
 		if (didDropOccurInEmptyArea(event)) {
 
-			if (selections.size() > 0) {
-
-				// TreeNode node = (TreeNode)selections.get(0);
-
-				// TreeNode nodeCopy = TreeUtil.copyTreePath(node);
-
-				// TreeNode dropTarget = (TreeNode) getTarget(event);
-				// TreeNode bookmarkOfDropTarget = TreeUtil
-				// .getBookmarkNode(dropTarget);
-
-				// if (didDropOccurInEmptyArea(bookmarkOfDropTarget)) {
-
-				new AddTreeNodesToNewBookmark(viewer, model).execute();
-				// createNewBookmarkAndAdd(node, nodeCopy);
-				// }
-
-			}
+			new AddTreeNodesToNewBookmark(viewer.getView(), viewer.getModel())
+					.execute();
 			return;
 		}
 
@@ -127,35 +106,8 @@ public class DefaultTreeDropListener implements DropTargetListener {
 			new AddTreeNodesToExistingBookmark(viewer, bookmarkOfDropTarget,
 					node).execute();
 
-			// if (didDropOccurInEmptyArea(bookmarkOfDropTarget)) {
-			// createNewBookmarkAndAdd(node, nodeCopy);
-			// continue;
-			// }
-
-			// if (TreeUtil.isDuplicate(bookmarkOfDropTarget, node))
-			// continue;
-			//
-			// TreeNode merged = null;
-			// if ((merged = TreeUtil.attemptMerge(bookmarkOfDropTarget,
-			// nodeCopy)) != null) {
-			// TreeUtil.unlink(node);
-			// TreeUtil.showNodeExpanded(viewer, merged);
-			// continue;
-			// }
-			//
-			// node.getParent().removeChild(node);
-			// TreeNode head =
-			// TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
-			// bookmarkOfDropTarget.addChild(head);
-			// TreeUtil.showNodeExpanded(viewer, head);
-
 		}
 
-		// for (int i = 0; i < selections.size(); i++) {
-		//
-		// TreeNode node = (TreeNode) selections.get(i);
-		// TreeUtil.unlink(node);
-		// }
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
@@ -169,8 +121,7 @@ public class DefaultTreeDropListener implements DropTargetListener {
 			new AddTreepathsToExistingBookmarkCommand(viewer, bookmark,
 					treePath).execute();
 		} else {
-			new CreateNewBookmarkAddAsNodeCommand(model, viewer, treePath)
-					.execute();
+			new CreateNewBookmarkAddAsNodeCommand(viewer, treePath).execute();
 		}
 
 	}
@@ -178,23 +129,7 @@ public class DefaultTreeDropListener implements DropTargetListener {
 	private boolean isValidDrop(DropTargetEvent event) {
 
 		if (dragListener.isDragInProgress()) {
-			return DropUtil.isValidDrop(viewer, event);
-			// List<IStructuredSelection> selectedList = TreeUtil
-			// .getTreeSelections(viewer);
-			// TreeNode target = (TreeNode) getTarget(event);
-			//
-			// for (int i = 0; i < selectedList.size(); i++) {
-			// TreeNode node = (TreeNode) selectedList.get(i);
-			//
-			// if (TreeUtil.causesRecursion(node, target))
-			// return false;
-			//
-			// if (node == target)
-			// return false;
-			//
-			// if (node.isBookmarkNode())
-			// return false;
-			// }
+			return DropUtil.isValidDrop(viewer.getView(), event);
 		}
 		return true;
 	}
@@ -215,18 +150,6 @@ public class DefaultTreeDropListener implements DropTargetListener {
 
 		return bookmarkOfDropTarget == null;
 	}
-
-	// private void createNewBookmarkAndAdd(TreeNode node, TreeNode nodeCopy) {
-	// TreeNode bookmark = TreeUtil.makeBookmarkNode();
-	//
-	// while (nodeCopy.getParent() != null)
-	// nodeCopy = nodeCopy.getParent();
-	//
-	// bookmark.addChild(nodeCopy);
-	// model.getModelRoot().addChild(bookmark);
-	// TreeUtil.showNodeExpanded(viewer, bookmark);
-	// TreeUtil.unlink(node);
-	// }
 
 	private Object getTarget(DropTargetEvent event) {
 		return ((event.item == null) ? null : event.item.getData());

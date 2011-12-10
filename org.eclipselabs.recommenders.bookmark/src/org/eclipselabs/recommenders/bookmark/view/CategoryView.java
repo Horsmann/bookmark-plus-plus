@@ -55,6 +55,10 @@ public class CategoryView implements BookmarkView {
 	private GridLayout gridLayout = null;
 
 	private ControlNotifier notifier = null;
+	private TreeKeyListener keyListener = null;
+	private TreeSelectionListener selectionListener = null;
+	private TreeDoubleclickListener doubleClickListener = null;
+	private CategoryTreeDropListener dropListener = null;
 
 	public CategoryView(ViewManager manager, Composite parent, TreeModel model) {
 
@@ -78,17 +82,26 @@ public class CategoryView implements BookmarkView {
 		gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
 		combo.setLayoutData(gridData);
 
-		createActions();
-		setUpContextMenu();
-
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
 
-		initializeControlNotifier();
+		initializerActionsListenerAndMenus();
 
 		addListenerToView();
 		addListenerToTreeInView();
+	}
+
+	private void initializerActionsListenerAndMenus() {
+		createActions();
+		setUpContextMenu();
+		initializeControlNotifier();
+
+		keyListener = new TreeKeyListener(this, showInEditor);
+		selectionListener = new TreeSelectionListener(notifier);
+		doubleClickListener = new TreeDoubleclickListener(showInEditor);
+
+		dropListener = new CategoryTreeDropListener(this, keyListener);
 	}
 
 	private void initializeControlNotifier() {
@@ -132,11 +145,8 @@ public class CategoryView implements BookmarkView {
 	}
 
 	private void addListenerToTreeInView() {
-		viewer.getTree().addKeyListener(
-				new TreeKeyListener(this, showInEditor));
+		viewer.getTree().addKeyListener(keyListener);
 
-		TreeSelectionListener selectionListener = new TreeSelectionListener(
-				notifier);
 		viewer.getTree().addSelectionListener(selectionListener);
 	}
 
@@ -162,7 +172,7 @@ public class CategoryView implements BookmarkView {
 
 	private void addListenerToView() {
 		addDragDropSupportToView(viewer, model);
-		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
+		viewer.addDoubleClickListener(doubleClickListener);
 
 	}
 
@@ -171,9 +181,6 @@ public class CategoryView implements BookmarkView {
 		Transfer[] transferTypes = new Transfer[] {
 				ResourceTransfer.getInstance(),
 				LocalSelectionTransfer.getTransfer() };
-
-		CategoryTreeDropListener dropListener = new CategoryTreeDropListener(
-				viewer, model);
 
 		viewer.addDropSupport(operations, transferTypes, dropListener);
 	}

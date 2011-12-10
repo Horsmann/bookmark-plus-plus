@@ -3,20 +3,16 @@ package org.eclipselabs.recommenders.bookmark.view.actions;
 import java.io.File;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.dialog.ExportDialog;
 
-public class ExportBookmarksAction extends Action  {
+public class ExportBookmarksAction extends Action {
 
-	private TreeModel model;
-	private TreeViewer viewer;
+	private BookmarkView viewer;
 
-	public ExportBookmarksAction(TreeViewer viewer, TreeModel model) {
-		this.model = model;
-		this.viewer = viewer;
+	public ExportBookmarksAction(BookmarkView viewer) {
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_SAVE_BOOKMARKS));
 		this.setToolTipText("Exports all bookmarks");
@@ -29,7 +25,8 @@ public class ExportBookmarksAction extends Action  {
 		File file = ExportDialog.showDialog();
 
 		if (file != null) {
-			TreeSerializerFacade.serialize(viewer, model, file);
+			TreeSerializerFacade.serialize(viewer.getView(), viewer.getModel(),
+					file);
 		}
 
 	}

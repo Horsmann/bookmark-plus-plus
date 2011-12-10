@@ -3,23 +3,23 @@ package org.eclipselabs.recommenders.bookmark.view.tree;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 public class CategoryTreeDropListener implements DropTargetListener {
 
-	private TreeViewer viewer = null;
-	private TreeModel model = null;
+	private BookmarkView viewer = null;
+	private TreeKeyListener keyListener = null;
 
-	public CategoryTreeDropListener(TreeViewer viewer, TreeModel model) {
+	public CategoryTreeDropListener(BookmarkView viewer,
+			TreeKeyListener keyListener) {
 		this.viewer = viewer;
-		this.model = model;
+		this.keyListener = keyListener;
 	}
 
 	@Override
@@ -55,8 +55,10 @@ public class CategoryTreeDropListener implements DropTargetListener {
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
 			DropTargetEvent event) throws JavaModelException {
 
+		System.err.println(keyListener.isCtrlPressed());
+		
 		TreePath[] treePath = getTreePath(event);
-		TreeNode bookmark = model.getModelHead();
+		TreeNode bookmark = viewer.getModel().getModelHead();
 
 		new AddTreepathsToExistingBookmarkCommand(viewer, bookmark, treePath)
 				.execute();
@@ -78,6 +80,6 @@ public class CategoryTreeDropListener implements DropTargetListener {
 	}
 
 	private void saveNewTreeModelState() {
-		TreeSerializerFacade.serializeToDefaultLocation(viewer, model);
+		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(), viewer.getModel());
 	}
 }

@@ -19,17 +19,15 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.CreateNewBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.DeleteAction;
-import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
-import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleViewAction;
+import org.eclipselabs.recommenders.bookmark.view.tree.DefaultTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
-import org.eclipselabs.recommenders.bookmark.view.tree.DefaultTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
@@ -53,6 +51,12 @@ public class DefaultView implements BookmarkView {
 
 	private ControlNotifier notifier = null;
 
+	private TreeKeyListener keyListener = null;
+	private TreeSelectionListener selectionListener = null;
+	private TreeDoubleclickListener doubleClickListener = null;
+	private TreeDragListener dragListener = null;
+	private DefaultTreeDropListener dropListener = null;
+
 	public DefaultView(ViewManager manager, Composite parent, TreeModel model) {
 		this.model = model;
 		this.manager = manager;
@@ -62,20 +66,30 @@ public class DefaultView implements BookmarkView {
 		viewer = new TreeViewer(composite, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 
-		createActions();
-		// Changes are view part associated, need to be called separatly if
-		// needed
-		// setUpToolbar();
-		setUpContextMenu();
-
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
 
-		initializeControlNotifier();
+		initializerActionsListenerAndMenus();
 
 		addListenerToView();
 		addListenerToTreeInView();
+	}
+
+	private void initializerActionsListenerAndMenus() {
+		createActions();
+		setUpContextMenu();
+		initializeControlNotifier();
+
+		keyListener = new TreeKeyListener(this, showInEditor);
+		selectionListener = new TreeSelectionListener(notifier);
+		doubleClickListener = new TreeDoubleclickListener(showInEditor);
+
+		dragListener = new TreeDragListener(viewer);
+		dropListener = new DefaultTreeDropListener(this, dragListener,
+				keyListener);
+
+		
 	}
 
 	private void initializeControlNotifier() {
@@ -89,17 +103,14 @@ public class DefaultView implements BookmarkView {
 	}
 
 	private void addListenerToTreeInView() {
-		viewer.getTree().addKeyListener(
-				new TreeKeyListener(this, showInEditor));
+		viewer.getTree().addKeyListener(keyListener);
 
-		TreeSelectionListener selectionListener = new TreeSelectionListener(
-				notifier);
 		viewer.getTree().addSelectionListener(selectionListener);
 	}
 
 	private void addListenerToView() {
-		addDragDropSupportToView(viewer, model);
-		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
+		addDragDropSupportToView();
+		viewer.addDoubleClickListener(doubleClickListener);
 
 	}
 
@@ -107,15 +118,11 @@ public class DefaultView implements BookmarkView {
 		notifier.fire();
 	}
 
-	public void addDragDropSupportToView(TreeViewer viewer, TreeModel model) {
+	public void addDragDropSupportToView() {
 		int operations = DND.DROP_LINK;
 		Transfer[] transferTypes = new Transfer[] {
 				ResourceTransfer.getInstance(),
 				LocalSelectionTransfer.getTransfer() };
-
-		TreeDragListener dragListener = new TreeDragListener(viewer);
-		DefaultTreeDropListener dropListener = new DefaultTreeDropListener(
-				viewer, model, dragListener);
 
 		viewer.addDropSupport(operations, transferTypes, dropListener);
 		viewer.addDragSupport(operations, transferTypes, dragListener);
@@ -124,8 +131,8 @@ public class DefaultView implements BookmarkView {
 	private void createActions() {
 		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
 				viewer);
-		exportBookmarks = new ExportBookmarksAction(viewer, model);
-		importBookmarks = new ImportBookmarksAction(viewer, model);
+//		exportBookmarks = new ExportBookmarksAction(this);
+//		importBookmarks = new ImportBookmarksAction(this);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(viewer);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
@@ -142,8 +149,8 @@ public class DefaultView implements BookmarkView {
 		mgr.add(showInEditor);
 		mgr.add(refreshView);
 		mgr.add(closeAllOpenEditors);
-		mgr.add(exportBookmarks);
-		mgr.add(importBookmarks);
+//		mgr.add(exportBookmarks);
+//		mgr.add(importBookmarks);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
 		mgr.add(newBookmark);
@@ -160,8 +167,8 @@ public class DefaultView implements BookmarkView {
 			public void menuAboutToShow(IMenuManager mgr) {
 				menuMgr.add(showInEditor);
 				menuMgr.add(refreshView);
-				menuMgr.add(exportBookmarks);
-				menuMgr.add(importBookmarks);
+//				menuMgr.add(exportBookmarks);
+//				menuMgr.add(importBookmarks);
 				menuMgr.add(new Separator());
 				menuMgr.add(toggleLevel);
 				menuMgr.add(newBookmark);

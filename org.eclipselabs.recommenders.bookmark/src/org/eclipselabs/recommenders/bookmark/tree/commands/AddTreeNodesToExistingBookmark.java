@@ -1,16 +1,16 @@
 package org.eclipselabs.recommenders.bookmark.tree.commands;
 
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 public class AddTreeNodesToExistingBookmark implements TreeCommand {
 
-	private TreeViewer viewer;
+	private BookmarkView viewer;
 	private TreeNode bookmark;
 	private TreeNode node;
 
-	public AddTreeNodesToExistingBookmark(TreeViewer viewer, TreeNode bookmark,
+	public AddTreeNodesToExistingBookmark(BookmarkView viewer, TreeNode bookmark,
 			TreeNode node) {
 		this.viewer = viewer;
 		this.bookmark = bookmark;
@@ -28,7 +28,7 @@ public class AddTreeNodesToExistingBookmark implements TreeCommand {
 		TreeNode merged = null;
 		if ((merged = TreeUtil.attemptMerge(bookmark, nodeCopy)) != null) {
 			TreeUtil.unlink(node);
-			TreeUtil.showNodeExpanded(viewer, merged);
+			TreeUtil.showNodeExpanded(viewer.getView(), merged);
 			return;
 		}
 
@@ -36,7 +36,7 @@ public class AddTreeNodesToExistingBookmark implements TreeCommand {
 		TreeNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
 		bookmark.addChild(head);
 		
-		TreeUtil.showNodeExpanded(viewer, head);
+		TreeUtil.showNodeExpanded(viewer.getView(), head);
 
 	}
 

@@ -1,19 +1,15 @@
 package org.eclipselabs.recommenders.bookmark.view;
 
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 
 public class ViewPartListener implements IPartListener2 {
 
-	private TreeViewer viewer;
-	private TreeModel model;
+	private BookmarkView viewer;
 
-	public ViewPartListener(TreeViewer viewer, TreeModel model) {
+	public ViewPartListener(BookmarkView viewer) {
 		this.viewer = viewer;
-		this.model = model;
 	}
 
 	@Override
@@ -57,7 +53,7 @@ public class ViewPartListener implements IPartListener2 {
 	}
 	
 	private void saveNewTreeModelState() {
-		TreeSerializerFacade.serializeToDefaultLocation(viewer, model);		
+		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(), viewer.getModel());		
 	}
 
 }

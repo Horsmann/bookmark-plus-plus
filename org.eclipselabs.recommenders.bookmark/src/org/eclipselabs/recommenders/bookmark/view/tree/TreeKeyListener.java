@@ -20,6 +20,8 @@ public class TreeKeyListener implements KeyListener {
 	private BookmarkView viewer = null;
 	private Action showInEditor = null;
 
+	private boolean isCtrlPressed = false;
+
 	public TreeKeyListener(BookmarkView viewer, Action showInEditor) {
 		this.viewer = viewer;
 
@@ -29,6 +31,10 @@ public class TreeKeyListener implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+
+		if (e.keyCode == SWT.CTRL) {
+			isCtrlPressed = true;
+		}
 
 		checkForNodeDeletion(e);
 		checkForOpenNodeInEditor(e);
@@ -96,8 +102,8 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private void saveNewTreeModelState() {
-		TreeSerializerFacade
-				.serializeToDefaultLocation(viewer.getView(), viewer.getModel());
+		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
+				viewer.getModel());
 	}
 
 	private void checkForOpenNodeInEditor(KeyEvent e) {
@@ -138,8 +144,12 @@ public class TreeKeyListener implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-
+		isCtrlPressed = false;
 	};
+
+	public boolean isCtrlPressed() {
+		return isCtrlPressed;
+	}
 
 	private void setFocusAndSelection(TreeItem item) {
 		viewer.getView().refresh();
