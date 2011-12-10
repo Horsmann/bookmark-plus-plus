@@ -1,34 +1,25 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
-import java.util.LinkedList;
-
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
+import org.eclipselabs.recommenders.bookmark.view.ControlNotifier;
 
-public class TreeSelectionListener implements SelectionListener{
-	
-	private LinkedList<SelfEnabling> selectionDependendSelfEnablers;
-	
-	public TreeSelectionListener() {
-		selectionDependendSelfEnablers = new LinkedList<SelfEnabling>();
-	}
-	
-	public void add(SelfEnabling selfEnabling){
-		selectionDependendSelfEnablers.add(selfEnabling);
+public class TreeSelectionListener implements SelectionListener {
+
+	private ControlNotifier notifier = null;
+
+	public TreeSelectionListener(ControlNotifier notifier) {
+		this.notifier = notifier;
 	}
 
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		for (SelfEnabling se : selectionDependendSelfEnablers){
-			se.updateEnabledStatus();
-		}
+		notifier.fire();
 	}
 
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 }

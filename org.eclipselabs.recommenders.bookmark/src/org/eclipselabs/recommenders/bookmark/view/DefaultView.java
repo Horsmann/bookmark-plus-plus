@@ -51,6 +51,8 @@ public class DefaultView implements BookmarkView {
 
 	private ViewManager manager = null;
 
+	private ControlNotifier notifier = null;
+
 	public DefaultView(ViewManager manager, Composite parent, TreeModel model) {
 		this.model = model;
 		this.manager = manager;
@@ -70,19 +72,28 @@ public class DefaultView implements BookmarkView {
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
 
+		initializeControlNotifier();
+
 		addListenerToView();
 		addListenerToTreeInView();
+	}
+
+	private void initializeControlNotifier() {
+		notifier = new ControlNotifier();
+
+		notifier.add((SelfEnabling) openInSystemFileExplorer);
+		notifier.add((SelfEnabling) showInEditor);
+		notifier.add((SelfEnabling) deleteSelection);
+		notifier.add((SelfEnabling) toggleLevel);
+
 	}
 
 	private void addListenerToTreeInView() {
 		viewer.getTree().addKeyListener(
 				new TreeKeyListener(viewer, model, showInEditor));
 
-		TreeSelectionListener selectionListener = new TreeSelectionListener();
-		selectionListener.add((SelfEnabling) openInSystemFileExplorer);
-		selectionListener.add((SelfEnabling) showInEditor);
-		selectionListener.add((SelfEnabling) deleteSelection);
-		selectionListener.add((SelfEnabling) toggleLevel);
+		TreeSelectionListener selectionListener = new TreeSelectionListener(
+				notifier);
 		viewer.getTree().addSelectionListener(selectionListener);
 	}
 
@@ -90,6 +101,10 @@ public class DefaultView implements BookmarkView {
 		addDragDropSupportToView(viewer, model);
 		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
 
+	}
+	
+	public void updateEnableStatusOfControls() {
+		notifier.fire();
 	}
 
 	public void addDragDropSupportToView(TreeViewer viewer, TreeModel model) {
@@ -99,8 +114,8 @@ public class DefaultView implements BookmarkView {
 				LocalSelectionTransfer.getTransfer() };
 
 		TreeDragListener dragListener = new TreeDragListener(viewer);
-		DefaultTreeDropListener dropListener = new DefaultTreeDropListener(viewer, model,
-				dragListener);
+		DefaultTreeDropListener dropListener = new DefaultTreeDropListener(
+				viewer, model, dragListener);
 
 		viewer.addDropSupport(operations, transferTypes, dropListener);
 		viewer.addDragSupport(operations, transferTypes, dragListener);
@@ -177,6 +192,7 @@ public class DefaultView implements BookmarkView {
 	@Override
 	public void updateControls() {
 		viewer.refresh(true);
+		updateEnableStatusOfControls();
 	}
 
 }

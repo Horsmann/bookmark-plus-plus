@@ -53,6 +53,8 @@ public class CategoryView implements BookmarkView {
 	private ViewManager manager = null;
 
 	private GridLayout gridLayout = null;
+	
+	private ControlNotifier notifier = null;
 
 	public CategoryView(ViewManager manager, Composite parent, TreeModel model) {
 
@@ -83,8 +85,20 @@ public class CategoryView implements BookmarkView {
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
 
+		initializeControlNotifier();
+		
 		addListenerToView();
 		addListenerToTreeInView();
+	}
+
+	private void initializeControlNotifier() {
+		notifier = new ControlNotifier();
+		
+		notifier.add((SelfEnabling) openInSystemFileExplorer);
+		notifier.add((SelfEnabling) showInEditor);
+		notifier.add((SelfEnabling) deleteSelection);
+		notifier.add((SelfEnabling) toggleLevel);
+		
 	}
 
 	public void refreshCategories() {
@@ -121,12 +135,12 @@ public class CategoryView implements BookmarkView {
 		viewer.getTree().addKeyListener(
 				new TreeKeyListener(viewer, model, showInEditor));
 
-		TreeSelectionListener selectionListener = new TreeSelectionListener();
-		selectionListener.add((SelfEnabling) openInSystemFileExplorer);
-		selectionListener.add((SelfEnabling) showInEditor);
-		selectionListener.add((SelfEnabling) deleteSelection);
-		selectionListener.add((SelfEnabling) toggleLevel);
+		TreeSelectionListener selectionListener = new TreeSelectionListener(notifier);
 		viewer.getTree().addSelectionListener(selectionListener);
+	}
+	
+	public void updateEnableStatusOfControls() {
+		notifier.fire();
 	}
 
 	void setUpToolbarForViewPart() {
@@ -202,6 +216,8 @@ public class CategoryView implements BookmarkView {
 	public void updateControls() {
 		refreshCategories();
 		viewer.refresh(true);
+		
+		updateEnableStatusOfControls();
 	}
 
 }
