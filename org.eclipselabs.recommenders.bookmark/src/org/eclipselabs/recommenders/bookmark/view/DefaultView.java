@@ -38,8 +38,8 @@ public class DefaultView implements BookmarkView {
 	Composite composite = null;
 	private TreeModel model = null;
 	private Action showInEditor = null;
-//	private Action exportBookmarks = null;
-//	private Action importBookmarks = null;
+	private Action exportBookmarks = null;
+	private Action importBookmarks = null;
 	private Action closeAllOpenEditors = null;
 	private Action refreshView = null;
 	private Action openInSystemFileExplorer = null;
@@ -131,8 +131,8 @@ public class DefaultView implements BookmarkView {
 	private void createActions() {
 		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
 				viewer);
-//		exportBookmarks = new ExportBookmarksAction(this);
-//		importBookmarks = new ImportBookmarksAction(this);
+		exportBookmarks = new ExportBookmarksAction(this);
+		importBookmarks = new ImportBookmarksAction(this);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(this);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
@@ -149,8 +149,8 @@ public class DefaultView implements BookmarkView {
 		mgr.add(showInEditor);
 		mgr.add(refreshView);
 		mgr.add(closeAllOpenEditors);
-//		mgr.add(exportBookmarks);
-//		mgr.add(importBookmarks);
+		mgr.add(exportBookmarks);
+		mgr.add(importBookmarks);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
 		mgr.add(newBookmark);
@@ -167,8 +167,8 @@ public class DefaultView implements BookmarkView {
 			public void menuAboutToShow(IMenuManager mgr) {
 				menuMgr.add(showInEditor);
 				menuMgr.add(refreshView);
-//				menuMgr.add(exportBookmarks);
-//				menuMgr.add(importBookmarks);
+				menuMgr.add(exportBookmarks);
+				menuMgr.add(importBookmarks);
 				menuMgr.add(new Separator());
 				menuMgr.add(toggleLevel);
 				menuMgr.add(newBookmark);
