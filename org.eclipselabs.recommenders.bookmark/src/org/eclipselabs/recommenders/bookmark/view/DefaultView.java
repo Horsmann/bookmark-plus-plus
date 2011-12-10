@@ -38,8 +38,8 @@ public class DefaultView implements BookmarkView {
 	Composite composite = null;
 	private TreeModel model = null;
 	private Action showInEditor = null;
-	private Action exportBookmarks = null;
-	private Action importBookmarks = null;
+//	private Action exportBookmarks = null;
+//	private Action importBookmarks = null;
 	private Action closeAllOpenEditors = null;
 	private Action refreshView = null;
 	private Action openInSystemFileExplorer = null;

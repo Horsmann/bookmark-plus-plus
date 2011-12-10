@@ -66,9 +66,9 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		stackLayout.topControl = toggledView.composite;
 		activeView = toggledView;
 		toggledView.setUpToolbarForViewPart();
-		
+
 		container.layout(true, true);
-		
+
 		toggledView.updateControls();
 	}
 
@@ -76,9 +76,9 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		stackLayout.topControl = defaultView.composite;
 		activeView = defaultView;
 		defaultView.setUpToolbarForViewPart();
-		
+
 		container.layout(true, true);
-		
+
 		toggledView.updateControls();
 	}
 
@@ -94,7 +94,7 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		}
 
 		checkPreferencesForDeletionOfDeadReferences();
-		
+
 		addCurrentlyExpandedNodesToStorage();
 
 	}
@@ -148,6 +148,9 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		Object[] expanded = activeView.getView().getExpandedElements();
 		for (Object o : expanded) {
 			expandedNodes.put(o, "");
+		}
+		if (!model.isHeadEqualRoot()) {
+			expandedNodes.put(model.getModelHead(), "");
 		}
 	}
 
