@@ -65,7 +65,7 @@ public class DefaultView implements BookmarkView {
 		composite.setLayout(new FillLayout());
 		viewer = new TreeViewer(composite, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
-
+		
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
@@ -134,7 +134,7 @@ public class DefaultView implements BookmarkView {
 //		exportBookmarks = new ExportBookmarksAction(this);
 //		importBookmarks = new ImportBookmarksAction(this);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
-		refreshView = new RefreshViewAction(viewer);
+		refreshView = new RefreshViewAction(this);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
 		toggleLevel = new ToggleViewAction(manager, this);
 		newBookmark = new CreateNewBookmarkAction(this);

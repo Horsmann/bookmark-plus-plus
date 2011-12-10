@@ -55,8 +55,8 @@ public class CategoryTreeDropListener implements DropTargetListener {
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
 			DropTargetEvent event) throws JavaModelException {
 
-		System.err.println(keyListener.isCtrlPressed());
-		
+		System.err.println(keyListener.isAltPressed());
+
 		TreePath[] treePath = getTreePath(event);
 		TreeNode bookmark = viewer.getModel().getModelHead();
 
@@ -80,6 +80,7 @@ public class CategoryTreeDropListener implements DropTargetListener {
 	}
 
 	private void saveNewTreeModelState() {
-		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(), viewer.getModel());
+		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
+				viewer.getModel());
 	}
 }

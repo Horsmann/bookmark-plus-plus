@@ -136,7 +136,7 @@ public class CategoryView implements BookmarkView {
 		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
 				viewer);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
-		refreshView = new RefreshViewAction(viewer);
+		refreshView = new RefreshViewAction(this);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
 		toggleLevel = new ToggleViewAction(manager, this);
 		deleteSelection = new DeleteAction(this);

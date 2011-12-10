@@ -34,8 +34,13 @@ public class BookmarkPreferencePage extends FieldEditorPreferencePage implements
 		// addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH,
 		// "&Directory preference:", getFieldEditorParent()));
 		addField(new BooleanFieldEditor(
-				PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES,
+				PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES_VIEW_OPENING,
 				"&automatically remove bookmarks that are referencing to non available projects when the view is opened",
+				getFieldEditorParent()));
+
+		addField(new BooleanFieldEditor(
+				PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES_REFRESH,
+				"&Refreshing removes dead links to non available projects",
 				getFieldEditorParent()));
 
 		// addField(new RadioGroupFieldEditor(

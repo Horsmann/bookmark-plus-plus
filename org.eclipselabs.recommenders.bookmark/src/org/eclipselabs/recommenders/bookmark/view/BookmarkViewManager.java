@@ -103,7 +103,7 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		IPreferenceStore preferenceStore = Activator.getDefault()
 				.getPreferenceStore();
 		boolean removeDeadReferences = preferenceStore
-				.getBoolean(org.eclipselabs.recommenders.bookmark.preferences.PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES);
+				.getBoolean(org.eclipselabs.recommenders.bookmark.preferences.PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES_VIEW_OPENING);
 
 		if (removeDeadReferences) {
 			final TreeNode root = model.getModelRoot();

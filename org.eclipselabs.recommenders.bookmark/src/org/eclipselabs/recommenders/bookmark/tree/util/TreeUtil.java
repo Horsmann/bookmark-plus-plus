@@ -98,10 +98,13 @@ public class TreeUtil {
 		boolean isProjectOpen = ResourceAvailabilityValidator
 				.isAssociatedProjectOpen(value);
 
+		boolean doesProjectExist = ResourceAvailabilityValidator
+				.doesAssociatedProjectExists(value);
+
 		boolean delete = ResourceAvailabilityValidator
 				.doesReferecedObjectExists(value);
 
-		if (!delete && isProjectOpen) {
+		if ((!delete && isProjectOpen) || !doesProjectExist) {
 
 			node.getParent().removeChild(node);
 			node.setParent(null);
@@ -247,8 +250,9 @@ public class TreeUtil {
 	}
 
 	/**
-	 * Returns the leaf of a tree path. If a node as two or more children
-	 * the path of the first encountered children is followed.
+	 * Returns the leaf of a tree path. If a node as two or more children the
+	 * path of the first encountered children is followed.
+	 * 
 	 * @param node
 	 * @return
 	 */
@@ -277,9 +281,10 @@ public class TreeUtil {
 	}
 
 	/**
-	 * Copies the tree structure of a node below the bookmark the node
-	 * belongs to. Calling this method with a node which is a bookmark or
-	 * root node returns null.
+	 * Copies the tree structure of a node below the bookmark the node belongs
+	 * to. Calling this method with a node which is a bookmark or root node
+	 * returns null.
+	 * 
 	 * @param node
 	 * @return
 	 */
@@ -294,8 +299,8 @@ public class TreeUtil {
 
 		TreeNode newNode = copyTreePathNodeToBookmark(node);
 
-//		if (newNode == null)
-//			return null;
+		// if (newNode == null)
+		// return null;
 
 		for (TreeNode child : newChilds)
 			newNode.addChild(child);
@@ -303,8 +308,8 @@ public class TreeUtil {
 		return newNode;
 
 	}
-	
-	private static boolean isRootNode(TreeNode node){
+
+	private static boolean isRootNode(TreeNode node) {
 		return node.getParent() == null;
 	}
 
@@ -335,8 +340,8 @@ public class TreeUtil {
 
 	private static boolean doesNodeMatchId(String id, TreeNode node) {
 		Object value = node.getValue();
-//		if (value == null || id == null)
-//			return false;
+		// if (value == null || id == null)
+		// return false;
 		String compareID = TreeValueConverter.getStringIdentification(value);
 		return (id.compareTo(compareID) == 0);
 	}

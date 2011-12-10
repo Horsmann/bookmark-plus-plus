@@ -83,7 +83,7 @@ public class DefaultTreeDropListener implements DropTargetListener {
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
 			throws JavaModelException {
 
-		System.err.println(listener.isCtrlPressed());
+		System.err.println(listener.isAltPressed());
 
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer.getView());

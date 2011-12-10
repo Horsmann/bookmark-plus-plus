@@ -17,7 +17,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	 */
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		store.setDefault(PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES, false);
+		store.setDefault(PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES_VIEW_OPENING, false);
+		store.setDefault(PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES_REFRESH, false);
 //		store.setDefault(PreferenceConstants.P_CHOICE, "choice2");
 //		store.setDefault(PreferenceConstants.P_STRING,
 //				"Default value");

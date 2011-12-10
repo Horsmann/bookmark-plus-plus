@@ -20,7 +20,7 @@ public class TreeKeyListener implements KeyListener {
 	private BookmarkView viewer = null;
 	private Action showInEditor = null;
 
-	private boolean isCtrlPressed = false;
+	private boolean isAltPressed = false;
 
 	public TreeKeyListener(BookmarkView viewer, Action showInEditor) {
 		this.viewer = viewer;
@@ -32,8 +32,9 @@ public class TreeKeyListener implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 
-		if (e.keyCode == SWT.CTRL) {
-			isCtrlPressed = true;
+		if (e.keyCode == SWT.ALT) {
+			isAltPressed = true;
+			System.err.println("keylistener: ALT->true");
 		}
 
 		checkForNodeDeletion(e);
@@ -144,11 +145,12 @@ public class TreeKeyListener implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		isCtrlPressed = false;
+		System.err.println("key released");
+		isAltPressed = false;
 	};
 
-	public boolean isCtrlPressed() {
-		return isCtrlPressed;
+	public boolean isAltPressed() {
+		return isAltPressed;
 	}
 
 	private void setFocusAndSelection(TreeItem item) {
