@@ -1,7 +1,6 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.events.FocusAdapter;
@@ -12,22 +11,20 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelectionCommand;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 public class TreeKeyListener implements KeyListener {
-	private TreeViewer viewer = null;
-	private TreeModel model = null;
+	private BookmarkView viewer = null;
 	private Action showInEditor = null;
 
-	public TreeKeyListener(TreeViewer viewer, TreeModel model,
-			Action showInEditor) {
+	public TreeKeyListener(BookmarkView viewer, Action showInEditor) {
 		this.viewer = viewer;
-		this.model = model;
 
 		this.showInEditor = showInEditor;
+
 	}
 
 	@Override
@@ -51,7 +48,7 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private void performRenameForBookmarks(TreeItem[] items) {
-		final TreeEditor editor = new TreeEditor(viewer.getTree());
+		final TreeEditor editor = new TreeEditor(viewer.getView().getTree());
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.minimumWidth = 100;
 
@@ -61,7 +58,7 @@ public class TreeKeyListener implements KeyListener {
 		if (!node.isBookmarkNode())
 			return;
 
-		final Text text = new Text(viewer.getTree(), SWT.NONE);
+		final Text text = new Text(viewer.getView().getTree(), SWT.NONE);
 		text.setText((String) node.getValue());
 		text.selectAll();
 		text.setFocus();
@@ -99,7 +96,8 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private void saveNewTreeModelState() {
-		TreeSerializerFacade.serializeToDefaultLocation(viewer, model);
+		TreeSerializerFacade
+				.serializeToDefaultLocation(viewer.getView(), viewer.getModel());
 	}
 
 	private void checkForOpenNodeInEditor(KeyEvent e) {
@@ -144,8 +142,8 @@ public class TreeKeyListener implements KeyListener {
 	};
 
 	private void setFocusAndSelection(TreeItem item) {
-		viewer.refresh();
-		viewer.getTree().setSelection(item);
-		viewer.getTree().setFocus();
+		viewer.getView().refresh();
+		viewer.getView().getTree().setSelection(item);
+		viewer.getView().getTree().setFocus();
 	}
 }

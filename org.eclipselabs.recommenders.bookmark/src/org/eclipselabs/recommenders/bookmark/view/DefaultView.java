@@ -90,7 +90,7 @@ public class DefaultView implements BookmarkView {
 
 	private void addListenerToTreeInView() {
 		viewer.getTree().addKeyListener(
-				new TreeKeyListener(viewer, model, showInEditor));
+				new TreeKeyListener(this, showInEditor));
 
 		TreeSelectionListener selectionListener = new TreeSelectionListener(
 				notifier);
@@ -102,8 +102,8 @@ public class DefaultView implements BookmarkView {
 		viewer.addDoubleClickListener(new TreeDoubleclickListener(showInEditor));
 
 	}
-	
-	public void updateEnableStatusOfControls() {
+
+	private void updateEnableStatusOfControls() {
 		notifier.fire();
 	}
 
@@ -129,9 +129,9 @@ public class DefaultView implements BookmarkView {
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(viewer);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
-		toggleLevel = new ToggleViewAction(manager, this, model);
-		newBookmark = new CreateNewBookmarkAction(this, model);
-		deleteSelection = new DeleteAction(viewer);
+		toggleLevel = new ToggleViewAction(manager, this);
+		newBookmark = new CreateNewBookmarkAction(this);
+		deleteSelection = new DeleteAction(this);
 	}
 
 	void setUpToolbarForViewPart() {
@@ -193,6 +193,11 @@ public class DefaultView implements BookmarkView {
 	public void updateControls() {
 		viewer.refresh(true);
 		updateEnableStatusOfControls();
+	}
+
+	@Override
+	public TreeModel getModel() {
+		return model;
 	}
 
 }

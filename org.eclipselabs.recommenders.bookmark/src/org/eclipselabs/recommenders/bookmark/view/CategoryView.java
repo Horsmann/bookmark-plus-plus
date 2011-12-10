@@ -53,7 +53,7 @@ public class CategoryView implements BookmarkView {
 	private ViewManager manager = null;
 
 	private GridLayout gridLayout = null;
-	
+
 	private ControlNotifier notifier = null;
 
 	public CategoryView(ViewManager manager, Composite parent, TreeModel model) {
@@ -86,19 +86,19 @@ public class CategoryView implements BookmarkView {
 		viewer.setInput(model.getModelRoot());
 
 		initializeControlNotifier();
-		
+
 		addListenerToView();
 		addListenerToTreeInView();
 	}
 
 	private void initializeControlNotifier() {
 		notifier = new ControlNotifier();
-		
+
 		notifier.add((SelfEnabling) openInSystemFileExplorer);
 		notifier.add((SelfEnabling) showInEditor);
 		notifier.add((SelfEnabling) deleteSelection);
 		notifier.add((SelfEnabling) toggleLevel);
-		
+
 	}
 
 	public void refreshCategories() {
@@ -125,21 +125,22 @@ public class CategoryView implements BookmarkView {
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(viewer);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
-		toggleLevel = new ToggleViewAction(manager, this, model);
-		deleteSelection = new DeleteAction(viewer);
-		newBookmark = new CreateNewBookmarkAction(this, model);
+		toggleLevel = new ToggleViewAction(manager, this);
+		deleteSelection = new DeleteAction(this);
+		newBookmark = new CreateNewBookmarkAction(this);
 
 	}
 
 	private void addListenerToTreeInView() {
 		viewer.getTree().addKeyListener(
-				new TreeKeyListener(viewer, model, showInEditor));
+				new TreeKeyListener(this, showInEditor));
 
-		TreeSelectionListener selectionListener = new TreeSelectionListener(notifier);
+		TreeSelectionListener selectionListener = new TreeSelectionListener(
+				notifier);
 		viewer.getTree().addSelectionListener(selectionListener);
 	}
-	
-	public void updateEnableStatusOfControls() {
+
+	private void updateEnableStatusOfControls() {
 		notifier.fire();
 	}
 
@@ -216,8 +217,13 @@ public class CategoryView implements BookmarkView {
 	public void updateControls() {
 		refreshCategories();
 		viewer.refresh(true);
-		
+
 		updateEnableStatusOfControls();
+	}
+
+	@Override
+	public TreeModel getModel() {
+		return model;
 	}
 
 }

@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelectionCommand;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 public class DeleteAction extends Action implements SelfEnabling {
 
-	private TreeViewer viewer;
+	private BookmarkView viewer;
 
-	public DeleteAction(TreeViewer viewer) {
+	public DeleteAction(BookmarkView viewer) {
 		this.viewer = viewer;
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_DELETE));
@@ -29,7 +29,7 @@ public class DeleteAction extends Action implements SelfEnabling {
 
 	@Override
 	public void updateEnabledStatus() {
-		List<IStructuredSelection> list = TreeUtil.getTreeSelections(viewer);
+		List<IStructuredSelection> list = TreeUtil.getTreeSelections(viewer.getView());
 		if (list.size() == 0) {
 			this.setEnabled(false);
 			return;

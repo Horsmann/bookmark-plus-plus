@@ -15,13 +15,10 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 
 	private ViewManager manager;
 	private BookmarkView actionTriggeringView;
-	private TreeModel model;
 
-	public ToggleViewAction(ViewManager manager, BookmarkView view,
-			TreeModel model) {
+	public ToggleViewAction(ViewManager manager, BookmarkView view) {
 		this.manager = manager;
 		this.actionTriggeringView = view;
-		this.model = model;
 
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_TOGGLE_LEVEL));
@@ -35,6 +32,7 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 		List<IStructuredSelection> selection = TreeUtil
 				.getTreeSelections(actionTriggeringView.getView());
 
+		TreeModel model = actionTriggeringView.getModel();
 		if (model.isHeadEqualRoot()) {
 			if (selection.size() <= 0)
 				return;

@@ -10,11 +10,9 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 public class CreateNewBookmarkAction extends Action  {
 	
 	private BookmarkView viewer;
-	private TreeModel model;
 	
-	public CreateNewBookmarkAction(BookmarkView viewer, TreeModel model){
+	public CreateNewBookmarkAction(BookmarkView viewer){
 		this.viewer = viewer;
-		this.model = model;
 		
 		setProperties();
 	}
@@ -29,7 +27,7 @@ public class CreateNewBookmarkAction extends Action  {
 	@Override
 	public void run() {
 		TreeNode bookmark = TreeUtil.makeBookmarkNode();
-		model.getModelRoot().addChild(bookmark);
+		viewer.getModel().getModelRoot().addChild(bookmark);
 		viewer.updateControls();
 	}
 
