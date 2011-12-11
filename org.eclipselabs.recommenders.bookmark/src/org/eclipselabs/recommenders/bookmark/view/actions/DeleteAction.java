@@ -29,6 +29,7 @@ public class DeleteAction extends Action implements SelfEnabling {
 
 	@Override
 	public void updateEnabledStatus() {
+		
 		List<IStructuredSelection> list = TreeUtil.getTreeSelections(viewer.getView());
 		if (list.size() == 0) {
 			this.setEnabled(false);

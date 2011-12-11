@@ -17,6 +17,8 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.view.categoryview.CategoryView;
+import org.eclipselabs.recommenders.bookmark.view.defaultView.DefaultView;
 
 public class BookmarkViewManager extends ViewPart implements ViewManager {
 
@@ -42,7 +44,7 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		defaultView = new DefaultView(this, container, model);
 		toggledView = new CategoryView(this, container, model);
 
-		stackLayout.topControl = defaultView.composite;
+		stackLayout.topControl = defaultView.getComposite();
 		activeView = defaultView;
 		defaultView.setUpToolbarForViewPart();
 
@@ -63,7 +65,7 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 	}
 
 	public void activateToggledView() {
-		stackLayout.topControl = toggledView.composite;
+		stackLayout.topControl = toggledView.getComposite();
 		activeView = toggledView;
 		toggledView.setUpToolbarForViewPart();
 
@@ -73,7 +75,7 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 	}
 
 	public void activateDefaultView() {
-		stackLayout.topControl = defaultView.composite;
+		stackLayout.topControl = defaultView.getComposite();
 		activeView = defaultView;
 		defaultView.setUpToolbarForViewPart();
 

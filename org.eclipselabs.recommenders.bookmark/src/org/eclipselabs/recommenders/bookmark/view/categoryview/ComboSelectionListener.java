@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view;
+package org.eclipselabs.recommenders.bookmark.view.categoryview;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.events.SelectionEvent;
@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class ComboSelectionListener implements SelectionListener {
 

@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view;
+package org.eclipselabs.recommenders.bookmark.view.categoryview;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -11,64 +11,76 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.view.actions.RenameBookmarkAction;
+import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ControlNotifier;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.CreateNewBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.DeleteAction;
-import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
-import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleViewAction;
-import org.eclipselabs.recommenders.bookmark.view.tree.DefaultTreeDropListener;
+import org.eclipselabs.recommenders.bookmark.view.tree.CategoryTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
-import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
 
-public class DefaultView implements BookmarkView {
+public class CategoryView implements BookmarkView {
 
-	TreeViewer viewer = null;
-	Composite composite = null;
+	private TreeViewer viewer = null;
+	private Composite composite = null;
+	private Combo combo = null;
+
 	private TreeModel model = null;
+
 	private Action showInEditor = null;
-	private Action exportBookmarks = null;
-	private Action importBookmarks = null;
 	private Action closeAllOpenEditors = null;
 	private Action refreshView = null;
 	private Action openInSystemFileExplorer = null;
 	private Action toggleLevel = null;
-	private Action newBookmark = null;
 	private Action deleteSelection = null;
-	private Action renameBookmark = null;
+	private Action newBookmark = null;
 
 	private ViewManager manager = null;
 
-	private ControlNotifier notifier = null;
+	private GridLayout gridLayout = null;
 
+	private ControlNotifier notifier = null;
 	private TreeKeyListener keyListener = null;
 	private TreeSelectionListener selectionListener = null;
 	private TreeDoubleclickListener doubleClickListener = null;
-	private TreeDragListener dragListener = null;
-	private DefaultTreeDropListener dropListener = null;
+	private TreeFocusListener focusListener = null;
+	private CategoryTreeDropListener dropListener = null;
 
-	public DefaultView(ViewManager manager, Composite parent, TreeModel model) {
-		this.model = model;
+	public CategoryView(ViewManager manager, Composite parent, TreeModel model) {
+
 		this.manager = manager;
+		this.model = model;
 
 		composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new FillLayout());
+		gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
+		composite.setLayout(gridLayout);
+
 		viewer = new TreeViewer(composite, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
+
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		viewer.getControl().setLayoutData(gridData);
+
+		assembleComboBox();
 
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
@@ -80,6 +92,22 @@ public class DefaultView implements BookmarkView {
 		addListenerToTreeInView();
 	}
 
+	private void assembleComboBox() {
+		combo = new Combo(composite, SWT.SIMPLE);
+
+		//Change bookmarks name on "Enter"
+		ComboKeyListener comboKeyListener = new ComboKeyListener(this);
+		combo.addKeyListener(comboKeyListener);
+
+		//Switch the head node in the model if selection changes
+		ComboSelectionListener comboSelectionListener = new ComboSelectionListener(
+				combo, model, manager, comboKeyListener);
+		combo.addSelectionListener(comboSelectionListener);
+
+		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
+		combo.setLayoutData(gridData);
+	}
+
 	private void initializerActionsListenerAndMenus() {
 		createActions();
 		setUpContextMenu();
@@ -88,11 +116,9 @@ public class DefaultView implements BookmarkView {
 		keyListener = new TreeKeyListener(this, showInEditor);
 		selectionListener = new TreeSelectionListener(notifier);
 		doubleClickListener = new TreeDoubleclickListener(showInEditor);
+		focusListener = new TreeFocusListener(this,notifier);
 
-		dragListener = new TreeDragListener(viewer);
-		dropListener = new DefaultTreeDropListener(this, dragListener,
-				keyListener);
-
+		dropListener = new CategoryTreeDropListener(this, keyListener);
 	}
 
 	private void initializeControlNotifier() {
@@ -102,7 +128,37 @@ public class DefaultView implements BookmarkView {
 		notifier.add((SelfEnabling) showInEditor);
 		notifier.add((SelfEnabling) deleteSelection);
 		notifier.add((SelfEnabling) toggleLevel);
-		notifier.add((SelfEnabling) renameBookmark);
+
+	}
+
+	public void refreshCategories() {
+
+		combo.removeAll();
+
+		String currentHead = (String) model.getModelHead().getValue();
+		int selectIndex = 0;
+		TreeNode[] bookmarks = model.getModelRoot().getChildren();
+		for (int i = 0; i < bookmarks.length; i++) {
+			String name = (String) bookmarks[i].getValue();
+			combo.add(name);
+
+			if (currentHead.equals(name)) {
+				selectIndex = i;
+			}
+		}
+		combo.select(selectIndex);
+	}
+
+	private void createActions() {
+
+		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
+				viewer);
+		closeAllOpenEditors = new CloseAllOpenEditorsAction();
+		refreshView = new RefreshViewAction(this);
+		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
+		toggleLevel = new ToggleViewAction(manager, this);
+		deleteSelection = new DeleteAction(this);
+		newBookmark = new CreateNewBookmarkAction(this);
 
 	}
 
@@ -110,43 +166,15 @@ public class DefaultView implements BookmarkView {
 		viewer.getTree().addKeyListener(keyListener);
 
 		viewer.getTree().addSelectionListener(selectionListener);
-	}
-
-	private void addListenerToView() {
-		addDragDropSupportToView();
-		viewer.addDoubleClickListener(doubleClickListener);
-
+		
+		viewer.getTree().addFocusListener(focusListener);
 	}
 
 	private void updateEnableStatusOfControls() {
 		notifier.fire();
 	}
 
-	public void addDragDropSupportToView() {
-		int operations = DND.DROP_LINK;
-		Transfer[] transferTypes = new Transfer[] {
-				ResourceTransfer.getInstance(),
-				LocalSelectionTransfer.getTransfer() };
-
-		viewer.addDropSupport(operations, transferTypes, dropListener);
-		viewer.addDragSupport(operations, transferTypes, dragListener);
-	}
-
-	private void createActions() {
-		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
-				viewer);
-		exportBookmarks = new ExportBookmarksAction(this);
-		importBookmarks = new ImportBookmarksAction(this);
-		closeAllOpenEditors = new CloseAllOpenEditorsAction();
-		refreshView = new RefreshViewAction(this);
-		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
-		toggleLevel = new ToggleViewAction(manager, this);
-		newBookmark = new CreateNewBookmarkAction(this);
-		deleteSelection = new DeleteAction(this);
-		renameBookmark = new RenameBookmarkAction(this);
-	}
-
-	void setUpToolbarForViewPart() {
+	public void setUpToolbarForViewPart() {
 
 		IToolBarManager mgr = manager.getViewPart().getViewSite()
 				.getActionBars().getToolBarManager();
@@ -154,15 +182,26 @@ public class DefaultView implements BookmarkView {
 		mgr.add(showInEditor);
 		mgr.add(refreshView);
 		mgr.add(closeAllOpenEditors);
-		mgr.add(exportBookmarks);
-		mgr.add(importBookmarks);
-		mgr.add(renameBookmark);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
 		mgr.add(newBookmark);
 		mgr.add(deleteSelection);
 
 		mgr.update(true);
+	}
+
+	private void addListenerToView() {
+		addDragDropSupportToView(viewer, model);
+		viewer.addDoubleClickListener(doubleClickListener);
+	}
+
+	public void addDragDropSupportToView(TreeViewer viewer, TreeModel model) {
+		int operations = DND.DROP_LINK;
+		Transfer[] transferTypes = new Transfer[] {
+				ResourceTransfer.getInstance(),
+				LocalSelectionTransfer.getTransfer() };
+
+		viewer.addDropSupport(operations, transferTypes, dropListener);
 	}
 
 	private void setUpContextMenu() {
@@ -173,9 +212,6 @@ public class DefaultView implements BookmarkView {
 			public void menuAboutToShow(IMenuManager mgr) {
 				menuMgr.add(showInEditor);
 				menuMgr.add(refreshView);
-				menuMgr.add(exportBookmarks);
-				menuMgr.add(importBookmarks);
-				menuMgr.add(renameBookmark);
 				menuMgr.add(new Separator());
 				menuMgr.add(toggleLevel);
 				menuMgr.add(newBookmark);
@@ -200,18 +236,24 @@ public class DefaultView implements BookmarkView {
 
 	@Override
 	public boolean requiresSelectionForToggle() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public void updateControls() {
+		refreshCategories();
 		viewer.refresh(true);
+
 		updateEnableStatusOfControls();
 	}
 
 	@Override
 	public TreeModel getModel() {
 		return model;
+	}
+	
+	public Composite getComposite() {
+		return composite;
 	}
 
 }

@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view;
+package org.eclipselabs.recommenders.bookmark.view.categoryview;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
