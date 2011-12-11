@@ -76,11 +76,7 @@ public class CategoryView implements BookmarkView {
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		viewer.getControl().setLayoutData(gridData);
 
-		combo = new Combo(composite, SWT.SINGLE | SWT.V_SCROLL | SWT.DROP_DOWN);
-		combo.addSelectionListener(new ComboSelectionListener(combo, model,
-				manager));
-		gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
-		combo.setLayoutData(gridData);
+		assembleComboBox();
 
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
@@ -90,6 +86,22 @@ public class CategoryView implements BookmarkView {
 
 		addListenerToView();
 		addListenerToTreeInView();
+	}
+
+	private void assembleComboBox() {
+		combo = new Combo(composite, SWT.SIMPLE);
+
+		//Change bookmarks name on "Enter"
+		ComboKeyListener comboKeyListener = new ComboKeyListener(this);
+		combo.addKeyListener(comboKeyListener);
+
+		//Switch the head node in the model if selection changes
+		ComboSelectionListener comboSelectionListener = new ComboSelectionListener(
+				combo, model, manager, comboKeyListener);
+		combo.addSelectionListener(comboSelectionListener);
+
+		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
+		combo.setLayoutData(gridData);
 	}
 
 	private void initializerActionsListenerAndMenus() {
@@ -115,6 +127,7 @@ public class CategoryView implements BookmarkView {
 	}
 
 	public void refreshCategories() {
+
 		combo.removeAll();
 
 		String currentHead = (String) model.getModelHead().getValue();

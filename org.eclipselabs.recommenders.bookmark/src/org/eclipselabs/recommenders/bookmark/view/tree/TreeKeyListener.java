@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelectionCommand;
 import org.eclipselabs.recommenders.bookmark.tree.commands.RenameBookmarkCommand;
-import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 public class TreeKeyListener implements KeyListener {

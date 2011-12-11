@@ -11,18 +11,22 @@ import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 public class ComboSelectionListener implements SelectionListener {
 
 	private Combo combo;
+	private ComboKeyListener keyListener;
 	private TreeModel model;
 	private ViewManager manager;
 
 	public ComboSelectionListener(Combo combo, TreeModel model,
-			ViewManager manager) {
+			ViewManager manager, ComboKeyListener keyListener) {
 		this.combo = combo;
 		this.model = model;
 		this.manager = manager;
+		this.keyListener = keyListener;
 	}
 
 	@Override
 	public void widgetSelected(SelectionEvent e) {
+		
+		keyListener.selectionChanged();
 		
 		Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
 				.getModelHead());

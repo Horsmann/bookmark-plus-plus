@@ -70,7 +70,7 @@ public class Activator extends AbstractUIPlugin {
 		registry.put(ICON_BOOKMARK, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
-				new Path("icons/openBookmarkInEditor.png"), null));
+				new Path("icons/read_obj.gif"), null));
 		registry.put(ICON_SHOW_IN_EDITOR, imgDesc);
 
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
