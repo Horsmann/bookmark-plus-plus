@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
@@ -25,6 +26,13 @@ public class DeleteSelectionCommand implements TreeCommand {
 		
 		viewer.getView().refresh();
 		viewer.updateControls();
+		
+		saveNewTreeModelState();
+	}
+	
+	private void saveNewTreeModelState() {
+		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
+				viewer.getModel());
 	}
 
 }

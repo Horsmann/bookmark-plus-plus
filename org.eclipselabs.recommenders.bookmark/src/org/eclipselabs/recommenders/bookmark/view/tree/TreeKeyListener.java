@@ -29,7 +29,6 @@ public class TreeKeyListener implements KeyListener {
 
 		if (e.keyCode == SWT.ALT) {
 			isAltPressed = true;
-			System.err.println("keylistener: ALT->true");
 		}
 
 		checkForNodeDeletion(e);
@@ -50,59 +49,8 @@ public class TreeKeyListener implements KeyListener {
 	}
 
 	private void performRenameForBookmarks(TreeItem[] items) {
-		
-		new RenameBookmarkCommand(viewer, items[0]).execute();
-		
-//		final TreeEditor editor = new TreeEditor(viewer.getView().getTree());
-//		editor.horizontalAlignment = SWT.LEFT;
-//		editor.minimumWidth = 100;
-//
-//		final TreeItem item = items[0];
-//
-//		final TreeNode node = (TreeNode) item.getData();
-//		if (!node.isBookmarkNode())
-//			return;
-//
-//		final Text text = new Text(viewer.getView().getTree(), SWT.NONE);
-//		text.setText((String) node.getValue());
-//		text.selectAll();
-//		text.setFocus();
-//
-//		// If the text field loses focus, set its text into the tree
-//		// and end the editing session
-//		text.addFocusListener(new FocusAdapter() {
-//			public void focusLost(FocusEvent event) {
-//				node.setValue(text.getText());
-//				text.dispose();
-//				setFocusAndSelection(item);
-//			}
-//		});
-//
-//		text.addKeyListener(new KeyAdapter() {
-//			public void keyPressed(KeyEvent event) {
-//				switch (event.keyCode) {
-//				case SWT.CR:
-//					// drop through
-//					String newValue = text.getText();
-//					node.setValue(newValue);
-//				case SWT.ESC:
-//					// End editing session
-//					text.dispose();
-//					setFocusAndSelection(item);
-//
-//					saveNewTreeModelState();
-//					break;
-//				}
-//			}
-//		});
-//
-//		// Set the text field into the editor
-//		editor.setEditor(text, item);
-	}
 
-	private void saveNewTreeModelState() {
-		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
-				viewer.getModel());
+		new RenameBookmarkCommand(viewer, items[0]).execute();
 	}
 
 	private void checkForOpenNodeInEditor(KeyEvent e) {
@@ -114,7 +62,6 @@ public class TreeKeyListener implements KeyListener {
 	private void checkForNodeDeletion(KeyEvent e) {
 		if (isDeleteNodeEvent(e)) {
 			new DeleteSelectionCommand(viewer).execute();
-			saveNewTreeModelState();
 		}
 	}
 
@@ -143,7 +90,6 @@ public class TreeKeyListener implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		System.err.println("key released");
 		isAltPressed = false;
 	};
 
@@ -151,9 +97,4 @@ public class TreeKeyListener implements KeyListener {
 		return isAltPressed;
 	}
 
-//	private void setFocusAndSelection(TreeItem item) {
-//		viewer.getView().refresh();
-//		viewer.getView().getTree().setSelection(item);
-//		viewer.getView().getTree().setFocus();
-//	}
 }
