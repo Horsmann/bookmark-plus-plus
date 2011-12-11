@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.view.actions.RenameBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.CreateNewBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.DeleteAction;
@@ -48,6 +49,7 @@ public class DefaultView implements BookmarkView {
 	private Action toggleLevel = null;
 	private Action newBookmark = null;
 	private Action deleteSelection = null;
+	private Action renameBookmark = null;
 
 	private ViewManager manager = null;
 
@@ -67,7 +69,7 @@ public class DefaultView implements BookmarkView {
 		composite.setLayout(new FillLayout());
 		viewer = new TreeViewer(composite, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
-		
+
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider());
 		viewer.setInput(model.getModelRoot());
@@ -91,7 +93,6 @@ public class DefaultView implements BookmarkView {
 		dropListener = new DefaultTreeDropListener(this, dragListener,
 				keyListener);
 
-		
 	}
 
 	private void initializeControlNotifier() {
@@ -101,6 +102,7 @@ public class DefaultView implements BookmarkView {
 		notifier.add((SelfEnabling) showInEditor);
 		notifier.add((SelfEnabling) deleteSelection);
 		notifier.add((SelfEnabling) toggleLevel);
+		notifier.add((SelfEnabling) renameBookmark);
 
 	}
 
@@ -141,6 +143,7 @@ public class DefaultView implements BookmarkView {
 		toggleLevel = new ToggleViewAction(manager, this);
 		newBookmark = new CreateNewBookmarkAction(this);
 		deleteSelection = new DeleteAction(this);
+		renameBookmark = new RenameBookmarkAction(this);
 	}
 
 	void setUpToolbarForViewPart() {
@@ -153,6 +156,7 @@ public class DefaultView implements BookmarkView {
 		mgr.add(closeAllOpenEditors);
 		mgr.add(exportBookmarks);
 		mgr.add(importBookmarks);
+		mgr.add(renameBookmark);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
 		mgr.add(newBookmark);
@@ -171,6 +175,7 @@ public class DefaultView implements BookmarkView {
 				menuMgr.add(refreshView);
 				menuMgr.add(exportBookmarks);
 				menuMgr.add(importBookmarks);
+				menuMgr.add(renameBookmark);
 				menuMgr.add(new Separator());
 				menuMgr.add(toggleLevel);
 				menuMgr.add(newBookmark);
