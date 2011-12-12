@@ -23,13 +23,13 @@ public class DefaultTreeDropListener implements DropTargetListener {
 	private final BookmarkView viewer;
 
 	private TreeDragListener dragListener = null;
-	private TreeKeyListener listener = null;
+	private TreeKeyListener keyListener = null;
 
 	public DefaultTreeDropListener(BookmarkView viewer,
 			TreeDragListener localViewsDragListener, TreeKeyListener listener) {
 		this.viewer = viewer;
 		this.dragListener = localViewsDragListener;
-		this.listener = listener;
+		this.keyListener = listener;
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class DefaultTreeDropListener implements DropTargetListener {
 
 	@Override
 	public void dragEnter(DropTargetEvent event) {
-		event.detail = DND.DROP_LINK;
+		event.detail = DND.DROP_LINK | DND.DROP_COPY;
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class DefaultTreeDropListener implements DropTargetListener {
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
 			throws JavaModelException {
 
-		System.err.println(listener.isAltPressed());
+		System.err.println(keyListener.isAltPressed());
 
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer.getView());
@@ -104,7 +104,7 @@ public class DefaultTreeDropListener implements DropTargetListener {
 					.getBookmarkNode(dropTarget);
 
 			new AddTreeNodesToExistingBookmark(viewer, bookmarkOfDropTarget,
-					node).execute();
+					node, keyListener.isAltPressed()).execute();
 
 		}
 

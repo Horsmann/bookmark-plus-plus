@@ -24,7 +24,7 @@ public class CategoryTreeDropListener implements DropTargetListener {
 
 	@Override
 	public void dragEnter(DropTargetEvent event) {
-		event.detail = DND.DROP_LINK;
+		event.detail = DND.DROP_LINK | DND.DROP_COPY;
 	}
 
 	@Override

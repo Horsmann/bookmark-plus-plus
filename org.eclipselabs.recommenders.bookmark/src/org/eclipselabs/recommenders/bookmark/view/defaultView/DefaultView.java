@@ -19,7 +19,6 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ControlNotifier;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
-import org.eclipselabs.recommenders.bookmark.view.actions.RenameBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.CreateNewBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.DeleteAction;
@@ -27,6 +26,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ImportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.RenameBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleViewAction;
@@ -81,6 +81,11 @@ public class DefaultView implements BookmarkView {
 
 		addListenerToView();
 		addListenerToTreeInView();
+
+//		IHandlerService handlerServ = (IHandlerService) manager.getViewPart()
+//				.getSite().getService(IHandlerService.class);
+//		PasteHandler paste = new PasteHandler();
+//		handlerServ.activateHandler("org.eclipse.ui.edit.paste", paste);
 	}
 
 	private void initializerActionsListenerAndMenus() {
@@ -126,7 +131,7 @@ public class DefaultView implements BookmarkView {
 	}
 
 	public void addDragDropSupportToView() {
-		int operations = DND.DROP_LINK;
+		int operations = DND.DROP_LINK | DND.DROP_COPY;
 		Transfer[] transferTypes = new Transfer[] {
 				ResourceTransfer.getInstance(),
 				LocalSelectionTransfer.getTransfer() };
@@ -216,7 +221,7 @@ public class DefaultView implements BookmarkView {
 	public TreeModel getModel() {
 		return model;
 	}
-	
+
 	public Composite getComposite() {
 		return composite;
 	}

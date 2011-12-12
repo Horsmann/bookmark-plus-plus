@@ -9,17 +9,19 @@ public class AddTreeNodesToExistingBookmark implements TreeCommand {
 	private BookmarkView viewer;
 	private TreeNode bookmark;
 	private TreeNode node;
+	private boolean keepSourceNode;
 
-	public AddTreeNodesToExistingBookmark(BookmarkView viewer, TreeNode bookmark,
-			TreeNode node) {
+	public AddTreeNodesToExistingBookmark(BookmarkView viewer,
+			TreeNode bookmark, TreeNode node, boolean keepSourceNode) {
 		this.viewer = viewer;
 		this.bookmark = bookmark;
 		this.node = node;
+		this.keepSourceNode = keepSourceNode;
 	}
 
 	@Override
 	public void execute() {
-		
+
 		TreeNode nodeCopy = TreeUtil.copyTreeBelowBookmark(node);
 
 		if (TreeUtil.isDuplicate(bookmark, nodeCopy))
@@ -27,15 +29,22 @@ public class AddTreeNodesToExistingBookmark implements TreeCommand {
 
 		TreeNode merged = null;
 		if ((merged = TreeUtil.attemptMerge(bookmark, nodeCopy)) != null) {
-			TreeUtil.unlink(node);
+
+			if (!keepSourceNode) {
+				TreeUtil.unlink(node);
+			}
+			
 			TreeUtil.showNodeExpanded(viewer.getView(), merged);
 			return;
 		}
 
-		node.getParent().removeChild(node);
+		if (!keepSourceNode) {
+			node.getParent().removeChild(node);
+		}
+		
 		TreeNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
 		bookmark.addChild(head);
-		
+
 		TreeUtil.showNodeExpanded(viewer.getView(), head);
 
 	}
