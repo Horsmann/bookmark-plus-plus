@@ -37,12 +37,14 @@ import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
+import org.eclipselabs.recommenders.dialog.ComboFakeTooltip;
 
 public class CategoryView implements BookmarkView {
 
 	private TreeViewer viewer = null;
 	private Composite composite = null;
 	private Combo combo = null;
+	private ComboFakeTooltip fakeToolTip=null;
 
 	private TreeModel model = null;
 
@@ -107,6 +109,8 @@ public class CategoryView implements BookmarkView {
 
 		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
 		combo.setLayoutData(gridData);
+		
+		fakeToolTip = new ComboFakeTooltip(combo);
 	}
 
 	private void initializerActionsListenerAndMenus() {

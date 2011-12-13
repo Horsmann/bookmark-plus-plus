@@ -160,8 +160,8 @@ public class DefaultView implements BookmarkView {
 		mgr.add(showInEditor);
 		mgr.add(refreshView);
 		mgr.add(closeAllOpenEditors);
-		mgr.add(exportBookmarks);
-		mgr.add(importBookmarks);
+//		mgr.add(exportBookmarks);
+//		mgr.add(importBookmarks);
 //		mgr.add(renameBookmark);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
