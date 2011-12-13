@@ -127,12 +127,14 @@ public class DefaultTreeDropListener implements DropTargetListener {
 	}
 
 	private boolean isValidDrop(DropTargetEvent event) {
-
+		
 		if (dragListener.isDragInProgress()) {
-			return DropUtil.isValidDrop(viewer.getView(), event);
+			TreeNode target = (TreeNode) getTarget(event);
+			return DropUtil.isValidDrop(viewer.getView(), target);
 		}
 		return true;
 	}
+	
 
 	private TreePath[] getTreePath(DropTargetEvent event) {
 		TreeSelection treeSelection = null;

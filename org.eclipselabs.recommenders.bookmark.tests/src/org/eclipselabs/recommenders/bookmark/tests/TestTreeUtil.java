@@ -15,10 +15,15 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.junit.Test;
 
 public class TestTreeUtil {
@@ -161,14 +166,14 @@ public class TestTreeUtil {
 	}
 
 	private TreeNode createFullyContainedPath() {
-		TreeNode root = new TreeNode("");
+		TreeNode root = new TreeNode("", false, false);
 
-		TreeNode bm1 = new TreeNode("BM#1", true);
+		TreeNode bm1 = new TreeNode("BM#1", true, true);
 
 		IFile ifile = TreeValueConverter
 				.attemptTransformationToIFile("../../TestProj/resource/project.properties");
-		TreeNode bm1c1 = new TreeNode(ifile);
-		TreeNode bm1c1c1 = new TreeNode("bm1c1c1");
+		TreeNode bm1c1 = new TreeNode(ifile, false, false);
+		TreeNode bm1c1c1 = new TreeNode("bm1c1c1", false, false);
 
 		bm1c1.addChild(bm1c1c1);
 		bm1.addChild(bm1c1);
@@ -179,14 +184,14 @@ public class TestTreeUtil {
 
 	private TreeNode createPartiallyContaintedInTree() {
 
-		TreeNode root = new TreeNode("");
+		TreeNode root = new TreeNode("", false, true);
 
-		TreeNode bm1 = new TreeNode("BM#1", true);
+		TreeNode bm1 = new TreeNode("BM#1", true, true);
 
 		IFile ifile = TreeValueConverter
 				.attemptTransformationToIFile("../../TestProj/resource/project.properties");
-		TreeNode bm1c1 = new TreeNode(ifile);
-		TreeNode other = new TreeNode("other");
+		TreeNode bm1c1 = new TreeNode(ifile, false, false);
+		TreeNode other = new TreeNode("other", false, false);
 
 		bm1c1.addChild(other);
 		bm1.addChild(bm1c1);
@@ -370,7 +375,7 @@ public class TestTreeUtil {
 		assertEquals(3, bm1c1.getChildren().length);
 
 		merge = TreeUtil.attemptMerge(root.getChildren()[0], new TreeNode(
-				"NotInTree"));
+				"NotInTree", false, false));
 		assertNull(merge);
 	}
 
@@ -403,26 +408,26 @@ public class TestTreeUtil {
 
 	}
 
-	// @Test
-	// public void testShowNodeExpanded() {
-	// Display display = Display.getCurrent();
-	// Shell shell = new Shell(display, SWT.NONE);
-	// // org.eclipse.swt.widgets.Composite composite = new
-	// // org.eclipse.swt.widgets.Composite(
-	// // shell, SWT.NONE);
-	// TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
-	// | SWT.V_SCROLL);
-	//
-	// TreeNode root = createTestTree();
-	// viewer.setContentProvider(new TreeContentProvider());
-	// viewer.setInput(root);
-	// viewer.refresh();
-	// TreeUtil.showNodeExpanded(viewer, root.getChildren()[0]);
-	//
-	// Object[] expanded = viewer.getExpandedElements();
-	// assertEquals(2, expanded.length);
-	//
-	// }
+	@Test
+	public void testShowNodeExpanded() {
+		Display display = Display.getCurrent();
+		Shell shell = new Shell(display, SWT.NONE);
+		// org.eclipse.swt.widgets.Composite composite = new
+		// org.eclipse.swt.widgets.Composite(
+		// shell, SWT.NONE);
+		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
+
+		TreeNode root = createTestTree();
+		viewer.setContentProvider(new TreeContentProvider());
+		viewer.setInput(root);
+		viewer.refresh();
+		TreeUtil.showNodeExpanded(viewer, root.getChildren()[0]);
+
+		Object[] expanded = viewer.getExpandedElements();
+		assertEquals(2, expanded.length);
+
+	}
 
 	// @Test
 	// public void testGetTreeViewerSelection() {
@@ -458,25 +463,25 @@ public class TestTreeUtil {
 	// }
 
 	private TreeNode createTestTree() {
-		TreeNode root = new TreeNode("");
+		TreeNode root = new TreeNode("", false, false);
 
-		TreeNode bm1 = new TreeNode("BM#1", true);
-		TreeNode bm2 = new TreeNode("BM#2", true);
+		TreeNode bm1 = new TreeNode("BM#1", true, true);
+		TreeNode bm2 = new TreeNode("BM#2", true, true);
 
 		IFile ifile = TreeValueConverter
 				.attemptTransformationToIFile("../../TestProj/resource/project.properties");
-		TreeNode bm1c1 = new TreeNode(ifile);
-		TreeNode bm1c2 = new TreeNode("bm1c2");
+		TreeNode bm1c1 = new TreeNode(ifile, false, false);
+		TreeNode bm1c2 = new TreeNode("bm1c2", false, true);
 
-		TreeNode bm1c1c1 = new TreeNode("bm1c1c1");
-		TreeNode bm1c1c2 = new TreeNode("bm1c1c2");
+		TreeNode bm1c1c1 = new TreeNode("bm1c1c1", false, false);
+		TreeNode bm1c1c2 = new TreeNode("bm1c1c2", false, false);
 
-		TreeNode bm1c1c2c1 = new TreeNode("bm1c1c2c1");
+		TreeNode bm1c1c2c1 = new TreeNode("bm1c1c2c1", false, true);
 
-		TreeNode bm2c1 = new TreeNode("bm2c1");
+		TreeNode bm2c1 = new TreeNode("bm2c1", false, true);
 		IJavaElement element = TreeValueConverter
 				.attemptTransformationToIJavaElement("=LKJLD/src<test.project{MyTest.java");
-		TreeNode bm2c2 = new TreeNode(element);
+		TreeNode bm2c2 = new TreeNode(element, false, true);
 
 		// Link
 		bm1c1c2.addChild(bm1c1c2c1);

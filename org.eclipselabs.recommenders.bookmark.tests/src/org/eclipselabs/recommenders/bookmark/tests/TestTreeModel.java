@@ -10,44 +10,44 @@ import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 import org.junit.Test;
 
 public class TestTreeModel {
-	
+
 	@Test
 	public void testTreeModel() {
-		TreeModel model =  new TreeModel();
-		
+		TreeModel model = new TreeModel();
+
 		assertNotNull(model.getModelRoot());
 		assertEquals(model.getModelRoot(), model.getModelHead());
 		assertTrue(model.isHeadEqualRoot());
-		
+
 		TreeNode root = createTestTree();
 		model.setModelRoot(root);
 		model.setHeadNode(root.getChildren()[0]);
 		assertFalse(model.isHeadEqualRoot());
-		
+
 		model.resetHeadToRoot();
 		assertTrue(model.isHeadEqualRoot());
 	}
-	
-	private TreeNode createTestTree() {
-		TreeNode root = new TreeNode("");
 
-		TreeNode bm1 = new TreeNode("BM#1", true);
-		TreeNode bm2 = new TreeNode("BM#2", true);
+	private TreeNode createTestTree() {
+		TreeNode root = new TreeNode("", false, true);
+
+		TreeNode bm1 = new TreeNode("BM#1", true, true);
+		TreeNode bm2 = new TreeNode("BM#2", true, true);
 
 		IFile ifile = TreeValueConverter
 				.attemptTransformationToIFile("../../TestProj/resource/project.properties");
-		TreeNode bm1c1 = new TreeNode(ifile);
-		TreeNode bm1c2 = new TreeNode("bm1c2");
+		TreeNode bm1c1 = new TreeNode(ifile, false, false);
+		TreeNode bm1c2 = new TreeNode("bm1c2", false, false);
 
-		TreeNode bm1c1c1 = new TreeNode("bm1c1c1");
-		TreeNode bm1c1c2 = new TreeNode("bm1c1c2");
+		TreeNode bm1c1c1 = new TreeNode("bm1c1c1", false, true);
+		TreeNode bm1c1c2 = new TreeNode("bm1c1c2", false, true);
 
-		TreeNode bm1c1c2c1 = new TreeNode("bm1c1c2c1");
+		TreeNode bm1c1c2c1 = new TreeNode("bm1c1c2c1", false, false);
 
-		TreeNode bm2c1 = new TreeNode("bm2c1");
+		TreeNode bm2c1 = new TreeNode("bm2c1", false, false);
 		IJavaElement element = TreeValueConverter
 				.attemptTransformationToIJavaElement("=LKJLD/src<test.project{MyTest.java");
-		TreeNode bm2c2 = new TreeNode(element);
+		TreeNode bm2c2 = new TreeNode(element, false, false);
 
 		// Link
 		bm1c1c2.addChild(bm1c1c2c1);

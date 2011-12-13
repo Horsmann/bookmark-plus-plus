@@ -110,7 +110,7 @@ public class CategoryView implements BookmarkView {
 		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
 		combo.setLayoutData(gridData);
 		
-		fakeToolTip = new ComboFakeTooltip(combo);
+//		fakeToolTip = new ComboFakeTooltip(combo);
 	}
 
 	private void initializerActionsListenerAndMenus() {

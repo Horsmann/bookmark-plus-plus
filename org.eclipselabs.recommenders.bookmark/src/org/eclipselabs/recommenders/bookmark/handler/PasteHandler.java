@@ -66,7 +66,7 @@ public class PasteHandler extends AbstractHandler {
 		for (Object data : clipBoardData) {
 
 			if (data instanceof IFile) {
-				TreeNode node = new TreeNode(data);
+				TreeNode node = new TreeNode(data, false, false);
 				TreeNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
 				new AddTreeNodesToExistingBookmark(activeView,
 						bookmarkOfTarget, node, true).execute();
