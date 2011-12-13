@@ -14,7 +14,9 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.handler.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ControlNotifier;
@@ -81,11 +83,7 @@ public class DefaultView implements BookmarkView {
 
 		addListenerToView();
 		addListenerToTreeInView();
-
-//		IHandlerService handlerServ = (IHandlerService) manager.getViewPart()
-//				.getSite().getService(IHandlerService.class);
-//		PasteHandler paste = new PasteHandler();
-//		handlerServ.activateHandler("org.eclipse.ui.edit.paste", paste);
+//
 	}
 
 	private void initializerActionsListenerAndMenus() {
@@ -164,11 +162,11 @@ public class DefaultView implements BookmarkView {
 		mgr.add(closeAllOpenEditors);
 		mgr.add(exportBookmarks);
 		mgr.add(importBookmarks);
-		mgr.add(renameBookmark);
+//		mgr.add(renameBookmark);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
 		mgr.add(newBookmark);
-		mgr.add(deleteSelection);
+//		mgr.add(deleteSelection);
 
 		mgr.update(true);
 	}

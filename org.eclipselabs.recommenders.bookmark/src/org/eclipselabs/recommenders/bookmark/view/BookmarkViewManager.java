@@ -9,8 +9,10 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.handler.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
@@ -57,6 +59,11 @@ public class BookmarkViewManager extends ViewPart implements ViewManager {
 		IPartService service = (IPartService) getSite().getService(
 				IPartService.class);
 		service.addPartListener(new ViewPartListener(activeView));
+
+		IHandlerService handlerServ = (IHandlerService) getSite().getService(
+				IHandlerService.class);
+		PasteHandler paste = new PasteHandler(activeView);
+		handlerServ.activateHandler("org.eclipse.ui.edit.paste", paste);
 	}
 
 	@Override
