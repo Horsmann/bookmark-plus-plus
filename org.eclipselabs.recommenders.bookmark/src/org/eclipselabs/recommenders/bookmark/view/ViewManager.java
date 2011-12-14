@@ -3,7 +3,8 @@ package org.eclipselabs.recommenders.bookmark.view;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.part.ViewPart;
 
-public interface ViewManager {
+public interface ViewManager
+{
 
 	public ViewPart getViewPart();
 
@@ -22,9 +23,13 @@ public interface ViewManager {
 	 */
 	public void setStoredExpandedNodesForActiveView();
 
-	
 	public void deleteExpandedNodeFromStorage(Object node);
-	
+
 	public void reinitializeExpandedStorage();
 
+	public void activateFlattenedView();
+
+	public void deactivateFlattenedView();
+
+	public boolean isViewFlattened();
 }

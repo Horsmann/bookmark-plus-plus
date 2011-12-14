@@ -39,7 +39,9 @@ import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
 
-public class DefaultView implements BookmarkView {
+public class DefaultView
+	implements BookmarkView
+{
 
 	private TreeViewer viewer = null;
 	private Composite composite = null;
@@ -66,7 +68,8 @@ public class DefaultView implements BookmarkView {
 	private TreeDragListener dragListener = null;
 	private DefaultTreeDropListener dropListener = null;
 
-	public DefaultView(ViewManager manager, Composite parent, TreeModel model) {
+	public DefaultView(ViewManager manager, Composite parent, TreeModel model)
+	{
 		this.model = model;
 		this.manager = manager;
 
@@ -83,10 +86,11 @@ public class DefaultView implements BookmarkView {
 
 		addListenerToView();
 		addListenerToTreeInView();
-//
+		//
 	}
 
-	private void initializerActionsListenerAndMenus() {
+	private void initializerActionsListenerAndMenus()
+	{
 		createActions();
 		setUpContextMenu();
 		initializeControlNotifier();
@@ -101,7 +105,8 @@ public class DefaultView implements BookmarkView {
 
 	}
 
-	private void initializeControlNotifier() {
+	private void initializeControlNotifier()
+	{
 		notifier = new ControlNotifier();
 
 		notifier.add((SelfEnabling) openInSystemFileExplorer);
@@ -112,23 +117,27 @@ public class DefaultView implements BookmarkView {
 
 	}
 
-	private void addListenerToTreeInView() {
+	private void addListenerToTreeInView()
+	{
 		viewer.getTree().addKeyListener(keyListener);
 
 		viewer.getTree().addSelectionListener(selectionListener);
 	}
 
-	private void addListenerToView() {
+	private void addListenerToView()
+	{
 		addDragDropSupportToView();
 		viewer.addDoubleClickListener(doubleClickListener);
 
 	}
 
-	private void updateEnableStatusOfControls() {
+	private void updateEnableStatusOfControls()
+	{
 		notifier.fire();
 	}
 
-	public void addDragDropSupportToView() {
+	public void addDragDropSupportToView()
+	{
 		int operations = DND.DROP_LINK | DND.DROP_COPY;
 		Transfer[] transferTypes = new Transfer[] {
 				ResourceTransfer.getInstance(),
@@ -138,7 +147,8 @@ public class DefaultView implements BookmarkView {
 		viewer.addDragSupport(operations, transferTypes, dragListener);
 	}
 
-	private void createActions() {
+	private void createActions()
+	{
 		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
 				viewer);
 		exportBookmarks = new ExportBookmarksAction(this);
@@ -150,10 +160,11 @@ public class DefaultView implements BookmarkView {
 		newBookmark = new CreateNewBookmarkAction(this);
 		deleteSelection = new DeleteAction(this);
 		renameBookmark = new RenameBookmarkAction(this);
-		toggleFlatTree = new ToggleFlatAndTreeAction();
+		toggleFlatTree = new ToggleFlatAndTreeAction(manager);
 	}
 
-	public void setUpToolbarForViewPart() {
+	public void setUpToolbarForViewPart()
+	{
 
 		IToolBarManager mgr = manager.getViewPart().getViewSite()
 				.getActionBars().getToolBarManager();
@@ -161,24 +172,27 @@ public class DefaultView implements BookmarkView {
 		mgr.add(showInEditor);
 		mgr.add(refreshView);
 		mgr.add(closeAllOpenEditors);
-//		mgr.add(exportBookmarks);
-//		mgr.add(importBookmarks);
-//		mgr.add(renameBookmark);
+		// mgr.add(exportBookmarks);
+		// mgr.add(importBookmarks);
+		// mgr.add(renameBookmark);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
 		mgr.add(toggleFlatTree);
 		mgr.add(newBookmark);
-//		mgr.add(deleteSelection);
+		// mgr.add(deleteSelection);
 
 		mgr.update(true);
 	}
 
-	private void setUpContextMenu() {
+	private void setUpContextMenu()
+	{
 		final MenuManager menuMgr = new MenuManager();
 		menuMgr.setRemoveAllWhenShown(true);
 
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager mgr) {
+		menuMgr.addMenuListener(new IMenuListener()
+		{
+			public void menuAboutToShow(IMenuManager mgr)
+			{
 				menuMgr.add(showInEditor);
 				menuMgr.add(refreshView);
 				menuMgr.add(exportBookmarks);
@@ -202,28 +216,38 @@ public class DefaultView implements BookmarkView {
 	}
 
 	@Override
-	public TreeViewer getView() {
+	public TreeViewer getView()
+	{
 		return viewer;
 	}
 
 	@Override
-	public boolean requiresSelectionForToggle() {
+	public boolean requiresSelectionForToggle()
+	{
 		return true;
 	}
 
 	@Override
-	public void updateControls() {
+	public void updateControls()
+	{
 		viewer.refresh(true);
 		updateEnableStatusOfControls();
 	}
 
 	@Override
-	public TreeModel getModel() {
+	public TreeModel getModel()
+	{
 		return model;
 	}
 
-	public Composite getComposite() {
+	public Composite getComposite()
+	{
 		return composite;
 	}
 
+	@Override
+	public ViewManager getManager()
+	{
+		return manager;
+	}
 }

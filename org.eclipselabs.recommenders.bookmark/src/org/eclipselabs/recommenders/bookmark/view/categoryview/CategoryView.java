@@ -261,4 +261,10 @@ public class CategoryView implements BookmarkView {
 		return composite;
 	}
 
+	@Override
+	public ViewManager getManager()
+	{
+		return manager;
+	}
+
 }

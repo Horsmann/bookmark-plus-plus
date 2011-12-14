@@ -24,9 +24,11 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
-public class TreeUtil {
+public class TreeUtil
+{
 
-	public static TreeNode[] getTreeBelowNode(TreeNode node) {
+	public static TreeNode[] getTreeBelowNode(TreeNode node)
+	{
 
 		LinkedList<TreeNode> children = new LinkedList<TreeNode>();
 
@@ -38,7 +40,8 @@ public class TreeUtil {
 		return children.toArray(new TreeNode[0]);
 	}
 
-	private static LinkedList<TreeNode> addChildrenOfNode(TreeNode node) {
+	private static LinkedList<TreeNode> addChildrenOfNode(TreeNode node)
+	{
 		LinkedList<TreeNode> children = new LinkedList<TreeNode>();
 
 		for (TreeNode child : node.getChildren()) {
@@ -50,7 +53,8 @@ public class TreeUtil {
 	}
 
 	public static TreeNode buildTreeStructure(TreePath path)
-			throws JavaModelException {
+		throws JavaModelException
+	{
 
 		int segNr = path.getSegmentCount() - 1;
 		if (segNr < 0)
@@ -70,7 +74,9 @@ public class TreeUtil {
 	}
 
 	public static TreeNode addNodesToExistingBookmark(TreeNode bookmark,
-			TreePath treePath) throws JavaModelException {
+			TreePath treePath)
+		throws JavaModelException
+	{
 		TreeNode node = TreeUtil.buildTreeStructure(treePath);
 		if (node == null)
 			return null;
@@ -85,7 +91,8 @@ public class TreeUtil {
 	}
 
 	public static void deleteNodesReferencingToDeadResourcesUnderNode(
-			TreeNode node, final TreeModel model) {
+			TreeNode node, final TreeModel model)
+	{
 
 		for (TreeNode child : node.getChildren()) {
 			deleteNodesReferencingToDeadResourcesUnderNode(child, model);
@@ -112,7 +119,8 @@ public class TreeUtil {
 
 	}
 
-	public static boolean isDuplicate(TreeNode bookmark, TreeNode node) {
+	public static boolean isDuplicate(TreeNode bookmark, TreeNode node)
+	{
 
 		LinkedList<TreeNode> leafs = TreeUtil.getLeafs(node);
 
@@ -128,7 +136,8 @@ public class TreeUtil {
 		return false;
 	}
 
-	public static TreeNode getBookmarkNode(TreeNode node) {
+	public static TreeNode getBookmarkNode(TreeNode node)
+	{
 
 		if (node == null)
 			return null;
@@ -139,7 +148,8 @@ public class TreeUtil {
 		return getBookmarkNode(node.getParent());
 	}
 
-	public static TreeNode locateNodeWithEqualID(String id, TreeNode node) {
+	public static TreeNode locateNodeWithEqualID(String id, TreeNode node)
+	{
 
 		if (doesNodeMatchId(id, node))
 			return node;
@@ -152,7 +162,8 @@ public class TreeUtil {
 		return null;
 	}
 
-	public static void showNodeExpanded(TreeViewer viewer, TreeNode node) {
+	public static void showNodeExpanded(TreeViewer viewer, TreeNode node)
+	{
 		viewer.refresh();
 		TreeNode leaf = TreeUtil.getLeafOfTreePath((node));
 
@@ -172,7 +183,8 @@ public class TreeUtil {
 	 * @param target
 	 * @return
 	 */
-	public static boolean causesRecursion(TreeNode source, TreeNode target) {
+	public static boolean causesRecursion(TreeNode source, TreeNode target)
+	{
 
 		if (target == null)
 			return false;
@@ -188,11 +200,13 @@ public class TreeUtil {
 
 	}
 
-	public static TreeNode makeBookmarkNode() {
+	public static TreeNode makeBookmarkNode()
+	{
 		return new TreeNode("New Bookmark", true, true);
 	}
 
-	public static void unlink(TreeNode node) {
+	public static void unlink(TreeNode node)
+	{
 
 		if (node == null)
 			return;
@@ -201,7 +215,8 @@ public class TreeUtil {
 		node.setParent(null);
 	}
 
-	private static TreeNode createHierarchyUpToCompilationUnitLevel(Object value) {
+	private static TreeNode createHierarchyUpToCompilationUnitLevel(Object value)
+	{
 		TreeNode tmpChild = new TreeNode(value, false, false);
 		TreeNode tmpParent = null;
 
@@ -216,7 +231,8 @@ public class TreeUtil {
 			if (nextParent != null && implementsRequiredInterfaces(nextParent)) {
 				tmpChild = tmpParent;
 				value = element;
-			} else {
+			}
+			else {
 				break;
 			}
 		}
@@ -225,19 +241,22 @@ public class TreeUtil {
 	}
 
 	private static void mergeAddNodeToBookmark(TreeNode bookmark, TreeNode node)
-			throws JavaModelException {
+		throws JavaModelException
+	{
 
 		if (TreeUtil.attemptMerge(bookmark, node) == null)
 			bookmark.addChild(node);
 	}
 
-	private static boolean implementsRequiredInterfaces(Object value) {
+	private static boolean implementsRequiredInterfaces(Object value)
+	{
 		return (value instanceof ICompilationUnit)
 				|| isValueInTypeHierarchyBelowICompilationUnit(value);
 	}
 
 	private static boolean isValueInTypeHierarchyBelowICompilationUnit(
-			Object value) {
+			Object value)
+	{
 		return value instanceof IMethod || value instanceof IType
 				|| value instanceof IField
 				|| value instanceof IImportDeclaration
@@ -245,7 +264,8 @@ public class TreeUtil {
 				|| value instanceof IPackageDeclaration;
 	}
 
-	private static boolean isNodeModelRoot(TreeNode node, TreeModel model) {
+	private static boolean isNodeModelRoot(TreeNode node, TreeModel model)
+	{
 		return (node == model.getModelRoot());
 	}
 
@@ -256,7 +276,8 @@ public class TreeUtil {
 	 * @param node
 	 * @return
 	 */
-	public static TreeNode getLeafOfTreePath(TreeNode node) {
+	public static TreeNode getLeafOfTreePath(TreeNode node)
+	{
 
 		if (node == null)
 			return null;
@@ -264,11 +285,13 @@ public class TreeUtil {
 		if (node.hasChildren()) {
 			TreeNode child = node.getChildren()[0];
 			return getLeafOfTreePath(child);
-		} else
+		}
+		else
 			return node;
 	}
 
-	public static LinkedList<TreeNode> getLeafs(TreeNode node) {
+	public static LinkedList<TreeNode> getLeafs(TreeNode node)
+	{
 
 		LinkedList<TreeNode> leafs = new LinkedList<TreeNode>();
 
@@ -288,7 +311,8 @@ public class TreeUtil {
 	 * @param node
 	 * @return
 	 */
-	public static TreeNode copyTreeBelowBookmark(TreeNode node) {
+	public static TreeNode copyTreeBelowBookmark(TreeNode node)
+	{
 
 		if (node == null || isRootNode(node))
 			return null;
@@ -309,18 +333,20 @@ public class TreeUtil {
 
 	}
 
-	private static boolean isRootNode(TreeNode node) {
+	private static boolean isRootNode(TreeNode node)
+	{
 		return node.getParent() == null;
 	}
 
-	private static TreeNode copyTreePathNodeToBookmark(TreeNode node) {
+	private static TreeNode copyTreePathNodeToBookmark(TreeNode node)
+	{
 		if (node == null || node.isBookmarkNode())
 			return null;
 
 		Object value = node.getValue();
 		boolean isBookmark = node.isBookmarkNode();
 		boolean isAutoGenerated = node.isAutoGenerated();
-		
+
 		TreeNode newNode = new TreeNode(value, isBookmark, isAutoGenerated);
 		TreeNode parent = node.getParent();
 		TreeNode newParent = copyTreePathNodeToBookmark(parent);
@@ -329,12 +355,13 @@ public class TreeUtil {
 		return newNode;
 	}
 
-	private static TreeNode copyTreePathNodeToLeafs(TreeNode node) {
+	private static TreeNode copyTreePathNodeToLeafs(TreeNode node)
+	{
 
 		Object value = node.getValue();
 		boolean isBookmark = node.isBookmarkNode();
 		boolean isAutoGenerated = node.isAutoGenerated();
-		
+
 		TreeNode newNode = new TreeNode(value, isBookmark, isAutoGenerated);
 
 		for (TreeNode child : node.getChildren()) {
@@ -345,7 +372,8 @@ public class TreeUtil {
 		return newNode;
 	}
 
-	private static boolean doesNodeMatchId(String id, TreeNode node) {
+	private static boolean doesNodeMatchId(String id, TreeNode node)
+	{
 		Object value = node.getValue();
 		// if (value == null || id == null)
 		// return false;
@@ -353,7 +381,8 @@ public class TreeUtil {
 		return (id.compareTo(compareID) == 0);
 	}
 
-	public static boolean isDuplicate(TreeNode node, String masterID) {
+	public static boolean isDuplicate(TreeNode node, String masterID)
+	{
 
 		String compareID = TreeValueConverter.getStringIdentification(node
 				.getValue());
@@ -369,7 +398,8 @@ public class TreeUtil {
 		return false;
 	}
 
-	public static TreeNode climbUpUntilLevelBelowBookmark(TreeNode node) {
+	public static TreeNode climbUpUntilLevelBelowBookmark(TreeNode node)
+	{
 		TreeNode climber = node;
 		while (climber.getParent() != null
 				&& !climber.getParent().isBookmarkNode()) {
@@ -380,7 +410,8 @@ public class TreeUtil {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<IStructuredSelection> getTreeSelections(TreeViewer viewer) {
+	public static List<IStructuredSelection> getTreeSelections(TreeViewer viewer)
+	{
 		ISelection selection = viewer.getSelection();
 		if (selection instanceof IStructuredSelection && !selection.isEmpty())
 			return ((IStructuredSelection) selection).toList();
@@ -397,7 +428,8 @@ public class TreeUtil {
 	 * @param node
 	 * @return TreeNode - found merge target or null
 	 */
-	public static TreeNode attemptMerge(TreeNode bookmark, TreeNode node) {
+	public static TreeNode attemptMerge(TreeNode bookmark, TreeNode node)
+	{
 		LinkedList<TreeNode> leafs = TreeUtil.getLeafs(node);
 
 		for (TreeNode leaf : leafs) {
@@ -410,7 +442,8 @@ public class TreeUtil {
 	}
 
 	private static boolean climbUpTreeHierarchyMergeIfIDMatches(
-			TreeNode bookmark, TreeNode parent) {
+			TreeNode bookmark, TreeNode parent)
+	{
 		while (parent != null) {
 			TreeNode mergeTargetExistingTree = getNodeThatMatchesID(bookmark,
 					parent);
@@ -425,20 +458,54 @@ public class TreeUtil {
 	}
 
 	private static TreeNode getNodeThatMatchesID(TreeNode bookmark,
-			TreeNode parent) {
+			TreeNode parent)
+	{
 		String id = TreeValueConverter.getStringIdentification(parent
 				.getValue());
 		return TreeUtil.locateNodeWithEqualID(id, bookmark);
 	}
 
-	private static void merge(TreeNode mergeTargetExistingTree, TreeNode parent) {
+	private static void merge(TreeNode mergeTargetExistingTree, TreeNode parent)
+	{
 		for (TreeNode child : parent.getChildren()) {
 			mergeTargetExistingTree.addChild(child);
 		}
 	}
 
-	private static boolean isMergeTargetFound(TreeNode mergeTargetExistingTree) {
+	private static boolean isMergeTargetFound(TreeNode mergeTargetExistingTree)
+	{
 		return mergeTargetExistingTree != null;
+	}
+
+	public static TreeNode[] getNonAutoGeneratedNodesUnderNode(
+			TreeNode node)
+	{
+		LinkedList<TreeNode> nonAutoGenerated = new LinkedList<TreeNode>();
+
+		for (TreeNode child : node.getChildren()) {
+			if (!child.isAutoGenerated()) {
+				nonAutoGenerated.add(child);
+			}
+			nonAutoGenerated
+					.addAll(getNonAutoGeneratedNodesUnderNodeRecursive(child));
+		}
+
+		return nonAutoGenerated.toArray(new TreeNode[0]);
+	}
+
+	private static LinkedList<TreeNode> getNonAutoGeneratedNodesUnderNodeRecursive(
+			TreeNode node)
+	{
+		LinkedList<TreeNode> children = new LinkedList<TreeNode>();
+
+		for (TreeNode child : node.getChildren()) {
+			if (!child.isAutoGenerated()) {
+				children.add(child);
+			}
+			children.addAll(getNonAutoGeneratedNodesUnderNodeRecursive(child));
+		}
+
+		return children;
 	}
 
 }

@@ -18,7 +18,9 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeS
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
-public class DefaultTreeDropListener implements DropTargetListener {
+public class DefaultTreeDropListener
+	implements DropTargetListener
+{
 
 	private final BookmarkView viewer;
 
@@ -26,25 +28,29 @@ public class DefaultTreeDropListener implements DropTargetListener {
 	private TreeKeyListener keyListener = null;
 
 	public DefaultTreeDropListener(BookmarkView viewer,
-			TreeDragListener localViewsDragListener, TreeKeyListener listener) {
+			TreeDragListener localViewsDragListener, TreeKeyListener listener)
+	{
 		this.viewer = viewer;
 		this.dragListener = localViewsDragListener;
 		this.keyListener = listener;
 	}
 
 	@Override
-	public void drop(DropTargetEvent event) {
+	public void drop(DropTargetEvent event)
+	{
 
 		try {
 			if (dragListener.isDragInProgress()) {
 				processDropEventWithDragFromWithinTheView(event);
-			} else {
+			}
+			else {
 				processDropEventWithDragInitiatedFromOutsideTheView(event);
 			}
 
 			saveNewTreeModelState();
 
-		} catch (JavaModelException e) {
+		}
+		catch (JavaModelException e) {
 			e.printStackTrace();
 		}
 
@@ -52,36 +58,43 @@ public class DefaultTreeDropListener implements DropTargetListener {
 	}
 
 	@Override
-	public void dropAccept(DropTargetEvent event) {
+	public void dropAccept(DropTargetEvent event)
+	{
 
 		if (!isValidDrop(event))
 			event.detail = DND.DROP_NONE;
 	}
 
 	@Override
-	public void dragEnter(DropTargetEvent event) {
+	public void dragEnter(DropTargetEvent event)
+	{
 		event.detail = DND.DROP_LINK | DND.DROP_COPY;
 	}
 
 	@Override
-	public void dragLeave(DropTargetEvent event) {
+	public void dragLeave(DropTargetEvent event)
+	{
 	}
 
 	@Override
-	public void dragOperationChanged(DropTargetEvent event) {
+	public void dragOperationChanged(DropTargetEvent event)
+	{
 	}
 
 	@Override
-	public void dragOver(DropTargetEvent event) {
+	public void dragOver(DropTargetEvent event)
+	{
 	}
 
-	private void saveNewTreeModelState() {
+	private void saveNewTreeModelState()
+	{
 		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
 				viewer.getModel());
 	}
 
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
-			throws JavaModelException {
+		throws JavaModelException
+	{
 
 		System.err.println(keyListener.isAltPressed());
 
@@ -111,8 +124,9 @@ public class DefaultTreeDropListener implements DropTargetListener {
 	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
-			DropTargetEvent event) throws JavaModelException {
-
+			DropTargetEvent event)
+		throws JavaModelException
+	{
 		TreePath[] treePath = getTreePath(event);
 		TreeNode target = (TreeNode) getTarget(event);
 		TreeNode bookmark = TreeUtil.getBookmarkNode(target);
@@ -120,23 +134,26 @@ public class DefaultTreeDropListener implements DropTargetListener {
 		if (bookmark != null) {
 			new AddTreepathsToExistingBookmarkCommand(viewer, bookmark,
 					treePath).execute();
-		} else {
-			new CreateNewBookmarkAddAsNodeCommand(viewer, treePath).execute();
 		}
+		else {
+			new CreateNewBookmarkAddAsNodeCommand(viewer, treePath).execute();
 
+		}
+		viewer.getManager().addCurrentlyExpandedNodesToStorage();
 	}
 
-	private boolean isValidDrop(DropTargetEvent event) {
-		
+	private boolean isValidDrop(DropTargetEvent event)
+	{
+
 		if (dragListener.isDragInProgress()) {
 			TreeNode target = (TreeNode) getTarget(event);
 			return DropUtil.isValidDrop(viewer.getView(), target);
 		}
 		return true;
 	}
-	
 
-	private TreePath[] getTreePath(DropTargetEvent event) {
+	private TreePath[] getTreePath(DropTargetEvent event)
+	{
 		TreeSelection treeSelection = null;
 		TreePath[] treePath = null;
 		if (event.data instanceof TreeSelection) {
@@ -146,14 +163,16 @@ public class DefaultTreeDropListener implements DropTargetListener {
 		return treePath;
 	}
 
-	private boolean didDropOccurInEmptyArea(DropTargetEvent event) {
+	private boolean didDropOccurInEmptyArea(DropTargetEvent event)
+	{
 		TreeNode dropTarget = (TreeNode) getTarget(event);
 		TreeNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
 
 		return bookmarkOfDropTarget == null;
 	}
 
-	private Object getTarget(DropTargetEvent event) {
+	private Object getTarget(DropTargetEvent event)
+	{
 		return ((event.item == null) ? null : event.item.getData());
 	}
 }
