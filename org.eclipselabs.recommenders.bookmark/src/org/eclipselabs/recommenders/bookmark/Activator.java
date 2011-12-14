@@ -33,6 +33,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final String ICON_TOGGLE_LEVEL = "toggleLevel";
 	public static final String ICON_DELETE = "delete";
 	public static final String ICON_BOOKMARK_RENAME = "rename";
+	public static final String ICON_TOGGLE_FLAT_HIERARCHY = "toggleBetweenFlatAndTreeH";
 	
 	public static final String AUTOSAVE_FILE = "bookmarkModel.bm";
 
@@ -112,6 +113,10 @@ public class Activator extends AbstractUIPlugin {
 		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
 				new Path("icons/write_obj.gif"), null));
 		registry.put(ICON_BOOKMARK_RENAME, imgDesc);
+		
+		imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
+				new Path("icons/tree_explorer.gif"), null));
+		registry.put(ICON_TOGGLE_FLAT_HIERARCHY, imgDesc);
 
 	}
 }

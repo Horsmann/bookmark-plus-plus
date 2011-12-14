@@ -14,9 +14,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ResourceTransfer;
-import org.eclipselabs.recommenders.bookmark.handler.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ControlNotifier;
@@ -31,6 +29,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RenameBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.ToggleFlatAndTreeAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleViewAction;
 import org.eclipselabs.recommenders.bookmark.view.tree.DefaultTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
@@ -55,6 +54,7 @@ public class DefaultView implements BookmarkView {
 	private Action newBookmark = null;
 	private Action deleteSelection = null;
 	private Action renameBookmark = null;
+	private Action toggleFlatTree = null;
 
 	private ViewManager manager = null;
 
@@ -150,6 +150,7 @@ public class DefaultView implements BookmarkView {
 		newBookmark = new CreateNewBookmarkAction(this);
 		deleteSelection = new DeleteAction(this);
 		renameBookmark = new RenameBookmarkAction(this);
+		toggleFlatTree = new ToggleFlatAndTreeAction();
 	}
 
 	public void setUpToolbarForViewPart() {
@@ -165,6 +166,7 @@ public class DefaultView implements BookmarkView {
 //		mgr.add(renameBookmark);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
+		mgr.add(toggleFlatTree);
 		mgr.add(newBookmark);
 //		mgr.add(deleteSelection);
 
