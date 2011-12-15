@@ -41,7 +41,7 @@ public class ComboSelectionListener implements SelectionListener {
 		BMNode[] bookmarks = model.getModelRoot().getChildren();
 
 		model.setHeadNode(bookmarks[index]);
-		TreeViewer viewer = manager.getActiveViewer();
+		TreeViewer viewer = manager.getActiveBookmarkView().getView();
 		viewer.setInput(null);
 		viewer.setInput(model.getModelHead());
 		manager.setStoredExpandedNodesForActiveView();

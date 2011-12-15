@@ -2,6 +2,9 @@ package org.eclipselabs.recommenders.bookmark.view.actions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class ToggleFlatAndTreeAction
@@ -26,8 +29,12 @@ public class ToggleFlatAndTreeAction
 		if (manager.isViewFlattened()) {
 			manager.deactivateFlattenedView();
 		}
-		else {			
-			manager.activateFlattenedView();
+		else {
+			BMNode flattenFromNode = null;
+			BookmarkView view = manager.getActiveBookmarkView();
+			TreeModel model = view.getModel();
+			flattenFromNode = model.getModelHead();
+			manager.activateFlattenedView(flattenFromNode);
 		}
 	}
 }

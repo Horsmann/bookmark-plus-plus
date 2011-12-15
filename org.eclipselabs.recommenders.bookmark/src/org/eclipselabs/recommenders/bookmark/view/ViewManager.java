@@ -2,6 +2,7 @@ package org.eclipselabs.recommenders.bookmark.view;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 
 public interface ViewManager
 {
@@ -10,7 +11,7 @@ public interface ViewManager
 
 	public BookmarkView activateNextView();
 
-	public TreeViewer getActiveViewer();
+	public BookmarkView getActiveBookmarkView();
 
 	/**
 	 * Takes the nodes of the currently active view and adds all expanded nodes
@@ -27,9 +28,11 @@ public interface ViewManager
 
 	public void reinitializeExpandedStorage();
 
-	public void activateFlattenedView();
+	public void activateFlattenedView(BMNode parentThatsChildsShallBeFlattened);
 
 	public void deactivateFlattenedView();
 
 	public boolean isViewFlattened();
+	
+	public boolean isViewToggled();
 }

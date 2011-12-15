@@ -29,6 +29,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplor
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.ToggleFlatAndTreeAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleViewAction;
 import org.eclipselabs.recommenders.bookmark.view.tree.CategoryTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
@@ -56,6 +57,7 @@ public class CategoryView
 	private Action toggleLevel;
 	private Action deleteSelection;
 	private Action newBookmark;
+	private Action toggleFlatTree;
 
 	private ViewManager manager;
 
@@ -147,12 +149,13 @@ public class CategoryView
 	{
 
 		combo.removeAll();
+		
+		BMNode head = model.getModelHead();
+		
+		if (head.getValue()==null)
+			return;
 
 		String currentHead = (String) model.getModelHead().getValue();
-
-		if (currentHead == null) {
-			return;
-		}
 
 		int selectIndex = 0;
 		BMNode[] bookmarks = model.getModelRoot().getChildren();
@@ -178,6 +181,7 @@ public class CategoryView
 		toggleLevel = new ToggleViewAction(manager, this);
 		deleteSelection = new DeleteAction(this);
 		newBookmark = new CreateNewBookmarkAction(this);
+		toggleFlatTree = new ToggleFlatAndTreeAction(manager);
 
 	}
 
@@ -206,6 +210,7 @@ public class CategoryView
 		mgr.add(closeAllOpenEditors);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
+		mgr.add(toggleFlatTree);
 		mgr.add(newBookmark);
 		// mgr.add(deleteSelection);
 

@@ -11,12 +11,16 @@ import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
-public class ToggleViewAction extends Action implements SelfEnabling {
+public class ToggleViewAction
+	extends Action
+	implements SelfEnabling
+{
 
 	private ViewManager manager;
 	private BookmarkView actionTriggeringView;
 
-	public ToggleViewAction(ViewManager manager, BookmarkView view) {
+	public ToggleViewAction(ViewManager manager, BookmarkView view)
+	{
 		this.manager = manager;
 		this.actionTriggeringView = view;
 
@@ -28,11 +32,42 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 	}
 
 	@Override
-	public void run() {
+	public void run()
+	{
+
 		List<IStructuredSelection> selection = TreeUtil
 				.getTreeSelections(actionTriggeringView.getView());
 
-		TreeModel model = actionTriggeringView.getModel();
+		TreeModel model = null;
+		if (manager.isViewFlattened()) {
+			model = actionTriggeringView.getFlatModel();
+		}
+		else {
+			model = actionTriggeringView.getModel();
+		}
+
+		if (manager.isViewToggled()) {
+			System.out.println("Category changes to Default");
+			if (manager.isViewFlattened()) {
+				System.out.println("Default will be flattened");
+				
+				
+			}
+			else {
+				System.out.println("Default will be normal");
+			}
+		}
+		else {
+			System.out.println("Default changes to Category");
+			if (manager.isViewFlattened()) {
+				System.out.println("Category will be flattened");
+			}
+			else {
+				System.out.println("Category will be normal");
+			}
+		}
+
+		// TreeModel model = actionTriggeringView.getModel();
 		if (model.isHeadEqualRoot()) {
 			if (selection.size() <= 0)
 				return;
@@ -40,7 +75,13 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 			Object object = selection.get(0);
 
 			BMNode node = (BMNode) object;
-			BMNode bookmark = TreeUtil.getBookmarkNode(node);
+			BMNode bookmark = null;
+			if (node.hasReference()) {
+				bookmark = TreeUtil.getBookmarkNode(node.getReference());
+			}
+			else {
+				bookmark = TreeUtil.getBookmarkNode(node);
+			}
 			model.setHeadNode(bookmark);
 
 			manager.reinitializeExpandedStorage();
@@ -48,35 +89,66 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 
 			BookmarkView activatedView = manager.activateNextView();
 
-			// get newly set view
-			activatedView.getView().setInput(null);
-			activatedView.getView().setInput(bookmark);
-			manager.setStoredExpandedNodesForActiveView();
+			if (manager.isViewFlattened()) {
+				manager.activateFlattenedView(bookmark);
+			}
+			else {
+				// get newly set view
+				activatedView.getView().setInput(null);
+				activatedView.getView().setInput(bookmark);
+				manager.setStoredExpandedNodesForActiveView();
+			}
 
 			activatedView.updateControls();
 
-		} else {
+		}
+		else {
 			// Get and remove all nodes that are currently visible from the
 			// storage
-			Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
-					.getModelHead());
-			for (Object o : currentlyVisibleNodes) {
-				manager.deleteExpandedNodeFromStorage(o);
+
+			BookmarkView activatedView = null;
+			if (manager.isViewFlattened()) {
+				model.resetHeadToRoot();
+
+				activatedView = manager.activateNextView();
+				manager.activateFlattenedView(model.getModelHead());
 			}
+			else {
+				Object[] currentlyVisibleNodes = TreeUtil
+						.getTreeBelowNode(model.getModelHead());
+				for (Object o : currentlyVisibleNodes) {
+					manager.deleteExpandedNodeFromStorage(o);
+				}
+				manager.addCurrentlyExpandedNodesToStorage();
+
+				model.resetHeadToRoot();
+
+				activatedView = manager.activateNextView();
+
+				activatedView.getView().setInput(null);
+				activatedView.getView().setInput(model.getModelHead());
+
+				manager.setStoredExpandedNodesForActiveView();
+			}
+			// Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
+			// .getModelHead());
+			// for (Object o : currentlyVisibleNodes) {
+			// manager.deleteExpandedNodeFromStorage(o);
+			// }
 
 			// Add those to the storage which are truly expanded since expanded
 			// state may have change
 			// for any visible node
-			manager.addCurrentlyExpandedNodesToStorage();
-
-			model.resetHeadToRoot();
-
-			BookmarkView activatedView = manager.activateNextView();
-
-			activatedView.getView().setInput(null);
-			activatedView.getView().setInput(model.getModelHead());
-
-			manager.setStoredExpandedNodesForActiveView();
+			// manager.addCurrentlyExpandedNodesToStorage();
+			//
+			// model.resetHeadToRoot();
+			//
+			// BookmarkView activatedView = manager.activateNextView();
+			//
+			// activatedView.getView().setInput(null);
+			// activatedView.getView().setInput(model.getModelHead());
+			//
+			// manager.setStoredExpandedNodesForActiveView();
 
 			activatedView.updateControls();
 		}
@@ -84,21 +156,25 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 	}
 
 	@Override
-	public void updateEnabledStatus() {
+	public void updateEnabledStatus()
+	{
 
 		setEnabledStatus();
 
 	}
 
-	public void setEnabledStatus() {
+	public void setEnabledStatus()
+	{
 		if (actionTriggeringView.requiresSelectionForToggle()) {
 			if (TreeUtil.getTreeSelections(actionTriggeringView.getView())
 					.size() > 0) {
 				this.setEnabled(true);
-			} else {
+			}
+			else {
 				this.setEnabled(false);
 			}
-		} else {
+		}
+		else {
 			this.setEnabled(true);
 		}
 	}
