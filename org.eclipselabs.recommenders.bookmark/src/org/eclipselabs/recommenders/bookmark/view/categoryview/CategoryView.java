@@ -111,7 +111,7 @@ public class CategoryView
 
 		// Switch the head node in the model if selection changes
 		ComboSelectionListener comboSelectionListener = new ComboSelectionListener(
-				combo, model, manager, comboKeyListener);
+				combo, manager, comboKeyListener);
 		combo.addSelectionListener(comboSelectionListener);
 
 		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
@@ -149,10 +149,10 @@ public class CategoryView
 	{
 
 		combo.removeAll();
-		
+
 		BMNode head = model.getModelHead();
-		
-		if (head.getValue()==null)
+
+		if (head.getValue() == null)
 			return;
 
 		String currentHead = (String) model.getModelHead().getValue();

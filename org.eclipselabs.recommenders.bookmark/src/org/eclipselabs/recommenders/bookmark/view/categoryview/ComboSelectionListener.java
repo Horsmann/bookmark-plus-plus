@@ -13,19 +13,19 @@ public class ComboSelectionListener implements SelectionListener {
 
 	private Combo combo;
 	private ComboKeyListener keyListener;
-	private TreeModel model;
 	private ViewManager manager;
 
-	public ComboSelectionListener(Combo combo, TreeModel model,
+	public ComboSelectionListener(Combo combo, 
 			ViewManager manager, ComboKeyListener keyListener) {
 		this.combo = combo;
-		this.model = model;
 		this.manager = manager;
 		this.keyListener = keyListener;
 	}
 
 	@Override
 	public void widgetSelected(SelectionEvent e) {
+		
+		TreeModel model=manager.getActiveBookmarkView().getModel();
 		
 		keyListener.selectionChanged();
 		
@@ -42,9 +42,15 @@ public class ComboSelectionListener implements SelectionListener {
 
 		model.setHeadNode(bookmarks[index]);
 		TreeViewer viewer = manager.getActiveBookmarkView().getView();
+		
 		viewer.setInput(null);
 		viewer.setInput(model.getModelHead());
 		manager.setStoredExpandedNodesForActiveView();
+		
+		if (manager.isViewFlattened()) {
+			manager.activateFlattenedView(bookmarks[index]);
+		}
+		
 	}
 
 	@Override
