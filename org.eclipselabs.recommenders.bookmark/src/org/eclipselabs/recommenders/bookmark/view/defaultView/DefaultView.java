@@ -15,6 +15,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.tree.FlatTreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ControlNotifier;
@@ -43,34 +44,37 @@ public class DefaultView
 	implements BookmarkView
 {
 
-	private TreeViewer viewer = null;
-	private Composite composite = null;
-	private TreeModel model = null;
-	private Action showInEditor = null;
-	private Action exportBookmarks = null;
-	private Action importBookmarks = null;
-	private Action closeAllOpenEditors = null;
-	private Action refreshView = null;
-	private Action openInSystemFileExplorer = null;
-	private Action toggleLevel = null;
-	private Action newBookmark = null;
-	private Action deleteSelection = null;
-	private Action renameBookmark = null;
-	private Action toggleFlatTree = null;
+	private TreeViewer viewer;
+	private Composite composite;
+	private TreeModel model;
+	private FlatTreeModel flattenedModel;
+	private Action showInEditor;
+	private Action exportBookmarks;
+	private Action importBookmarks;
+	private Action closeAllOpenEditors;
+	private Action refreshView;
+	private Action openInSystemFileExplorer;
+	private Action toggleLevel;
+	private Action newBookmark;
+	private Action deleteSelection;
+	private Action renameBookmark;
+	private Action toggleFlatTree;
 
-	private ViewManager manager = null;
+	private ViewManager manager;
 
-	private ControlNotifier notifier = null;
+	private ControlNotifier notifier;
 
-	private TreeKeyListener keyListener = null;
-	private TreeSelectionListener selectionListener = null;
-	private TreeDoubleclickListener doubleClickListener = null;
-	private TreeDragListener dragListener = null;
-	private DefaultTreeDropListener dropListener = null;
+	private TreeKeyListener keyListener;
+	private TreeSelectionListener selectionListener;
+	private TreeDoubleclickListener doubleClickListener;
+	private TreeDragListener dragListener;
+	private DefaultTreeDropListener dropListener;
 
-	public DefaultView(ViewManager manager, Composite parent, TreeModel model)
+	public DefaultView(ViewManager manager, Composite parent, TreeModel model,
+			FlatTreeModel flattenedModel)
 	{
 		this.model = model;
+		this.flattenedModel = flattenedModel;
 		this.manager = manager;
 
 		composite = new Composite(parent, SWT.NONE);
@@ -249,5 +253,12 @@ public class DefaultView
 	public ViewManager getManager()
 	{
 		return manager;
+	}
+
+	@Override
+	public FlatTreeModel getFlatModel()
+	{
+		return flattenedModel;
+
 	}
 }

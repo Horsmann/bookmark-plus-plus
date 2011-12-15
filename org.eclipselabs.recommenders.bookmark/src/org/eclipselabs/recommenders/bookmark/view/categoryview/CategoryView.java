@@ -8,7 +8,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
@@ -18,6 +17,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.tree.FlatTreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
@@ -39,38 +39,44 @@ import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
 import org.eclipselabs.recommenders.dialog.ComboFakeTooltip;
 
-public class CategoryView implements BookmarkView {
+public class CategoryView
+	implements BookmarkView
+{
 
-	private TreeViewer viewer = null;
-	private Composite composite = null;
-	private Combo combo = null;
-	private ComboFakeTooltip fakeToolTip=null;
+	private TreeViewer viewer;
+	private Composite composite;
+	private Combo combo;
+	private ComboFakeTooltip fakeToolTip = null;
 
-	private TreeModel model = null;
+	private TreeModel model;
+	private FlatTreeModel flattenedModel;
 
-	private Action showInEditor = null;
-	private Action closeAllOpenEditors = null;
-	private Action refreshView = null;
-	private Action openInSystemFileExplorer = null;
-	private Action toggleLevel = null;
-	private Action deleteSelection = null;
-	private Action newBookmark = null;
+	private Action showInEditor;
+	private Action closeAllOpenEditors;
+	private Action refreshView;
+	private Action openInSystemFileExplorer;
+	private Action toggleLevel;
+	private Action deleteSelection;
+	private Action newBookmark;
 
-	private ViewManager manager = null;
+	private ViewManager manager;
 
-	private GridLayout gridLayout = null;
+	private GridLayout gridLayout;
 
-	private ControlNotifier notifier = null;
-	private TreeKeyListener keyListener = null;
-	private TreeSelectionListener selectionListener = null;
-	private TreeDoubleclickListener doubleClickListener = null;
-	private TreeFocusListener focusListener = null;
-	private CategoryTreeDropListener dropListener = null;
+	private ControlNotifier notifier;
+	private TreeKeyListener keyListener;
+	private TreeSelectionListener selectionListener;
+	private TreeDoubleclickListener doubleClickListener;
+	private TreeFocusListener focusListener;
+	private CategoryTreeDropListener dropListener;
 
-	public CategoryView(ViewManager manager, Composite parent, TreeModel model) {
+	public CategoryView(ViewManager manager, Composite parent, TreeModel model,
+			FlatTreeModel flattenedModel)
+	{
 
 		this.manager = manager;
 		this.model = model;
+		this.flattenedModel = flattenedModel;
 
 		composite = new Composite(parent, SWT.NONE);
 		gridLayout = new GridLayout();
@@ -95,25 +101,27 @@ public class CategoryView implements BookmarkView {
 		addListenerToTreeInView();
 	}
 
-	private void assembleComboBox() {
+	private void assembleComboBox()
+	{
 		combo = new Combo(composite, SWT.SIMPLE);
 
-		//Change bookmarks name on "Enter"
+		// Change bookmarks name on "Enter"
 		ComboKeyListener comboKeyListener = new ComboKeyListener(this);
 		combo.addKeyListener(comboKeyListener);
 
-		//Switch the head node in the model if selection changes
+		// Switch the head node in the model if selection changes
 		ComboSelectionListener comboSelectionListener = new ComboSelectionListener(
 				combo, model, manager, comboKeyListener);
 		combo.addSelectionListener(comboSelectionListener);
 
 		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
 		combo.setLayoutData(gridData);
-		
-//		fakeToolTip = new ComboFakeTooltip(combo);
+
+		// fakeToolTip = new ComboFakeTooltip(combo);
 	}
 
-	private void initializerActionsListenerAndMenus() {
+	private void initializerActionsListenerAndMenus()
+	{
 		createActions();
 		setUpContextMenu();
 		initializeControlNotifier();
@@ -121,12 +129,13 @@ public class CategoryView implements BookmarkView {
 		keyListener = new TreeKeyListener(this, showInEditor);
 		selectionListener = new TreeSelectionListener(notifier);
 		doubleClickListener = new TreeDoubleclickListener(showInEditor);
-		focusListener = new TreeFocusListener(this,notifier);
+		focusListener = new TreeFocusListener(this, notifier);
 
 		dropListener = new CategoryTreeDropListener(this, keyListener);
 	}
 
-	private void initializeControlNotifier() {
+	private void initializeControlNotifier()
+	{
 		notifier = new ControlNotifier();
 
 		notifier.add((SelfEnabling) openInSystemFileExplorer);
@@ -136,7 +145,8 @@ public class CategoryView implements BookmarkView {
 
 	}
 
-	public void refreshCategories() {
+	public void refreshCategories()
+	{
 
 		combo.removeAll();
 
@@ -154,7 +164,8 @@ public class CategoryView implements BookmarkView {
 		combo.select(selectIndex);
 	}
 
-	private void createActions() {
+	private void createActions()
+	{
 
 		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
 				viewer);
@@ -167,19 +178,22 @@ public class CategoryView implements BookmarkView {
 
 	}
 
-	private void addListenerToTreeInView() {
+	private void addListenerToTreeInView()
+	{
 		viewer.getTree().addKeyListener(keyListener);
 
 		viewer.getTree().addSelectionListener(selectionListener);
-		
+
 		viewer.getTree().addFocusListener(focusListener);
 	}
 
-	private void updateEnableStatusOfControls() {
+	private void updateEnableStatusOfControls()
+	{
 		notifier.fire();
 	}
 
-	public void setUpToolbarForViewPart() {
+	public void setUpToolbarForViewPart()
+	{
 
 		IToolBarManager mgr = manager.getViewPart().getViewSite()
 				.getActionBars().getToolBarManager();
@@ -190,17 +204,19 @@ public class CategoryView implements BookmarkView {
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
 		mgr.add(newBookmark);
-//		mgr.add(deleteSelection);
+		// mgr.add(deleteSelection);
 
 		mgr.update(true);
 	}
 
-	private void addListenerToView() {
+	private void addListenerToView()
+	{
 		addDragDropSupportToView(viewer, model);
 		viewer.addDoubleClickListener(doubleClickListener);
 	}
 
-	public void addDragDropSupportToView(TreeViewer viewer, TreeModel model) {
+	public void addDragDropSupportToView(TreeViewer viewer, TreeModel model)
+	{
 		int operations = DND.DROP_LINK;
 		Transfer[] transferTypes = new Transfer[] {
 				ResourceTransfer.getInstance(),
@@ -209,12 +225,15 @@ public class CategoryView implements BookmarkView {
 		viewer.addDropSupport(operations, transferTypes, dropListener);
 	}
 
-	private void setUpContextMenu() {
+	private void setUpContextMenu()
+	{
 		final MenuManager menuMgr = new MenuManager();
 		menuMgr.setRemoveAllWhenShown(true);
 
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager mgr) {
+		menuMgr.addMenuListener(new IMenuListener()
+		{
+			public void menuAboutToShow(IMenuManager mgr)
+			{
 				menuMgr.add(showInEditor);
 				menuMgr.add(refreshView);
 				menuMgr.add(new Separator());
@@ -235,17 +254,20 @@ public class CategoryView implements BookmarkView {
 	}
 
 	@Override
-	public TreeViewer getView() {
+	public TreeViewer getView()
+	{
 		return viewer;
 	}
 
 	@Override
-	public boolean requiresSelectionForToggle() {
+	public boolean requiresSelectionForToggle()
+	{
 		return false;
 	}
 
 	@Override
-	public void updateControls() {
+	public void updateControls()
+	{
 		refreshCategories();
 		viewer.refresh(true);
 
@@ -253,11 +275,13 @@ public class CategoryView implements BookmarkView {
 	}
 
 	@Override
-	public TreeModel getModel() {
+	public TreeModel getModel()
+	{
 		return model;
 	}
-	
-	public Composite getComposite() {
+
+	public Composite getComposite()
+	{
 		return composite;
 	}
 
@@ -265,6 +289,12 @@ public class CategoryView implements BookmarkView {
 	public ViewManager getManager()
 	{
 		return manager;
+	}
+
+	@Override
+	public FlatTreeModel getFlatModel()
+	{
+		return flattenedModel;
 	}
 
 }
