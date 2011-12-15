@@ -19,7 +19,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipselabs.recommenders.bookmark.tree.FlatTreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
@@ -231,16 +230,6 @@ public class TreeUtil
 	}
 
 	public static void unlink(TreeNode node)
-	{
-
-		if (node == null)
-			return;
-
-		node.getParent().removeChild(node);
-		node.setParent(null);
-	}
-	
-	public static void unlink(FlatTreeNode node)
 	{
 
 		if (node == null)

@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
-import org.eclipselabs.recommenders.bookmark.tree.FlatTreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
@@ -49,7 +48,7 @@ public class CategoryView
 	private ComboFakeTooltip fakeToolTip = null;
 
 	private TreeModel model;
-	private FlatTreeModel flattenedModel;
+	// private FlatTreeModel flattenedModel;
 
 	private Action showInEditor;
 	private Action closeAllOpenEditors;
@@ -70,13 +69,12 @@ public class CategoryView
 	private TreeFocusListener focusListener;
 	private CategoryTreeDropListener dropListener;
 
-	public CategoryView(ViewManager manager, Composite parent, TreeModel model,
-			FlatTreeModel flattenedModel)
+	public CategoryView(ViewManager manager, Composite parent, TreeModel model)
 	{
 
 		this.manager = manager;
 		this.model = model;
-		this.flattenedModel = flattenedModel;
+		// this.flattenedModel = flattenedModel;
 
 		composite = new Composite(parent, SWT.NONE);
 		gridLayout = new GridLayout();
@@ -291,10 +289,10 @@ public class CategoryView
 		return manager;
 	}
 
-	@Override
-	public FlatTreeModel getFlatModel()
-	{
-		return flattenedModel;
-	}
+	// @Override
+	// public FlatTreeModel getFlatModel()
+	// {
+	// return flattenedModel;
+	// }
 
 }

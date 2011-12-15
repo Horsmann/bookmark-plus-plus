@@ -15,7 +15,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
-import org.eclipselabs.recommenders.bookmark.tree.FlatTreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ControlNotifier;
@@ -47,7 +46,7 @@ public class DefaultView
 	private TreeViewer viewer;
 	private Composite composite;
 	private TreeModel model;
-	private FlatTreeModel flattenedModel;
+	// private FlatTreeModel flattenedModel;
 	private Action showInEditor;
 	private Action exportBookmarks;
 	private Action importBookmarks;
@@ -70,11 +69,10 @@ public class DefaultView
 	private TreeDragListener dragListener;
 	private DefaultTreeDropListener dropListener;
 
-	public DefaultView(ViewManager manager, Composite parent, TreeModel model,
-			FlatTreeModel flattenedModel)
+	public DefaultView(ViewManager manager, Composite parent, TreeModel model)
 	{
 		this.model = model;
-		this.flattenedModel = flattenedModel;
+		// this.flattenedModel = flattenedModel;
 		this.manager = manager;
 
 		composite = new Composite(parent, SWT.NONE);
@@ -255,10 +253,10 @@ public class DefaultView
 		return manager;
 	}
 
-	@Override
-	public FlatTreeModel getFlatModel()
-	{
-		return flattenedModel;
-
-	}
+	// @Override
+	// public FlatTreeModel getFlatModel()
+	// {
+	// return flattenedModel;
+	//
+	// }
 }

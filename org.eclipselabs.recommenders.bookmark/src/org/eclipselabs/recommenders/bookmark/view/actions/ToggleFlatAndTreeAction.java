@@ -23,12 +23,12 @@ public class ToggleFlatAndTreeAction
 	@Override
 	public void run()
 	{
-		if (manager.isViewFlattened()) {
-			manager.deactivateFlattenedView();
-		}
-		else {
-			manager.activateFlattenedView();
-		}
+//		if (manager.isViewFlattened()) {
+//			manager.deactivateFlattenedView();
+//		}
+//		else {
+//			manager.activateFlattenedView();
+//		}
 	}
 
 }
