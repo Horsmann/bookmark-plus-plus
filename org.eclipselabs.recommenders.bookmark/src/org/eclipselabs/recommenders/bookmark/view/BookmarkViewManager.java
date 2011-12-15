@@ -13,8 +13,8 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.handler.PasteHandler;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
@@ -43,7 +43,7 @@ public class BookmarkViewManager
 	private DefaultView defaultView = null;
 	private CategoryView toggledView = null;
 
-	private boolean isFlattenedActive;
+//	private boolean isFlattenedActive;
 
 	private HashMap<Object, String> expandedNodes = new HashMap<Object, String>();
 
@@ -138,7 +138,7 @@ public class BookmarkViewManager
 				.getBoolean(org.eclipselabs.recommenders.bookmark.preferences.PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES_VIEW_OPENING);
 
 		if (removeDeadReferences) {
-			final TreeNode root = model.getModelRoot();
+			final BMNode root = model.getModelRoot();
 
 			TreeUtil.deleteNodesReferencingToDeadResourcesUnderNode(root, model);
 			activeView.getView().refresh();

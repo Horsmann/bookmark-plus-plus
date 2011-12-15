@@ -15,22 +15,28 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
-public class PasteHandler extends AbstractHandler {
+public class PasteHandler
+	extends AbstractHandler
+{
 
 	private BookmarkView activeView;
 
-	public PasteHandler(BookmarkView activeView) {
+	public PasteHandler(BookmarkView activeView)
+	{
 		this.activeView = activeView;
 	}
 
 	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
+	public Object execute(ExecutionEvent event)
+		throws ExecutionException
+	{
 
 		Clipboard cb = new Clipboard(Display.getCurrent());
 
@@ -54,20 +60,21 @@ public class PasteHandler extends AbstractHandler {
 		return null;
 	}
 
-	private void processFiles(Object[] clipBoardData) {
+	private void processFiles(Object[] clipBoardData)
+	{
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(activeView.getView());
 
 		if (selections.size() != 1)
 			return;
 
-		TreeNode target = (TreeNode) selections.get(0);
+		BMNode target = (BMNode) selections.get(0);
 
 		for (Object data : clipBoardData) {
 
 			if (data instanceof IFile) {
-				TreeNode node = new TreeNode(data, false, false);
-				TreeNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
+				BMNode node = new TreeNode(data, false, false);
+				BMNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
 				new AddTreeNodesToExistingBookmark(activeView,
 						bookmarkOfTarget, node, true).execute();
 			}
@@ -75,14 +82,15 @@ public class PasteHandler extends AbstractHandler {
 
 	}
 
-	private void processJavaElement(Object[] clipBoardData) {
+	private void processJavaElement(Object[] clipBoardData)
+	{
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(activeView.getView());
 
 		if (selections.size() != 1)
 			return;
 
-		TreeNode target = (TreeNode) selections.get(0);
+		BMNode target = (BMNode) selections.get(0);
 
 		for (Object data : clipBoardData) {
 
@@ -90,7 +98,7 @@ public class PasteHandler extends AbstractHandler {
 				TreePath[] path = new TreePath[1];
 				path[0] = new TreePath(new Object[] { data });
 
-				TreeNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
+				BMNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
 				new AddTreepathsToExistingBookmarkCommand(activeView,
 						bookmarkOfTarget, path).execute();
 

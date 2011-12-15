@@ -15,16 +15,20 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
-public class ShowBookmarksInEditorAction extends Action implements SelfEnabling {
+public class ShowBookmarksInEditorAction
+	extends Action
+	implements SelfEnabling
+{
 
 	private TreeViewer viewer;
 	private ViewPart part;
 
-	public ShowBookmarksInEditorAction(ViewPart part, TreeViewer viewer) {
+	public ShowBookmarksInEditorAction(ViewPart part, TreeViewer viewer)
+	{
 		this.viewer = viewer;
 		this.part = part;
 
@@ -36,12 +40,13 @@ public class ShowBookmarksInEditorAction extends Action implements SelfEnabling 
 	}
 
 	@Override
-	public void run() {
+	public void run()
+	{
 
 		List<IStructuredSelection> selectedList = TreeUtil
 				.getTreeSelections(viewer);
 		for (int i = 0; i < selectedList.size(); i++) {
-			TreeNode node = (TreeNode) selectedList.get(i);
+			BMNode node = (BMNode) selectedList.get(i);
 
 			if (!isReferencedResourceAvailable(node)) {
 				continue;
@@ -55,25 +60,29 @@ public class ShowBookmarksInEditorAction extends Action implements SelfEnabling 
 
 	}
 
-	private boolean isReferencedResourceAvailable(TreeNode node) {
+	private boolean isReferencedResourceAvailable(BMNode node)
+	{
 
 		return ResourceAvailabilityValidator.isResourceAvailable(node
 				.getValue());
 	}
 
-	private void openAllEntriesOfBookmark(TreeNode bookmark) {
-		for (TreeNode child : bookmark.getChildren()) {
-			LinkedList<TreeNode> leafs = TreeUtil.getLeafs(child);
-			for (TreeNode leaf : leafs)
+	private void openAllEntriesOfBookmark(BMNode bookmark)
+	{
+		for (BMNode child : bookmark.getChildren()) {
+			LinkedList<BMNode> leafs = TreeUtil.getLeafs(child);
+			for (BMNode leaf : leafs)
 				openInEditor(leaf);
 		}
 	}
 
-	private void openSingleEntry(TreeNode node) {
+	private void openSingleEntry(BMNode node)
+	{
 		openInEditor(node);
 	}
 
-	private void openInEditor(TreeNode node) {
+	private void openInEditor(BMNode node)
+	{
 		try {
 			if (node.getValue() instanceof IJavaElement) {
 				IEditorPart part = JavaUI.openInEditor((IJavaElement) node
@@ -86,15 +95,18 @@ public class ShowBookmarksInEditorAction extends Action implements SelfEnabling 
 				IDE.openEditor(part.getViewSite().getWorkbenchWindow()
 						.getActivePage(), file);
 			}
-		} catch (PartInitException e) {
+		}
+		catch (PartInitException e) {
 			e.printStackTrace();
-		} catch (JavaModelException e) {
+		}
+		catch (JavaModelException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void updateEnabledStatus() {
+	public void updateEnabledStatus()
+	{
 		List<IStructuredSelection> list = TreeUtil.getTreeSelections(viewer);
 		if (list.size() == 0) {
 			this.setEnabled(false);

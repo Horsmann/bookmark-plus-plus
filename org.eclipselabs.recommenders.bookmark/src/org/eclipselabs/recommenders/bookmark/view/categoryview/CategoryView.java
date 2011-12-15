@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ControlNotifier;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -36,7 +36,6 @@ import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
-import org.eclipselabs.recommenders.dialog.ComboFakeTooltip;
 
 public class CategoryView
 	implements BookmarkView
@@ -45,7 +44,7 @@ public class CategoryView
 	private TreeViewer viewer;
 	private Composite composite;
 	private Combo combo;
-	private ComboFakeTooltip fakeToolTip = null;
+	// private ComboFakeTooltip fakeToolTip = null;
 
 	private TreeModel model;
 	// private FlatTreeModel flattenedModel;
@@ -150,7 +149,7 @@ public class CategoryView
 
 		String currentHead = (String) model.getModelHead().getValue();
 		int selectIndex = 0;
-		TreeNode[] bookmarks = model.getModelRoot().getChildren();
+		BMNode[] bookmarks = model.getModelRoot().getChildren();
 		for (int i = 0; i < bookmarks.length; i++) {
 			String name = (String) bookmarks[i].getValue();
 			combo.add(name);

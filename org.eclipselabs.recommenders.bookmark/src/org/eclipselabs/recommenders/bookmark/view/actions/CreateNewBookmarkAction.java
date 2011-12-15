@@ -2,7 +2,7 @@ package org.eclipselabs.recommenders.bookmark.view.actions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
@@ -26,7 +26,7 @@ public class CreateNewBookmarkAction extends Action {
 
 	@Override
 	public void run() {
-		TreeNode bookmark = TreeUtil.makeBookmarkNode();
+		BMNode bookmark = TreeUtil.makeBookmarkNode();
 		viewer.getModel().getModelRoot().addChild(bookmark);
 		viewer.updateControls();
 

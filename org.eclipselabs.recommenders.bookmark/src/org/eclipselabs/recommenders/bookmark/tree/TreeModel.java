@@ -1,46 +1,53 @@
 package org.eclipselabs.recommenders.bookmark.tree;
 
-
-public class TreeModel {
+public class TreeModel
+{
 
 	/**
-	 * The root node is the highest node in the hierarchy, below the root
-	 * are bookmark nodes
+	 * The root node is the highest node in the hierarchy, below the root are
+	 * bookmark nodes
 	 */
-	private TreeNode root = null;
-	
+	private BMNode root = null;
+
 	/**
 	 * The head node is the node that is currently set as 'root' for the view
 	 */
-	private TreeNode head = null;
+	private BMNode head = null;
 
-	public TreeModel() {
+	public TreeModel()
+	{
 		root = new TreeNode("", false, true);
 		head = root;
 	}
-	
-	public void setHeadNode(TreeNode node) {
+
+	public void setHeadNode(BMNode node)
+	{
 		head = node;
 	}
-	
-	public void resetHeadToRoot(){
+
+	public void resetHeadToRoot()
+	{
 		head = root;
 	}
 
-	public TreeNode getModelRoot() {
+	public BMNode getModelRoot()
+	{
 		return root;
 	}
-	
-	public TreeNode getModelHead() {
+
+	public BMNode getModelHead()
+	{
 		return head;
 	}
-	
-	public void setModelRoot(TreeNode root) {
+
+	public void setModelRoot(BMNode root)
+	{
 		this.root = root;
 		this.head = this.root;
 	}
-	
-	public boolean isHeadEqualRoot() {
+
+	public boolean isHeadEqualRoot()
+	{
 		return root == head;
 	}
 }

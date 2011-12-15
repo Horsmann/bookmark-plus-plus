@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.junit.Test;
 
@@ -22,7 +23,7 @@ public class TestTreeNode {
 	}
 
 	private void doChildrenHaveParentAsParent(TreeNode node) {
-		for (TreeNode child : node.getChildren()) {
+		for (BMNode child : node.getChildren()) {
 			assertEquals(node, child.getParent());
 			assertTrue(child.hasParent());
 		}

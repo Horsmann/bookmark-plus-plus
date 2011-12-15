@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
@@ -58,7 +58,7 @@ public class CategoryTreeDropListener implements DropTargetListener {
 		System.err.println(keyListener.isAltPressed());
 
 		TreePath[] treePath = getTreePath(event);
-		TreeNode bookmark = viewer.getModel().getModelHead();
+		BMNode bookmark = viewer.getModel().getModelHead();
 
 		new AddTreepathsToExistingBookmarkCommand(viewer, bookmark, treePath)
 				.execute();

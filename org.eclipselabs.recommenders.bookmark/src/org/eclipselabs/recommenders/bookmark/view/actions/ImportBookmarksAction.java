@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.eclipse.jface.action.Action;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
@@ -47,15 +47,15 @@ public class ImportBookmarksAction extends Action {
 				viewer.getModel());
 	}
 
-	private TreeNode deSerializeTreeAndImportBookmarks(String serializedTree) {
+	private BMNode deSerializeTreeAndImportBookmarks(String serializedTree) {
 
 		RestoredTree rstTree = TreeDeserializerFacade
 				.deserialize(serializedTree);
-		TreeNode newRoot = rstTree.getRoot();
+		BMNode newRoot = rstTree.getRoot();
 
-		TreeNode existingTreesRoot = viewer.getModel().getModelRoot();
+		BMNode existingTreesRoot = viewer.getModel().getModelRoot();
 
-		for (TreeNode bookmarks : newRoot.getChildren()) {
+		for (BMNode bookmarks : newRoot.getChildren()) {
 			existingTreesRoot.addChild(bookmarks);
 		}
 

@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
 public class AddTreeNodesToNewBookmark implements TreeCommand {
@@ -23,18 +23,18 @@ public class AddTreeNodesToNewBookmark implements TreeCommand {
 	@Override
 	public void execute() {
 
-		TreeNode bookmark = TreeUtil.makeBookmarkNode();
+		BMNode bookmark = TreeUtil.makeBookmarkNode();
 		model.getModelRoot().addChild(bookmark);
 
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer);
 
-		LinkedList<TreeNode> nodesToUnlink = new LinkedList<TreeNode>();
+		LinkedList<BMNode> nodesToUnlink = new LinkedList<BMNode>();
 
 		for (int i = 0; i < selections.size(); i++) {
-			TreeNode node = (TreeNode) selections.get(i);
+			BMNode node = (BMNode) selections.get(i);
 
-			TreeNode nodeCopy = TreeUtil.copyTreeBelowBookmark(node);
+			BMNode nodeCopy = TreeUtil.copyTreeBelowBookmark(node);
 
 			while (nodeCopy.getParent() != null)
 				nodeCopy = nodeCopy.getParent();
@@ -42,7 +42,7 @@ public class AddTreeNodesToNewBookmark implements TreeCommand {
 			if (TreeUtil.isDuplicate(bookmark, node))
 				continue;
 
-			TreeNode merged = null;
+			BMNode merged = null;
 			if ((merged = TreeUtil.attemptMerge(bookmark, nodeCopy)) != null) {
 				nodesToUnlink.add(node);
 				TreeUtil.showNodeExpanded(viewer, merged);
@@ -59,7 +59,7 @@ public class AddTreeNodesToNewBookmark implements TreeCommand {
 
 		TreeUtil.showNodeExpanded(viewer, bookmark);
 
-		for (TreeNode node : nodesToUnlink) {
+		for (BMNode node : nodesToUnlink) {
 			TreeUtil.unlink(node);
 		}
 	}

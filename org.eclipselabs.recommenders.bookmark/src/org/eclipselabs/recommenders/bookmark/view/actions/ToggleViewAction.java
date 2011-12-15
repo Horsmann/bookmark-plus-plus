@@ -6,7 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -39,8 +39,8 @@ public class ToggleViewAction extends Action implements SelfEnabling {
 
 			Object object = selection.get(0);
 
-			TreeNode node = (TreeNode) object;
-			TreeNode bookmark = TreeUtil.getBookmarkNode(node);
+			BMNode node = (BMNode) object;
+			BMNode bookmark = TreeUtil.getBookmarkNode(node);
 			model.setHeadNode(bookmark);
 
 			manager.reinitializeExpandedStorage();

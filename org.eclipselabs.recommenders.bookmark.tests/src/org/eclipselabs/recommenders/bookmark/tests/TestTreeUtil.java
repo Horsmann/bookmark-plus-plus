@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
@@ -34,7 +35,7 @@ public class TestTreeUtil
 	{
 		TreeNode root = createTestTree();
 
-		LinkedList<TreeNode> leafList = TreeUtil.getLeafs(root);
+		LinkedList<BMNode> leafList = TreeUtil.getLeafs(root);
 
 		assertEquals(5, leafList.size());
 
@@ -59,7 +60,7 @@ public class TestTreeUtil
 	public void testGetFirstLeafOfTreePath()
 	{
 
-		TreeNode leaf = TreeUtil.getLeafOfTreePath(null);
+		BMNode leaf = TreeUtil.getLeafOfTreePath(null);
 		assertNull(leaf);
 
 		TreeNode root = createTestTree();
@@ -76,9 +77,9 @@ public class TestTreeUtil
 	{
 		TreeNode root = createTestTree();
 
-		TreeNode leaf = TreeUtil.getLeafOfTreePath(root);
+		BMNode leaf = TreeUtil.getLeafOfTreePath(root);
 
-		TreeNode belowBookmark = TreeUtil.climbUpUntilLevelBelowBookmark(leaf);
+		BMNode belowBookmark = TreeUtil.climbUpUntilLevelBelowBookmark(leaf);
 
 		Object value = belowBookmark.getValue();
 		assertTrue(value instanceof IFile);
@@ -90,8 +91,8 @@ public class TestTreeUtil
 	{
 		TreeNode root = createTestTree();
 
-		TreeNode leaf = TreeUtil.getLeafOfTreePath(root);
-		TreeNode bookmark = TreeUtil.getBookmarkNode(leaf);
+		BMNode leaf = TreeUtil.getLeafOfTreePath(root);
+		BMNode bookmark = TreeUtil.getBookmarkNode(leaf);
 
 		assertEquals(true, bookmark.isBookmarkNode());
 		assertNotNull(bookmark.getParent());
@@ -100,7 +101,7 @@ public class TestTreeUtil
 	@Test
 	public void testGetBookmarkNodeForNull()
 	{
-		TreeNode bookmark = TreeUtil.getBookmarkNode(null);
+		BMNode bookmark = TreeUtil.getBookmarkNode(null);
 
 		assertNull(bookmark);
 	}
@@ -109,7 +110,7 @@ public class TestTreeUtil
 	public void testLocateNodeWithItsStringValueAsID()
 	{
 		TreeNode root = createTestTree();
-		TreeNode node = TreeUtil.locateNodeWithEqualID(
+		BMNode node = TreeUtil.locateNodeWithEqualID(
 				"../../TestProj/resource/project.properties", root);
 
 		assertNotNull(node);
@@ -130,22 +131,22 @@ public class TestTreeUtil
 	public void testCopyTreeBelowBookmark()
 	{
 
-		TreeNode copy = TreeUtil.copyTreeBelowBookmark(null);
+		BMNode copy = TreeUtil.copyTreeBelowBookmark(null);
 		assertNull(copy);
 
 		TreeNode root = createTestTree();
 		copy = TreeUtil.copyTreeBelowBookmark(root);
 		assertNull(copy);
 
-		TreeNode bm1c1 = root.getChildren()[0].getChildren()[0];
+		BMNode bm1c1 = root.getChildren()[0].getChildren()[0];
 		copy = TreeUtil.copyTreeBelowBookmark(bm1c1);
 
 		Object value1 = bm1c1.getValue();
 		Object value2 = copy.getValue();
 		assertEquals(value1, value2);
 
-		TreeNode node1 = bm1c1.getChildren()[0];
-		TreeNode node2 = copy.getChildren()[0];
+		BMNode node1 = bm1c1.getChildren()[0];
+		BMNode node2 = copy.getChildren()[0];
 		value1 = node1.getValue();
 		value2 = node2.getValue();
 		assertEquals(value1, value2);
@@ -216,7 +217,7 @@ public class TestTreeUtil
 	{
 		String SEEK = "../../TestProj/resource/project.properties";
 		TreeNode root = createTestTree();
-		TreeNode node = TreeUtil.locateNodeWithEqualID(SEEK, root);
+		BMNode node = TreeUtil.locateNodeWithEqualID(SEEK, root);
 
 		assertNotNull(node);
 		assertNotNull(node.getParent());
@@ -230,9 +231,9 @@ public class TestTreeUtil
 	public void testGetTreeBelowNode()
 	{
 		TreeNode root = createTestTree();
-		TreeNode bm1 = root.getChildren()[0];
+		BMNode bm1 = root.getChildren()[0];
 
-		TreeNode[] below = TreeUtil.getTreeBelowNode(bm1);
+		BMNode[] below = TreeUtil.getTreeBelowNode(bm1);
 
 		assertEquals(5, below.length);
 		assertTrue(below[0].getValue() instanceof IFile);
@@ -265,7 +266,7 @@ public class TestTreeUtil
 	{
 		String SEEK = "=LKJLD/src<test.project{MyTest.java";
 		TreeNode root = createTestTree();
-		TreeNode node = TreeUtil.locateNodeWithEqualID(SEEK, root);
+		BMNode node = TreeUtil.locateNodeWithEqualID(SEEK, root);
 
 		assertNotNull(node);
 		assertNotNull(node.getParent());
@@ -284,8 +285,8 @@ public class TestTreeUtil
 				root.getChildren()[0]);
 		assertTrue(recursion);
 
-		TreeNode source = root.getChildren()[0].getChildren()[0];
-		TreeNode target = root.getChildren()[1].getChildren()[0];
+		BMNode source = root.getChildren()[0].getChildren()[0];
+		BMNode target = root.getChildren()[1].getChildren()[0];
 		recursion = TreeUtil.causesRecursion(source, target);
 		assertFalse(recursion);
 
@@ -297,9 +298,9 @@ public class TestTreeUtil
 	public void testClimbUpInHierarchyUntilLevelBelowBookmark()
 	{
 		TreeNode root = createTestTree();
-		TreeNode leaf = TreeUtil.getLeafOfTreePath(root);
+		BMNode leaf = TreeUtil.getLeafOfTreePath(root);
 
-		TreeNode node = TreeUtil.climbUpUntilLevelBelowBookmark(leaf);
+		BMNode node = TreeUtil.climbUpUntilLevelBelowBookmark(leaf);
 
 		assertTrue(node.getValue() instanceof IFile);
 		assertEquals(2, node.getChildren().length);
@@ -315,7 +316,7 @@ public class TestTreeUtil
 		IJavaElement element = TreeValueConverter
 				.attemptTransformationToIJavaElement(idOfMethod);
 		TreePath path = new TreePath(new Object[] { element });
-		TreeNode compilationUnit = TreeUtil.buildTreeStructure(path);
+		BMNode compilationUnit = TreeUtil.buildTreeStructure(path);
 
 		assertNotNull(compilationUnit);
 		assertTrue(compilationUnit.getValue() instanceof ICompilationUnit);
@@ -349,13 +350,13 @@ public class TestTreeUtil
 		// Everything except for the boomarks should be deleted, because
 		// everything is referencing to non-existing projects or is just a
 		// string dummy
-		TreeNode root = model.getModelRoot();
+		BMNode root = model.getModelRoot();
 		assertEquals(2, root.getChildren().length);
 
-		TreeNode bm1 = root.getChildren()[0];
+		BMNode bm1 = root.getChildren()[0];
 		assertEquals(0, bm1.getChildren().length);
 
-		TreeNode bm2 = root.getChildren()[1];
+		BMNode bm2 = root.getChildren()[1];
 		assertEquals(0, bm2.getChildren().length);
 
 	}
@@ -363,7 +364,7 @@ public class TestTreeUtil
 	@Test
 	public void testCreationOfBookmark()
 	{
-		TreeNode node = TreeUtil.makeBookmarkNode();
+		BMNode node = TreeUtil.makeBookmarkNode();
 
 		assertTrue(node.isBookmarkNode());
 	}
@@ -373,7 +374,7 @@ public class TestTreeUtil
 	{
 		TreeNode root = createTestTree();
 
-		TreeNode bm1c1 = root.getChildren()[0].getChildren()[0];
+		BMNode bm1c1 = root.getChildren()[0].getChildren()[0];
 		TreeUtil.unlink(bm1c1);
 
 		assertEquals(1, root.getChildren()[0].getChildren().length);
@@ -388,11 +389,11 @@ public class TestTreeUtil
 		TreeNode root = createTestTree();
 		TreeNode partlyContaintedPath = createPartiallyContaintedInTree();
 
-		TreeNode merge = TreeUtil.attemptMerge(root.getChildren()[0],
+		BMNode merge = TreeUtil.attemptMerge(root.getChildren()[0],
 				partlyContaintedPath);
 
 		assertNotNull(merge);
-		TreeNode bm1c1 = root.getChildren()[0].getChildren()[0];
+		BMNode bm1c1 = root.getChildren()[0].getChildren()[0];
 		assertEquals(merge.getValue(), bm1c1.getValue());
 		assertEquals(3, bm1c1.getChildren().length);
 
@@ -412,7 +413,7 @@ public class TestTreeUtil
 				.attemptTransformationToIJavaElement(idOfCompilationUnit);
 		TreePath path = new TreePath(new Object[] { element });
 
-		TreeNode added = TreeUtil.addNodesToExistingBookmark(
+		BMNode added = TreeUtil.addNodesToExistingBookmark(
 				root.getChildren()[0], path);
 
 		assertNotNull(added);
@@ -491,7 +492,7 @@ public class TestTreeUtil
 	public void testGetNonAutoGeneratedNodes()
 	{
 		TreeNode root = createTestTree();
-		TreeNode[] nonAutoGeneratedNodes = TreeUtil
+		BMNode[] nonAutoGeneratedNodes = TreeUtil
 				.getNonAutoGeneratedNodesUnderNode(root);
 
 		assertEquals(3, nonAutoGeneratedNodes.length);
@@ -502,12 +503,12 @@ public class TestTreeUtil
 	public void testIsDecendant()
 	{
 		TreeNode root = createTestTree();
-		TreeNode descendingNode = root.getChildren()[0].getChildren()[1];
+		BMNode descendingNode = root.getChildren()[0].getChildren()[1];
 		TreeNode nonDescendingNode = new TreeNode("-DUMMY-", false, true);
 
 		boolean isDescending = TreeUtil.isDescendant(root, descendingNode);
 		assertTrue(isDescending);
-		
+
 		isDescending = TreeUtil.isDescendant(root, nonDescendingNode);
 		assertFalse(isDescending);
 

@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToNewBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmarkCommand;
@@ -110,11 +110,10 @@ public class DefaultTreeDropListener
 
 		for (int i = 0; i < selections.size(); i++) {
 
-			TreeNode node = (TreeNode) selections.get(i);
+			BMNode node = (BMNode) selections.get(i);
 
-			TreeNode dropTarget = (TreeNode) getTarget(event);
-			TreeNode bookmarkOfDropTarget = TreeUtil
-					.getBookmarkNode(dropTarget);
+			BMNode dropTarget = (BMNode) getTarget(event);
+			BMNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
 
 			new AddTreeNodesToExistingBookmark(viewer, bookmarkOfDropTarget,
 					node, keyListener.isAltPressed()).execute();
@@ -128,8 +127,8 @@ public class DefaultTreeDropListener
 		throws JavaModelException
 	{
 		TreePath[] treePath = getTreePath(event);
-		TreeNode target = (TreeNode) getTarget(event);
-		TreeNode bookmark = TreeUtil.getBookmarkNode(target);
+		BMNode target = (BMNode) getTarget(event);
+		BMNode bookmark = TreeUtil.getBookmarkNode(target);
 
 		if (bookmark != null) {
 			new AddTreepathsToExistingBookmarkCommand(viewer, bookmark,
@@ -146,7 +145,7 @@ public class DefaultTreeDropListener
 	{
 
 		if (dragListener.isDragInProgress()) {
-			TreeNode target = (TreeNode) getTarget(event);
+			BMNode target = (BMNode) getTarget(event);
 			return DropUtil.isValidDrop(viewer.getView(), target);
 		}
 		return true;
@@ -165,8 +164,8 @@ public class DefaultTreeDropListener
 
 	private boolean didDropOccurInEmptyArea(DropTargetEvent event)
 	{
-		TreeNode dropTarget = (TreeNode) getTarget(event);
-		TreeNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
+		BMNode dropTarget = (BMNode) getTarget(event);
+		BMNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
 
 		return bookmarkOfDropTarget == null;
 	}

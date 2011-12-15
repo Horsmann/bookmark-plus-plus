@@ -3,16 +3,19 @@ package org.eclipselabs.recommenders.bookmark.view.actions;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
-public class RefreshViewAction extends Action {
+public class RefreshViewAction
+	extends Action
+{
 
 	private BookmarkView viewer;
 
-	public RefreshViewAction(BookmarkView viewer) {
+	public RefreshViewAction(BookmarkView viewer)
+	{
 		this.viewer = viewer;
 
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
@@ -22,8 +25,9 @@ public class RefreshViewAction extends Action {
 	}
 
 	@Override
-	public void run() {
-		
+	public void run()
+	{
+
 		IPreferenceStore preferenceStore = Activator.getDefault()
 				.getPreferenceStore();
 		boolean removeDeadReferences = preferenceStore
@@ -31,13 +35,12 @@ public class RefreshViewAction extends Action {
 
 		if (removeDeadReferences) {
 			TreeModel model = viewer.getModel();
-			final TreeNode root = model.getModelRoot();
+			final BMNode root = model.getModelRoot();
 
 			TreeUtil.deleteNodesReferencingToDeadResourcesUnderNode(root, model);
 		}
-		
+
 		viewer.getView().refresh(true);
 	}
-
 
 }

@@ -1,18 +1,18 @@
 package org.eclipselabs.recommenders.bookmark.tree.commands;
 
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 public class AddTreeNodesToExistingBookmark implements TreeCommand {
 
 	private BookmarkView viewer;
-	private TreeNode bookmark;
-	private TreeNode node;
+	private BMNode bookmark;
+	private BMNode node;
 	private boolean keepSourceNode;
 
 	public AddTreeNodesToExistingBookmark(BookmarkView viewer,
-			TreeNode bookmark, TreeNode node, boolean keepSourceNode) {
+			BMNode bookmark, BMNode node, boolean keepSourceNode) {
 		this.viewer = viewer;
 		this.bookmark = bookmark;
 		this.node = node;
@@ -22,12 +22,12 @@ public class AddTreeNodesToExistingBookmark implements TreeCommand {
 	@Override
 	public void execute() {
 
-		TreeNode nodeCopy = TreeUtil.copyTreeBelowBookmark(node);
+		BMNode nodeCopy = TreeUtil.copyTreeBelowBookmark(node);
 
 		if (TreeUtil.isDuplicate(bookmark, nodeCopy))
 			return;
 
-		TreeNode merged = null;
+		BMNode merged = null;
 		if ((merged = TreeUtil.attemptMerge(bookmark, nodeCopy)) != null) {
 
 			if (!keepSourceNode) {
@@ -42,7 +42,7 @@ public class AddTreeNodesToExistingBookmark implements TreeCommand {
 			node.getParent().removeChild(node);
 		}
 		
-		TreeNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
+		BMNode head = TreeUtil.climbUpUntilLevelBelowBookmark(nodeCopy);
 		bookmark.addChild(head);
 
 		TreeUtil.showNodeExpanded(viewer.getView(), head);
