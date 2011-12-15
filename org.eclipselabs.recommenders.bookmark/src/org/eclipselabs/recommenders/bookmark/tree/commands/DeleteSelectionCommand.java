@@ -55,7 +55,6 @@ public class DeleteSelectionCommand
 	private void iterateAllNodesOfFlatModelAndDeleteDescendantNodes(BMNode ref,
 			BMNode flatRoot)
 	{
-		// Model root hat keine Kinder????
 		for (BMNode child : flatRoot.getChildren()) {
 			boolean isDescendant = TreeUtil.isDescendant(ref,
 					child.getReference());

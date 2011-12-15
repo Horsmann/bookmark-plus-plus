@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
 public class TreeLabelProvider extends LabelProvider {
@@ -21,10 +21,10 @@ public class TreeLabelProvider extends LabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		if (element instanceof TreeNode) {
-			TreeNode node = (TreeNode) element;
+		if (element instanceof BMNode) {
+			BMNode node = (BMNode) element;
 
-			String text = jelp.getText(((TreeNode) element).getValue());
+			String text = jelp.getText(((BMNode) element).getValue());
 
 			if (text.compareTo("") != 0)
 				return text;
@@ -41,7 +41,7 @@ public class TreeLabelProvider extends LabelProvider {
 
 		Image image = null;
 
-		TreeNode node = (TreeNode) element;
+		BMNode node = (BMNode) element;
 
 		if (node.isBookmarkNode()) {
 			image = registry.get(getImageKeyForType(element));
@@ -75,10 +75,10 @@ public class TreeLabelProvider extends LabelProvider {
 
 	public String getImageKeyForType(Object element) {
 
-		if (!(element instanceof TreeNode))
+		if (!(element instanceof BMNode))
 			return Activator.ICON_DEFAULT;
 
-		TreeNode node = (TreeNode) element;
+		BMNode node = (BMNode) element;
 		if (node.isBookmarkNode())
 			return Activator.ICON_BOOKMARK;
 

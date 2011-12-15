@@ -6,12 +6,12 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.ui.part.ResourceTransfer;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 
 public class TreeDragListener implements DragSourceListener {
 
 	private final TreeViewer viewer;
-	private TreeNode dragNode;
+	private BMNode dragNode;
 	private boolean refreshView;
 	
 	private boolean isDragInProgress;
@@ -31,7 +31,7 @@ public class TreeDragListener implements DragSourceListener {
 	public void dragSetData(DragSourceEvent event) {
 		IStructuredSelection selection = (IStructuredSelection) viewer
 				.getSelection();
-		dragNode = (TreeNode) selection.getFirstElement();
+		dragNode = (BMNode) selection.getFirstElement();
 
 		if (dragNode.isBookmarkNode()) {
 			event.doit = false;
