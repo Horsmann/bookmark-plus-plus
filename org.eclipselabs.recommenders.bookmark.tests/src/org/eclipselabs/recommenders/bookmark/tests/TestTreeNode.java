@@ -1,6 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +10,13 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.junit.Test;
 
 public class TestTreeNode {
+	
+	@Test(expected=UnsupportedOperationException.class)
+	public void testExceptionForNonAvailableReference() {
+		TreeNode node = new TreeNode("node", false, true);
+		assertFalse(node.hasReference());
+		node.getReference();
+	}
 
 	@Test
 	public void testChildren() {
