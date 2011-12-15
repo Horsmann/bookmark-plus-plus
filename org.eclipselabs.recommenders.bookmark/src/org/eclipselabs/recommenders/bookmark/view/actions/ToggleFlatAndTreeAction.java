@@ -26,9 +26,8 @@ public class ToggleFlatAndTreeAction
 		if (manager.isViewFlattened()) {
 			manager.deactivateFlattenedView();
 		}
-		else {
+		else {			
 			manager.activateFlattenedView();
 		}
 	}
-
 }

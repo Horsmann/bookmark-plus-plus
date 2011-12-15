@@ -149,6 +149,11 @@ public class CategoryView
 		combo.removeAll();
 
 		String currentHead = (String) model.getModelHead().getValue();
+
+		if (currentHead == null) {
+			return;
+		}
+
 		int selectIndex = 0;
 		BMNode[] bookmarks = model.getModelRoot().getChildren();
 		for (int i = 0; i < bookmarks.length; i++) {
