@@ -27,9 +27,9 @@ public interface ViewManager
 
 	public void reinitializeExpandedStorage();
 
-//	public void activateFlattenedView();
-//
-//	public void deactivateFlattenedView();
-//
-//	public boolean isViewFlattened();
+	public void activateFlattenedView();
+
+	public void deactivateFlattenedView();
+
+	public boolean isViewFlattened();
 }

@@ -3,7 +3,7 @@ package org.eclipselabs.recommenders.bookmark.tree.commands;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
@@ -26,17 +26,13 @@ public class DeleteSelectionCommand
 				.getTreeSelections(viewer.getView());
 		for (int i = 0; i < selections.size(); i++) {
 
-			TreeNode node = (TreeNode) selections.get(i);
+			BMNode node = (BMNode) selections.get(i);
 
-//			if (node instanceof FlatTreeNode) {
-//				FlatTreeNode flatNode = (FlatTreeNode) node;
-//				processFlattened(flatNode);
-//				TreeUtil.unlink((FlatTreeNode) node);
-//			}
-//			else {
+			if (node.hasReference()) {
+				processFlattened(node);
+			}
 
-				TreeUtil.unlink(node);
-//			}
+			TreeUtil.unlink(node);
 		}
 
 		viewer.getView().refresh(true);
@@ -45,29 +41,29 @@ public class DeleteSelectionCommand
 		saveNewTreeModelState();
 	}
 
-//	private void processFlattened(FlatTreeNode flatNode)
-//	{
-//		TreeNode ref = flatNode.getReferencingNode();
-//
-//		FlatTreeNode flatRoot = viewer.getFlatModel().getModelRoot();
-//
-//		iterateAllNodesOfFlatModelAndDeleteDescendantNodes(ref, flatRoot);
-//
-//		TreeUtil.unlink(ref);
-//	}
-//
-//	private void iterateAllNodesOfFlatModelAndDeleteDescendantNodes(
-//			TreeNode ref, FlatTreeNode flatRoot)
-//	{
-//		// Model root hat keine Kinder????
-//		for (FlatTreeNode child : flatRoot.getChildren()) {
-//			boolean isDescendant = TreeUtil.isDescendant(ref,
-//					child.getReferencingNode());
-//			if (isDescendant) {
-//				TreeUtil.unlink(child);
-//			}
-//		}
-//	}
+	private void processFlattened(BMNode flatNode)
+	{
+		BMNode ref = flatNode.getReference();
+
+		BMNode flatRoot = viewer.getFlatModel().getModelRoot();
+
+		iterateAllNodesOfFlatModelAndDeleteDescendantNodes(ref, flatRoot);
+
+		TreeUtil.unlink(ref);
+	}
+
+	private void iterateAllNodesOfFlatModelAndDeleteDescendantNodes(BMNode ref,
+			BMNode flatRoot)
+	{
+		// Model root hat keine Kinder????
+		for (BMNode child : flatRoot.getChildren()) {
+			boolean isDescendant = TreeUtil.isDescendant(ref,
+					child.getReference());
+			if (isDescendant) {
+				TreeUtil.unlink(child);
+			}
+		}
+	}
 
 	private void saveNewTreeModelState()
 	{

@@ -10,7 +10,7 @@ public interface BookmarkView
 
 	public TreeModel getModel();
 
-	// public FlatTreeModel getFlatModel();
+	public TreeModel getFlatModel();
 
 	public boolean requiresSelectionForToggle();
 

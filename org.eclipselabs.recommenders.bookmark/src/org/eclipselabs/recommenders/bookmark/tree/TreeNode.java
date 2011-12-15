@@ -2,6 +2,8 @@ package org.eclipselabs.recommenders.bookmark.tree;
 
 import java.util.ArrayList;
 
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+
 public class TreeNode
 	implements BMNode
 {
@@ -94,4 +96,23 @@ public class TreeNode
 		return parent;
 	}
 
+	@Override
+	public void removeAllChildren()
+	{
+		for (BMNode child : getChildren()) {
+			TreeUtil.unlink(child);
+		}
+	}
+
+	@Override
+	public BMNode getReference()
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean hasReference()
+	{
+		return false;
+	}
 }

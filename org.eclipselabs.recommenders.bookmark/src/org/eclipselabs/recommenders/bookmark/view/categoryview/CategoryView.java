@@ -47,7 +47,7 @@ public class CategoryView
 	// private ComboFakeTooltip fakeToolTip = null;
 
 	private TreeModel model;
-	// private FlatTreeModel flattenedModel;
+	private TreeModel flatModel;
 
 	private Action showInEditor;
 	private Action closeAllOpenEditors;
@@ -68,12 +68,13 @@ public class CategoryView
 	private TreeFocusListener focusListener;
 	private CategoryTreeDropListener dropListener;
 
-	public CategoryView(ViewManager manager, Composite parent, TreeModel model)
+	public CategoryView(ViewManager manager, Composite parent, TreeModel model,
+			TreeModel flatModel)
 	{
 
 		this.manager = manager;
 		this.model = model;
-		// this.flattenedModel = flattenedModel;
+		this.flatModel = flatModel;
 
 		composite = new Composite(parent, SWT.NONE);
 		gridLayout = new GridLayout();
@@ -288,10 +289,10 @@ public class CategoryView
 		return manager;
 	}
 
-	// @Override
-	// public FlatTreeModel getFlatModel()
-	// {
-	// return flattenedModel;
-	// }
+	@Override
+	public TreeModel getFlatModel()
+	{
+		return flatModel;
+	}
 
 }

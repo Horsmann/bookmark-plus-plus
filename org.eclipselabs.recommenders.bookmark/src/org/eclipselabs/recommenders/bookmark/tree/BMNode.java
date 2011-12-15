@@ -23,4 +23,10 @@ public interface BMNode
 	public Object getValue();
 	
 	public boolean hasParent();
+	
+	public void removeAllChildren();
+	
+	public BMNode getReference();
+	
+	public boolean hasReference();
 }

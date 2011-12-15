@@ -46,7 +46,7 @@ public class DefaultView
 	private TreeViewer viewer;
 	private Composite composite;
 	private TreeModel model;
-	// private FlatTreeModel flattenedModel;
+	private TreeModel flatModel;
 	private Action showInEditor;
 	private Action exportBookmarks;
 	private Action importBookmarks;
@@ -69,10 +69,11 @@ public class DefaultView
 	private TreeDragListener dragListener;
 	private DefaultTreeDropListener dropListener;
 
-	public DefaultView(ViewManager manager, Composite parent, TreeModel model)
+	public DefaultView(ViewManager manager, Composite parent, TreeModel model,
+			TreeModel flatModel)
 	{
 		this.model = model;
-		// this.flattenedModel = flattenedModel;
+		this.flatModel = flatModel;
 		this.manager = manager;
 
 		composite = new Composite(parent, SWT.NONE);
@@ -253,10 +254,10 @@ public class DefaultView
 		return manager;
 	}
 
-	// @Override
-	// public FlatTreeModel getFlatModel()
-	// {
-	// return flattenedModel;
-	//
-	// }
+	@Override
+	public TreeModel getFlatModel()
+	{
+		return flatModel;
+
+	}
 }
