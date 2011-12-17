@@ -32,13 +32,13 @@ public class TreeUtil
 		if (isRootNode(node)) {
 			return "";
 		}
-		
-		if (node.isBookmarkNode()){
+
+		if (node.isBookmarkNode()) {
 			return (String) node.getValue();
 		}
-		
+
 		BMNode bookmark = TreeUtil.getBookmarkNode(node);
-		String bookmarkName = (String)bookmark.getValue();
+		String bookmarkName = (String) bookmark.getValue();
 		return bookmarkName;
 	}
 
@@ -499,8 +499,12 @@ public class TreeUtil
 
 	private static BMNode getNodeThatMatchesID(BMNode bookmark, BMNode parent)
 	{
-		String id = TreeValueConverter.getStringIdentification(parent
-				.getValue());
+		Object value = parent.getValue();
+
+		if (value == null)
+			return null;
+
+		String id = TreeValueConverter.getStringIdentification(value);
 		return TreeUtil.locateNodeWithEqualID(id, bookmark);
 	}
 

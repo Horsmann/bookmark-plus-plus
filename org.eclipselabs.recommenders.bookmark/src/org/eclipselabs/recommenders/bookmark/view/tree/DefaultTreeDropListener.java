@@ -10,6 +10,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToNewBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmarkCommand;
@@ -17,6 +18,7 @@ import org.eclipselabs.recommenders.bookmark.tree.commands.CreateNewBookmarkAddA
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class DefaultTreeDropListener
 	implements DropTargetListener
@@ -54,7 +56,27 @@ public class DefaultTreeDropListener
 			e.printStackTrace();
 		}
 
-		viewer.getView().refresh();
+		updateView();
+
+	}
+
+	private void updateView()
+	{
+		viewer.updateControls();
+
+		ViewManager manager = viewer.getManager();
+
+		/*
+		 * The flattened view works with a partial copy of the main model. To
+		 * make the change visible, we rebuild the flat-copied model from
+		 * scratch
+		 */
+		if (manager.isViewFlattened()) {
+			TreeModel model = viewer.getModel();
+			BMNode head = model.getModelHead();
+			manager.activateFlattenedView(head);
+		}
+
 	}
 
 	@Override
@@ -99,7 +121,13 @@ public class DefaultTreeDropListener
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer.getView());
 
-		if (didDropOccurInEmptyArea(event)) {
+		BMNode dropTarget = (BMNode) getTarget(event);
+
+		dropTarget = getReference(dropTarget);
+
+		BMNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
+
+		if (didDropOccurInEmptyArea(bookmarkOfDropTarget)) {
 
 			new AddTreeNodesToNewBookmark(viewer.getView(), viewer.getModel())
 					.execute();
@@ -109,9 +137,8 @@ public class DefaultTreeDropListener
 		for (int i = 0; i < selections.size(); i++) {
 
 			BMNode node = (BMNode) selections.get(i);
-
-			BMNode dropTarget = (BMNode) getTarget(event);
-			BMNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
+			
+			node = getReference(node);
 
 			new AddTreeNodesToExistingBookmark(viewer, bookmarkOfDropTarget,
 					node, keyListener.isAltPressed()).execute();
@@ -120,12 +147,25 @@ public class DefaultTreeDropListener
 
 	}
 
+	private BMNode getReference(BMNode node)
+	{
+		if (node.hasReference()) {
+			return node.getReference();
+		}
+		return node;
+	}
+
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
 			DropTargetEvent event)
 		throws JavaModelException
 	{
 		TreePath[] treePath = getTreePath(event);
 		BMNode target = (BMNode) getTarget(event);
+
+		if (target.hasReference()) {
+			target = target.getReference();
+		}
+
 		BMNode bookmark = TreeUtil.getBookmarkNode(target);
 
 		if (bookmark != null) {
@@ -160,12 +200,9 @@ public class DefaultTreeDropListener
 		return treePath;
 	}
 
-	private boolean didDropOccurInEmptyArea(DropTargetEvent event)
+	private boolean didDropOccurInEmptyArea(BMNode node)
 	{
-		BMNode dropTarget = (BMNode) getTarget(event);
-		BMNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
-
-		return bookmarkOfDropTarget == null;
+		return node == null;
 	}
 
 	private Object getTarget(DropTargetEvent event)
