@@ -37,12 +37,12 @@ public class BookmarkViewManager
 	 */
 	private TreeModel flatModel;
 
-	private StackLayout stackLayout = null;
-	private Composite container = null;
+	private StackLayout stackLayout;
+	private Composite container ;
 
-	private BookmarkView activeView = null;
-	private DefaultView defaultView = null;
-	private CategoryView toggledView = null;
+	private BookmarkView activeView;
+	private DefaultView defaultView;
+	private CategoryView toggledView;
 
 	private boolean isFlattenedActive;
 	private boolean isViewToggled;

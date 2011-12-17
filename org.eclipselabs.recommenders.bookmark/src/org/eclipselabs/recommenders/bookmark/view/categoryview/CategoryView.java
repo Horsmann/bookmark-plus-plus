@@ -131,7 +131,7 @@ public class CategoryView
 		doubleClickListener = new TreeDoubleclickListener(showInEditor);
 		focusListener = new TreeFocusListener(this, notifier);
 
-		dropListener = new CategoryTreeDropListener(this, keyListener);
+		dropListener = new CategoryTreeDropListener(this);
 	}
 
 	private void initializeControlNotifier()
