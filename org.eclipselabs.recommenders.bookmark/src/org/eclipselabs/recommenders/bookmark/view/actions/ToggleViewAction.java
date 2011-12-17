@@ -35,180 +35,117 @@ public class ToggleViewAction
 	public void run()
 	{
 
-		// List<IStructuredSelection> selection = TreeUtil
-		// .getTreeSelections(actionTriggeringView.getView());
-
-		TreeModel model = null;
-//		if (manager.isViewFlattened()) {
-//			model = actionTriggeringView.getFlatModel();
-//		}
-//		else {
-			model = actionTriggeringView.getModel();
-//		}
+		TreeModel model = actionTriggeringView.getModel();
 
 		if (manager.isViewToggled()) {
-			System.out.println("Category changes to Default");
-			if (manager.isViewFlattened()) {
-				System.out.println("Default will be flattened");
-				model.resetHeadToRoot();
-
-				BookmarkView activatedView = manager.activateNextView();
-				manager.activateFlattenedView(model.getModelHead());
-				activatedView.updateControls();
-			}
-			else {
-				System.out.println("Default will be normal");
-				Object[] currentlyVisibleNodes = TreeUtil
-						.getTreeBelowNode(model.getModelHead());
-				for (Object o : currentlyVisibleNodes) {
-					manager.deleteExpandedNodeFromStorage(o);
-				}
-				manager.addCurrentlyExpandedNodesToStorage();
-
-				model.resetHeadToRoot();
-
-				BookmarkView activatedView = manager.activateNextView();
-
-				activatedView.getView().setInput(null);
-				activatedView.getView().setInput(model.getModelHead());
-
-				manager.setStoredExpandedNodesForActiveView();
-				activatedView.updateControls();
-			}
+			setUpDefault(model);
 		}
 		else {
-			System.out.println("Default changes to Category");
-			if (manager.isViewFlattened()) {
-				System.out.println("Category will be flattened");
-				List<IStructuredSelection> selection = TreeUtil
-						.getTreeSelections(actionTriggeringView.getView());
-
-				if (selection.size() <= 0) {
-					return;
-				}
-				Object object = selection.get(0);
-				BMNode node = (BMNode) object;
-				BMNode referencedNode = node.getReference();
-				BMNode bookmark = TreeUtil.getBookmarkNode(referencedNode);
-
-				model.setHeadNode(bookmark);
-				BookmarkView activatedView = manager.activateNextView();
-				manager.activateFlattenedView(model.getModelHead());
-				activatedView.updateControls();
-			}
-			else {
-				System.out.println("Category will be normal");
-
-				List<IStructuredSelection> selection = TreeUtil
-						.getTreeSelections(actionTriggeringView.getView());
-
-				if (selection.size() <= 0) {
-					return;
-				}
-
-				Object object = selection.get(0);
-
-				BMNode node = (BMNode) object;
-				BMNode bookmark = TreeUtil.getBookmarkNode(node);
-				model.setHeadNode(bookmark);
-
-				manager.reinitializeExpandedStorage();
-				manager.addCurrentlyExpandedNodesToStorage();
-
-				BookmarkView activatedView = manager.activateNextView();
-				activatedView.getView().setInput(null);
-				activatedView.getView().setInput(bookmark);
-				manager.setStoredExpandedNodesForActiveView();
-				activatedView.updateControls();
-			}
+			setUpCategory(model);
 		}
+	}
 
-		// TreeModel model = actionTriggeringView.getModel();
-		// if (model.isHeadEqualRoot()) {
-		// if (selection.size() <= 0)
-		// return;
-		//
-		// Object object = selection.get(0);
-		//
-		// BMNode node = (BMNode) object;
-		// BMNode bookmark = null;
-		// if (node.hasReference()) {
-		// bookmark = TreeUtil.getBookmarkNode(node.getReference());
-		// }
-		// else {
-		// bookmark = TreeUtil.getBookmarkNode(node);
-		// }
-		// model.setHeadNode(bookmark);
-		//
-		// manager.reinitializeExpandedStorage();
-		// manager.addCurrentlyExpandedNodesToStorage();
-		//
-		// BookmarkView activatedView = manager.activateNextView();
-		//
-		// if (manager.isViewFlattened()) {
-		// manager.activateFlattenedView(bookmark);
-		// }
-		// else {
-		// // get newly set view
-		// activatedView.getView().setInput(null);
-		// activatedView.getView().setInput(bookmark);
-		// manager.setStoredExpandedNodesForActiveView();
-		// }
-		//
-		// activatedView.updateControls();
-		//
-		// }
-		// else {
-		// // Get and remove all nodes that are currently visible from the
-		// // storage
-		//
-		// BookmarkView activatedView = null;
-		// if (manager.isViewFlattened()) {
-		// model.resetHeadToRoot();
-		//
-		// activatedView = manager.activateNextView();
-		// manager.activateFlattenedView(model.getModelHead());
-		// }
-		// else {
-		// Object[] currentlyVisibleNodes = TreeUtil
-		// .getTreeBelowNode(model.getModelHead());
-		// for (Object o : currentlyVisibleNodes) {
-		// manager.deleteExpandedNodeFromStorage(o);
-		// }
-		// manager.addCurrentlyExpandedNodesToStorage();
-		//
-		// model.resetHeadToRoot();
-		//
-		// activatedView = manager.activateNextView();
-		//
-		// activatedView.getView().setInput(null);
-		// activatedView.getView().setInput(model.getModelHead());
-		//
-		// manager.setStoredExpandedNodesForActiveView();
-		// }
-		// Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
-		// .getModelHead());
-		// for (Object o : currentlyVisibleNodes) {
-		// manager.deleteExpandedNodeFromStorage(o);
-		// }
+	private void setUpCategory(TreeModel model)
+	{
+		if (manager.isViewFlattened()) {
+			if (noSelectionInView()) {
+				return;
+			}
 
-		// Add those to the storage which are truly expanded since expanded
-		// state may have change
-		// for any visible node
-		// manager.addCurrentlyExpandedNodesToStorage();
-		//
-		// model.resetHeadToRoot();
-		//
-		// BookmarkView activatedView = manager.activateNextView();
-		//
-		// activatedView.getView().setInput(null);
-		// activatedView.getView().setInput(model.getModelHead());
-		//
-		// manager.setStoredExpandedNodesForActiveView();
+			setModelsHeadToCurrentlySelectedNode(model);
 
-		// activatedView.updateControls();
-		// }
+			setUpViewFlattened(model);
+		}
+		else {
 
+			updateExpandedNodesStorage(model);
+
+			if (noSelectionInView()) {
+				return;
+			}
+
+			setModelsHeadToCurrentlySelectedNode(model);
+
+			manager.reinitializeExpandedStorage();
+			manager.addCurrentlyExpandedNodesToStorage();
+
+			setUpViewUnflattened(model.getModelHead());
+		}
+	}
+
+	private void setModelsHeadToCurrentlySelectedNode(TreeModel model)
+	{
+		BMNode node = getFirstSelectionInView();
+		BMNode bookmark = null;
+		if (node.hasReference()) {
+			BMNode reference = node.getReference();
+			bookmark = TreeUtil.getBookmarkNode(reference);
+		}
+		else {
+			bookmark = TreeUtil.getBookmarkNode(node);
+		}
+		model.setHeadNode(bookmark);
+	}
+
+	private void setUpDefault(TreeModel model)
+	{
+		model.resetHeadToRoot();
+
+		if (manager.isViewFlattened()) {
+
+			setUpViewFlattened(model);
+		}
+		else {
+
+			updateExpandedNodesStorage(model);
+
+			setUpViewUnflattened(model.getModelHead());
+		}
+	}
+
+	private void updateExpandedNodesStorage(TreeModel model)
+	{
+		Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
+				.getModelHead());
+		for (Object o : currentlyVisibleNodes) {
+			manager.deleteExpandedNodeFromStorage(o);
+		}
+		manager.addCurrentlyExpandedNodesToStorage();
+	}
+
+	private BMNode getFirstSelectionInView()
+	{
+		List<IStructuredSelection> selection = TreeUtil
+				.getTreeSelections(actionTriggeringView.getView());
+		return (BMNode) selection.get(0);
+	}
+
+	private boolean noSelectionInView()
+	{
+		List<IStructuredSelection> selection = TreeUtil
+				.getTreeSelections(actionTriggeringView.getView());
+
+		return (selection.size() <= 0);
+	}
+
+	private void setUpViewUnflattened(BMNode input)
+	{
+		BookmarkView activatedView = manager.activateNextView();
+
+		activatedView.getView().setInput(null);
+		activatedView.getView().setInput(input);
+
+		manager.setStoredExpandedNodesForActiveView();
+		activatedView.updateControls();
+	}
+
+	private void setUpViewFlattened(TreeModel model)
+	{
+		// model.setHeadNode(bmNode);
+
+		BookmarkView activatedView = manager.activateNextView();
+		manager.activateFlattenedView(model.getModelHead());
+		activatedView.updateControls();
 	}
 
 	@Override
