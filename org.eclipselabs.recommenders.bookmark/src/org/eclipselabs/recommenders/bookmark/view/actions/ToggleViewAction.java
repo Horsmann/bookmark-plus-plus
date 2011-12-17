@@ -68,7 +68,8 @@ public class ToggleViewAction
 		}
 		else {
 
-			updateExpandedNodesStorage(model);
+			removeCurrentlyVisibleNodesFromStorage(model);
+			manager.addCurrentlyExpandedNodesToStorage();
 
 			if (noSelectionInView()) {
 				return;
@@ -99,28 +100,28 @@ public class ToggleViewAction
 
 	private void setUpDefault(TreeModel model)
 	{
-		model.resetHeadToRoot();
+//		model.resetHeadToRoot();
 
 		if (manager.isViewFlattened()) {
-
+			model.resetHeadToRoot();
 			setUpViewFlattened(model);
 		}
 		else {
 
-			updateExpandedNodesStorage(model);
-
+			removeCurrentlyVisibleNodesFromStorage(model);
+			manager.addCurrentlyExpandedNodesToStorage();
+			model.resetHeadToRoot();
 			setUpViewUnflattened(model.getModelHead());
 		}
 	}
 
-	private void updateExpandedNodesStorage(TreeModel model)
+	private void removeCurrentlyVisibleNodesFromStorage(TreeModel model)
 	{
 		Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
 				.getModelHead());
 		for (Object o : currentlyVisibleNodes) {
 			manager.deleteExpandedNodeFromStorage(o);
 		}
-		manager.addCurrentlyExpandedNodesToStorage();
 	}
 
 	private BMNode getFirstSelectionInView()
