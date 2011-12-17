@@ -137,7 +137,7 @@ public class DefaultTreeDropListener
 		for (int i = 0; i < selections.size(); i++) {
 
 			BMNode node = (BMNode) selections.get(i);
-			
+
 			node = getReference(node);
 
 			new AddTreeNodesToExistingBookmark(viewer, bookmarkOfDropTarget,
@@ -149,6 +149,10 @@ public class DefaultTreeDropListener
 
 	private BMNode getReference(BMNode node)
 	{
+		if (node == null) {
+			return null;
+		}
+
 		if (node.hasReference()) {
 			return node.getReference();
 		}
@@ -162,9 +166,7 @@ public class DefaultTreeDropListener
 		TreePath[] treePath = getTreePath(event);
 		BMNode target = (BMNode) getTarget(event);
 
-		if (target.hasReference()) {
-			target = target.getReference();
-		}
+		target = getReference(target);
 
 		BMNode bookmark = TreeUtil.getBookmarkNode(target);
 
