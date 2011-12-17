@@ -6,6 +6,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.corext.refactoring.reorg.JavaElementTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -13,6 +14,7 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
@@ -44,6 +46,13 @@ public class PasteHandler
 		if (clipBoardContent instanceof Object[]) {
 			Object[] clipBoardData = (Object[]) clipBoardContent;
 			processJavaElement(clipBoardData);
+		}
+
+		ResourceTransfer resoureTransfer = ResourceTransfer.getInstance();
+		clipBoardContent = cb.getContents(resoureTransfer);
+		if (clipBoardContent instanceof Object[]) {
+			int a = 0;
+			a++;
 		}
 
 		FileTransfer fileTransfer = FileTransfer.getInstance();
