@@ -9,7 +9,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 import org.junit.Test;
 
-public class TestTreeModel {
+public class TreeModelTest {
 
 	@Test
 	public void testTreeModel() {

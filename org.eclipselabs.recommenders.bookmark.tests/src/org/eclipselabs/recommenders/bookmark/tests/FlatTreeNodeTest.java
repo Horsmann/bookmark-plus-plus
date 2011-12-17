@@ -6,7 +6,7 @@ import org.eclipselabs.recommenders.bookmark.tree.FlatTreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.junit.Test;
 
-public class TestFlatTreeNode
+public class FlatTreeNodeTest
 {
 	@Test
 	public void testFlatTreeNode() {

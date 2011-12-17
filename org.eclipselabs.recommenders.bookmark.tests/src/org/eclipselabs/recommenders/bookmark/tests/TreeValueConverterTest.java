@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 import org.junit.Test;
 
-public class TestTreeValueConverter {
+public class TreeValueConverterTest {
 
 	@Test
 	public void testIFileCreationForValidString() throws CoreException {

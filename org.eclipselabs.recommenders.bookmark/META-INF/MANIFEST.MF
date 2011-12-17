@@ -17,6 +17,7 @@ Export-Package: org.eclipselabs.recommenders.bookmark,
  org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization,
  org.eclipselabs.recommenders.bookmark.tree.persistent.serialization,
  org.eclipselabs.recommenders.bookmark.tree.util,
+ org.eclipselabs.recommenders.bookmark.util,
  org.eclipselabs.recommenders.bookmark.view.tree
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,

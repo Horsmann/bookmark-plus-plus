@@ -9,7 +9,7 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.Tre
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.junit.Test;
 
-public class TestTreeDeserializer
+public class TreeDeserializerTest
 {
 
 	@Test

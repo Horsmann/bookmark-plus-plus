@@ -9,7 +9,7 @@ import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.junit.Test;
 
-public class TestTreeNode {
+public class TreeNodeTest {
 	
 	@Test(expected=UnsupportedOperationException.class)
 	public void testExceptionForNonAvailableReference() {

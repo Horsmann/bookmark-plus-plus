@@ -82,7 +82,7 @@ public class DefaultView
 				| SWT.V_SCROLL);
 
 		viewer.setContentProvider(new TreeContentProvider());
-		viewer.setLabelProvider(new TreeLabelProvider());
+		viewer.setLabelProvider(new TreeLabelProvider(manager));
 		viewer.setInput(model.getModelRoot());
 
 		initializerActionsListenerAndMenus();

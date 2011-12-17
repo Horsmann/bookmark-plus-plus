@@ -20,7 +20,7 @@ import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.junit.Test;
 
-public class TestTreeSerializer {
+public class TreeSerializerTest {
 
 	@Test
 	public void testSerializationFacade() {
