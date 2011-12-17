@@ -1,5 +1,6 @@
 package org.eclipselabs.recommenders.bookmark.util;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -7,14 +8,35 @@ import org.eclipse.jdt.core.IJavaElement;
 
 public class DirectoryUtil
 {
-	public static String getProjectName(IJavaElement element)
+	public static String getProjectName(Object value)
 	{
-		IResource resource = element.getResource();
-		IProject project = resource.getProject();
 
-		String projectName = project.getName();
+		if (value instanceof IJavaElement) {
+			return getProjectNameOfIJavaElement(value);
+		}
 
-		return projectName;
+		if (value instanceof IFile) {
+			return getProjectOfIFile(value);
+		}
+
+		return "";
+	}
+
+	private static String getProjectOfIFile(Object value)
+	{
+		IFile iFile = (IFile) value;
+		IProject iProject = iFile.getProject();
+		String project = iProject.getName();
+		return project;
+	}
+
+	private static String getProjectNameOfIJavaElement(Object value)
+	{
+		IJavaElement element = (IJavaElement) value;
+		IResource iResource = element.getResource();
+		IProject iProject = iResource.getProject();
+		String name = iProject.getName();
+		return name;
 	}
 
 	public static String getCompilationUnitName(IJavaElement element)

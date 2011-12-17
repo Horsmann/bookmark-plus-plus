@@ -1,5 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -8,6 +10,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.util.DirectoryUtil;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -32,14 +35,14 @@ public class TreeLabelProvider
 	}
 
 	@Override
-	public String getText(Object element)
+	public String getText(Object object)
 	{
-		if (element instanceof BMNode) {
-			BMNode node = (BMNode) element;
+		if (object instanceof BMNode) {
+			BMNode node = (BMNode) object;
 
-			String text = jelp.getText(((BMNode) element).getValue());
+			String text = jelp.getText(node.getValue());
 
-			text = updateTextIfViewIsFlattened(text, node.getValue());
+			text = updateTextIfViewIsFlattened(text, node);
 
 			if (text.compareTo("") != 0)
 				return text;
@@ -51,22 +54,68 @@ public class TreeLabelProvider
 		return "UNKNOWN TYPE";
 	}
 
-	private String updateTextIfViewIsFlattened(String text, Object value)
+	private String updateTextIfViewIsFlattened(String text, BMNode viewNode)
 	{
+
+		BMNode node = getModelNode(viewNode);
+
+		Object value = node.getValue();
+
 		if (!showExtendInformationInName(value))
 			return text;
-		
-		IJavaElement element = (IJavaElement) value;
-		String project = DirectoryUtil.getProjectName(element);
-		String compilationUnit = DirectoryUtil.getCompilationUnitName(element);
-//		String bookmark = DirectoryUtil.
 
-		return null;
+		String compilationUnit = determineCompilationUnit(value);
+		String bookmark = determineBookmarkName(node);
+		String project = determineProject(value);
+
+		String suffix = getCompilationUnitSuffix(compilationUnit) + ":"
+				+ project + "[" + bookmark + "]";
+
+		String updatedText = text + suffix;
+		updatedText = updatedText.trim();
+		return updatedText;
+	}
+
+	private String determineBookmarkName(BMNode node)
+	{
+		return TreeUtil.getNameOfNodesBookmark(node);
+	}
+
+	private String getCompilationUnitSuffix(String compilationUnit)
+	{
+		if (compilationUnit.compareTo("") != 0) {
+			return "@" + compilationUnit;
+		}
+		return "";
+	}
+
+	private String determineProject(Object value)
+	{
+		return DirectoryUtil.getProjectName(value);
+	}
+
+	private String determineCompilationUnit(Object value)
+	{
+		if (!(value instanceof IJavaElement)) {
+			return "";
+		}
+		IJavaElement element = (IJavaElement) value;
+		String compilationUnit = DirectoryUtil.getCompilationUnitName(element);
+		return compilationUnit;
+	}
+
+	private BMNode getModelNode(BMNode viewNode)
+	{
+		if (viewNode.hasReference()) {
+			return viewNode.getReference();
+		}
+		return viewNode;
 	}
 
 	private boolean showExtendInformationInName(Object value)
 	{
-		return !manager.isViewFlattened() || (value instanceof IJavaElement);
+		return manager.isViewFlattened()
+				&& ((value instanceof IJavaElement) || (value instanceof IFile));
 	}
 
 	@Override

@@ -32,7 +32,6 @@ public class DirectoryUtilTest
 		assertEquals(expected, actually);
 	}
 
-
 	@Before
 	public void setUp()
 	{

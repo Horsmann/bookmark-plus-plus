@@ -26,6 +26,21 @@ import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
 public class TreeUtil
 {
+	public static String getNameOfNodesBookmark(BMNode node)
+	{
+
+		if (isRootNode(node)) {
+			return "";
+		}
+		
+		if (node.isBookmarkNode()){
+			return (String) node.getValue();
+		}
+		
+		BMNode bookmark = TreeUtil.getBookmarkNode(node);
+		String bookmarkName = (String)bookmark.getValue();
+		return bookmarkName;
+	}
 
 	public static BMNode[] getTreeBelowNode(BMNode node)
 	{
@@ -239,7 +254,6 @@ public class TreeUtil
 		node.getParent().removeChild(node);
 		node.setParent(null);
 	}
-	
 
 	private static BMNode createHierarchyUpToCompilationUnitLevel(Object value)
 	{
@@ -483,8 +497,7 @@ public class TreeUtil
 		return false;
 	}
 
-	private static BMNode getNodeThatMatchesID(BMNode bookmark,
-			BMNode parent)
+	private static BMNode getNodeThatMatchesID(BMNode bookmark, BMNode parent)
 	{
 		String id = TreeValueConverter.getStringIdentification(parent
 				.getValue());

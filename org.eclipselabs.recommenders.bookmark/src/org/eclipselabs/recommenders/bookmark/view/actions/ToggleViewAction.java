@@ -4,9 +4,10 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -43,6 +44,15 @@ public class ToggleViewAction
 		else {
 			setUpCategory(model);
 		}
+
+		refreshView();
+
+	}
+
+	private void refreshView()
+	{
+		TreeViewer viewer = manager.getActiveBookmarkView().getView();
+		viewer.refresh(true);
 	}
 
 	private void setUpCategory(TreeModel model)

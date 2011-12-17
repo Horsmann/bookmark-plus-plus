@@ -29,6 +29,35 @@ import org.junit.Test;
 
 public class TreeUtilTest
 {
+	
+	@Test
+	public void testGetBookmarkNameForSomeNodeUnderBookmark() {
+		BMNode root = createTestTree();
+		BMNode testNode = root.getChildren()[0].getChildren()[0];
+		
+		String expected = "BM#1";
+		String actually = TreeUtil.getNameOfNodesBookmark(testNode);
+		assertEquals(expected, actually);
+	}
+	
+	@Test
+	public void testGetBookmarkNameForBookmark() {
+		BMNode root = createTestTree();
+		BMNode testNode = root.getChildren()[0];
+		
+		String expected = "BM#1";
+		String actually = TreeUtil.getNameOfNodesBookmark(testNode);
+		assertEquals(expected, actually);
+	}
+	
+	@Test
+	public void testGetBookmarkNameForRoot() {
+		BMNode root = createTestTree();
+		
+		String expected = "";
+		String actually = TreeUtil.getNameOfNodesBookmark(root);
+		assertEquals(expected, actually);
+	}
 
 	@Test
 	public void testGetLeafs()
