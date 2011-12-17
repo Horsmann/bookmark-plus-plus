@@ -123,7 +123,7 @@ public class DefaultTreeDropListener
 
 		BMNode dropTarget = (BMNode) getTarget(event);
 
-		dropTarget = getReference(dropTarget);
+		dropTarget = TreeUtil.getReference(dropTarget);
 
 		BMNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
 
@@ -138,7 +138,7 @@ public class DefaultTreeDropListener
 
 			BMNode node = (BMNode) selections.get(i);
 
-			node = getReference(node);
+			node = TreeUtil.getReference(node);
 
 			new AddTreeNodesToExistingBookmark(viewer, bookmarkOfDropTarget,
 					node, keyListener.isAltPressed()).execute();
@@ -147,17 +147,6 @@ public class DefaultTreeDropListener
 
 	}
 
-	private BMNode getReference(BMNode node)
-	{
-		if (node == null) {
-			return null;
-		}
-
-		if (node.hasReference()) {
-			return node.getReference();
-		}
-		return node;
-	}
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
 			DropTargetEvent event)
@@ -166,7 +155,7 @@ public class DefaultTreeDropListener
 		TreePath[] treePath = getTreePath(event);
 		BMNode target = (BMNode) getTarget(event);
 
-		target = getReference(target);
+		target = TreeUtil.getReference(target);
 
 		BMNode bookmark = TreeUtil.getBookmarkNode(target);
 

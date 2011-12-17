@@ -9,19 +9,23 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
-public class AddTreeNodesToNewBookmark implements TreeCommand {
+public class AddTreeNodesToNewBookmark
+	implements TreeCommand
+{
 
 	private TreeViewer viewer = null;
 	private TreeModel model = null;
 
-	public AddTreeNodesToNewBookmark(TreeViewer viewer, TreeModel model) {
+	public AddTreeNodesToNewBookmark(TreeViewer viewer, TreeModel model)
+	{
 
 		this.viewer = viewer;
 		this.model = model;
 	}
 
 	@Override
-	public void execute() {
+	public void execute()
+	{
 
 		BMNode bookmark = TreeUtil.makeBookmarkNode();
 		model.getModelRoot().addChild(bookmark);
@@ -33,6 +37,8 @@ public class AddTreeNodesToNewBookmark implements TreeCommand {
 
 		for (int i = 0; i < selections.size(); i++) {
 			BMNode node = (BMNode) selections.get(i);
+
+			node = TreeUtil.getReference(node);
 
 			BMNode nodeCopy = TreeUtil.copyTreeBelowBookmark(node);
 
