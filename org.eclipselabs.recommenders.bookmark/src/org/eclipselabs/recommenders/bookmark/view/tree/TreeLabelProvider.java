@@ -1,7 +1,6 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.resource.ImageRegistry;

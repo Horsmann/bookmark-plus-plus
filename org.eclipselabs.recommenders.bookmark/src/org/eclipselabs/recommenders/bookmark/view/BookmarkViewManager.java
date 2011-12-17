@@ -3,7 +3,6 @@ package org.eclipselabs.recommenders.bookmark.view;
 import java.util.HashMap;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;

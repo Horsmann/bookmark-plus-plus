@@ -1,6 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.view;
 
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 
