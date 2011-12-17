@@ -96,8 +96,6 @@ public class DefaultTreeDropListener
 		throws JavaModelException
 	{
 
-		System.err.println(keyListener.isAltPressed());
-
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer.getView());
 
