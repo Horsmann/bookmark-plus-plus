@@ -6,13 +6,13 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.corext.refactoring.reorg.JavaElementTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
@@ -39,15 +39,23 @@ public class PasteHandler
 	{
 
 		Clipboard cb = new Clipboard(Display.getCurrent());
-		
+
+		TextTransfer textTransfer = TextTransfer.getInstance();
+		Object o = cb.getContents(textTransfer);
+		if (o instanceof Object[]) {
+			Object[] clipBoardData = (Object[]) o;
+			int a = 0;
+			a++;
+		}
+
 		BookmarkNodeTransfer bmTransfer = BookmarkNodeTransfer.getInstance();
 		Object bookmarks = cb.getContents(bmTransfer);
-		
+
 		if (bookmarks instanceof Object[]) {
 			Object[] clipBoardData = (Object[]) bookmarks;
 			int a = 0;
 			a++;
-		} 
+		}
 
 		JavaElementTransfer javaEleTransfer = JavaElementTransfer.getInstance();
 		Object clipBoardContent = cb.getContents(javaEleTransfer);
