@@ -39,6 +39,15 @@ public class PasteHandler
 	{
 
 		Clipboard cb = new Clipboard(Display.getCurrent());
+		
+		BookmarkNodeTransfer bmTransfer = BookmarkNodeTransfer.getInstance();
+		Object bookmarks = cb.getContents(bmTransfer);
+		
+		if (bookmarks instanceof Object[]) {
+			Object[] clipBoardData = (Object[]) bookmarks;
+			int a = 0;
+			a++;
+		} 
 
 		JavaElementTransfer javaEleTransfer = JavaElementTransfer.getInstance();
 		Object clipBoardContent = cb.getContents(javaEleTransfer);
