@@ -11,6 +11,7 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.handler.CopyHandler;
 import org.eclipselabs.recommenders.bookmark.handler.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.FlatTreeNode;
@@ -81,6 +82,9 @@ public class BookmarkViewManager
 				IHandlerService.class);
 		PasteHandler paste = new PasteHandler(activeView);
 		handlerServ.activateHandler("org.eclipse.ui.edit.paste", paste);
+		
+		CopyHandler copy = new CopyHandler(this);
+		handlerServ.activateHandler("org.eclipse.ui.edit.copy", copy);
 	}
 
 	@Override
