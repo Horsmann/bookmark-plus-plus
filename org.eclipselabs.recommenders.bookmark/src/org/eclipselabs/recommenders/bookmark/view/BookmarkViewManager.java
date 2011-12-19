@@ -218,14 +218,16 @@ public class BookmarkViewManager
 	}
 
 	@Override
-	public void activateFlattenedView(BMNode node)
+	public void activateFlattenedModus(BMNode node)
 	{
 		flatModel.getModelRoot().removeAllChildren();
 
 		BMNode flattenedRoot = new TreeNode(null, false, true);
 
-		boolean isDefault = setUpForDefaultView(node);
-		if (isDefault) {
+		boolean setUpForDefault = setUpForDefaultView(node);
+		if (setUpForDefault) {
+			addCurrentlyExpandedNodesToStorage();
+
 			buildFlatModelForDefaultView(flattenedRoot, node);
 		}
 		else {
@@ -238,11 +240,20 @@ public class BookmarkViewManager
 		view.setInput(flatModel.getModelRoot());
 
 		// we have to set the data in the view before we can expand
-		if (isDefault) {
+		if (setUpForDefault) {
 			expandBookmarks(flattenedRoot, view);
 		}
 
 		isFlattenedActive = true;
+	}
+
+	@Override
+	public void deactivateFlattenedModus()
+	{
+		activeView.getView().setInput(null);
+		activeView.getView().setInput(model.getModelHead());
+		setStoredExpandedNodesForActiveView();
+		isFlattenedActive = false;
 	}
 
 	private void expandBookmarks(BMNode flattenedRoot, TreeViewer view)
@@ -292,15 +303,6 @@ public class BookmarkViewManager
 			targetNode.addChild(newNode);
 		}
 
-	}
-
-	@Override
-	public void deactivateFlattenedView()
-	{
-		activeView.getView().setInput(null);
-		activeView.getView().setInput(model.getModelHead());
-		setStoredExpandedNodesForActiveView();
-		isFlattenedActive = false;
 	}
 
 	@Override

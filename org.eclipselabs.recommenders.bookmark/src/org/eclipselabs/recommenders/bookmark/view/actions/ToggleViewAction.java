@@ -155,7 +155,7 @@ public class ToggleViewAction
 		// model.setHeadNode(bmNode);
 
 		BookmarkView activatedView = manager.activateNextView();
-		manager.activateFlattenedView(model.getModelHead());
+		manager.activateFlattenedModus(model.getModelHead());
 		activatedView.updateControls();
 	}
 

@@ -100,7 +100,7 @@ public class PasteHandler
 		ViewManager manager = activeView.getManager();
 		if (manager.isViewFlattened()) {
 			BMNode node = activeView.getModel().getModelHead();
-			manager.activateFlattenedView(node);
+			manager.activateFlattenedModus(node);
 		}
 
 	}

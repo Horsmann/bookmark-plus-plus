@@ -28,14 +28,14 @@ public class ToggleFlatAndTreeAction
 	public void run()
 	{
 		if (manager.isViewFlattened()) {
-			manager.deactivateFlattenedView();
+			manager.deactivateFlattenedModus();
 		}
 		else {
 			BMNode flattenFromNode = null;
 			BookmarkView view = manager.getActiveBookmarkView();
 			TreeModel model = view.getModel();
 			flattenFromNode = model.getModelHead();
-			manager.activateFlattenedView(flattenFromNode);
+			manager.activateFlattenedModus(flattenFromNode);
 		}
 
 		refreshView();

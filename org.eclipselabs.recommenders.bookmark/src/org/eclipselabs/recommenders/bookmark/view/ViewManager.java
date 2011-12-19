@@ -27,9 +27,9 @@ public interface ViewManager
 
 	public void reinitializeExpandedStorage();
 
-	public void activateFlattenedView(BMNode parentThatsChildsShallBeFlattened);
+	public void activateFlattenedModus(BMNode parentThatsChildsShallBeFlattened);
 
-	public void deactivateFlattenedView();
+	public void deactivateFlattenedModus();
 
 	public boolean isViewFlattened();
 	

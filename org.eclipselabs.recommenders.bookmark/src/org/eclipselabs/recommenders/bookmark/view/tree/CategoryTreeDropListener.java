@@ -75,7 +75,7 @@ public class CategoryTreeDropListener
 		if (manager.isViewFlattened()) {
 			TreeModel model = viewer.getModel();
 			BMNode head = model.getModelHead();
-			manager.activateFlattenedView(head);
+			manager.activateFlattenedModus(head);
 		}
 
 	}

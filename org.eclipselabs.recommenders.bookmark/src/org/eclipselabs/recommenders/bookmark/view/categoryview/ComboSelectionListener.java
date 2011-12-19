@@ -48,7 +48,7 @@ public class ComboSelectionListener implements SelectionListener {
 		manager.setStoredExpandedNodesForActiveView();
 		
 		if (manager.isViewFlattened()) {
-			manager.activateFlattenedView(bookmarks[index]);
+			manager.activateFlattenedModus(bookmarks[index]);
 		}
 		
 	}
