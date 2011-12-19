@@ -103,8 +103,7 @@ public class DefaultView
 		doubleClickListener = new TreeDoubleclickListener(showInEditor);
 
 		dragListener = new TreeDragListener(viewer);
-		dropListener = new DefaultTreeDropListener(this, dragListener,
-				keyListener);
+		dropListener = new DefaultTreeDropListener(this, dragListener);
 
 	}
 
@@ -115,7 +114,6 @@ public class DefaultView
 		notifier.add((SelfEnabling) openInSystemFileExplorer);
 		notifier.add((SelfEnabling) showInEditor);
 		notifier.add((SelfEnabling) deleteSelection);
-//		notifier.add((SelfEnabling) toggleLevel);
 		notifier.add((SelfEnabling) renameBookmark);
 
 	}

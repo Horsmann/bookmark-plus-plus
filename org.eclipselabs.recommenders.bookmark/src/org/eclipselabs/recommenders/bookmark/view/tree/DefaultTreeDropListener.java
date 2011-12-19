@@ -6,6 +6,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
@@ -27,14 +28,12 @@ public class DefaultTreeDropListener
 	private final BookmarkView viewer;
 
 	private TreeDragListener dragListener = null;
-	private TreeKeyListener keyListener = null;
 
 	public DefaultTreeDropListener(BookmarkView viewer,
-			TreeDragListener localViewsDragListener, TreeKeyListener listener)
+			TreeDragListener localViewsDragListener)
 	{
 		this.viewer = viewer;
 		this.dragListener = localViewsDragListener;
-		this.keyListener = listener;
 	}
 
 	@Override
@@ -90,7 +89,13 @@ public class DefaultTreeDropListener
 	@Override
 	public void dragEnter(DropTargetEvent event)
 	{
-		event.detail = DND.DROP_LINK | DND.DROP_COPY;
+		if (event.operations == DND.DROP_COPY) {
+			event.detail = DND.DROP_COPY;
+			return;
+		}
+
+		event.detail = DND.DROP_LINK;
+
 	}
 
 	@Override
@@ -118,21 +123,38 @@ public class DefaultTreeDropListener
 		throws JavaModelException
 	{
 
-		List<IStructuredSelection> selections = TreeUtil
-				.getTreeSelections(viewer.getView());
+		BMNode bookmark = getBookmarkOfDropTarget(event);
 
+		if (didDropOccurInEmptyArea(bookmark)) {
+			addToNewBookmark();
+			return;
+		}
+
+		addToExistingBookmark(event, bookmark);
+
+	}
+
+	private void addToNewBookmark()
+	{
+		TreeViewer view = viewer.getView();
+		TreeModel model = viewer.getModel();
+		new AddTreeNodesToNewBookmark(view, model).execute();
+	}
+
+	private BMNode getBookmarkOfDropTarget(DropTargetEvent event)
+	{
 		BMNode dropTarget = (BMNode) getTarget(event);
 
 		dropTarget = TreeUtil.getReference(dropTarget);
 
 		BMNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
+		return bookmarkOfDropTarget;
+	}
 
-		if (didDropOccurInEmptyArea(bookmarkOfDropTarget)) {
-
-			new AddTreeNodesToNewBookmark(viewer.getView(), viewer.getModel())
-					.execute();
-			return;
-		}
+	private void addToExistingBookmark(DropTargetEvent event, BMNode bookmark)
+	{
+		List<IStructuredSelection> selections = TreeUtil
+				.getTreeSelections(viewer.getView());
 
 		for (int i = 0; i < selections.size(); i++) {
 
@@ -140,13 +162,12 @@ public class DefaultTreeDropListener
 
 			node = TreeUtil.getReference(node);
 
-			new AddTreeNodesToExistingBookmark(viewer, bookmarkOfDropTarget,
-					node, keyListener.isAltPressed()).execute();
+			boolean keepSource = (event.operations == DND.DROP_COPY);
+			new AddTreeNodesToExistingBookmark(viewer, bookmark, node,
+					keepSource).execute();
 
 		}
-
 	}
-
 
 	private void processDropEventWithDragInitiatedFromOutsideTheView(
 			DropTargetEvent event)
