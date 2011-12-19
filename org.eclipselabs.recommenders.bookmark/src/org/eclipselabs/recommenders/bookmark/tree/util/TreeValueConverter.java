@@ -8,7 +8,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 
 public class TreeValueConverter {
-
+	
 	public static String getStringIdentification(Object value) {
 		String id = null;
 		if (value instanceof IJavaElement)

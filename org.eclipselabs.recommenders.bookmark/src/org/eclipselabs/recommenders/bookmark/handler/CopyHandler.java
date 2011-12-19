@@ -41,7 +41,7 @@ public class CopyHandler
 				.getTreeSelections(viewer);
 
 		LinkedList<String> transferObjects = new LinkedList<String>();
-		LinkedList<Transfer> transferHandles = new LinkedList<Transfer>();
+//		LinkedList<Transfer> transferHandles = new LinkedList<Transfer>();
 		for (int i = 0; i < selections.size(); i++) {
 			BMNode node = (BMNode) selections.get(i);
 			node = TreeUtil.getReference(node);
@@ -53,13 +53,15 @@ public class CopyHandler
 			String id = TreeValueConverter.getStringIdentification(value);
 
 			transferObjects.add(id);
-			transferHandles.add(TextTransfer.getInstance());
+//			transferHandles.add(TextTransfer.getInstance());
 
 		}
 
 		Clipboard cb = new Clipboard(Display.getCurrent());
-		Object[] data = transferObjects.toArray();
-		Transfer[] transfer = transferHandles.toArray(new Transfer[0]);
+		String[] ids = transferObjects.toArray(new String[0]);
+		BookmarkNodeTransferObject bm = new BookmarkNodeTransferObject(ids);
+		Object [] data = new Object [] {bm};
+		Transfer[] transfer = new Transfer [] {BookmarkNodeTransfer.getInstance()};
 		cb.setContents(data, transfer, DND.CLIPBOARD);
 		cb.dispose();
 		return null;

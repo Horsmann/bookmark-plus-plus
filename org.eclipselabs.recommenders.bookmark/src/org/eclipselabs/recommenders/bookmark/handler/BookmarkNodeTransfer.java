@@ -36,7 +36,16 @@ public class BookmarkNodeTransfer
 			DataOutputStream writeOut = new DataOutputStream(out);
 			// for (int i = 0, length = myType.length; i < length; i++) {
 			// byte[] buffer = myType[i].id.getBytes();
-			byte[] buffer = myType.id.getBytes();
+
+			String idsString="";
+			for (int i = 0; i < myType.ids.length; i++){
+				idsString += myType.ids[i];
+				if (i+1 < myType.ids.length){
+					idsString += "\n";
+				}
+			}
+			
+			byte[] buffer = idsString.getBytes();
 			writeOut.writeInt(buffer.length);
 			writeOut.write(buffer);
 			// }
@@ -60,14 +69,17 @@ public class BookmarkNodeTransfer
 				ByteArrayInputStream in = new ByteArrayInputStream(buffer);
 				DataInputStream readIn = new DataInputStream(in);
 				while (readIn.available() > 20) {
-					BookmarkNodeTransferObject datum = new BookmarkNodeTransferObject();
+					BookmarkNodeTransferObject bm = new BookmarkNodeTransferObject();
 					int size = readIn.readInt();
 					byte[] id = new byte[size];
 					readIn.read(id);
-					datum.id = new String(id);
+					String idsString = new String(id);
+					String [] ids = idsString.split("\n");
+					bm.ids = ids;
+					
 					BookmarkNodeTransferObject[] newMyData = new BookmarkNodeTransferObject[myData.length + 1];
 					System.arraycopy(myData, 0, newMyData, 0, myData.length);
-					newMyData[myData.length] = datum;
+					newMyData[myData.length] = bm;
 					myData = newMyData;
 				}
 				readIn.close();
@@ -97,7 +109,7 @@ public class BookmarkNodeTransfer
 			return false;
 		}
 		BookmarkNodeTransferObject bm = (BookmarkNodeTransferObject) object;
-		if (bm.id == null || bm.id.length() == 0) {
+		if (bm.ids == null) {
 			return false;
 		}
 		return true;

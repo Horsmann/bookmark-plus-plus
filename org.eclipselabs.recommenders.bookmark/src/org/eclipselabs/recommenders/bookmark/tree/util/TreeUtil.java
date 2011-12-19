@@ -367,7 +367,7 @@ public class TreeUtil
 	public static BMNode copyTreeBelowBookmark(BMNode node)
 	{
 
-		if (node == null || isRootNode(node))
+		if (node == null /*|| isRootNode(node)*/)
 			return null;
 
 		LinkedList<BMNode> newChilds = new LinkedList<BMNode>();

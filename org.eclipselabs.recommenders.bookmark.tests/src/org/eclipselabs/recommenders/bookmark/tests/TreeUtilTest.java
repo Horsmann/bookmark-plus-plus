@@ -165,7 +165,7 @@ public class TreeUtilTest
 
 		TreeNode root = createTestTree();
 		copy = TreeUtil.copyTreeBelowBookmark(root);
-		assertNull(copy);
+		assertTrue(copy.getValue().equals(root.getValue()));
 
 		BMNode bm1c1 = root.getChildren()[0].getChildren()[0];
 		copy = TreeUtil.copyTreeBelowBookmark(bm1c1);
