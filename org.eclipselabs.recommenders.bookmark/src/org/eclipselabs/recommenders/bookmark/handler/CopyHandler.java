@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
@@ -24,9 +23,6 @@ public class CopyHandler
 
 	private ViewManager manager;
 
-	private BookmarkNodeTransfer bmTransfer = BookmarkNodeTransfer
-			.getInstance();
-
 	public CopyHandler(ViewManager manager)
 	{
 		this.manager = manager;
@@ -36,12 +32,47 @@ public class CopyHandler
 	public Object execute(ExecutionEvent event)
 		throws ExecutionException
 	{
+
+		LinkedList<String> transferIDs = getIDsOfSelection();
+
+		addDataToClipboard(transferIDs);
+
+		return null;
+	}
+
+	private void addDataToClipboard(LinkedList<String> transferIDs)
+	{
+		Clipboard cb = new Clipboard(Display.getCurrent());
+
+		Object[] data = prepareDataForAddingToClipboard(transferIDs);
+		Transfer[] transfer = prepareTransferHandles();
+
+		cb.setContents(data, transfer, DND.CLIPBOARD);
+		
+		cb.dispose();
+	}
+
+	private Transfer[] prepareTransferHandles()
+	{
+		return new Transfer[] { BookmarkNodeTransfer.getInstance() };
+	}
+
+	private Object[] prepareDataForAddingToClipboard(
+			LinkedList<String> transferIDs)
+	{
+		String[] ids = transferIDs.toArray(new String[0]);
+		BookmarkNodeTransferObject bm = new BookmarkNodeTransferObject(ids);
+		Object[] data = new Object[] { bm };
+		return data;
+	}
+
+	private LinkedList<String> getIDsOfSelection()
+	{
 		TreeViewer viewer = manager.getActiveBookmarkView().getView();
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer);
 
 		LinkedList<String> transferObjects = new LinkedList<String>();
-//		LinkedList<Transfer> transferHandles = new LinkedList<Transfer>();
 		for (int i = 0; i < selections.size(); i++) {
 			BMNode node = (BMNode) selections.get(i);
 			node = TreeUtil.getReference(node);
@@ -53,18 +84,9 @@ public class CopyHandler
 			String id = TreeValueConverter.getStringIdentification(value);
 
 			transferObjects.add(id);
-//			transferHandles.add(TextTransfer.getInstance());
 
 		}
-
-		Clipboard cb = new Clipboard(Display.getCurrent());
-		String[] ids = transferObjects.toArray(new String[0]);
-		BookmarkNodeTransferObject bm = new BookmarkNodeTransferObject(ids);
-		Object [] data = new Object [] {bm};
-		Transfer[] transfer = new Transfer [] {BookmarkNodeTransfer.getInstance()};
-		cb.setContents(data, transfer, DND.CLIPBOARD);
-		cb.dispose();
-		return null;
+		return transferObjects;
 	}
 
 }

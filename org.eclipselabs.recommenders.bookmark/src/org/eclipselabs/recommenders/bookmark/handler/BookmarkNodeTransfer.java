@@ -30,12 +30,8 @@ public class BookmarkNodeTransfer
 		}
 		BookmarkNodeTransferObject myType = (BookmarkNodeTransferObject) object;
 		try {
-			// write data to a byte array and then ask super to convert to
-			// pMedium
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			DataOutputStream writeOut = new DataOutputStream(out);
-			// for (int i = 0, length = myType.length; i < length; i++) {
-			// byte[] buffer = myType[i].id.getBytes();
 
 			String idsString="";
 			for (int i = 0; i < myType.ids.length; i++){
@@ -73,7 +69,7 @@ public class BookmarkNodeTransfer
 					int size = readIn.readInt();
 					byte[] id = new byte[size];
 					readIn.read(id);
-					String idsString = new String(id);
+					String idsString = new String(id, "UTF-8");
 					String [] ids = idsString.split("\n");
 					bm.ids = ids;
 					

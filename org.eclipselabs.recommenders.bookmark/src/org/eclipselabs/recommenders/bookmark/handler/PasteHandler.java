@@ -11,19 +11,15 @@ import org.eclipse.jdt.internal.corext.refactoring.reorg.JavaElementTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.FileTransfer;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
+@SuppressWarnings("restriction")
 public class PasteHandler
 	extends AbstractHandler
 {
@@ -42,26 +38,16 @@ public class PasteHandler
 
 		Clipboard cb = new Clipboard(Display.getCurrent());
 
-		TextTransfer textTransfer = TextTransfer.getInstance();
-		Object o = cb.getContents(textTransfer);
-		if (o instanceof Object[]) {
-			Object[] clipBoardData = (Object[]) o;
-			int a = 0;
-			a++;
-		}
+		processInternalBookmarkTransfer(cb);
 
-		BookmarkNodeTransfer bmTransfer = BookmarkNodeTransfer.getInstance();
-		Object bms = cb.getContents(bmTransfer);
+		processExternalJavaElementTransfer(cb);
 
-		if (bms instanceof BookmarkNodeTransferObject[]) {
-			BookmarkNodeTransferObject[] bookmarkObjects = (BookmarkNodeTransferObject[]) bms;
-			BookmarkNodeTransferObject content = bookmarkObjects[0];
-			processBookmarViewItems(content);
+		cb.dispose();
+		return null;
+	}
 
-			int a = 0;
-			a++;
-		}
-
+	private void processExternalJavaElementTransfer(Clipboard cb)
+	{
 		JavaElementTransfer javaEleTransfer = JavaElementTransfer.getInstance();
 		Object clipBoardContent = cb.getContents(javaEleTransfer);
 
@@ -69,24 +55,18 @@ public class PasteHandler
 			Object[] clipBoardData = (Object[]) clipBoardContent;
 			processJavaElement(clipBoardData);
 		}
+	}
 
-		ResourceTransfer resoureTransfer = ResourceTransfer.getInstance();
-		clipBoardContent = cb.getContents(resoureTransfer);
-		if (clipBoardContent instanceof Object[]) {
-			int a = 0;
-			a++;
+	private void processInternalBookmarkTransfer(Clipboard cb)
+	{
+		BookmarkNodeTransfer bmTransfer = BookmarkNodeTransfer.getInstance();
+		Object bms = cb.getContents(bmTransfer);
+
+		if (bms instanceof BookmarkNodeTransferObject[]) {
+			BookmarkNodeTransferObject[] bookmarkObjects = (BookmarkNodeTransferObject[]) bms;
+			BookmarkNodeTransferObject content = bookmarkObjects[0];
+			processBookmarViewItems(content);
 		}
-
-		FileTransfer fileTransfer = FileTransfer.getInstance();
-		clipBoardContent = cb.getContents(fileTransfer);
-
-		if (clipBoardContent instanceof Object[]) {
-			Object[] clipBoardData = (Object[]) clipBoardContent;
-			processFiles(clipBoardData);
-		}
-
-		cb.dispose();
-		return null;
 	}
 
 	private void processBookmarViewItems(
@@ -135,28 +115,6 @@ public class PasteHandler
 
 		IFile ifile = TreeValueConverter.attemptTransformationToIFile(id);
 		return ifile;
-	}
-
-	private void processFiles(Object[] clipBoardData)
-	{
-		List<IStructuredSelection> selections = TreeUtil
-				.getTreeSelections(activeView.getView());
-
-		if (selections.size() != 1)
-			return;
-
-		BMNode target = (BMNode) selections.get(0);
-
-		for (Object data : clipBoardData) {
-
-			if (data instanceof IFile) {
-				BMNode node = new TreeNode(data, false, false);
-				BMNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
-				new AddTreeNodesToExistingBookmark(activeView,
-						bookmarkOfTarget, node, true).execute();
-			}
-		}
-
 	}
 
 	private void processJavaElement(Object[] clipBoardData)
