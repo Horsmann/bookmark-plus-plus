@@ -14,7 +14,7 @@ import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class ToggleViewAction
 	extends Action
-	implements SelfEnabling
+// implements SelfEnabling
 {
 
 	private ViewManager manager;
@@ -29,7 +29,7 @@ public class ToggleViewAction
 				.getDescriptor(Activator.ICON_TOGGLE_LEVEL));
 		this.setToolTipText("Toggles between the default view and the category the selected item is in");
 		this.setText("Toggle between levels");
-		setEnabledStatus();
+		// setEnabledStatus();
 	}
 
 	@Override
@@ -49,33 +49,17 @@ public class ToggleViewAction
 
 	}
 
-	private void refreshView()
-	{
-		TreeViewer viewer = manager.getActiveBookmarkView().getView();
-		viewer.refresh(true);
-	}
-
 	private void setUpCategory(TreeModel model)
 	{
 		if (manager.isViewFlattened()) {
-			if (noSelectionInView()) {
-				return;
-			}
 
-			setModelsHeadToCurrentlySelectedNode(model);
+			setNewModelHead(model);
 
 			setUpViewFlattened(model);
 		}
 		else {
 
-			removeCurrentlyVisibleNodesFromStorage(model);
-			manager.addCurrentlyExpandedNodesToStorage();
-
-			if (noSelectionInView()) {
-				return;
-			}
-
-			setModelsHeadToCurrentlySelectedNode(model);
+			setNewModelHead(model);
 
 			manager.reinitializeExpandedStorage();
 			manager.addCurrentlyExpandedNodesToStorage();
@@ -84,23 +68,23 @@ public class ToggleViewAction
 		}
 	}
 
-	private void setModelsHeadToCurrentlySelectedNode(TreeModel model)
+	private void setNewModelHead(TreeModel model)
 	{
-		BMNode node = getFirstSelectionInView();
-		BMNode bookmark = null;
-		if (node.hasReference()) {
-			BMNode reference = node.getReference();
-			bookmark = TreeUtil.getBookmarkNode(reference);
-		}
-		else {
-			bookmark = TreeUtil.getBookmarkNode(node);
-		}
+		BMNode node = getSelectedOrDefaultNode(model);
+		BMNode bookmark = getNodesBookmark(node);
+
 		model.setHeadNode(bookmark);
+	}
+
+	private BMNode getNodesBookmark(BMNode node)
+	{
+		BMNode reference = TreeUtil.getReference(node);
+		BMNode bookmark = TreeUtil.getBookmarkNode(reference);
+		return bookmark;
 	}
 
 	private void setUpDefault(TreeModel model)
 	{
-//		model.resetHeadToRoot();
 
 		if (manager.isViewFlattened()) {
 			model.resetHeadToRoot();
@@ -124,19 +108,18 @@ public class ToggleViewAction
 		}
 	}
 
-	private BMNode getFirstSelectionInView()
-	{
-		List<IStructuredSelection> selection = TreeUtil
-				.getTreeSelections(actionTriggeringView.getView());
-		return (BMNode) selection.get(0);
-	}
-
-	private boolean noSelectionInView()
+	private BMNode getSelectedOrDefaultNode(TreeModel model)
 	{
 		List<IStructuredSelection> selection = TreeUtil
 				.getTreeSelections(actionTriggeringView.getView());
 
-		return (selection.size() <= 0);
+		if (selection.isEmpty()) {
+			BMNode node = model.getModelRoot().getChildren()[0];
+			return node;
+		}
+
+		BMNode node = (BMNode) selection.get(0);
+		return node;
 	}
 
 	private void setUpViewUnflattened(BMNode input)
@@ -152,35 +135,14 @@ public class ToggleViewAction
 
 	private void setUpViewFlattened(TreeModel model)
 	{
-		// model.setHeadNode(bmNode);
-
 		BookmarkView activatedView = manager.activateNextView();
 		manager.activateFlattenedModus(model.getModelHead());
 		activatedView.updateControls();
 	}
 
-	@Override
-	public void updateEnabledStatus()
+	private void refreshView()
 	{
-
-		setEnabledStatus();
-
+		TreeViewer viewer = manager.getActiveBookmarkView().getView();
+		viewer.refresh(true);
 	}
-
-	public void setEnabledStatus()
-	{
-		if (actionTriggeringView.requiresSelectionForToggle()) {
-			if (TreeUtil.getTreeSelections(actionTriggeringView.getView())
-					.size() > 0) {
-				this.setEnabled(true);
-			}
-			else {
-				this.setEnabled(false);
-			}
-		}
-		else {
-			this.setEnabled(true);
-		}
-	}
-
 }
