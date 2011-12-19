@@ -3,6 +3,7 @@ package org.eclipselabs.recommenders.bookmark.view;
 import java.util.HashMap;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -223,18 +224,32 @@ public class BookmarkViewManager
 
 		BMNode flattenedRoot = new TreeNode(null, false, true);
 
-		if (setUpForDefaultView(node)) {
+		boolean isDefault = setUpForDefaultView(node);
+		if (isDefault) {
 			buildFlatModelForDefaultView(flattenedRoot, node);
 		}
 		else {
 			buildFlatModelForCategoryView(flattenedRoot, node);
 		}
 
+		TreeViewer view = activeView.getView();
 		flatModel.setModelRoot(flattenedRoot);
-		activeView.getView().setInput(null);
-		activeView.getView().setInput(flatModel.getModelRoot());
+		view.setInput(null);
+		view.setInput(flatModel.getModelRoot());
+
+		// we have to set the data in the view before we can expand
+		if (isDefault) {
+			expandBookmarks(flattenedRoot, view);
+		}
 
 		isFlattenedActive = true;
+	}
+
+	private void expandBookmarks(BMNode flattenedRoot, TreeViewer view)
+	{
+		for (BMNode child : flattenedRoot.getChildren()) {
+			TreeUtil.showNodeExpanded(view, child);
+		}
 	}
 
 	private void buildFlatModelForCategoryView(BMNode flattenedRoot, BMNode node)
