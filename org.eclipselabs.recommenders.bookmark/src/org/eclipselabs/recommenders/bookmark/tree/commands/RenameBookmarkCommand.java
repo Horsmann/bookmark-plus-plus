@@ -8,8 +8,9 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 public class RenameBookmarkCommand implements TreeCommand {
@@ -28,7 +29,7 @@ public class RenameBookmarkCommand implements TreeCommand {
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.minimumWidth = 100;
 
-		final TreeNode node = (TreeNode) item.getData();
+		final BMNode node = (BMNode) item.getData();
 		if (!node.isBookmarkNode())
 			return;
 
@@ -53,7 +54,8 @@ public class RenameBookmarkCommand implements TreeCommand {
 				case SWT.CR:
 					// drop through
 					String newValue = text.getText();
-					node.setValue(newValue);
+					setNewValue(node, newValue);
+//					node.setValue(newValue);
 				case SWT.ESC:
 					// End editing session
 					text.dispose();
@@ -69,6 +71,16 @@ public class RenameBookmarkCommand implements TreeCommand {
 		editor.setEditor(text, item);
 	}
 
+	private void setNewValue(BMNode node, String newValue) {
+		node.setValue(newValue);
+		
+		if (node.hasReference()) {
+			BMNode reference = node.getReference();
+			reference.setValue(newValue);
+		}
+		
+	}
+	
 	private void setFocusAndSelection(TreeItem item) {
 		viewer.getView().refresh();
 		viewer.getView().getTree().setSelection(item);
