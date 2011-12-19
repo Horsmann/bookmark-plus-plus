@@ -48,14 +48,16 @@ public class ShowBookmarksInEditorAction
 		for (int i = 0; i < selectedList.size(); i++) {
 			BMNode node = (BMNode) selectedList.get(i);
 
-			if (!isReferencedResourceAvailable(node)) {
-				continue;
-			}
-
-			if (node.isBookmarkNode())
+			if (node.isBookmarkNode()) {
 				openAllEntriesOfBookmark(node);
-			else
+			}
+			else {
+
+				if (!isReferencedResourceAvailable(node)) {
+					continue;
+				}
 				openSingleEntry(node);
+			}
 		}
 
 	}
