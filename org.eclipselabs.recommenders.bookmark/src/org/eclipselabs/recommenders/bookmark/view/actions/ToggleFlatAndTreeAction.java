@@ -33,6 +33,9 @@ public class ToggleFlatAndTreeAction
 		else {
 			BMNode flattenFromNode = null;
 			BookmarkView view = manager.getActiveBookmarkView();
+			
+			saveExpandedState();
+			
 			TreeModel model = view.getModel();
 			flattenFromNode = model.getModelHead();
 			manager.activateFlattenedModus(flattenFromNode);
@@ -40,6 +43,11 @@ public class ToggleFlatAndTreeAction
 
 		refreshView();
 
+	}
+
+	private void saveExpandedState()
+	{
+		
 	}
 
 	private void refreshView()

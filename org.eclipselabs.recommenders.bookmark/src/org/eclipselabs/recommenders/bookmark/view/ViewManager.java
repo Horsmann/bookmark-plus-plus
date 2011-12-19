@@ -23,7 +23,7 @@ public interface ViewManager
 	 */
 	public void setStoredExpandedNodesForActiveView();
 
-	public void deleteExpandedNodeFromStorage(Object node);
+	public void removeCurrentlyVisibleNodesFromStorage();
 
 	public void reinitializeExpandedStorage();
 

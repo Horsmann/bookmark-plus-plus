@@ -206,9 +206,13 @@ public class BookmarkViewManager
 	}
 
 	@Override
-	public void deleteExpandedNodeFromStorage(Object node)
+	public void removeCurrentlyVisibleNodesFromStorage()
 	{
-		expandedNodes.remove(node);
+		Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
+				.getModelHead());
+		for (Object o : currentlyVisibleNodes) {
+			expandedNodes.remove(o);
+		}
 	}
 
 	@Override

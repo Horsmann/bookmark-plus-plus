@@ -92,19 +92,10 @@ public class ToggleViewAction
 		}
 		else {
 
-			removeCurrentlyVisibleNodesFromStorage(model);
+			manager.removeCurrentlyVisibleNodesFromStorage();
 			manager.addCurrentlyExpandedNodesToStorage();
 			model.resetHeadToRoot();
 			setUpViewUnflattened(model.getModelHead());
-		}
-	}
-
-	private void removeCurrentlyVisibleNodesFromStorage(TreeModel model)
-	{
-		Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
-				.getModelHead());
-		for (Object o : currentlyVisibleNodes) {
-			manager.deleteExpandedNodeFromStorage(o);
 		}
 	}
 
