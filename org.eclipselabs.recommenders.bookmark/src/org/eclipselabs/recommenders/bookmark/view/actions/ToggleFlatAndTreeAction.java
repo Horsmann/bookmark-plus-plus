@@ -29,13 +29,14 @@ public class ToggleFlatAndTreeAction
 	{
 		if (manager.isViewFlattened()) {
 			manager.deactivateFlattenedModus();
+			manager.setStoredExpandedNodesForActiveView();
 		}
 		else {
 			BMNode flattenFromNode = null;
 			BookmarkView view = manager.getActiveBookmarkView();
-			
+
 			saveExpandedState();
-			
+
 			TreeModel model = view.getModel();
 			flattenFromNode = model.getModelHead();
 			manager.activateFlattenedModus(flattenFromNode);
@@ -47,7 +48,8 @@ public class ToggleFlatAndTreeAction
 
 	private void saveExpandedState()
 	{
-		
+		manager.removeCurrentlyVisibleNodesFromStorage();
+		manager.addCurrentlyExpandedNodesToStorage();
 	}
 
 	private void refreshView()
