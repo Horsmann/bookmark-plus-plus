@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 public class RenameBookmarkCommand implements TreeCommand {
@@ -55,7 +54,6 @@ public class RenameBookmarkCommand implements TreeCommand {
 					// drop through
 					String newValue = text.getText();
 					setNewValue(node, newValue);
-//					node.setValue(newValue);
 				case SWT.ESC:
 					// End editing session
 					text.dispose();
