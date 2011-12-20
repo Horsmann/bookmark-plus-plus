@@ -269,7 +269,7 @@ public class CategoryView
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
 		toggleLevel = new ToggleViewAction(manager, this);
 		deleteSelection = new DeleteAction(this);
-		newBookmark = new CreateNewBookmarkAction(this);
+		newBookmark = new CreateNewBookmarkAction(manager);
 		toggleFlatTree = new ToggleFlatAndTreeAction(manager);
 
 	}
