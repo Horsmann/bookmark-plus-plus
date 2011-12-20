@@ -1,6 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -9,7 +10,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.util.DirectoryUtil;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -63,15 +63,32 @@ public class TreeLabelProvider
 		if (!showExtendInformationInName(value))
 			return text;
 
-		String compilationUnit = determineCompilationUnit(value);
-		String project = determineProject(value);
-
-		String prefix = compilationUnit + ".";
-		String suffix = ":" + project;
+		String prefix = generatePrefix(value);
+		String suffix = generateSuffix(value);
 
 		String updatedText = prefix + text + suffix;
 		updatedText = updatedText.trim();
+		
 		return updatedText;
+	}
+
+	private String generateSuffix(Object value)
+	{
+		String project = determineProject(value);
+		String suffix = " - " + project;
+		return suffix;
+	}
+
+	private String generatePrefix(Object value)
+	{
+		String compilationUnit = determineCompilationUnit(value);
+		String prefix = "";
+
+		if (!(value instanceof ICompilationUnit)) {
+			prefix = compilationUnit + ".";
+		}
+
+		return prefix;
 	}
 
 	private String determineProject(Object value)
