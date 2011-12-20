@@ -41,7 +41,7 @@ public class BookmarkNodeTransfer
 				}
 			}
 			
-			byte[] buffer = idsString.getBytes();
+			byte[] buffer = idsString.getBytes("UTF-16");
 			writeOut.writeInt(buffer.length);
 			writeOut.write(buffer);
 			// }
@@ -69,7 +69,7 @@ public class BookmarkNodeTransfer
 					int size = readIn.readInt();
 					byte[] id = new byte[size];
 					readIn.read(id);
-					String idsString = new String(id, "UTF-8");
+					String idsString = new String(id, "UTF-16");
 					String [] ids = idsString.split("\n");
 					bm.ids = ids;
 					
