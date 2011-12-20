@@ -146,7 +146,7 @@ public class CategoryView
 	private void addListenerToComboBox()
 	{
 		ComboModifyListener comboModifyListener = new ComboModifyListener(
-				saveBookmarkNameChanges);
+				saveBookmarkNameChanges, this);
 		combo.addModifyListener(comboModifyListener);
 
 		// Switch the head node in the model if selection changes
@@ -238,19 +238,25 @@ public class CategoryView
 		if (head.getValue() == null)
 			return;
 
-		String currentHead = (String) model.getModelHead().getValue();
+		BMNode currentHead = model.getModelHead();
+		int selectIndex = rebuildCategoryNamesInCombobox(currentHead);
+		combo.select(selectIndex);
+	}
 
+	private int rebuildCategoryNamesInCombobox(BMNode currentHead)
+	{
 		int selectIndex = 0;
 		BMNode[] bookmarks = model.getModelRoot().getChildren();
 		for (int i = 0; i < bookmarks.length; i++) {
+
 			String name = (String) bookmarks[i].getValue();
 			combo.add(name);
 
-			if (currentHead.equals(name)) {
+			if (currentHead == bookmarks[i]) {
 				selectIndex = i;
 			}
 		}
-		combo.select(selectIndex);
+		return selectIndex;
 	}
 
 	private void createActions()
@@ -283,23 +289,6 @@ public class CategoryView
 		saveBookmarkNameChanges.setEnabled(false);
 	}
 
-	public void setUpToolbarForViewPart()
-	{
-
-		IToolBarManager mgr = manager.getViewPart().getViewSite()
-				.getActionBars().getToolBarManager();
-		mgr.removeAll();
-		mgr.add(showInEditor);
-		mgr.add(refreshView);
-		mgr.add(closeAllOpenEditors);
-		mgr.add(new Separator());
-		mgr.add(toggleLevel);
-		mgr.add(toggleFlatTree);
-		mgr.add(newBookmark);
-
-		mgr.update(true);
-	}
-
 	private void addListenerToView()
 	{
 		addDragDropSupportToView(viewer, model);
@@ -314,34 +303,6 @@ public class CategoryView
 				LocalSelectionTransfer.getTransfer() };
 
 		viewer.addDropSupport(operations, transferTypes, dropListener);
-	}
-
-	private void setUpContextMenu()
-	{
-		final MenuManager menuMgr = new MenuManager();
-		menuMgr.setRemoveAllWhenShown(true);
-
-		menuMgr.addMenuListener(new IMenuListener()
-		{
-			public void menuAboutToShow(IMenuManager mgr)
-			{
-				menuMgr.add(showInEditor);
-				menuMgr.add(refreshView);
-				menuMgr.add(new Separator());
-				menuMgr.add(toggleLevel);
-				menuMgr.add(newBookmark);
-				menuMgr.add(deleteSelection);
-				menuMgr.add(new Separator());
-				menuMgr.add(openInSystemFileExplorer);
-			}
-		});
-
-		menuMgr.update(true);
-
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-
-		manager.getViewPart().getSite().registerContextMenu(menuMgr, viewer);
 	}
 
 	@Override
@@ -380,6 +341,51 @@ public class CategoryView
 	public TreeModel getFlatModel()
 	{
 		return flatModel;
+	}
+
+	private void setUpContextMenu()
+	{
+		final MenuManager menuMgr = new MenuManager();
+		menuMgr.setRemoveAllWhenShown(true);
+
+		menuMgr.addMenuListener(new IMenuListener()
+		{
+			public void menuAboutToShow(IMenuManager mgr)
+			{
+				menuMgr.add(showInEditor);
+				menuMgr.add(refreshView);
+				menuMgr.add(new Separator());
+				menuMgr.add(toggleLevel);
+				menuMgr.add(newBookmark);
+				menuMgr.add(deleteSelection);
+				menuMgr.add(new Separator());
+				menuMgr.add(openInSystemFileExplorer);
+			}
+		});
+
+		menuMgr.update(true);
+
+		Menu menu = menuMgr.createContextMenu(viewer.getControl());
+		viewer.getControl().setMenu(menu);
+
+		manager.getViewPart().getSite().registerContextMenu(menuMgr, viewer);
+	}
+
+	public void setUpToolbarForViewPart()
+	{
+
+		IToolBarManager mgr = manager.getViewPart().getViewSite()
+				.getActionBars().getToolBarManager();
+		mgr.removeAll();
+		mgr.add(showInEditor);
+		mgr.add(refreshView);
+		mgr.add(closeAllOpenEditors);
+		mgr.add(new Separator());
+		mgr.add(toggleLevel);
+		mgr.add(toggleFlatTree);
+		mgr.add(newBookmark);
+
+		mgr.update(true);
 	}
 
 }
