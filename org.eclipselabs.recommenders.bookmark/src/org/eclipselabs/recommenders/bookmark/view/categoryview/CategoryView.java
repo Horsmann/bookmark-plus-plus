@@ -113,12 +113,12 @@ public class CategoryView
 		setUpAndAddLabelToComboComposite();
 		setUpAndAddComboBoxToComboComposite();
 		
-//		Button but = new Button(composite, SWT.NONE);
-//		Image image = Activator.getDefault().getImageRegistry()
-//				.get(Activator.ICON_BOOKMARK);
-//		but.setImage(image);
-//		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-//		but.setLayoutData(gridData);
+		Button but = new Button(comboComposite, SWT.NONE);
+		Image image = Activator.getDefault().getImageRegistry()
+				.get(Activator.ICON_BOOKMARK);
+		but.setImage(image);
+		GridData gridData = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+		but.setLayoutData(gridData);
 
 	}
 
@@ -135,7 +135,7 @@ public class CategoryView
 				combo, manager, comboKeyListener);
 		combo.addSelectionListener(comboSelectionListener);
 		
-		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
+		GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		combo.setLayoutData(gridData);
 	}
 
@@ -154,7 +154,7 @@ public class CategoryView
 	private void setComboCompositeLayout()
 	{
 		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 2;
+		gridLayout.numColumns = 3;
 		comboComposite.setLayout(gridLayout);
 		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
 		comboComposite.setLayoutData(gridData);
