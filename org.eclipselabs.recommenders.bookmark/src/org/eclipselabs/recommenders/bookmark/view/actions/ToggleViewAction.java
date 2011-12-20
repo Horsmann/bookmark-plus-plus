@@ -14,7 +14,6 @@ import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class ToggleViewAction
 	extends Action
-// implements SelfEnabling
 {
 
 	private ViewManager manager;
