@@ -11,12 +11,16 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
@@ -44,8 +48,9 @@ public class CategoryView
 
 	private TreeViewer viewer;
 	private Composite composite;
+
+	private Composite comboComposite;
 	private Combo combo;
-	// private ComboFakeTooltip fakeToolTip = null;
 
 	private TreeModel model;
 	private TreeModel flatModel;
@@ -89,7 +94,7 @@ public class CategoryView
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		viewer.getControl().setLayoutData(gridData);
 
-		assembleComboBox();
+		assembleComboComposite();
 
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider(manager));
@@ -101,9 +106,25 @@ public class CategoryView
 		addListenerToTreeInView();
 	}
 
-	private void assembleComboBox()
+	private void assembleComboComposite()
 	{
-		combo = new Combo(composite, SWT.SIMPLE);
+		comboComposite = new Composite(composite, SWT.NONE);
+		setComboCompositeLayout();
+		setUpAndAddLabelToComboComposite();
+		setUpAndAddComboBoxToComboComposite();
+		
+//		Button but = new Button(composite, SWT.NONE);
+//		Image image = Activator.getDefault().getImageRegistry()
+//				.get(Activator.ICON_BOOKMARK);
+//		but.setImage(image);
+//		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+//		but.setLayoutData(gridData);
+
+	}
+
+	private void setUpAndAddComboBoxToComboComposite()
+	{
+		combo = new Combo(comboComposite, SWT.SIMPLE);
 
 		// Change bookmarks name on "Enter"
 		ComboKeyListener comboKeyListener = new ComboKeyListener(this);
@@ -113,11 +134,30 @@ public class CategoryView
 		ComboSelectionListener comboSelectionListener = new ComboSelectionListener(
 				combo, manager, comboKeyListener);
 		combo.addSelectionListener(comboSelectionListener);
-
+		
 		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
 		combo.setLayoutData(gridData);
+	}
 
-		// fakeToolTip = new ComboFakeTooltip(combo);
+	private void setUpAndAddLabelToComboComposite()
+	{
+		Label label = new Label(comboComposite, SWT.NONE);
+
+		Image image = Activator.getDefault().getImageRegistry()
+				.get(Activator.ICON_BOOKMARK);
+		label.setImage(image);
+		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		label.setLayoutData(gridData);
+
+	}
+
+	private void setComboCompositeLayout()
+	{
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
+		comboComposite.setLayout(gridLayout);
+		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
+		comboComposite.setLayoutData(gridData);
 	}
 
 	private void initializerActionsListenerAndMenus()
@@ -141,7 +181,7 @@ public class CategoryView
 		notifier.add((SelfEnabling) openInSystemFileExplorer);
 		notifier.add((SelfEnabling) showInEditor);
 		notifier.add((SelfEnabling) deleteSelection);
-//		notifier.add((SelfEnabling) toggleLevel);
+		// notifier.add((SelfEnabling) toggleLevel);
 
 	}
 
