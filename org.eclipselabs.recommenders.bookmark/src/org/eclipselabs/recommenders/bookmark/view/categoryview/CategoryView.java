@@ -47,9 +47,8 @@ public class CategoryView
 {
 
 	private TreeViewer viewer;
-	private Composite mainComposite;
+	private Composite composite;
 
-	private Composite comboComposite;
 	private Combo combo;
 	private Button saveBookmarkNameChanges;
 
@@ -84,7 +83,7 @@ public class CategoryView
 		this.model = model;
 		this.flatModel = flatModel;
 
-		mainComposite = new Composite(parent, SWT.NONE);
+		composite = new Composite(parent, SWT.NONE);
 
 		setUpMainCompositesContent();
 
@@ -113,20 +112,19 @@ public class CategoryView
 	private void addTreeViewerToMainComposite()
 	{
 		gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
-		mainComposite.setLayout(gridLayout);
+		gridLayout.numColumns = 3;
+		composite.setLayout(gridLayout);
 
-		viewer = new TreeViewer(mainComposite, SWT.MULTI | SWT.H_SCROLL
+		viewer = new TreeViewer(composite, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gridData.horizontalSpan = 3;
 		viewer.getControl().setLayoutData(gridData);
 	}
 
 	private void addComboCompositeToMainComposite()
 	{
-		comboComposite = new Composite(mainComposite, SWT.NONE);
-		setComboCompositeLayout();
 		setUpAndAddLabelToComboComposite();
 		setUpAndAddComboBoxToComboComposite();
 		setUpAndAddSaveButtonToComboComposite();
@@ -151,13 +149,13 @@ public class CategoryView
 
 		// Switch the head node in the model if selection changes
 		ComboSelectionListener comboSelectionListener = new ComboSelectionListener(
-				combo, manager);
+				saveBookmarkNameChanges, combo, manager);
 		combo.addSelectionListener(comboSelectionListener);
 	}
 
 	private void setUpAndAddSaveButtonToComboComposite()
 	{
-		saveBookmarkNameChanges = new Button(comboComposite, SWT.NONE);
+		saveBookmarkNameChanges = new Button(composite, SWT.NONE);
 
 		Image image = Activator.getDefault().getImageRegistry()
 				.get(Activator.ICON_SAVE);
@@ -177,7 +175,7 @@ public class CategoryView
 
 	private void setUpAndAddComboBoxToComboComposite()
 	{
-		combo = new Combo(comboComposite, SWT.SIMPLE);
+		combo = new Combo(composite, SWT.SIMPLE);
 
 		GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		combo.setLayoutData(gridData);
@@ -185,7 +183,7 @@ public class CategoryView
 
 	private void setUpAndAddLabelToComboComposite()
 	{
-		Label label = new Label(comboComposite, SWT.NONE);
+		Label label = new Label(composite, SWT.NONE);
 
 		Image image = Activator.getDefault().getImageRegistry()
 				.get(Activator.ICON_BOOKMARK);
@@ -193,15 +191,6 @@ public class CategoryView
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		label.setLayoutData(gridData);
 
-	}
-
-	private void setComboCompositeLayout()
-	{
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 3;
-		comboComposite.setLayout(gridLayout);
-		GridData gridData = new GridData(SWT.FILL, SWT.VERTICAL, true, false);
-		comboComposite.setLayoutData(gridData);
 	}
 
 	private void initializerActionsListenerAndMenus()
@@ -328,7 +317,7 @@ public class CategoryView
 
 	public Composite getComposite()
 	{
-		return mainComposite;
+		return composite;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package org.eclipselabs.recommenders.bookmark.view.categoryview;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
@@ -14,9 +15,11 @@ public class ComboSelectionListener
 
 	private Combo combo;
 	private ViewManager manager;
+	private final Button saveBookmarkNameChanges;
 
-	public ComboSelectionListener(Combo combo, ViewManager manager)
+	public ComboSelectionListener(Button saveBookmarkNameChanges, Combo combo, ViewManager manager)
 	{
+		this.saveBookmarkNameChanges = saveBookmarkNameChanges;
 		this.combo = combo;
 		this.manager = manager;
 	}
@@ -44,6 +47,7 @@ public class ComboSelectionListener
 			manager.activateFlattenedModus(bookmarks[index]);
 		}
 
+		saveBookmarkNameChanges.setEnabled(false);
 	}
 
 	@Override
