@@ -47,7 +47,7 @@ public class CategoryView
 {
 
 	private TreeViewer viewer;
-	private Composite composite;
+	private Composite mainComposite;
 
 	private Composite comboComposite;
 	private Combo combo;
@@ -83,18 +83,16 @@ public class CategoryView
 		this.model = model;
 		this.flatModel = flatModel;
 
-		composite = new Composite(parent, SWT.NONE);
-		gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
-		composite.setLayout(gridLayout);
+		mainComposite = new Composite(parent, SWT.NONE);
+		
+		setUpMainCompositesContent();
+		
+	}
 
-		viewer = new TreeViewer(composite, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
-
-		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		viewer.getControl().setLayoutData(gridData);
-
-		assembleComboComposite();
+	private void setUpMainCompositesContent()
+	{
+		addTreeViewerToMainComposite();
+		addComboCompositeToMainComposite();
 
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider(manager));
@@ -103,19 +101,32 @@ public class CategoryView
 		initializerActionsListenerAndMenus();
 
 		addListenerToView();
-		addListenerToTreeInView();
+		addListenerToTreeInView();		
 	}
 
-	private void assembleComboComposite()
+	private void addTreeViewerToMainComposite()
 	{
-		comboComposite = new Composite(composite, SWT.NONE);
+		gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
+		mainComposite.setLayout(gridLayout);
+
+		viewer = new TreeViewer(mainComposite, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
+
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		viewer.getControl().setLayoutData(gridData);
+	}
+
+	private void addComboCompositeToMainComposite()
+	{
+		comboComposite = new Composite(mainComposite, SWT.NONE);
 		setComboCompositeLayout();
 		setUpAndAddLabelToComboComposite();
 		setUpAndAddComboBoxToComboComposite();
-		
+
 		Button but = new Button(comboComposite, SWT.NONE);
 		Image image = Activator.getDefault().getImageRegistry()
-				.get(Activator.ICON_BOOKMARK);
+				.get(Activator.ICON_SAVE);
 		but.setImage(image);
 		GridData gridData = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 		but.setLayoutData(gridData);
@@ -134,7 +145,7 @@ public class CategoryView
 		ComboSelectionListener comboSelectionListener = new ComboSelectionListener(
 				combo, manager, comboKeyListener);
 		combo.addSelectionListener(comboSelectionListener);
-		
+
 		GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		combo.setLayoutData(gridData);
 	}
@@ -181,7 +192,6 @@ public class CategoryView
 		notifier.add((SelfEnabling) openInSystemFileExplorer);
 		notifier.add((SelfEnabling) showInEditor);
 		notifier.add((SelfEnabling) deleteSelection);
-		// notifier.add((SelfEnabling) toggleLevel);
 
 	}
 
@@ -252,7 +262,6 @@ public class CategoryView
 		mgr.add(toggleLevel);
 		mgr.add(toggleFlatTree);
 		mgr.add(newBookmark);
-		// mgr.add(deleteSelection);
 
 		mgr.update(true);
 	}
@@ -330,7 +339,7 @@ public class CategoryView
 
 	public Composite getComposite()
 	{
-		return composite;
+		return mainComposite;
 	}
 
 	@Override

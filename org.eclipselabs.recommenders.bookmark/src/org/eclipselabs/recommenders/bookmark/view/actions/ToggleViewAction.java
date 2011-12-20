@@ -26,7 +26,7 @@ public class ToggleViewAction
 		this.actionTriggeringView = view;
 
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
-				.getDescriptor(Activator.ICON_TOGGLE_LEVEL));
+				.getDescriptor(Activator.ICON_TOGGLE_VIEW));
 		this.setToolTipText("Toggles between the default view and the category the selected item is in");
 		this.setText("Toggle between levels");
 		// setEnabledStatus();
