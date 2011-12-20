@@ -64,28 +64,14 @@ public class TreeLabelProvider
 			return text;
 
 		String compilationUnit = determineCompilationUnit(value);
-		String bookmark = determineBookmarkName(node);
 		String project = determineProject(value);
 
-		String suffix = getCompilationUnitSuffix(compilationUnit) + ":"
-				+ project + "[" + bookmark + "]";
+		String prefix = compilationUnit + ".";
+		String suffix = ":" + project;
 
-		String updatedText = text + suffix;
+		String updatedText = prefix + text + suffix;
 		updatedText = updatedText.trim();
 		return updatedText;
-	}
-
-	private String determineBookmarkName(BMNode node)
-	{
-		return TreeUtil.getNameOfNodesBookmark(node);
-	}
-
-	private String getCompilationUnitSuffix(String compilationUnit)
-	{
-		if (compilationUnit.compareTo("") != 0) {
-			return "@" + compilationUnit;
-		}
-		return "";
 	}
 
 	private String determineProject(Object value)
@@ -100,7 +86,23 @@ public class TreeLabelProvider
 		}
 		IJavaElement element = (IJavaElement) value;
 		String compilationUnit = DirectoryUtil.getCompilationUnitName(element);
+
+		compilationUnit = chopOffFileEnding(compilationUnit);
+
 		return compilationUnit;
+	}
+
+	private String chopOffFileEnding(String compilationUnit)
+	{
+		int pos = compilationUnit.lastIndexOf(".");
+
+		if (pos == -1) {
+			return compilationUnit;
+		}
+
+		String name = compilationUnit.substring(0, pos);
+
+		return name;
 	}
 
 	private BMNode getModelNode(BMNode viewNode)
