@@ -51,6 +51,7 @@ public class CategoryView
 
 	private Composite comboComposite;
 	private Combo combo;
+	private Button saveBookmarkNameChanges;
 
 	private TreeModel model;
 	private TreeModel flatModel;
@@ -84,9 +85,9 @@ public class CategoryView
 		this.flatModel = flatModel;
 
 		mainComposite = new Composite(parent, SWT.NONE);
-		
+
 		setUpMainCompositesContent();
-		
+
 	}
 
 	private void setUpMainCompositesContent()
@@ -94,14 +95,19 @@ public class CategoryView
 		addTreeViewerToMainComposite();
 		addComboCompositeToMainComposite();
 
-		viewer.setContentProvider(new TreeContentProvider());
-		viewer.setLabelProvider(new TreeLabelProvider(manager));
-		viewer.setInput(model.getModelRoot());
+		configureTreeViewer();
 
 		initializerActionsListenerAndMenus();
 
 		addListenerToView();
-		addListenerToTreeInView();		
+		addListenerToTreeInView();
+	}
+
+	private void configureTreeViewer()
+	{
+		viewer.setContentProvider(new TreeContentProvider());
+		viewer.setLabelProvider(new TreeLabelProvider(manager));
+		viewer.setInput(model.getModelRoot());
 	}
 
 	private void addTreeViewerToMainComposite()
@@ -123,13 +129,28 @@ public class CategoryView
 		setComboCompositeLayout();
 		setUpAndAddLabelToComboComposite();
 		setUpAndAddComboBoxToComboComposite();
+		setUpAndAddSaveButtonToComboComposite();
 
-		Button but = new Button(comboComposite, SWT.NONE);
+	}
+
+	private void setUpAndAddSaveButtonToComboComposite()
+	{
+		saveBookmarkNameChanges = new Button(comboComposite, SWT.NONE);
 		Image image = Activator.getDefault().getImageRegistry()
 				.get(Activator.ICON_SAVE);
-		but.setImage(image);
+		saveBookmarkNameChanges.setImage(image);
 		GridData gridData = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-		but.setLayoutData(gridData);
+		saveBookmarkNameChanges.setLayoutData(gridData);
+
+		addListenerToSaveButton();
+
+	}
+
+	private void addListenerToSaveButton()
+	{
+		saveBookmarkNameChanges.addListener(SWT.MouseDown,
+				new ComboSaveButtonListener(saveBookmarkNameChanges, combo,
+						model));
 
 	}
 
