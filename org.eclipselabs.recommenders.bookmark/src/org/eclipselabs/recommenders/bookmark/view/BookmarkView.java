@@ -12,8 +12,6 @@ public interface BookmarkView
 
 	public TreeModel getFlatModel();
 
-	public boolean requiresSelectionForToggle();
-
 	public void updateControls();
 
 	public ViewManager getManager();

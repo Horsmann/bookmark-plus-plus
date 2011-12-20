@@ -5,30 +5,32 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 
-public class ComboSaveButtonListener implements Listener
+public class ComboSaveButtonListener
+	implements Listener
 {
 
 	private final Combo combo;
-	private final TreeModel model;
 	private final Button button;
+	private final CategoryView view;
 
-	public ComboSaveButtonListener(Button save, Combo combo, TreeModel model)
+	public ComboSaveButtonListener(CategoryView view, Button save, Combo combo)
 	{
+		this.view = view;
 		this.button = save;
 		this.combo = combo;
-		this.model = model;
 	}
 
 	@Override
 	public void handleEvent(Event event)
 	{
 		String text = combo.getText();
-		BMNode head = model.getModelHead();
-		
+		BMNode head = view.getModel().getModelHead();
+
 		head.setValue(text);
 		
+		view.refreshCategories();
+
 		button.setEnabled(false);
 	}
 

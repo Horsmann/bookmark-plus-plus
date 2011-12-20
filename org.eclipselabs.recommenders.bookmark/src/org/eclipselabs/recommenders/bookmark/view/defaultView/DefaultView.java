@@ -223,12 +223,6 @@ public class DefaultView
 	}
 
 	@Override
-	public boolean requiresSelectionForToggle()
-	{
-		return true;
-	}
-
-	@Override
 	public void updateControls()
 	{
 		viewer.refresh(true);

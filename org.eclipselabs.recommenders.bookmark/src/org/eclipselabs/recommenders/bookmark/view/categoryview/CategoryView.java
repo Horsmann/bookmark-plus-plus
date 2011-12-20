@@ -131,41 +131,53 @@ public class CategoryView
 		setUpAndAddComboBoxToComboComposite();
 		setUpAndAddSaveButtonToComboComposite();
 
+		addListenerToComboCompositeControls();
+
+		saveBookmarkNameChanges.setEnabled(false);
+	}
+
+	private void addListenerToComboCompositeControls()
+	{
+		addListenerToComboBox();
+
+		addListenerToSaveButton();
+	}
+
+	private void addListenerToComboBox()
+	{
+		ComboModifyListener comboModifyListener = new ComboModifyListener(
+				saveBookmarkNameChanges);
+		combo.addModifyListener(comboModifyListener);
+
+		// Switch the head node in the model if selection changes
+		ComboSelectionListener comboSelectionListener = new ComboSelectionListener(
+				combo, manager);
+		combo.addSelectionListener(comboSelectionListener);
 	}
 
 	private void setUpAndAddSaveButtonToComboComposite()
 	{
 		saveBookmarkNameChanges = new Button(comboComposite, SWT.NONE);
+
 		Image image = Activator.getDefault().getImageRegistry()
 				.get(Activator.ICON_SAVE);
 		saveBookmarkNameChanges.setImage(image);
+
 		GridData gridData = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 		saveBookmarkNameChanges.setLayoutData(gridData);
-
-		addListenerToSaveButton();
-
 	}
 
 	private void addListenerToSaveButton()
 	{
 		saveBookmarkNameChanges.addListener(SWT.MouseDown,
-				new ComboSaveButtonListener(saveBookmarkNameChanges, combo,
-						model));
+				new ComboSaveButtonListener(this, saveBookmarkNameChanges,
+						combo));
 
 	}
 
 	private void setUpAndAddComboBoxToComboComposite()
 	{
 		combo = new Combo(comboComposite, SWT.SIMPLE);
-
-		// Change bookmarks name on "Enter"
-		ComboKeyListener comboKeyListener = new ComboKeyListener(this);
-		combo.addKeyListener(comboKeyListener);
-
-		// Switch the head node in the model if selection changes
-		ComboSelectionListener comboSelectionListener = new ComboSelectionListener(
-				combo, manager, comboKeyListener);
-		combo.addSelectionListener(comboSelectionListener);
 
 		GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		combo.setLayoutData(gridData);
@@ -268,6 +280,7 @@ public class CategoryView
 	private void updateEnableStatusOfControls()
 	{
 		notifier.fire();
+		saveBookmarkNameChanges.setEnabled(false);
 	}
 
 	public void setUpToolbarForViewPart()
@@ -335,12 +348,6 @@ public class CategoryView
 	public TreeViewer getView()
 	{
 		return viewer;
-	}
-
-	@Override
-	public boolean requiresSelectionForToggle()
-	{
-		return false;
 	}
 
 	@Override

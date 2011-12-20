@@ -13,15 +13,12 @@ public class ComboSelectionListener
 {
 
 	private Combo combo;
-	private ComboKeyListener keyListener;
 	private ViewManager manager;
 
-	public ComboSelectionListener(Combo combo, ViewManager manager,
-			ComboKeyListener keyListener)
+	public ComboSelectionListener(Combo combo, ViewManager manager)
 	{
 		this.combo = combo;
 		this.manager = manager;
-		this.keyListener = keyListener;
 	}
 
 	@Override
@@ -29,8 +26,6 @@ public class ComboSelectionListener
 	{
 
 		TreeModel model = manager.getActiveBookmarkView().getModel();
-
-		keyListener.selectionChanged();
 
 		manager.removeCurrentlyVisibleNodesFromStorage();
 		manager.addCurrentlyExpandedNodesToStorage();
