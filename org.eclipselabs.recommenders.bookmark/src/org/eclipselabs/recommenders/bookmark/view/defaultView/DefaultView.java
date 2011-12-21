@@ -152,7 +152,7 @@ public class DefaultView
 	{
 		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
 				viewer);
-		exportBookmarks = new ExportBookmarksAction(this);
+		exportBookmarks = new ExportBookmarksAction(manager);
 		importBookmarks = new ImportBookmarksAction(this);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(this);
