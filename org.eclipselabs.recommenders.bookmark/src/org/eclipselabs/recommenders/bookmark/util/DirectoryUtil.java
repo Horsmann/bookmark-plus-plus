@@ -41,6 +41,7 @@ public class DirectoryUtil
 
 	public static String getCompilationUnitName(IJavaElement element)
 	{
+		
 		ICompilationUnit compilationUnit = seekCompilationUnit(element);
 
 		if (compilationUnit == null) {

@@ -11,6 +11,35 @@ import org.junit.Test;
 
 public class TreeNodeTest {
 	
+	@Test
+	public void testHasParent() {
+		BMNode root = getTestTree();
+		assertFalse(root.hasParent());
+		
+		BMNode child = root.getChildren()[0];
+		assertTrue(child.hasParent());
+	}
+	
+	@Test
+	public void testRemoveAllChildren() {
+		BMNode root = getTestTree();
+		
+		root.removeAllChildren();
+		
+		BMNode[] children = root.getChildren();
+		
+		assertFalse(root.hasChildren());
+		assertEquals(0, children.length);
+	}
+	
+	private BMNode getTestTree()
+	{
+		TreeNode node = new TreeNode("Node", true, true);
+		node.addChild(new TreeNode("child 1", false, false));
+		node.addChild(new TreeNode("child 2", false, false));
+		return node;
+	}
+
 	@Test(expected=UnsupportedOperationException.class)
 	public void testExceptionForNonAvailableReference() {
 		TreeNode node = new TreeNode("node", false, true);

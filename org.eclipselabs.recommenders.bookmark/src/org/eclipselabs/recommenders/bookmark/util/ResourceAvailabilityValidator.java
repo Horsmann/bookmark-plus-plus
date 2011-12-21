@@ -8,15 +8,19 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 
-public class ResourceAvailabilityValidator {
+public class ResourceAvailabilityValidator
+{
 
-	public static boolean isResourceAvailable(Object value) {
+	public static boolean isResourceAvailable(Object value)
+	{
+		// testing for project existence unnecessary, if it not exist not open
+		// will evaluate to 'false'
 		return isAssociatedProjectOpen(value)
-				&& doesReferecedObjectExists(value)
-				&& doesAssociatedProjectExists(value);
+				&& doesReferecedObjectExists(value);
 	}
 
-	public static boolean isAssociatedProjectOpen(Object value) {
+	public static boolean isAssociatedProjectOpen(Object value)
+	{
 		if (value instanceof IJavaElement) {
 			IJavaElement element = (IJavaElement) value;
 			IProject project = element.getJavaProject().getProject();
@@ -34,7 +38,8 @@ public class ResourceAvailabilityValidator {
 		return false;
 	}
 
-	public static boolean doesAssociatedProjectExists(Object value) {
+	public static boolean doesAssociatedProjectExists(Object value)
+	{
 		if (value instanceof IJavaElement) {
 			IJavaElement element = (IJavaElement) value;
 			IProject project = element.getJavaProject().getProject();
@@ -52,12 +57,15 @@ public class ResourceAvailabilityValidator {
 		return false;
 	}
 
-	/** 
-	 * If the resource is in a closed project this method will evaluate <code>false</code>!
+	/**
+	 * If the resource is in a closed project this method will evaluate
+	 * <code>false</code>!
+	 * 
 	 * @param value
 	 * @return
 	 */
-	public static boolean doesReferecedObjectExists(Object value) {
+	public static boolean doesReferecedObjectExists(Object value)
+	{
 
 		if (value instanceof IField) {
 			IField field = (IField) value;
