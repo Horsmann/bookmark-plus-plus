@@ -1,22 +1,22 @@
 package org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization;
 
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 
 public class RestoredTree {
 	
-	private TreeNode root;
-	private TreeNode [] expanded;
+	private BMNode root;
+	private BMNode [] expanded;
 	
-	public RestoredTree(TreeNode root, TreeNode [] expanded){
+	public RestoredTree(BMNode root, BMNode [] expanded){
 		this.root = root;
 		this.expanded = expanded;
 	}
 
-	public TreeNode getRoot() {
+	public BMNode getRoot() {
 		return root;
 	}
 
-	public TreeNode[] getExpanded() {
+	public BMNode[] getExpanded() {
 		return expanded;
 	}
 

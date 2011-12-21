@@ -3,7 +3,7 @@ package org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization;
 import java.util.LinkedList;
 
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.GsonConverter;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.ObjectConverter;
 
@@ -17,12 +17,12 @@ public class TreeDeserializerFacade {
 		return rstTree;
 	}
 	
-	public static void setExpandedNodesForView(TreeViewer viewer, TreeNode [] expanded){
-		LinkedList<TreeNode> exNodeList = new LinkedList<TreeNode>();
+	public static void setExpandedNodesForView(TreeViewer viewer, BMNode [] expanded){
+		LinkedList<BMNode> exNodeList = new LinkedList<BMNode>();
 		for (Object node : viewer.getExpandedElements())
-			exNodeList.add((TreeNode) node);
+			exNodeList.add((BMNode) node);
 
-		for (TreeNode node : expanded)
+		for (BMNode node : expanded)
 			exNodeList.add(node);
 
 
