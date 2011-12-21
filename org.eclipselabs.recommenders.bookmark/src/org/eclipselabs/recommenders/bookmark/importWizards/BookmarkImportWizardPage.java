@@ -33,8 +33,6 @@ public class BookmarkImportWizardPage
 	private Text textField;
 	private Button button;
 
-	// private FileFieldEditor fileFieldEditor;
-
 	protected BookmarkImportWizardPage(String pageName)
 	{
 		super(pageName, pageName, null);
@@ -48,15 +46,14 @@ public class BookmarkImportWizardPage
 		container = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
+		GridData compData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		container.setLayout(layout);
+		container.setLayoutData(compData);
 
-		// fileFieldEditor = new FileFieldEditor("Import Bookmark",
-		// "Select file",
-		// container);
-		// fileFieldEditor.setFileExtensions(new String[] { "*.bm" });
 
 		textField = new Text(container, SWT.BORDER);
-		GridData data = new GridData(GridData.GRAB_HORIZONTAL);
+		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		data.grabExcessHorizontalSpace = true;
 		textField.setLayoutData(data);
 
 		data = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
