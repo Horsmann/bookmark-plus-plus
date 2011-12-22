@@ -68,7 +68,7 @@ public class TreeLabelProvider
 
 		String updatedText = prefix + text + suffix;
 		updatedText = updatedText.trim();
-		
+
 		return updatedText;
 	}
 
@@ -84,7 +84,8 @@ public class TreeLabelProvider
 		String compilationUnit = determineCompilationUnit(value);
 		String prefix = "";
 
-		if (!(value instanceof ICompilationUnit)) {
+		if (!(value instanceof ICompilationUnit)
+				&& compilationUnit.compareTo("") != 0) {
 			prefix = compilationUnit + ".";
 		}
 
