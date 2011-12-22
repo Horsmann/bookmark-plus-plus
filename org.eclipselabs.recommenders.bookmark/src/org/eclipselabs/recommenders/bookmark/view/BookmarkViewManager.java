@@ -81,7 +81,7 @@ public class BookmarkViewManager
 
 		IHandlerService handlerServ = (IHandlerService) getSite().getService(
 				IHandlerService.class);
-		PasteHandler paste = new PasteHandler(activeView);
+		PasteHandler paste = new PasteHandler(this);
 		handlerServ.activateHandler("org.eclipse.ui.edit.paste", paste);
 
 		CopyHandler copy = new CopyHandler(this);
@@ -319,5 +319,17 @@ public class BookmarkViewManager
 	public boolean isViewToggled()
 	{
 		return isViewToggled;
+	}
+
+	@Override
+	public TreeModel getModel()
+	{
+		return model;
+	}
+
+	@Override
+	public TreeModel getFlatModel()
+	{
+		return flatModel;
 	}
 }

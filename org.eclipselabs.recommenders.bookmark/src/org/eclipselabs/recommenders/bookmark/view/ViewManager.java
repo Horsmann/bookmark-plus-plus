@@ -2,6 +2,7 @@ package org.eclipselabs.recommenders.bookmark.view;
 
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 
 public interface ViewManager
 {
@@ -34,4 +35,8 @@ public interface ViewManager
 	public boolean isViewFlattened();
 	
 	public boolean isViewToggled();
+	
+	public TreeModel getModel();
+
+	public TreeModel getFlatModel();
 }

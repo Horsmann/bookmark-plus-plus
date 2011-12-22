@@ -6,13 +6,21 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.internal.corext.refactoring.reorg.JavaElementTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
@@ -23,12 +31,15 @@ import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 public class PasteHandler
 	extends AbstractHandler
 {
+	private final ViewManager manager;
 
-	private BookmarkView activeView;
+	private final Transfer[] supportedTransfers = {
+			BookmarkNodeTransfer.getInstance(),
+			JavaElementTransfer.getInstance(), FileTransfer.getInstance() };
 
-	public PasteHandler(BookmarkView activeView)
+	public PasteHandler(ViewManager manager)
 	{
-		this.activeView = activeView;
+		this.manager = manager;
 	}
 
 	@Override
@@ -38,71 +49,158 @@ public class PasteHandler
 
 		Clipboard cb = new Clipboard(Display.getCurrent());
 
-		processInternalBookmarkTransfer(cb);
-
-		processExternalJavaElementTransfer(cb);
+		processAvailableClipboardData(cb);
 
 		cb.dispose();
 		return null;
 	}
 
-	private void processExternalJavaElementTransfer(Clipboard cb)
+	private void processAvailableClipboardData(Clipboard cb)
 	{
-		JavaElementTransfer javaEleTransfer = JavaElementTransfer.getInstance();
-		Object clipBoardContent = cb.getContents(javaEleTransfer);
-
-		if (clipBoardContent instanceof Object[]) {
-			Object[] clipBoardData = (Object[]) clipBoardContent;
-			processJavaElement(clipBoardData);
+		for (Transfer transfer : supportedTransfers) {
+			Object object = cb.getContents(transfer);
+			if (object instanceof Object[]) {
+				Object[] objects = (Object[]) object;
+				performPaste(objects);
+			}
 		}
+
 	}
 
-	private void processInternalBookmarkTransfer(Clipboard cb)
+	private void performPaste(Object[] objects)
 	{
-		BookmarkNodeTransfer bmTransfer = BookmarkNodeTransfer.getInstance();
-		Object bms = cb.getContents(bmTransfer);
+		BMNode target = getTargetNode();
 
-		if (bms instanceof BookmarkNodeTransferObject[]) {
-			BookmarkNodeTransferObject[] bookmarkObjects = (BookmarkNodeTransferObject[]) bms;
-			BookmarkNodeTransferObject content = bookmarkObjects[0];
-			processBookmarViewItems(content);
-		}
-	}
-
-	private void processBookmarViewItems(
-			BookmarkNodeTransferObject bookmarkObjects)
-	{
-		List<IStructuredSelection> selections = TreeUtil
-				.getTreeSelections(activeView.getView());
-
-		if (selections.size() != 1)
+		if (target == null) {
 			return;
-
-		BMNode target = (BMNode) selections.get(0);
-
-		for (String id : bookmarkObjects.ids) {
-			Object restoredValue = restoreValue(id);
-			BMNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
-
-			TreePath path = new TreePath(new Object[] { restoredValue });
-			TreePath[] treePath = new TreePath[] { path };
-			new AddTreepathsToExistingBookmarkCommand(activeView,
-					bookmarkOfTarget, treePath).execute();
-
-			updateView();
-
 		}
 
+		processClipboardData(objects, target);
+
+		updateView();
+	}
+
+	private BMNode getTargetNode()
+	{
+		TreeViewer viewer = manager.getActiveBookmarkView().getView();
+		List<IStructuredSelection> selections = TreeUtil
+				.getTreeSelections(viewer);
+
+		if (selections.size() > 1)
+			return null;
+
+		BMNode target = null;
+		if (selections.size() == 0) { // Also paste in empty area
+			target = getTargetBasedOnViewsToggledState();
+		}
+		else {
+			target = (BMNode) selections.get(0);
+		}
+		return target;
+	}
+
+	private BMNode getTargetBasedOnViewsToggledState()
+	{
+		BMNode target = null;
+		if (manager.isViewToggled()) {
+			TreeModel model = manager.getModel();
+			target = model.getModelHead();
+		}
+		else {
+			target = createNewBookmark();
+		}
+		return target;
+	}
+
+	private void processClipboardData(Object[] objects, BMNode target)
+	{
+		BookmarkView activeView = manager.getActiveBookmarkView();
+		target = TreeUtil.getReference(target);
+		BMNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
+
+		attemptProcessingForBookmarkNodes(objects, activeView, bookmarkOfTarget);
+
+		if (objects instanceof Object[]) {
+			Object[] dataset = (Object[]) objects;
+			for (Object data : dataset) {
+				attemptProcessingForIJavaElements(data, activeView,
+						bookmarkOfTarget);
+				attemptProcessingForStrings(data, activeView, bookmarkOfTarget);
+			}
+		}
+	}
+
+	private void attemptProcessingForStrings(Object data,
+			BookmarkView activeView, BMNode bookmarkOfTarget)
+	{
+		if (data instanceof String) {
+			attemptProcessingForIFileStringRepresentation(data, activeView,
+					bookmarkOfTarget);
+		}
+	}
+
+	private void attemptProcessingForIFileStringRepresentation(Object data,
+			BookmarkView activeView, BMNode bookmarkOfTarget)
+	{
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IPath location = Path.fromOSString((String) data);
+		IFile ifile = workspace.getRoot().getFileForLocation(location);
+
+		if (ifile != null) {
+			paste(ifile, activeView, bookmarkOfTarget);
+		}
+	}
+
+	private void attemptProcessingForIJavaElements(Object data,
+			BookmarkView activeView, BMNode bookmarkOfTarget)
+	{
+		if (data instanceof IJavaElement) {
+			paste(data, activeView, bookmarkOfTarget);
+		}
+	}
+
+	private void attemptProcessingForBookmarkNodes(Object[] objects,
+			BookmarkView activeView, BMNode bookmarkOfTarget)
+	{
+		if (objects instanceof BookmarkNodeTransferObject[]) {
+
+			BookmarkNodeTransferObject bms = ((BookmarkNodeTransferObject[]) objects)[0];
+
+			for (String id : bms.ids) {
+				Object restoredValue = restoreValue(id);
+				paste(restoredValue, activeView, bookmarkOfTarget);
+			}
+		}
+
+	}
+
+	private void paste(Object data, BookmarkView activeView,
+			BMNode bookmarkOfTarget)
+	{
+		TreePath path = new TreePath(new Object[] { data });
+		TreePath[] treePath = new TreePath[] { path };
+		new AddTreepathsToExistingBookmarkCommand(activeView, bookmarkOfTarget,
+				treePath).execute();
+	}
+
+	private BMNode createNewBookmark()
+	{
+		BookmarkView activeView = manager.getActiveBookmarkView();
+		BMNode bookmark = TreeUtil.makeBookmarkNode();
+		TreeModel model = activeView.getModel();
+		model.getModelRoot().addChild(bookmark);
+		return bookmark;
 	}
 
 	private void updateView()
 	{
+		BookmarkView activeView = manager.getActiveBookmarkView();
 		ViewManager manager = activeView.getManager();
 		if (manager.isViewFlattened()) {
 			BMNode node = activeView.getModel().getModelHead();
 			manager.activateFlattenedModus(node);
 		}
-
+		activeView.getView().refresh(true);
 	}
 
 	private Object restoreValue(String id)
@@ -115,31 +213,6 @@ public class PasteHandler
 
 		IFile ifile = TreeValueConverter.attemptTransformationToIFile(id);
 		return ifile;
-	}
-
-	private void processJavaElement(Object[] clipBoardData)
-	{
-		List<IStructuredSelection> selections = TreeUtil
-				.getTreeSelections(activeView.getView());
-
-		if (selections.size() != 1)
-			return;
-
-		BMNode target = (BMNode) selections.get(0);
-
-		for (Object data : clipBoardData) {
-
-			if (data instanceof IJavaElement) {
-				TreePath[] path = new TreePath[1];
-				path[0] = new TreePath(new Object[] { data });
-
-				BMNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
-				new AddTreepathsToExistingBookmarkCommand(activeView,
-						bookmarkOfTarget, path).execute();
-
-			}
-		}
-
 	}
 
 }
