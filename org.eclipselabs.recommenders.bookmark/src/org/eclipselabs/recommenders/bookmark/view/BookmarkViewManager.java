@@ -71,6 +71,8 @@ public class BookmarkViewManager
 		addPartViewFeatures();
 		restoreBookmarks();
 		activeView.getView().refresh();
+		
+		Activator.setManager(this);
 	}
 
 	private void addPartViewFeatures()

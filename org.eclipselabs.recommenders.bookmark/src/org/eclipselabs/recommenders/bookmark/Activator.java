@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -21,6 +22,8 @@ public class Activator
 
 	// The shared instance
 	private static Activator plugin;
+	
+	private static ViewManager manager;
 
 	public static final String ICON_DEFAULT = "default";
 	public static final String ICON_BOOKMARK = "bookmark";
@@ -64,6 +67,10 @@ public class Activator
 		IPath stateLocation = Activator.getDefault().getStateLocation();
 		File stateFile = stateLocation.append(Activator.AUTOSAVE_FILE).toFile();
 		return stateFile;
+	}
+	
+	public static void setManager(ViewManager manager) {
+		Activator.manager = manager;
 	}
 
 	@Override

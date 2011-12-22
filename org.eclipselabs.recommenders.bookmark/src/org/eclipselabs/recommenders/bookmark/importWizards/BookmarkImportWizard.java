@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipselabs.recommenders.bookmark.importWizards;
 
-import java.io.File;
-
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -31,10 +30,19 @@ public class BookmarkImportWizard
 
 	public boolean performFinish()
 	{
-		File file = mainPage.getSelectedFile();
-		if (file == null)
+		IFile iFile = mainPage.getSelectedFile();
+		if (iFile == null)
 			return false;
+		
+		performImport(iFile);
+		
 		return true;
+	}
+
+	private void performImport(IFile iFile)
+	{
+		System.out.println("perform Import");
+//		File file = iFile.
 	}
 
 	public void init(IWorkbench workbench, IStructuredSelection selection)
