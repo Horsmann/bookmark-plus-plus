@@ -115,7 +115,6 @@ public class PasteHandler
 	private void processClipboardData(Object[] objects, BMNode target)
 	{
 		BookmarkView activeView = manager.getActiveBookmarkView();
-		target = TreeUtil.getReference(target);
 		BMNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
 
 		attemptProcessingForBookmarkNodes(objects, activeView, bookmarkOfTarget);

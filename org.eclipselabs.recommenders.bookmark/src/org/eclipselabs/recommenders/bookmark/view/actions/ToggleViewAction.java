@@ -77,8 +77,7 @@ public class ToggleViewAction
 
 	private BMNode getNodesBookmark(BMNode node)
 	{
-		BMNode reference = TreeUtil.getReference(node);
-		BMNode bookmark = TreeUtil.getBookmarkNode(reference);
+		BMNode bookmark = TreeUtil.getBookmarkNode(node);
 		return bookmark;
 	}
 

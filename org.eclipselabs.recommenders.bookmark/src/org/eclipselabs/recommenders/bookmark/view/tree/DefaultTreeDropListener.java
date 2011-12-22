@@ -145,8 +145,6 @@ public class DefaultTreeDropListener
 	{
 		BMNode dropTarget = (BMNode) getTarget(event);
 
-		dropTarget = TreeUtil.getReference(dropTarget);
-
 		BMNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
 		return bookmarkOfDropTarget;
 	}
@@ -159,8 +157,6 @@ public class DefaultTreeDropListener
 		for (int i = 0; i < selections.size(); i++) {
 
 			BMNode node = (BMNode) selections.get(i);
-
-			node = TreeUtil.getReference(node);
 
 			boolean keepSource = (event.operations == DND.DROP_COPY);
 			new AddTreeNodesToExistingBookmark(viewer, bookmark, node,
@@ -175,8 +171,6 @@ public class DefaultTreeDropListener
 	{
 		TreePath[] treePath = getTreePath(event);
 		BMNode target = (BMNode) getTarget(event);
-
-		target = TreeUtil.getReference(target);
 
 		BMNode bookmark = TreeUtil.getBookmarkNode(target);
 

@@ -27,7 +27,7 @@ import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 public class TreeUtil
 {
 
-	public static BMNode getReference(BMNode node)
+	private static BMNode getReference(BMNode node)
 	{
 		if (node == null) {
 			return null;
@@ -174,6 +174,8 @@ public class TreeUtil
 
 	public static boolean isDuplicate(BMNode bookmark, BMNode node)
 	{
+		bookmark = getReference(bookmark);
+		node = getReference(node);
 
 		LinkedList<BMNode> leafs = TreeUtil.getLeafs(node);
 
@@ -194,6 +196,8 @@ public class TreeUtil
 
 		if (node == null)
 			return null;
+		
+		node = getReference(node);
 
 		if (node.isBookmarkNode())
 			return node;
@@ -203,6 +207,7 @@ public class TreeUtil
 
 	public static BMNode locateNodeWithEqualID(String id, BMNode node)
 	{
+		node = getReference(node);
 
 		if (doesNodeMatchId(id, node))
 			return node;
@@ -331,7 +336,6 @@ public class TreeUtil
 	 */
 	public static BMNode getLeafOfTreePath(BMNode node)
 	{
-
 		if (node == null)
 			return null;
 
@@ -345,6 +349,7 @@ public class TreeUtil
 
 	public static LinkedList<BMNode> getLeafs(BMNode node)
 	{
+		node = getReference(node);
 
 		LinkedList<BMNode> leafs = new LinkedList<BMNode>();
 
@@ -366,6 +371,7 @@ public class TreeUtil
 	 */
 	public static BMNode copyTreeBelowBookmark(BMNode node)
 	{
+		node = getReference(node);
 
 		if (node == null /*|| isRootNode(node)*/)
 			return null;
@@ -436,6 +442,7 @@ public class TreeUtil
 
 	public static boolean isDuplicate(BMNode node, String masterID)
 	{
+		node = getReference(node);
 
 		String compareID = TreeValueConverter.getStringIdentification(node
 				.getValue());
@@ -453,6 +460,8 @@ public class TreeUtil
 
 	public static BMNode climbUpUntilLevelBelowBookmark(BMNode node)
 	{
+		node = getReference(node);
+		
 		BMNode climber = node;
 		while (climber.getParent() != null
 				&& !climber.getParent().isBookmarkNode()) {
@@ -483,6 +492,9 @@ public class TreeUtil
 	 */
 	public static BMNode attemptMerge(BMNode bookmark, BMNode node)
 	{
+		bookmark = getReference(bookmark);
+		node = getReference(node);
+		
 		LinkedList<BMNode> leafs = TreeUtil.getLeafs(node);
 
 		for (BMNode leaf : leafs) {

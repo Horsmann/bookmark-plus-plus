@@ -75,7 +75,7 @@ public class CopyHandler
 		LinkedList<String> transferObjects = new LinkedList<String>();
 		for (int i = 0; i < selections.size(); i++) {
 			BMNode node = (BMNode) selections.get(i);
-			node = TreeUtil.getReference(node);
+//			node = TreeUtil.getReference(node);
 
 			if (node.isBookmarkNode()) {
 				continue;
