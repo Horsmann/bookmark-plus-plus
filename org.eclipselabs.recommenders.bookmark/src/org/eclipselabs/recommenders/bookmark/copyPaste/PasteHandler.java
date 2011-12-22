@@ -141,8 +141,19 @@ public class PasteHandler
 	private void attemptProcessingForIFileStringRepresentation(Object data,
 			BookmarkView activeView, BMNode bookmarkOfTarget)
 	{
+		String dataString = (String) data;
+
+		/*
+		 * JavaElements are also provided as file path which will be casted to
+		 * ifiles successfully. To prevent a double creation of files we look
+		 * files with '.java' ending
+		 */
+		if (dataString.indexOf(".java") != -1) {
+			return;
+		}
+
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IPath location = Path.fromOSString((String) data);
+		IPath location = Path.fromOSString(dataString);
 		IFile ifile = workspace.getRoot().getFileForLocation(location);
 
 		if (ifile != null) {
