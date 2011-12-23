@@ -22,7 +22,7 @@ public class Activator
 
 	// The shared instance
 	private static Activator plugin;
-	
+
 	private static ViewManager manager;
 
 	public static final String ICON_DEFAULT = "default";
@@ -68,9 +68,15 @@ public class Activator
 		File stateFile = stateLocation.append(Activator.AUTOSAVE_FILE).toFile();
 		return stateFile;
 	}
-	
-	public static void setManager(ViewManager manager) {
+
+	public static void setManager(ViewManager manager)
+	{
 		Activator.manager = manager;
+	}
+
+	public static ViewManager getManager()
+	{
+		return Activator.manager;
 	}
 
 	@Override

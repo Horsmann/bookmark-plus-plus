@@ -88,21 +88,30 @@ public class BookmarkImportWizardPage
 				iFile = TreeValueConverter
 						.attemptTransformationToIFile(textField.getText());
 
+				if (iFile == null) {
+					setPageComplete(false);
+					return;
+				}
+
 				File file = iFile.getFullPath().toFile();
 
-				if (iFile != null
-						&& file.exists()
-						&& !file.isDirectory()
-						&& (file.getAbsoluteFile().length() > 3)
-						&& file.getAbsolutePath()
-								.substring(file.getAbsolutePath().length() - 3)
-								.compareTo(".bm") == 0) {
+				if (isValid(file)) {
 					setPageComplete(true);
 				}
 				else {
 					setPageComplete(false);
 				}
 
+			}
+
+			private boolean isValid(File file)
+			{
+				return file.exists()
+						&& !file.isDirectory()
+						&& (file.getAbsoluteFile().length() > 3)
+						&& file.getAbsolutePath()
+								.substring(file.getAbsolutePath().length() - 3)
+								.compareTo(".bm") == 0;
 			}
 		});
 
