@@ -49,7 +49,6 @@ public class DefaultView
 	private TreeModel flatModel;
 	private Action showInEditor;
 	private Action exportBookmarks;
-	private Action importBookmarks;
 	private Action closeAllOpenEditors;
 	private Action refreshView;
 	private Action openInSystemFileExplorer;
@@ -153,7 +152,6 @@ public class DefaultView
 		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
 				viewer);
 		exportBookmarks = new ExportBookmarksAction(manager);
-		importBookmarks = new ImportBookmarksAction(this);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(this);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
@@ -174,7 +172,6 @@ public class DefaultView
 		mgr.add(refreshView);
 		mgr.add(closeAllOpenEditors);
 		// mgr.add(exportBookmarks);
-		// mgr.add(importBookmarks);
 		// mgr.add(renameBookmark);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
@@ -197,7 +194,6 @@ public class DefaultView
 				menuMgr.add(showInEditor);
 				menuMgr.add(refreshView);
 				menuMgr.add(exportBookmarks);
-				menuMgr.add(importBookmarks);
 				menuMgr.add(renameBookmark);
 				menuMgr.add(new Separator());
 				menuMgr.add(toggleLevel);
