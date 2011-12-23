@@ -23,6 +23,8 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class BookmarkImportWizard
@@ -58,17 +60,57 @@ public class BookmarkImportWizard
 		}
 
 		String serializedTree = data[0];
-		RestoredTree deserialize = TreeDeserializerFacade
+		RestoredTree deserialized = TreeDeserializerFacade
 				.deserialize(serializedTree);
 
+		addBookmarksToCurrentModel(deserialized);
+
+		BMNode[] expanded = deserialized.getExpanded();
+		updateView(expanded);
+
+	}
+
+	private void addBookmarksToCurrentModel(RestoredTree deserialized)
+	{
 		ViewManager manager = Activator.getManager();
 		TreeModel model = manager.getModel();
-		for (BMNode child : deserialize.getRoot().getChildren()) {
+		for (BMNode child : deserialized.getRoot().getChildren()) {
 			model.getModelRoot().addChild(child);
 		}
+	}
 
-		manager.getActiveBookmarkView().updateControls();
+	private void updateView(BMNode[] expanded)
+	{
+		ViewManager manager = Activator.getManager();
+		BookmarkView bmView = manager.getActiveBookmarkView();
 
+		if (manager.isViewFlattened()) {
+			updateFlatView(expanded);
+		}
+		else {
+
+			for (BMNode expand : expanded) {
+				TreeUtil.showNodeExpanded(bmView.getView(), expand);
+			}
+		}
+
+		bmView.updateControls();
+
+	}
+
+	private void updateFlatView(BMNode[] expanded)
+	{
+		ViewManager manager = Activator.getManager();
+		TreeModel model = manager.getModel();
+		BMNode head = model.getModelHead();
+		manager.activateFlattenedModus(head);
+
+		// there won't be any expanded nodes in the flat view, place the
+		// restored-expanded nodes in the storage for a later switch-back to the
+		// tree-representation
+		for (BMNode expand : expanded) {
+			manager.addNodeToExpandedStorage(expand);
+		}
 	}
 
 	public void init(IWorkbench workbench, IStructuredSelection selection)

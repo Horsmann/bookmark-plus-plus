@@ -71,7 +71,7 @@ public class BookmarkViewManager
 		addPartViewFeatures();
 		restoreBookmarks();
 		activeView.getView().refresh();
-		
+
 		Activator.setManager(this);
 	}
 
@@ -333,5 +333,11 @@ public class BookmarkViewManager
 	public TreeModel getFlatModel()
 	{
 		return flatModel;
+	}
+
+	@Override
+	public void addNodeToExpandedStorage(BMNode node)
+	{
+		expandedNodes.put(node, "");
 	}
 }

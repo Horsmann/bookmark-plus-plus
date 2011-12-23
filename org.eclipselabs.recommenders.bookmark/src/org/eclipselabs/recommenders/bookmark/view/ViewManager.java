@@ -13,17 +13,12 @@ public interface ViewManager
 
 	public BookmarkView getActiveBookmarkView();
 
-	/**
-	 * Takes the nodes of the currently active view and adds all expanded nodes
-	 * to the storage
-	 */
 	public void addCurrentlyExpandedNodesToStorage();
+	
+	public void addNodeToExpandedStorage(BMNode node);
 
-	/**
-	 * All stored nodes are set to expanded for the currently active view
-	 */
 	public void setStoredExpandedNodesForActiveView();
-
+	
 	public void removeCurrentlyVisibleNodesFromStorage();
 
 	public void reinitializeExpandedStorage();
