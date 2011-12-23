@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipselabs.recommenders.bookmark.importWizards;
 
-import java.io.File;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -19,11 +17,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
-import org.eclipselabs.recommenders.dialog.ImportDialog;
 
 public class BookmarkImportWizardPage
 	extends WizardPage
