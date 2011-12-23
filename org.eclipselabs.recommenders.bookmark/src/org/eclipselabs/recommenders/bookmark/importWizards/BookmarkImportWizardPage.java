@@ -32,7 +32,7 @@ public class BookmarkImportWizardPage
 	private Composite container;
 	private Text textField;
 	private Button button;
-	private IFile iFile;
+	private IFile ifile;
 
 	protected BookmarkImportWizardPage(String pageName)
 	{
@@ -61,59 +61,11 @@ public class BookmarkImportWizardPage
 		button.setText("Select File");
 		button.setLayoutData(data);
 
-		button.addListener(SWT.MouseDown, new Listener()
-		{
+		button.addListener(SWT.MouseDown, new ButtonMouseDownListener(
+				textField, this));
 
-			@Override
-			public void handleEvent(Event event)
-			{
-				File file = ImportDialog.showDialog();
-				iFile = TreeValueConverter.attemptTransformationToIFile(file
-						.getAbsolutePath());
-
-				if (iFile != null) {
-					textField.setText(iFile.getFullPath().toOSString());
-					setPageComplete(true);
-				}
-
-			}
-		});
-
-		textField.addListener(SWT.KeyUp, new Listener()
-		{
-
-			@Override
-			public void handleEvent(Event event)
-			{
-				iFile = TreeValueConverter
-						.attemptTransformationToIFile(textField.getText());
-
-				if (iFile == null) {
-					setPageComplete(false);
-					return;
-				}
-
-				File file = iFile.getFullPath().toFile();
-
-				if (isValid(file)) {
-					setPageComplete(true);
-				}
-				else {
-					setPageComplete(false);
-				}
-
-			}
-
-			private boolean isValid(File file)
-			{
-				return file.exists()
-						&& !file.isDirectory()
-						&& (file.getAbsoluteFile().length() > 3)
-						&& file.getAbsolutePath()
-								.substring(file.getAbsolutePath().length() - 3)
-								.compareTo(".bm") == 0;
-			}
-		});
+		textField.addListener(SWT.KeyUp, new TextFieldKeyListener(textField,
+				this));
 
 		// Required to avoid an error in the system
 		setControl(container);
@@ -121,9 +73,14 @@ public class BookmarkImportWizardPage
 
 	}
 
+	public void setSelectedFile(IFile ifile)
+	{
+		this.ifile = ifile;
+	}
+
 	public IFile getSelectedFile()
 	{
-		return iFile;
+		return ifile;
 	}
 
 }
