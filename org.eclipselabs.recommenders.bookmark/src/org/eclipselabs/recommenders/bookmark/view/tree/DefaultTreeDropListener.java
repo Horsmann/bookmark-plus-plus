@@ -14,8 +14,8 @@ import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToNewBookmark;
-import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmarkCommand;
-import org.eclipselabs.recommenders.bookmark.tree.commands.CreateNewBookmarkAddAsNodeCommand;
+import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmark;
+import org.eclipselabs.recommenders.bookmark.tree.commands.CreateNewBookmarkAddAsNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
@@ -175,11 +175,11 @@ public class DefaultTreeDropListener
 		BMNode bookmark = TreeUtil.getBookmarkNode(target);
 
 		if (bookmark != null) {
-			new AddTreepathsToExistingBookmarkCommand(viewer, bookmark,
+			new AddTreepathsToExistingBookmark(viewer, bookmark,
 					treePath).execute();
 		}
 		else {
-			new CreateNewBookmarkAddAsNodeCommand(viewer, treePath).execute();
+			new CreateNewBookmarkAddAsNode(viewer, treePath).execute();
 
 		}
 		viewer.getManager().addCurrentlyExpandedNodesToStorage();

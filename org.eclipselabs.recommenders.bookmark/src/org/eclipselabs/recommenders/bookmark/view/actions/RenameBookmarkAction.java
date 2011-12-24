@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-import org.eclipselabs.recommenders.bookmark.tree.commands.RenameBookmarkCommand;
+import org.eclipselabs.recommenders.bookmark.tree.commands.RenameBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
@@ -30,7 +30,7 @@ public class RenameBookmarkAction extends Action implements SelfEnabling {
 		TreeItem[] items = viewer.getView().getTree().getSelection();
 
 		if (items.length > 0) {
-			new RenameBookmarkCommand(viewer, items[0]).execute();
+			new RenameBookmark(viewer, items[0]).execute();
 		}
 	}
 

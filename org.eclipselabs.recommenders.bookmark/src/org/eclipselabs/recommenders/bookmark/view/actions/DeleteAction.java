@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelectionCommand;
+import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelection;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
@@ -24,7 +24,7 @@ public class DeleteAction extends Action implements SelfEnabling {
 
 	@Override
 	public void run() {
-		new DeleteSelectionCommand(viewer).execute();
+		new DeleteSelection(viewer).execute();
 	}
 
 	@Override

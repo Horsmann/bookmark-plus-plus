@@ -12,12 +12,12 @@ import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
-public class RenameBookmarkCommand implements TreeCommand {
+public class RenameBookmark implements TreeCommand {
 
 	private TreeItem item = null;
 	private BookmarkView viewer = null;
 
-	public RenameBookmarkCommand(BookmarkView viewer, TreeItem bookmark) {
+	public RenameBookmark(BookmarkView viewer, TreeItem bookmark) {
 		this.item = bookmark;
 		this.viewer = viewer;
 	}

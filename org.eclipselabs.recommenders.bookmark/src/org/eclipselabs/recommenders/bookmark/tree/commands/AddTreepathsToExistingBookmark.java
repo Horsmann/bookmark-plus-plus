@@ -6,7 +6,7 @@ import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
-public class AddTreepathsToExistingBookmarkCommand
+public class AddTreepathsToExistingBookmark
 	implements TreeCommand
 {
 
@@ -14,7 +14,7 @@ public class AddTreepathsToExistingBookmarkCommand
 	private BMNode bookmark = null;
 	private TreePath[] treePath = null;
 
-	public AddTreepathsToExistingBookmarkCommand(BookmarkView viewer,
+	public AddTreepathsToExistingBookmark(BookmarkView viewer,
 			BMNode bookmark, TreePath[] treePath)
 	{
 

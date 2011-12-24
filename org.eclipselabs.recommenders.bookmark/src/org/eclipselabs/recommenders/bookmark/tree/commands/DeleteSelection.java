@@ -8,13 +8,13 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeS
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
-public class DeleteSelectionCommand
+public class DeleteSelection
 	implements TreeCommand
 {
 
 	private BookmarkView viewer = null;
 
-	public DeleteSelectionCommand(BookmarkView viewer)
+	public DeleteSelection(BookmarkView viewer)
 	{
 		this.viewer = viewer;
 	}

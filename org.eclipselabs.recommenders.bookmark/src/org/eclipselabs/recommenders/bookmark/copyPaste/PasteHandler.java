@@ -21,7 +21,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmarkCommand;
+import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
@@ -189,7 +189,7 @@ public class PasteHandler
 	{
 		TreePath path = new TreePath(new Object[] { data });
 		TreePath[] treePath = new TreePath[] { path };
-		new AddTreepathsToExistingBookmarkCommand(activeView, bookmarkOfTarget,
+		new AddTreepathsToExistingBookmark(activeView, bookmarkOfTarget,
 				treePath).execute();
 	}
 

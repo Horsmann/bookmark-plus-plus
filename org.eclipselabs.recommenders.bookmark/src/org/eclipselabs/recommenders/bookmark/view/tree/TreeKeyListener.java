@@ -6,8 +6,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelectionCommand;
-import org.eclipselabs.recommenders.bookmark.tree.commands.RenameBookmarkCommand;
+import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelection;
+import org.eclipselabs.recommenders.bookmark.tree.commands.RenameBookmark;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 public class TreeKeyListener implements KeyListener {
@@ -49,7 +49,7 @@ public class TreeKeyListener implements KeyListener {
 
 	private void performRenameForBookmarks(TreeItem[] items) {
 
-		new RenameBookmarkCommand(viewer, items[0]).execute();
+		new RenameBookmark(viewer, items[0]).execute();
 	}
 
 	private void checkForOpenNodeInEditor(KeyEvent e) {
@@ -60,7 +60,7 @@ public class TreeKeyListener implements KeyListener {
 
 	private void checkForNodeDeletion(KeyEvent e) {
 		if (isDeleteNodeEvent(e)) {
-			new DeleteSelectionCommand(viewer).execute();
+			new DeleteSelection(viewer).execute();
 		}
 	}
 
