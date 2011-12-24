@@ -160,15 +160,15 @@ public class TreeUtilTest
 	public void testCopyTreeBelowBookmark()
 	{
 
-		BMNode copy = TreeUtil.copyTreeBelowBookmark(null);
+		BMNode copy = TreeUtil.copyTreePathBelowBookmark(null);
 		assertNull(copy);
 
 		TreeNode root = createTestTree();
-		copy = TreeUtil.copyTreeBelowBookmark(root);
+		copy = TreeUtil.copyTreePathBelowBookmark(root);
 		assertTrue(copy.getValue().equals(root.getValue()));
 
 		BMNode bm1c1 = root.getChildren()[0].getChildren()[0];
-		copy = TreeUtil.copyTreeBelowBookmark(bm1c1);
+		copy = TreeUtil.copyTreePathBelowBookmark(bm1c1);
 
 		Object value1 = bm1c1.getValue();
 		Object value2 = copy.getValue();

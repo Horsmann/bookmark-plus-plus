@@ -22,7 +22,7 @@ public class AddTreeNodesToExistingBookmark implements TreeCommand {
 	@Override
 	public void execute() {
 
-		BMNode nodeCopy = TreeUtil.copyTreeBelowBookmark(node);
+		BMNode nodeCopy = TreeUtil.copyTreePathBelowBookmark(node);
 
 		if (TreeUtil.isDuplicate(bookmark, nodeCopy))
 			return;

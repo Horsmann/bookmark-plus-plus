@@ -369,12 +369,12 @@ public class TreeUtil
 	 * @param node
 	 * @return
 	 */
-	public static BMNode copyTreeBelowBookmark(BMNode node)
+	public static BMNode copyTreePathBelowBookmark(BMNode node)
 	{
-		node = getReference(node);
-
-		if (node == null /*|| isRootNode(node)*/)
+		if (node == null)
 			return null;
+		
+		node = getReference(node);
 
 		LinkedList<BMNode> newChilds = new LinkedList<BMNode>();
 		for (BMNode child : node.getChildren())
