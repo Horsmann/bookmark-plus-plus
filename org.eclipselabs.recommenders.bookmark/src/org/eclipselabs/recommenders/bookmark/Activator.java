@@ -43,7 +43,7 @@ public class Activator
 	public static final String ICON_TOGGLE_FLAT_HIERARCHY = "toggleBetweenFlatAndTreeModus";
 	public static final String ICON_SAVE = "saveChanges";
 
-	public static final String AUTOSAVE_FILE = "bookmarkModel.bm";
+	public static final String AUTOSAVE_FILE = "bookmarkModel" + fileEnding;
 
 	public void start(BundleContext context)
 		throws Exception

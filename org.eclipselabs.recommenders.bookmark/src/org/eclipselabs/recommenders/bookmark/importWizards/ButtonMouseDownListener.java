@@ -5,7 +5,6 @@ import java.io.File;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipselabs.recommenders.dialog.ImportDialog;
 
 public class ButtonMouseDownListener
 	implements Listener

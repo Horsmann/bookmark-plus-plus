@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.dialog;
+package org.eclipselabs.recommenders.bookmark.importWizards;
 
 import java.io.File;
 
@@ -13,7 +13,7 @@ public class ImportDialog {
 	public static File showDialog() {
 		Shell shell = Display.getCurrent().getActiveShell();
 		FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-		fileDialog.setFilterExtensions(new String[] { Activator.fileEnding });
+		fileDialog.setFilterExtensions(new String[] { "*" + Activator.fileEnding });
 		String fileName = fileDialog.open();
 		if (fileName != null)
 			return new File(fileName);

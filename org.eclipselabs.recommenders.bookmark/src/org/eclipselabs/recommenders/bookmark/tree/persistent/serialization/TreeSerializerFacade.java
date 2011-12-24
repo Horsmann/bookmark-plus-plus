@@ -11,11 +11,11 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.ObjectConverter;
 
 public class TreeSerializerFacade {
 
-	public static void serialize(TreeViewer viewer, TreeModel model, File file) {
+	public static void serialize(TreeModel model, Object [] expandedNodes, File file) {
 
 		ObjectConverter converter = new GsonConverter();
 		String serializedTree = TreeSerializer.serializeTree(
-				model.getModelRoot(), viewer.getExpandedElements(), converter);
+				model.getModelRoot(), expandedNodes, converter);
 		if (serializedTree != null) {
 			BookmarkFileIO.writeToFile(file, serializedTree);
 		}

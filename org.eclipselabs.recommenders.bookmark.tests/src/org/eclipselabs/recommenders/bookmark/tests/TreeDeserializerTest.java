@@ -4,15 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.widgets.Display;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.GsonConverter;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializer;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
-import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.junit.Test;
 
 public class TreeDeserializerTest

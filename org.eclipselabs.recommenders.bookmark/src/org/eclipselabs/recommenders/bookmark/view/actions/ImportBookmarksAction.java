@@ -4,13 +4,13 @@ import java.io.File;
 
 import org.eclipse.jface.action.Action;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.importWizards.ImportDialog;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
-import org.eclipselabs.recommenders.dialog.ImportDialog;
 
 public class ImportBookmarksAction extends Action {
 

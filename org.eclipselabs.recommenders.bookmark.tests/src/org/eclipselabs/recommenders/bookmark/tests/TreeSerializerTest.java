@@ -39,7 +39,7 @@ public class TreeSerializerTest {
 		viewer.setInput(model.getModelRoot());
 
 		File file = new File("file");
-		TreeSerializerFacade.serialize(viewer, model, file);
+		TreeSerializerFacade.serialize(model, viewer.getExpandedElements(), file);
 
 		String[] read = BookmarkFileIO.readFromFile(file);
 

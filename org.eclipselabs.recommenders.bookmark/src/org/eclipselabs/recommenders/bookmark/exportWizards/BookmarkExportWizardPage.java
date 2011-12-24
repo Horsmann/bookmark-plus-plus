@@ -105,4 +105,10 @@ public class BookmarkExportWizardPage
 		return file;
 	}
 
+	public TreeViewer getView()
+	{
+		return treeViewer;
+	}
+
+
 }
