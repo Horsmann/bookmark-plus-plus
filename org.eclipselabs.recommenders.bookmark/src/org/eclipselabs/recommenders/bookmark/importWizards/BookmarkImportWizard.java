@@ -12,7 +12,6 @@ package org.eclipselabs.recommenders.bookmark.importWizards;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -41,18 +40,17 @@ public class BookmarkImportWizard
 
 	public boolean performFinish()
 	{
-		IFile iFile = mainPage.getSelectedFile();
-		if (iFile == null)
+		File file = mainPage.getImportFile();
+		if (file == null)
 			return false;
 
-		performImport(iFile);
+		performImport(file);
 
 		return true;
 	}
 
-	private void performImport(IFile iFile)
+	private void performImport(File file)
 	{
-		File file = iFile.getFullPath().toFile();
 		String[] data = BookmarkFileIO.readFromFile(file);
 
 		if (data.length < 1) {
@@ -120,6 +118,7 @@ public class BookmarkImportWizard
 		mainPage = new BookmarkImportWizardPage("Import Bookmarks");
 	}
 
+	@Override
 	public void addPages()
 	{
 		super.addPages();

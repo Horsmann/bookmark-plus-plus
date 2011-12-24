@@ -8,31 +8,38 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipselabs.recommenders.bookmark.importWizards;
+package org.eclipselabs.recommenders.bookmark.exportWizards;
 
 import java.io.File;
 
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 
-public class BookmarkImportWizardPage
+public class BookmarkExportWizardPage
 	extends WizardPage
 {
 
 	private Composite container;
 	private Text textField;
 	private Button button;
+	private TreeViewer treeViewer;
 	private File file;
 
-	protected BookmarkImportWizardPage(String pageName)
+	protected BookmarkExportWizardPage(String pageName)
 	{
 		super(pageName, pageName, null);
-		setDescription("Imports the bookmark provided in an external file");
 	}
 
 	@Override
@@ -51,6 +58,9 @@ public class BookmarkImportWizardPage
 		data.grabExcessHorizontalSpace = true;
 		textField.setLayoutData(data);
 
+		textField.addListener(SWT.KeyUp, new TextFieldKeyListener(textField,
+				this));
+
 		data = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 		button = new Button(container, SWT.NONE);
 		button.setText("Select File");
@@ -59,21 +69,38 @@ public class BookmarkImportWizardPage
 		button.addListener(SWT.MouseDown, new ButtonMouseDownListener(
 				textField, this));
 
-		textField.addListener(SWT.KeyUp, new TextFieldKeyListener(textField,
-				this));
+		ViewManager manager = Activator.getManager();
+		TreeModel model = manager.getModel();
+		data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.horizontalSpan = 2;
+		treeViewer = new TreeViewer(container, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
+		treeViewer.setLabelProvider(new TreeLabelProvider(Activator
+				.getManager()));
+		treeViewer.setContentProvider(new TreeContentProvider());
+		treeViewer.setInput(model.getModelRoot());
+		treeViewer.getTree().setLayoutData(data);
+
+		Object[] expanded = manager.getNodesFromExpandedStorage();
+		treeViewer.setExpandedElements(expanded);
+
+		Label label = new Label(container, SWT.NONE);
+		label.setText("Select bookmarks for export (no selection = all will be exported)");
+		data = new GridData(SWT.RIGHT, SWT.CENTER, true, false);
+		data.horizontalSpan = 2;
+		label.setLayoutData(data);
 
 		// Required to avoid an error in the system
 		setControl(container);
 		setPageComplete(false);
 
 	}
-
-	public void setImportFile(File file)
-	{
+	
+	public void setExportFile(File file) {
 		this.file = file;
 	}
 
-	public File getImportFile()
+	public File getExportFile()
 	{
 		return file;
 	}

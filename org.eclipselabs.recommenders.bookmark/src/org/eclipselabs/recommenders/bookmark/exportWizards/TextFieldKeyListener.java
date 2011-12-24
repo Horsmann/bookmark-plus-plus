@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.importWizards;
+package org.eclipselabs.recommenders.bookmark.exportWizards;
 
 import java.io.File;
 
@@ -10,14 +10,14 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 public class TextFieldKeyListener
 	implements Listener
 {
-	private final BookmarkImportWizardPage bookmarkImportWizardPage;
+	private final BookmarkExportWizardPage bookmarkExportWizardPage;
 	private final Text textField;
 
 	public TextFieldKeyListener(Text textField,
-			BookmarkImportWizardPage bookmarkImportWizardPage)
+			BookmarkExportWizardPage bookmarkImportWizardPage)
 	{
 		this.textField = textField;
-		this.bookmarkImportWizardPage = bookmarkImportWizardPage;
+		this.bookmarkExportWizardPage = bookmarkImportWizardPage;
 	}
 
 	@Override
@@ -26,21 +26,18 @@ public class TextFieldKeyListener
 		File file = new File(textField.getText());
 
 		if (isValid(file)) {
-			bookmarkImportWizardPage.setImportFile(file);
-			bookmarkImportWizardPage.setPageComplete(true);
-
-		}
-		else {
-			bookmarkImportWizardPage.setImportFile(null);
-			bookmarkImportWizardPage.setPageComplete(false);
+			bookmarkExportWizardPage.setExportFile(file);
+			bookmarkExportWizardPage.setPageComplete(true);
+			return;
 		}
 
+		bookmarkExportWizardPage.setExportFile(null);
+		bookmarkExportWizardPage.setPageComplete(false);
 	}
 
 	private boolean isValid(File file)
 	{
-		return file.exists() && !file.isDirectory()
-				&& hasCorrectFileEnding(file);
+		return file != null && hasCorrectFileEnding(file);
 	}
 
 	private boolean hasCorrectFileEnding(File file)
@@ -50,8 +47,8 @@ public class TextFieldKeyListener
 
 		String filePath = file.getAbsolutePath();
 		int pathLen = filePath.length();
-
-		if (pathLen - suffixLen < 0) {
+		
+		if (pathLen-suffixLen < 0){
 			return false;
 		}
 

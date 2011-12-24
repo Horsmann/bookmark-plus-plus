@@ -2,11 +2,9 @@ package org.eclipselabs.recommenders.bookmark.importWizards;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 import org.eclipselabs.recommenders.dialog.ImportDialog;
 
 public class ButtonMouseDownListener
@@ -26,12 +24,10 @@ public class ButtonMouseDownListener
 	public void handleEvent(Event event)
 	{
 		File file = ImportDialog.showDialog();
-		IFile iFile = TreeValueConverter.attemptTransformationToIFile(file
-				.getAbsolutePath());
 
-		if (iFile != null) {
-			textField.setText(iFile.getFullPath().toOSString());
-			bookmarkImportWizardPage.setSelectedFile(iFile);
+		if (file != null) {
+			textField.setText(file.getAbsolutePath());
+			bookmarkImportWizardPage.setImportFile(file);
 			bookmarkImportWizardPage.setPageComplete(true);
 		}
 

@@ -340,4 +340,10 @@ public class BookmarkViewManager
 	{
 		expandedNodes.put(node, "");
 	}
+
+	@Override
+	public Object[] getNodesFromExpandedStorage()
+	{
+		return expandedNodes.keySet().toArray();
+	}
 }
