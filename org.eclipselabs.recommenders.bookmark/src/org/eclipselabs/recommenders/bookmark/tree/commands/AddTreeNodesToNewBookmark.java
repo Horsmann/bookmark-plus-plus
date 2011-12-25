@@ -38,7 +38,7 @@ public class AddTreeNodesToNewBookmark
 		for (int i = 0; i < selections.size(); i++) {
 			BMNode node = (BMNode) selections.get(i);
 
-			BMNode nodeCopy = TreeUtil.copyTreePathBelowBookmark(node);
+			BMNode nodeCopy = TreeUtil.copyTreeBelowNode(node,false);
 
 			while (nodeCopy.getParent() != null)
 				nodeCopy = nodeCopy.getParent();

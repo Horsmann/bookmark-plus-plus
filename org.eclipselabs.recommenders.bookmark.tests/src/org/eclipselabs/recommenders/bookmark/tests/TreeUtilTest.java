@@ -162,25 +162,42 @@ public class TreeUtilTest
 	@Test
 	public void testCopyTreeBewlowBookmarkForNull()
 	{
-		BMNode copy = TreeUtil.copyTreePathBelowBookmark(null);
-		assertNull(copy);
-	}
-	
-	@Test
-	public void testCopyTreeBelowBookmarkForRootNode() {
-		TreeNode root = createTestTree();
-		BMNode copy = TreeUtil.copyTreePathBelowBookmark(root);
+		BMNode copy = TreeUtil.copyTreeBelowNode(null, false);
 		assertNull(copy);
 	}
 
 	@Test
-	public void testCopyTreeBelowBookmark()
+	public void testCopyTreeBelowBookmarkForRootNode()
+	{
+		TreeNode root = createTestTree();
+		BMNode copy = TreeUtil.copyTreeBelowNode(root, false);
+		assertNull(copy);
+	}
+
+	@Test
+	public void testCopyTreeBelowInclusiveBookmark()
 	{
 
 		TreeNode root = createTestTree();
 
 		BMNode bm1c1 = root.getChildren()[0].getChildren()[0];
-		BMNode copy = TreeUtil.copyTreePathBelowBookmark(bm1c1);
+		BMNode copy = TreeUtil.copyTreeBelowNode(bm1c1, true);
+
+		assertEquals("BM#1", copy.getValue());
+		assertEquals(1, copy.getChildren().length);
+		assertEquals(bm1c1.getChildren().length,
+				copy.getChildren()[0].getChildren().length);
+
+	}
+
+	@Test
+	public void testCopyTreeBelowExclusiveBookmark()
+	{
+
+		TreeNode root = createTestTree();
+
+		BMNode bm1c1 = root.getChildren()[0].getChildren()[0];
+		BMNode copy = TreeUtil.copyTreeBelowNode(bm1c1, false);
 
 		Object value1 = bm1c1.getValue();
 		Object value2 = copy.getValue();
