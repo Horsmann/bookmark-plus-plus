@@ -35,6 +35,7 @@ public class TextFieldKeyListener
 		bookmarkExportWizardPage.setPageComplete(false);
 	}
 
+
 	private boolean isValid(File file)
 	{
 		return file != null && hasCorrectFileEnding(file);
@@ -47,8 +48,8 @@ public class TextFieldKeyListener
 
 		String filePath = file.getAbsolutePath();
 		int pathLen = filePath.length();
-		
-		if (pathLen-suffixLen < 0){
+
+		if (pathLen - suffixLen < 0) {
 			return false;
 		}
 

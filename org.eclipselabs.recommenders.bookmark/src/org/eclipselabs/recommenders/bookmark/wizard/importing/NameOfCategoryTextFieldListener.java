@@ -1,11 +1,11 @@
 package org.eclipselabs.recommenders.bookmark.wizard.importing;
 
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Text;
 
 public class NameOfCategoryTextFieldListener
-	implements KeyListener
+	implements ModifyListener
 {
 
 	private final BookmarkImportWizardPage bookmarkImportWizardPage;
@@ -19,21 +19,20 @@ public class NameOfCategoryTextFieldListener
 		this.nameOfNewCategory = nameOfNewCategory;
 	}
 
-	@Override
-	public void keyPressed(KeyEvent e)
+	public boolean isValid()
 	{
-		if (nameOfNewCategory.getText().compareTo("") == 0) {
-			bookmarkImportWizardPage.setPageComplete(false);
-		}
-		else {
-			bookmarkImportWizardPage.updateCompletionStatus();
-		}
+		return !(nameOfNewCategory.getText().compareTo("") == 0);
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e)
+	public void modifyText(ModifyEvent e)
 	{
-		// TODO Auto-generated method stub
+		if (!isValid()) {
+			bookmarkImportWizardPage.setPageComplete(false);
+		}
+		else {
+			bookmarkImportWizardPage.getChecker().checkCompletion();
+		}
 
 	}
 

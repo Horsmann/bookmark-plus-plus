@@ -41,7 +41,7 @@ public class ButtonMouseDownListener
 				bookmarkImportWizardPage.getView().expandAll();
 			}
 
-			bookmarkImportWizardPage.setPageComplete(true);
+			bookmarkImportWizardPage.getChecker().checkCompletion();
 		}
 
 	}

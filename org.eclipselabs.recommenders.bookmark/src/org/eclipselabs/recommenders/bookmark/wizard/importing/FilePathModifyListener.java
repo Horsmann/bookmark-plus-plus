@@ -10,13 +10,13 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 
-public class FilePathTextFieldKeyListener
+public class FilePathModifyListener
 	implements Listener
 {
 	private final BookmarkImportWizardPage bookmarkImportWizardPage;
 	private final Text textField;
 
-	public FilePathTextFieldKeyListener(Text textField,
+	public FilePathModifyListener(Text textField,
 			BookmarkImportWizardPage bookmarkImportWizardPage)
 	{
 		this.textField = textField;
@@ -34,6 +34,7 @@ public class FilePathTextFieldKeyListener
 
 			bookmarkImportWizardPage.setImportFile(file);
 			bookmarkImportWizardPage.setPageComplete(true);
+			bookmarkImportWizardPage.getChecker().checkCompletion();
 		}
 		else {
 			bookmarkImportWizardPage.getView().setInput(null);
@@ -53,6 +54,12 @@ public class FilePathTextFieldKeyListener
 			bookmarkImportWizardPage.getView().expandAll();
 		}
 
+	}
+	
+	public boolean isValid()
+	{
+		File file = new File(textField.getText());
+		return isValid(file);
 	}
 
 	private boolean isValid(File file)

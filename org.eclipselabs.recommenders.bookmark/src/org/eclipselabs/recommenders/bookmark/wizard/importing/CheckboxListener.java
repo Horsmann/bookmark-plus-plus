@@ -9,9 +9,12 @@ public class CheckboxListener
 {
 
 	private final Text nameOfNewCategory;
+	private final BookmarkImportWizardPage bookmarkImportWizardPage;
 
-	public CheckboxListener(Text nameOfNewCategory)
+	public CheckboxListener(BookmarkImportWizardPage bookmarkImportWizardPage,
+			Text nameOfNewCategory)
 	{
+		this.bookmarkImportWizardPage = bookmarkImportWizardPage;
 		this.nameOfNewCategory = nameOfNewCategory;
 	}
 
@@ -24,7 +27,12 @@ public class CheckboxListener
 		else {
 			nameOfNewCategory.setEnabled(true);
 		}
-
+		bookmarkImportWizardPage.getChecker().checkCompletion();
 	}
+	
+	public boolean isEnabled() {
+		return nameOfNewCategory.isEnabled();
+	}
+
 
 }

@@ -35,6 +35,11 @@ public class BookmarkImportWizardPage
 	private Button checkbox;
 	private File file;
 	private TreeViewer treeViewer;
+	private FilePathModifyListener filePathListener;
+	private NameOfCategoryTextFieldListener nameOfCategoryListener;
+	private CheckboxListener checkBoxListener;
+
+	private CompletionChecker checker;
 
 	protected BookmarkImportWizardPage(String pageName)
 	{
@@ -54,15 +59,18 @@ public class BookmarkImportWizardPage
 
 		addRowWithCheckboxAndNewNameTextfield();
 
+		checker = new CompletionChecker(this, filePathListener,
+				checkBoxListener, nameOfCategoryListener);
+
 		// Required to avoid an error in the system
 		setControl(container);
 		setPageComplete(false);
 
 	}
 
-	public void updateCompletionStatus()
+	public CompletionChecker getChecker()
 	{
-
+		return checker;
 	}
 
 	private void addRowWithCheckboxAndNewNameTextfield()
@@ -87,11 +95,12 @@ public class BookmarkImportWizardPage
 		data = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		nameOfNewCategory.setLayoutData(data);
 
-		nameOfNewCategory.addKeyListener(new NameOfCategoryTextFieldListener(
-				this, nameOfNewCategory));
+		nameOfCategoryListener = new NameOfCategoryTextFieldListener(this,
+				nameOfNewCategory);
+		nameOfNewCategory.addModifyListener(nameOfCategoryListener);
 
-		checkbox.addListener(SWT.Selection, new CheckboxListener(
-				nameOfNewCategory));
+		checkBoxListener = new CheckboxListener(this, nameOfNewCategory);
+		checkbox.addListener(SWT.Selection, checkBoxListener);
 	}
 
 	private void addTwoRowSpanningTreeViewer()
@@ -121,8 +130,9 @@ public class BookmarkImportWizardPage
 		button.addListener(SWT.MouseDown, new ButtonMouseDownListener(
 				selectedFileTextField, this));
 
-		selectedFileTextField.addListener(SWT.KeyUp,
-				new FilePathTextFieldKeyListener(selectedFileTextField, this));
+		filePathListener = new FilePathModifyListener(selectedFileTextField,
+				this);
+		selectedFileTextField.addListener(SWT.KeyUp, filePathListener);
 	}
 
 	private void initializeTwoColumnContainerComposite(Composite parent)
