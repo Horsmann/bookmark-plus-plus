@@ -14,6 +14,7 @@ import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -112,6 +113,13 @@ public class BookmarkExportWizard
 			}
 		}
 		
+		//copy entire bookmarks add to root 
+		for (BMNode cat : listOfSelectedCategories){
+			BMNode copy = TreeUtil.copyTreeBelowNode(cat, true);
+			root.addChild(copy);
+		}
+		
+		
 		BMNode bm;
 		LinkedList<BMNode> shareSameBM;
 		while(!singleSelectedNodes.isEmpty()) {
@@ -146,15 +154,15 @@ public class BookmarkExportWizard
 					
 					
 				}
-				
+				root.addChild(newBookmark);
 			}
 			
 		}
 		
+		TreeModel model = new TreeModel();
+		model.setModelRoot(root);
+		TreeSerializerFacade.serialize(model, null, file);
 		
-		int a = 0;
-		a++;
-
 	}
 
 	private void exportEntireModelToFile(File file)
