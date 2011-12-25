@@ -29,32 +29,82 @@ public class BookmarkImportWizardPage
 {
 
 	private Composite container;
-	private Text textField;
+	private Text selectedFileTextField;
+	private Text nameOfNewCategory;
 	private Button button;
+	private Button checkbox;
 	private File file;
 	private TreeViewer treeViewer;
 
 	protected BookmarkImportWizardPage(String pageName)
 	{
 		super(pageName, pageName, null);
-		setDescription("Imports the bookmark provided in an external file");
+		setDescription("Imports the bookmark provided in an external file\nNo selection = import all");
 	}
 
 	@Override
 	public void createControl(Composite parent)
 	{
 
-		container = new Composite(parent, SWT.NONE);
+		initializeTwoColumnContainerComposite(parent);
+
+		addRowWithTextFieldForLoadedFileAndBrowseButton();
+
+		addTwoRowSpanningTreeViewer();
+
+		addRowWithCheckboxAndNewNameTextfield();
+
+		// Required to avoid an error in the system
+		setControl(container);
+		setPageComplete(false);
+
+	}
+
+
+	private void addRowWithCheckboxAndNewNameTextfield()
+	{
+		Composite subContainer = new Composite(container, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
-		GridData compData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		container.setLayout(layout);
-		container.setLayoutData(compData);
+		layout.makeColumnsEqualWidth = true;
+		GridData compData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		compData.horizontalSpan = 2;
+		subContainer.setLayout(layout);
+		subContainer.setLayoutData(compData);
 
-		textField = new Text(container, SWT.BORDER);
+		checkbox = new Button(subContainer, SWT.CHECK);
+		checkbox.setText("Import as single category with name: ");
+		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		checkbox.setLayoutData(data);
+
+		nameOfNewCategory = new Text(subContainer, SWT.NONE);
+		nameOfNewCategory.setText("Import");
+		nameOfNewCategory.setEnabled(false);
+		data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		nameOfNewCategory.setLayoutData(data);
+
+		checkbox.addListener(SWT.Selection, new CheckboxListener(
+				nameOfNewCategory));
+	}
+
+	private void addTwoRowSpanningTreeViewer()
+	{
+		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.horizontalSpan = 2;
+		treeViewer = new TreeViewer(container, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
+		treeViewer.setLabelProvider(new TreeLabelProvider(Activator
+				.getManager()));
+		treeViewer.setContentProvider(new TreeContentProvider());
+		treeViewer.getTree().setLayoutData(data);
+	}
+
+	private void addRowWithTextFieldForLoadedFileAndBrowseButton()
+	{
+		selectedFileTextField = new Text(container, SWT.BORDER);
 		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		data.grabExcessHorizontalSpace = true;
-		textField.setLayoutData(data);
+		selectedFileTextField.setLayoutData(data);
 
 		data = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 		button = new Button(container, SWT.NONE);
@@ -62,28 +112,24 @@ public class BookmarkImportWizardPage
 		button.setLayoutData(data);
 
 		button.addListener(SWT.MouseDown, new ButtonMouseDownListener(
-				textField, this));
+				selectedFileTextField, this));
 
-		textField.addListener(SWT.KeyUp, new TextFieldKeyListener(textField,
-				this));
-		
-		data = new GridData(SWT.FILL, SWT.FILL, true, true);
-		data.horizontalSpan = 2;
-		treeViewer = new TreeViewer(container, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
-		treeViewer.setLabelProvider(new TreeLabelProvider(Activator
-				.getManager()));
-		treeViewer.setContentProvider(new TreeContentProvider());
-//		treeViewer.setInput(model.getModelRoot());
-		treeViewer.getTree().setLayoutData(data);
-
-		// Required to avoid an error in the system
-		setControl(container);
-		setPageComplete(false);
-
+		selectedFileTextField.addListener(SWT.KeyUp, new TextFieldKeyListener(
+				selectedFileTextField, this));
 	}
-	
-	public TreeViewer getView() {
+
+	private void initializeTwoColumnContainerComposite(Composite parent)
+	{
+		container = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 2;
+		GridData compData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		container.setLayout(layout);
+		container.setLayoutData(compData);
+	}
+
+	public TreeViewer getView()
+	{
 		return treeViewer;
 	}
 
