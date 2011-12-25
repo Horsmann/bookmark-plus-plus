@@ -11,9 +11,12 @@
 package org.eclipselabs.recommenders.bookmark.wizard.importing;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -50,13 +53,19 @@ public class BookmarkImportWizard
 		if (file == null)
 			return false;
 
-		performImport(file, treeSelections);
+		try {
+			performImport(file, treeSelections);
+		}
+		catch (JavaModelException e) {
+			e.printStackTrace();
+		}
 
 		return true;
 	}
 
 	private void performImport(File file,
 			List<IStructuredSelection> treeSelections)
+		throws JavaModelException
 	{
 
 		if (treeSelections.isEmpty()) {
@@ -70,8 +79,13 @@ public class BookmarkImportWizard
 
 	private void importSelected(File file,
 			List<IStructuredSelection> treeSelections)
+		throws JavaModelException
 	{
 		BMNode root = WizardUtil.buildTreeConsistingOfSelection(treeSelections);
+
+		if (mainPage.consolidateBookmarksAsSingleBookmark()) {
+			root = uniteBookmarksWithNewName(root);
+		}
 
 		ViewManager manager = Activator.getManager();
 		TreeModel model = manager.getModel();
@@ -79,7 +93,7 @@ public class BookmarkImportWizard
 			model.getModelRoot().addChild(bookmark);
 		}
 
-		Object[] nodesToExpand = TreeUtil.getTreeBelowNode(root);
+		Object[] nodesToExpand = TreeUtil.getTreeBelowNode(bookmark);
 
 		TreeViewer viewer = manager.getActiveBookmarkView().getView();
 		for (Object o : nodesToExpand) {
@@ -87,7 +101,30 @@ public class BookmarkImportWizard
 		}
 	}
 
+	private BMNode uniteBookmarksWithNewName(BMNode root)
+		throws JavaModelException
+	{
+		BMNode bookmark = TreeUtil.makeBookmarkNode();
+
+		String newBookmarkName = mainPage.getNameOfNewBookmarkName();
+		bookmark.setValue(newBookmarkName);
+
+		LinkedList<BMNode> leafs = TreeUtil.getLeafs(root);
+
+		for (BMNode node : leafs) {
+
+			TreePath path = new TreePath(new Object[] { node.getValue() });
+			TreeUtil.addNodesToExistingBookmark(bookmark, path);
+		}
+
+		root.removeAllChildren();
+		root.addChild(bookmark);
+
+		return root;
+	}
+
 	private void importAll(File file)
+		throws JavaModelException
 	{
 		String[] data = BookmarkFileIO.readFromFile(file);
 
@@ -99,18 +136,24 @@ public class BookmarkImportWizard
 		RestoredTree deserialized = TreeDeserializerFacade
 				.deserialize(serializedTree);
 
-		addBookmarksToCurrentModel(deserialized);
+		BMNode root = deserialized.getRoot();
 
-		BMNode[] expanded = deserialized.getExpanded();
+		if (mainPage.consolidateBookmarksAsSingleBookmark()) {
+			root = uniteBookmarksWithNewName(root);
+		}
+
+		addBookmarksToCurrentModel(root);
+
+		BMNode[] expanded = TreeUtil.getTreeBelowNode(root);
 		updateView(expanded);
 
 	}
 
-	private void addBookmarksToCurrentModel(RestoredTree deserialized)
+	private void addBookmarksToCurrentModel(BMNode root)
 	{
 		ViewManager manager = Activator.getManager();
 		TreeModel model = manager.getModel();
-		for (BMNode child : deserialized.getRoot().getChildren()) {
+		for (BMNode child : root.getChildren()) {
 			model.getModelRoot().addChild(child);
 		}
 	}
