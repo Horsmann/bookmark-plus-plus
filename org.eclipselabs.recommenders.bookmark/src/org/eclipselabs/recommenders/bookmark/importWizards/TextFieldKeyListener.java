@@ -6,6 +6,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 
 public class TextFieldKeyListener
 	implements Listener
@@ -26,13 +29,28 @@ public class TextFieldKeyListener
 		File file = new File(textField.getText());
 
 		if (isValid(file)) {
+
+			setFileContentForViewer(file);
+
 			bookmarkImportWizardPage.setImportFile(file);
 			bookmarkImportWizardPage.setPageComplete(true);
-
 		}
 		else {
+			bookmarkImportWizardPage.getView().setInput(null);
 			bookmarkImportWizardPage.setImportFile(null);
 			bookmarkImportWizardPage.setPageComplete(false);
+		}
+
+	}
+
+	private void setFileContentForViewer(File file)
+	{
+		String[] data = BookmarkFileIO.readFromFile(file);
+
+		if (data.length > 0) {
+			RestoredTree restore = TreeDeserializerFacade.deserialize(data[0]);
+			bookmarkImportWizardPage.getView().setInput(restore.getRoot());
+			bookmarkImportWizardPage.getView().expandAll();
 		}
 
 	}

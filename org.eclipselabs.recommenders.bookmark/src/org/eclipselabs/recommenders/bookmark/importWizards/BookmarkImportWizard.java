@@ -11,8 +11,10 @@
 package org.eclipselabs.recommenders.bookmark.importWizards;
 
 import java.io.File;
+import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
@@ -41,15 +43,37 @@ public class BookmarkImportWizard
 	public boolean performFinish()
 	{
 		File file = mainPage.getImportFile();
+		TreeViewer viewer = mainPage.getView();
+		List<IStructuredSelection> treeSelections = TreeUtil
+				.getTreeSelections(viewer);
 		if (file == null)
 			return false;
 
-		performImport(file);
+		performImport(file, treeSelections);
 
 		return true;
 	}
 
-	private void performImport(File file)
+	private void performImport(File file,
+			List<IStructuredSelection> treeSelections)
+	{
+
+		if (treeSelections.isEmpty()) {
+			importAll(file);
+		}
+		else {
+			importSelected(file, treeSelections);
+		}
+
+	}
+
+	private void importSelected(File file,
+			List<IStructuredSelection> treeSelections)
+	{
+		
+	}
+
+	private void importAll(File file)
 	{
 		String[] data = BookmarkFileIO.readFromFile(file);
 
