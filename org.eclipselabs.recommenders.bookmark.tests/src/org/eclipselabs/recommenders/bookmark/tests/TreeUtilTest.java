@@ -29,31 +29,34 @@ import org.junit.Test;
 
 public class TreeUtilTest
 {
-	
+
 	@Test
-	public void testGetBookmarkNameForSomeNodeUnderBookmark() {
+	public void testGetBookmarkNameForSomeNodeUnderBookmark()
+	{
 		BMNode root = createTestTree();
 		BMNode testNode = root.getChildren()[0].getChildren()[0];
-		
+
 		String expected = "BM#1";
 		String actually = TreeUtil.getNameOfNodesBookmark(testNode);
 		assertEquals(expected, actually);
 	}
-	
+
 	@Test
-	public void testGetBookmarkNameForBookmark() {
+	public void testGetBookmarkNameForBookmark()
+	{
 		BMNode root = createTestTree();
 		BMNode testNode = root.getChildren()[0];
-		
+
 		String expected = "BM#1";
 		String actually = TreeUtil.getNameOfNodesBookmark(testNode);
 		assertEquals(expected, actually);
 	}
-	
+
 	@Test
-	public void testGetBookmarkNameForRoot() {
+	public void testGetBookmarkNameForRoot()
+	{
 		BMNode root = createTestTree();
-		
+
 		String expected = "";
 		String actually = TreeUtil.getNameOfNodesBookmark(root);
 		assertEquals(expected, actually);
@@ -157,18 +160,27 @@ public class TreeUtilTest
 	}
 
 	@Test
+	public void testCopyTreeBewlowBookmarkForNull()
+	{
+		BMNode copy = TreeUtil.copyTreePathBelowBookmark(null);
+		assertNull(copy);
+	}
+	
+	@Test
+	public void testCopyTreeBelowBookmarkForRootNode() {
+		TreeNode root = createTestTree();
+		BMNode copy = TreeUtil.copyTreePathBelowBookmark(root);
+		assertNull(copy);
+	}
+
+	@Test
 	public void testCopyTreeBelowBookmark()
 	{
 
-		BMNode copy = TreeUtil.copyTreePathBelowBookmark(null);
-		assertNull(copy);
-
 		TreeNode root = createTestTree();
-		copy = TreeUtil.copyTreePathBelowBookmark(root);
-		assertTrue(copy.getValue().equals(root.getValue()));
 
 		BMNode bm1c1 = root.getChildren()[0].getChildren()[0];
-		copy = TreeUtil.copyTreePathBelowBookmark(bm1c1);
+		BMNode copy = TreeUtil.copyTreePathBelowBookmark(bm1c1);
 
 		Object value1 = bm1c1.getValue();
 		Object value2 = copy.getValue();

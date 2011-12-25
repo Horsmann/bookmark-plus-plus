@@ -196,7 +196,7 @@ public class TreeUtil
 
 		if (node == null)
 			return null;
-		
+
 		node = getReference(node);
 
 		if (node.isBookmarkNode())
@@ -373,7 +373,7 @@ public class TreeUtil
 	{
 		if (node == null)
 			return null;
-		
+
 		node = getReference(node);
 
 		LinkedList<BMNode> newChilds = new LinkedList<BMNode>();
@@ -382,8 +382,8 @@ public class TreeUtil
 
 		BMNode newNode = copyTreePathNodeToBookmark(node);
 
-		// if (newNode == null)
-		// return null;
+		if (newNode == null)
+			return null;
 
 		for (BMNode child : newChilds)
 			newNode.addChild(child);
@@ -399,7 +399,7 @@ public class TreeUtil
 
 	private static BMNode copyTreePathNodeToBookmark(BMNode node)
 	{
-		if (node == null || node.isBookmarkNode())
+		if (node == null || node.getParent() == null || node.isBookmarkNode())
 			return null;
 
 		Object value = node.getValue();
@@ -461,7 +461,7 @@ public class TreeUtil
 	public static BMNode climbUpUntilLevelBelowBookmark(BMNode node)
 	{
 		node = getReference(node);
-		
+
 		BMNode climber = node;
 		while (climber.getParent() != null
 				&& !climber.getParent().isBookmarkNode()) {
@@ -494,7 +494,7 @@ public class TreeUtil
 	{
 		bookmark = getReference(bookmark);
 		node = getReference(node);
-		
+
 		LinkedList<BMNode> leafs = TreeUtil.getLeafs(node);
 
 		for (BMNode leaf : leafs) {
