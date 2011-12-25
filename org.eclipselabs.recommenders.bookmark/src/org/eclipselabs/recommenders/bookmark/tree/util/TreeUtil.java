@@ -360,6 +360,19 @@ public class TreeUtil
 			leafs.add(node);
 		return leafs;
 	}
+	
+	public static BMNode copyTreePathFromNodeToBookmark(BMNode node)
+	{
+		if (node == null)
+			return null;
+
+		node = getReference(node);
+
+		BMNode upPath = copyTreePathNodeToBookmark(node, true);
+
+		return upPath;
+
+	}
 
 	/**
 	 * Copies the <b>tree structure</b> below the provided node. Starting from

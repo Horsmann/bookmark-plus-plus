@@ -118,7 +118,7 @@ public class BookmarkExportWizard
 			LinkedList<BMNode> shareSameBM)
 	{
 		BMNode shared = shareSameBM.pollFirst();
-		BMNode newBookmark = TreeUtil.copyTreeBelowNode(shared, true);
+		BMNode newBookmark = TreeUtil.copyTreePathFromNodeToBookmark(shared);
 		while (!shareSameBM.isEmpty()) {
 			BMNode next = shareSameBM.pollFirst();
 			BMNode copy = TreeUtil.copyTreeBelowNode(next, false);
