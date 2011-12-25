@@ -71,18 +71,89 @@ public class BookmarkExportWizard
 		BMNode root = new TreeNode("", false, true);
 
 		// selected category nodes
-		LinkedList<BMNode> listOfSelectedCategories = new LinkedList<BMNode>();
-
-		for (int i = 0; i < treeSelections.size(); i++) {
-			BMNode node = (BMNode) treeSelections.get(i);
-
-			if (node.isBookmarkNode()) {
-				listOfSelectedCategories.add(node);
-			}
-		}
+		LinkedList<BMNode> listOfSelectedCategories = getEntireSelectedCategories(treeSelections);
 
 		// single nodes which are not below one of the selected categories and
 		// need to be pressed separatly
+		LinkedList<BMNode> singleSelectedNodes = getSingleSelectedNodesWhichAreNotBewlowAnAlreadySelectedCategory(
+				treeSelections, listOfSelectedCategories);
+
+		root = copyCategoriesAndAddToNode(listOfSelectedCategories, root);
+
+		root = copySingleSelectedNodes(root, singleSelectedNodes);
+
+		export(root,file);
+		
+	}
+
+	private void export(BMNode root, File file)
+	{
+		TreeModel model = new TreeModel();
+		model.setModelRoot(root);
+		TreeSerializerFacade.serialize(model, null, file);		
+	}
+
+	private BMNode copySingleSelectedNodes(BMNode root,
+			LinkedList<BMNode> singleSelectedNodes)
+	{
+		BMNode bm;
+		LinkedList<BMNode> shareSameBM;
+		while (!singleSelectedNodes.isEmpty()) {
+			
+			
+			
+			BMNode select = singleSelectedNodes.pollFirst();
+			bm = TreeUtil.getBookmarkNode(select);
+			shareSameBM = new LinkedList<BMNode>();
+			shareSameBM.add(select);
+
+			for (BMNode remain : singleSelectedNodes) {
+				BMNode remainBM = TreeUtil.getBookmarkNode(remain);
+				if (remainBM == bm) {
+					shareSameBM.add(remain);
+				}
+			}
+
+			// delete
+			for (BMNode node : shareSameBM) {
+				singleSelectedNodes.remove(node);
+			}
+
+			if (!shareSameBM.isEmpty()) {
+				BMNode shared = shareSameBM.pollFirst();
+				BMNode newBookmark = TreeUtil.copyTreeBelowNode(shared, true);
+				while (!shareSameBM.isEmpty()) {
+					BMNode next = shareSameBM.pollFirst();
+					BMNode copy = TreeUtil.copyTreeBelowNode(next, false);
+
+					if (TreeUtil.attemptMerge(newBookmark, copy) == null) {
+						newBookmark.addChild(copy);
+					}
+
+				}
+				root.addChild(newBookmark);
+			}
+
+		}
+		return root;
+	}
+
+	private BMNode copyCategoriesAndAddToNode(
+			LinkedList<BMNode> listOfSelectedCategories, BMNode root)
+	{
+		// copy entire bookmarks add to root
+		for (BMNode cat : listOfSelectedCategories) {
+			BMNode copy = TreeUtil.copyTreeBelowNode(cat, true);
+			root.addChild(copy);
+		}
+
+		return root;
+	}
+
+	private LinkedList<BMNode> getSingleSelectedNodesWhichAreNotBewlowAnAlreadySelectedCategory(
+			List<IStructuredSelection> treeSelections,
+			LinkedList<BMNode> listOfSelectedCategories)
+	{
 		LinkedList<BMNode> singleSelectedNodes = new LinkedList<BMNode>();
 
 		BMNode[] selectedCategories = listOfSelectedCategories
@@ -98,7 +169,7 @@ public class BookmarkExportWizard
 			// category or not,
 			// if they are, do nothing since the entire category will be
 			// exported anyway
-			// if they are not store them separatly
+			// if they are not, store them separately
 			boolean isContainedInAlreadySelectedCat = false;
 			for (BMNode category : selectedCategories) {
 				isContainedInAlreadySelectedCat = TreeUtil.isDescendant(
@@ -112,57 +183,23 @@ public class BookmarkExportWizard
 				singleSelectedNodes.add(node);
 			}
 		}
-		
-		//copy entire bookmarks add to root 
-		for (BMNode cat : listOfSelectedCategories){
-			BMNode copy = TreeUtil.copyTreeBelowNode(cat, true);
-			root.addChild(copy);
-		}
-		
-		
-		BMNode bm;
-		LinkedList<BMNode> shareSameBM;
-		while(!singleSelectedNodes.isEmpty()) {
-			BMNode select = singleSelectedNodes.pollFirst();
-			bm = TreeUtil.getBookmarkNode(select);
-			shareSameBM = new LinkedList<BMNode>();
-			shareSameBM.add(select);
-			
-			for (BMNode remain : singleSelectedNodes){
-				BMNode remainBM = TreeUtil.getBookmarkNode(remain);
-				if (remainBM == bm){
-					shareSameBM.add(remain);
-				}
-			}
-			
-			//delete
-			for (BMNode node:shareSameBM){
-				singleSelectedNodes.remove(node);
-			}
-			
-			if (!shareSameBM.isEmpty()) {
-				BMNode shared = shareSameBM.pollFirst();
-				BMNode newBookmark= TreeUtil.copyTreeBelowNode(shared, true);
-				while(!shareSameBM.isEmpty()) {
-					BMNode next = shareSameBM.pollFirst();
-					BMNode copy = TreeUtil.copyTreeBelowNode(next, false);
+		return singleSelectedNodes;
+	}
 
-					BMNode merged = null;
-					if ((merged = TreeUtil.attemptMerge(newBookmark, copy)) == null) {
-						newBookmark.addChild(copy);
-					}
-					
-					
-				}
-				root.addChild(newBookmark);
+	private LinkedList<BMNode> getEntireSelectedCategories(
+			List<IStructuredSelection> treeSelections)
+	{
+		LinkedList<BMNode> listOfSelectedCategories = new LinkedList<BMNode>();
+
+		for (int i = 0; i < treeSelections.size(); i++) {
+			BMNode node = (BMNode) treeSelections.get(i);
+
+			if (node.isBookmarkNode()) {
+				listOfSelectedCategories.add(node);
 			}
-			
 		}
-		
-		TreeModel model = new TreeModel();
-		model.setModelRoot(root);
-		TreeSerializerFacade.serialize(model, null, file);
-		
+
+		return listOfSelectedCategories;
 	}
 
 	private void exportEntireModelToFile(File file)
