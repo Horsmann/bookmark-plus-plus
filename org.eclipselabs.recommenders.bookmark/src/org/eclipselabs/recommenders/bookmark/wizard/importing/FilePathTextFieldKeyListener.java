@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.importWizards;
+package org.eclipselabs.recommenders.bookmark.wizard.importing;
 
 import java.io.File;
 
@@ -10,13 +10,13 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 
-public class TextFieldKeyListener
+public class FilePathTextFieldKeyListener
 	implements Listener
 {
 	private final BookmarkImportWizardPage bookmarkImportWizardPage;
 	private final Text textField;
 
-	public TextFieldKeyListener(Text textField,
+	public FilePathTextFieldKeyListener(Text textField,
 			BookmarkImportWizardPage bookmarkImportWizardPage)
 	{
 		this.textField = textField;

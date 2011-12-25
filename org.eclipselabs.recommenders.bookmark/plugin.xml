@@ -55,7 +55,7 @@
       </category>
       <wizard
             category="org.eclipselabs.recommenders.bookmark.importWizards.bookmark"
-            class="org.eclipselabs.recommenders.bookmark.importWizards.BookmarkImportWizard"
+            class="org.eclipselabs.recommenders.bookmark.wizard.importing.BookmarkImportWizard"
             icon="icons/bkmrk_nav.gif"
             id="org.eclipselabs.recommenders.bookmark.importWizards.BookmarkImportWizard"
             name="Import Bookmarks">
@@ -72,7 +72,7 @@
       </category>
       <wizard
             category="org.eclipselabs.recommenders.bookmark.exportWizards.bookmark"
-            class="org.eclipselabs.recommenders.bookmark.exportWizards.BookmarkExportWizard"
+            class="org.eclipselabs.recommenders.bookmark.wizard.export.BookmarkExportWizard"
             icon="icons/bkmrk_nav.gif"
             id="org.eclipselabs.recommenders.bookmark.wizard1"
             name="Export Bookmarks">

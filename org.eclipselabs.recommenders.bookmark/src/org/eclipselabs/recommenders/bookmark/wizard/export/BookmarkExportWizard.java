@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.exportWizards;
+package org.eclipselabs.recommenders.bookmark.wizard.export;
 
 import java.io.File;
 import java.util.List;
@@ -14,6 +14,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
+import org.eclipselabs.recommenders.bookmark.wizard.WizardUtil;
 
 public class BookmarkExportWizard
 	extends Wizard

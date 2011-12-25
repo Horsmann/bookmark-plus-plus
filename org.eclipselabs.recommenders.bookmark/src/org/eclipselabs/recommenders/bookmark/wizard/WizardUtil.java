@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.exportWizards;
+package org.eclipselabs.recommenders.bookmark.wizard;
 
 import java.util.LinkedList;
 import java.util.List;

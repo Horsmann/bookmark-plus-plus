@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipselabs.recommenders.bookmark.importWizards;
+package org.eclipselabs.recommenders.bookmark.wizard.importing;
 
 import java.io.File;
 
@@ -60,6 +60,10 @@ public class BookmarkImportWizardPage
 
 	}
 
+	public void updateCompletionStatus()
+	{
+
+	}
 
 	private void addRowWithCheckboxAndNewNameTextfield()
 	{
@@ -82,6 +86,9 @@ public class BookmarkImportWizardPage
 		nameOfNewCategory.setEnabled(false);
 		data = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		nameOfNewCategory.setLayoutData(data);
+
+		nameOfNewCategory.addKeyListener(new NameOfCategoryTextFieldListener(
+				this, nameOfNewCategory));
 
 		checkbox.addListener(SWT.Selection, new CheckboxListener(
 				nameOfNewCategory));
@@ -114,8 +121,8 @@ public class BookmarkImportWizardPage
 		button.addListener(SWT.MouseDown, new ButtonMouseDownListener(
 				selectedFileTextField, this));
 
-		selectedFileTextField.addListener(SWT.KeyUp, new TextFieldKeyListener(
-				selectedFileTextField, this));
+		selectedFileTextField.addListener(SWT.KeyUp,
+				new FilePathTextFieldKeyListener(selectedFileTextField, this));
 	}
 
 	private void initializeTwoColumnContainerComposite(Composite parent)

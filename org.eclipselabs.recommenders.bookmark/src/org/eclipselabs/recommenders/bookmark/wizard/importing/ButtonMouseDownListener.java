@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.importWizards;
+package org.eclipselabs.recommenders.bookmark.wizard.importing;
 
 import java.io.File;
 

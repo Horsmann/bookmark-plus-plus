@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.importWizards;
+package org.eclipselabs.recommenders.bookmark.wizard.importing;
 
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;

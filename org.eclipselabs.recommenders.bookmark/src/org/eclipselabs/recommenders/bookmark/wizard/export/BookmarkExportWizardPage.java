@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipselabs.recommenders.bookmark.exportWizards;
+package org.eclipselabs.recommenders.bookmark.wizard.export;
 
 import java.io.File;
 
