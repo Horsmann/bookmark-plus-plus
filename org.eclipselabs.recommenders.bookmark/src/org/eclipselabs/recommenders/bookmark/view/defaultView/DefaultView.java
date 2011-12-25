@@ -22,7 +22,6 @@ import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.eclipselabs.recommenders.bookmark.view.actions.CloseAllOpenEditorsAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.CreateNewBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.DeleteAction;
-import org.eclipselabs.recommenders.bookmark.view.actions.ExportBookmarksAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplorerAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RenameBookmarkAction;
@@ -47,7 +46,6 @@ public class DefaultView
 	private TreeModel model;
 	private TreeModel flatModel;
 	private Action showInEditor;
-	private Action exportBookmarks;
 	private Action closeAllOpenEditors;
 	private Action refreshView;
 	private Action openInSystemFileExplorer;
@@ -150,7 +148,6 @@ public class DefaultView
 	{
 		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
 				viewer);
-		exportBookmarks = new ExportBookmarksAction(manager);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(this);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
@@ -170,13 +167,10 @@ public class DefaultView
 		mgr.add(showInEditor);
 		mgr.add(refreshView);
 		mgr.add(closeAllOpenEditors);
-		// mgr.add(exportBookmarks);
-		// mgr.add(renameBookmark);
 		mgr.add(new Separator());
 		mgr.add(toggleLevel);
 		mgr.add(toggleFlatTree);
 		mgr.add(newBookmark);
-		// mgr.add(deleteSelection);
 
 		mgr.update(true);
 	}
@@ -192,7 +186,6 @@ public class DefaultView
 			{
 				menuMgr.add(showInEditor);
 				menuMgr.add(refreshView);
-				menuMgr.add(exportBookmarks);
 				menuMgr.add(renameBookmark);
 				menuMgr.add(new Separator());
 				menuMgr.add(toggleLevel);
