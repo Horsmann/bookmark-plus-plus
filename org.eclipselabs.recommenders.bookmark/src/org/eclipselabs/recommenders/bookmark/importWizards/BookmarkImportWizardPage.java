@@ -12,6 +12,7 @@ package org.eclipselabs.recommenders.bookmark.importWizards;
 
 import java.io.File;
 
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -19,6 +20,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 
 public class BookmarkImportWizardPage
 	extends WizardPage
@@ -28,6 +32,7 @@ public class BookmarkImportWizardPage
 	private Text textField;
 	private Button button;
 	private File file;
+	private TreeViewer treeViewer;
 
 	protected BookmarkImportWizardPage(String pageName)
 	{
@@ -61,11 +66,25 @@ public class BookmarkImportWizardPage
 
 		textField.addListener(SWT.KeyUp, new TextFieldKeyListener(textField,
 				this));
+		
+		data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.horizontalSpan = 2;
+		treeViewer = new TreeViewer(container, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
+		treeViewer.setLabelProvider(new TreeLabelProvider(Activator
+				.getManager()));
+		treeViewer.setContentProvider(new TreeContentProvider());
+//		treeViewer.setInput(model.getModelRoot());
+		treeViewer.getTree().setLayoutData(data);
 
 		// Required to avoid an error in the system
 		setControl(container);
 		setPageComplete(false);
 
+	}
+	
+	public TreeViewer getView() {
+		return treeViewer;
 	}
 
 	public void setImportFile(File file)

@@ -5,6 +5,10 @@ import java.io.File;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 
 public class ButtonMouseDownListener
 	implements Listener
@@ -27,6 +31,16 @@ public class ButtonMouseDownListener
 		if (file != null) {
 			textField.setText(file.getAbsolutePath());
 			bookmarkImportWizardPage.setImportFile(file);
+
+			String[] data = BookmarkFileIO.readFromFile(file);
+			if (data.length > 0) {
+				RestoredTree rstTree = TreeDeserializerFacade
+						.deserialize(data[0]);
+				BMNode node = rstTree.getRoot();
+				bookmarkImportWizardPage.getView().setInput(node);
+				bookmarkImportWizardPage.getView().expandAll();
+			}
+
 			bookmarkImportWizardPage.setPageComplete(true);
 		}
 
