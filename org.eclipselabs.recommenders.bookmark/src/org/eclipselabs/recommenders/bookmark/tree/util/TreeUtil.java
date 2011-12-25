@@ -416,7 +416,8 @@ public class TreeUtil
 		BMNode parent = node.getParent();
 		BMNode newParent = copyTreePathNodeToBookmark(parent, inclusiveBookmark);
 		if (newParent != null) {
-			newParent.addChild(newNode);
+			BMNode leaf = TreeUtil.getLeafOfTreePath(newParent);
+			leaf.addChild(newNode);
 			return newParent;
 		}
 		return newNode;

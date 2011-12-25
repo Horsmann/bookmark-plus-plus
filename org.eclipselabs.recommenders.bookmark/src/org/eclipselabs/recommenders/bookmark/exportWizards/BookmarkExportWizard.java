@@ -13,6 +13,7 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -110,6 +111,46 @@ public class BookmarkExportWizard
 				singleSelectedNodes.add(node);
 			}
 		}
+		
+		BMNode bm;
+		LinkedList<BMNode> shareSameBM;
+		while(!singleSelectedNodes.isEmpty()) {
+			BMNode select = singleSelectedNodes.pollFirst();
+			bm = TreeUtil.getBookmarkNode(select);
+			shareSameBM = new LinkedList<BMNode>();
+			shareSameBM.add(select);
+			
+			for (BMNode remain : singleSelectedNodes){
+				BMNode remainBM = TreeUtil.getBookmarkNode(remain);
+				if (remainBM == bm){
+					shareSameBM.add(remain);
+				}
+			}
+			
+			//delete
+			for (BMNode node:shareSameBM){
+				singleSelectedNodes.remove(node);
+			}
+			
+			if (!shareSameBM.isEmpty()) {
+				BMNode shared = shareSameBM.pollFirst();
+				BMNode newBookmark= TreeUtil.copyTreeBelowNode(shared, true);
+				while(!shareSameBM.isEmpty()) {
+					BMNode next = shareSameBM.pollFirst();
+					BMNode copy = TreeUtil.copyTreeBelowNode(next, false);
+
+					BMNode merged = null;
+					if ((merged = TreeUtil.attemptMerge(newBookmark, copy)) == null) {
+						newBookmark.addChild(copy);
+					}
+					
+					
+				}
+				
+			}
+			
+		}
+		
 		
 		int a = 0;
 		a++;
