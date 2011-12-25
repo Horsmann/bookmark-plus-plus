@@ -13,8 +13,6 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
-import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
-import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -82,60 +80,87 @@ public class BookmarkExportWizard
 
 		root = copySingleSelectedNodes(root, singleSelectedNodes);
 
-		export(root,file);
-		
+		export(root, file);
+
 	}
 
 	private void export(BMNode root, File file)
 	{
 		TreeModel model = new TreeModel();
 		model.setModelRoot(root);
-		TreeSerializerFacade.serialize(model, null, file);		
+
+		Object[] expanded = TreeUtil.getTreeBelowNode(root);
+
+		TreeSerializerFacade.serialize(model, expanded, file);
 	}
 
 	private BMNode copySingleSelectedNodes(BMNode root,
 			LinkedList<BMNode> singleSelectedNodes)
 	{
-		BMNode bm;
 		LinkedList<BMNode> shareSameBM;
 		while (!singleSelectedNodes.isEmpty()) {
-			
-			
-			
-			BMNode select = singleSelectedNodes.pollFirst();
-			bm = TreeUtil.getBookmarkNode(select);
-			shareSameBM = new LinkedList<BMNode>();
-			shareSameBM.add(select);
 
-			for (BMNode remain : singleSelectedNodes) {
-				BMNode remainBM = TreeUtil.getBookmarkNode(remain);
-				if (remainBM == bm) {
-					shareSameBM.add(remain);
-				}
-			}
+			shareSameBM = consolidateSingleNodesAmongCommonCategory(singleSelectedNodes);
 
-			// delete
-			for (BMNode node : shareSameBM) {
-				singleSelectedNodes.remove(node);
-			}
+			singleSelectedNodes = removeConsolidatedNodesFromSingleSelectionList(
+					shareSameBM, singleSelectedNodes);
 
 			if (!shareSameBM.isEmpty()) {
-				BMNode shared = shareSameBM.pollFirst();
-				BMNode newBookmark = TreeUtil.copyTreeBelowNode(shared, true);
-				while (!shareSameBM.isEmpty()) {
-					BMNode next = shareSameBM.pollFirst();
-					BMNode copy = TreeUtil.copyTreeBelowNode(next, false);
-
-					if (TreeUtil.attemptMerge(newBookmark, copy) == null) {
-						newBookmark.addChild(copy);
-					}
-
-				}
-				root.addChild(newBookmark);
+				root = mergeTreeStructureOfNodesUnderCommonCategory(root,
+						shareSameBM);
 			}
 
 		}
 		return root;
+	}
+
+	private BMNode mergeTreeStructureOfNodesUnderCommonCategory(BMNode root,
+			LinkedList<BMNode> shareSameBM)
+	{
+		BMNode shared = shareSameBM.pollFirst();
+		BMNode newBookmark = TreeUtil.copyTreeBelowNode(shared, true);
+		while (!shareSameBM.isEmpty()) {
+			BMNode next = shareSameBM.pollFirst();
+			BMNode copy = TreeUtil.copyTreeBelowNode(next, false);
+
+			if (TreeUtil.attemptMerge(newBookmark, copy) == null) {
+				newBookmark.addChild(copy);
+			}
+
+		}
+		root.addChild(newBookmark);
+
+		return root;
+	}
+
+	private LinkedList<BMNode> removeConsolidatedNodesFromSingleSelectionList(
+			LinkedList<BMNode> shareSameBM,
+			LinkedList<BMNode> singleSelectedNodes)
+	{
+		// delete
+		for (BMNode node : shareSameBM) {
+			singleSelectedNodes.remove(node);
+		}
+
+		return singleSelectedNodes;
+	}
+
+	private LinkedList<BMNode> consolidateSingleNodesAmongCommonCategory(
+			LinkedList<BMNode> singleSelectedNodes)
+	{
+
+		BMNode select = singleSelectedNodes.pollFirst();
+		BMNode bm = TreeUtil.getBookmarkNode(select);
+		LinkedList<BMNode> shareSameBM = new LinkedList<BMNode>();
+		shareSameBM.add(select);
+
+		for (BMNode remain : singleSelectedNodes) {
+			BMNode remainBM = TreeUtil.getBookmarkNode(remain);
+			if (remainBM == bm) {
+				shareSameBM.add(remain);
+			}
+		}
+		return shareSameBM;
 	}
 
 	private BMNode copyCategoriesAndAddToNode(
