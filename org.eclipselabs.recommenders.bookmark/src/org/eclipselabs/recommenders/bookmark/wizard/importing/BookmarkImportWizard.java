@@ -93,7 +93,7 @@ public class BookmarkImportWizard
 			model.getModelRoot().addChild(bookmark);
 		}
 
-		Object[] nodesToExpand = TreeUtil.getTreeBelowNode(bookmark);
+		Object[] nodesToExpand = TreeUtil.getTreeBelowNode(root);
 
 		TreeViewer viewer = manager.getActiveBookmarkView().getView();
 		for (Object o : nodesToExpand) {
