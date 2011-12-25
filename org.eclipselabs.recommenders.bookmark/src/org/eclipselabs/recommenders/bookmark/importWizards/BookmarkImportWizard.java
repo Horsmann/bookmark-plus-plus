@@ -19,6 +19,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.exportWizards.WizardUtil;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
@@ -70,7 +71,20 @@ public class BookmarkImportWizard
 	private void importSelected(File file,
 			List<IStructuredSelection> treeSelections)
 	{
-		
+		BMNode root = WizardUtil.buildTreeConsistingOfSelection(treeSelections);
+
+		ViewManager manager = Activator.getManager();
+		TreeModel model = manager.getModel();
+		for (BMNode bookmark : root.getChildren()) {
+			model.getModelRoot().addChild(bookmark);
+		}
+
+		Object[] nodesToExpand = TreeUtil.getTreeBelowNode(root);
+
+		TreeViewer viewer = manager.getActiveBookmarkView().getView();
+		for (Object o : nodesToExpand) {
+			TreeUtil.showNodeExpanded(viewer, (BMNode) o);
+		}
 	}
 
 	private void importAll(File file)
