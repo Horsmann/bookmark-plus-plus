@@ -5,20 +5,21 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class AddTreepathsToExistingBookmark
 	implements TreeCommand
 {
 
-	private BookmarkView viewer = null;
 	private BMNode bookmark = null;
 	private TreePath[] treePath = null;
+	private final ViewManager manager;
 
-	public AddTreepathsToExistingBookmark(BookmarkView viewer,
+	public AddTreepathsToExistingBookmark(ViewManager manager,
 			BMNode bookmark, TreePath[] treePath)
 	{
 
-		this.viewer = viewer;
+		this.manager = manager;
 		this.bookmark = bookmark;
 		this.treePath = treePath;
 	}
@@ -32,6 +33,7 @@ public class AddTreepathsToExistingBookmark
 				BMNode added = TreeUtil.addNodesToExistingBookmark(bookmark,
 						treePath[i]);
 				if (added != null) {
+					BookmarkView viewer = manager.getActiveBookmarkView();
 					TreeUtil.showNodeExpanded(viewer.getView(), added);
 				}
 			}

@@ -61,8 +61,8 @@ public class BookmarkViewManager
 		stackLayout = new StackLayout();
 		container.setLayout(stackLayout);
 		// //
-		defaultView = new DefaultView(this, container, model, flatModel);
-		toggledView = new CategoryView(this, container, model, flatModel);
+		defaultView = new DefaultView(this, container);
+		toggledView = new CategoryView(this, container);
 
 		stackLayout.topControl = defaultView.getComposite();
 		activeView = defaultView;
@@ -79,7 +79,7 @@ public class BookmarkViewManager
 	{
 		IPartService service = (IPartService) getSite().getService(
 				IPartService.class);
-		service.addPartListener(new ViewPartListener(activeView));
+		service.addPartListener(new ViewPartListener(this));
 
 		IHandlerService handlerServ = (IHandlerService) getSite().getService(
 				IHandlerService.class);

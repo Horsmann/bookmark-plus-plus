@@ -26,10 +26,10 @@ public class ComboSaveButtonListener
 	public void handleEvent(Event event)
 	{
 		String text = combo.getText();
-		BMNode head = view.getModel().getModelHead();
+		BMNode head = view.getManager().getModel().getModelHead();
 
 		head.setValue(text);
-		
+
 		view.refreshCategories();
 
 		button.setEnabled(false);

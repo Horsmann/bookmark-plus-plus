@@ -25,14 +25,13 @@ public class DefaultTreeDropListener
 	implements DropTargetListener
 {
 
-	private final BookmarkView viewer;
-
 	private TreeDragListener dragListener = null;
+	private final ViewManager manager;
 
-	public DefaultTreeDropListener(BookmarkView viewer,
+	public DefaultTreeDropListener(ViewManager manager,
 			TreeDragListener localViewsDragListener)
 	{
-		this.viewer = viewer;
+		this.manager = manager;
 		this.dragListener = localViewsDragListener;
 	}
 
@@ -61,6 +60,8 @@ public class DefaultTreeDropListener
 
 	private void updateView()
 	{
+		BookmarkView viewer = manager.getActiveBookmarkView();
+
 		viewer.updateControls();
 
 		ViewManager manager = viewer.getManager();
@@ -71,7 +72,7 @@ public class DefaultTreeDropListener
 		 * scratch
 		 */
 		if (manager.isViewFlattened()) {
-			TreeModel model = viewer.getModel();
+			TreeModel model = manager.getModel();
 			BMNode head = model.getModelHead();
 			manager.activateFlattenedModus(head);
 		}
@@ -119,8 +120,11 @@ public class DefaultTreeDropListener
 
 	private void saveNewTreeModelState()
 	{
-		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
-				viewer.getModel());
+		BookmarkView viewer = manager.getActiveBookmarkView();
+		TreeModel model = manager.getModel();
+
+		TreeSerializerFacade
+				.serializeToDefaultLocation(viewer.getView(), model);
 	}
 
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
@@ -140,8 +144,9 @@ public class DefaultTreeDropListener
 
 	private void addToNewBookmark(DropTargetEvent event)
 	{
-		TreeViewer view = viewer.getView();
-		TreeModel model = viewer.getModel();
+		TreeViewer view = manager.getActiveBookmarkView().getView();
+		TreeModel model = manager.getModel();
+
 		boolean keepSource = (event.operations == DND.DROP_COPY);
 		new AddTreeNodesToNewBookmark(view, model, keepSource).execute();
 	}
@@ -156,6 +161,7 @@ public class DefaultTreeDropListener
 
 	private void addToExistingBookmark(DropTargetEvent event, BMNode bookmark)
 	{
+		BookmarkView viewer = manager.getActiveBookmarkView();
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer.getView());
 
@@ -178,13 +184,14 @@ public class DefaultTreeDropListener
 		BMNode target = (BMNode) getTarget(event);
 
 		BMNode bookmark = TreeUtil.getBookmarkNode(target);
+		BookmarkView viewer = manager.getActiveBookmarkView();
 
 		if (bookmark != null) {
-			new AddTreepathsToExistingBookmark(viewer, bookmark, treePath)
+			new AddTreepathsToExistingBookmark(manager, bookmark, treePath)
 					.execute();
 		}
 		else {
-			new CreateNewBookmarkAddAsNode(viewer, treePath).execute();
+			new CreateNewBookmarkAddAsNode(manager, treePath).execute();
 
 		}
 		viewer.getManager().addCurrentlyExpandedNodesToStorage();
@@ -192,7 +199,7 @@ public class DefaultTreeDropListener
 
 	private boolean isValidDrop(DropTargetEvent event)
 	{
-
+		BookmarkView viewer = manager.getActiveBookmarkView();
 		if (dragListener.isDragInProgress()) {
 			BMNode target = (BMNode) getTarget(event);
 			return DropUtil.isValidDrop(viewer.getView(), target);

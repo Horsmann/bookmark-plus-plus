@@ -33,7 +33,7 @@ public class ToggleViewAction
 	public void run()
 	{
 		bookmarkView = manager.getActiveBookmarkView();
-		TreeModel model = bookmarkView.getModel();
+		TreeModel model = manager.getModel();
 
 		if (manager.isViewToggled()) {
 			setUpDefault(model);

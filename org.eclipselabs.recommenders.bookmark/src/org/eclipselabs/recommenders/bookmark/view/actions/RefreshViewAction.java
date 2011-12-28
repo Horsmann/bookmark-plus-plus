@@ -6,18 +6,18 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
-import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class RefreshViewAction
 	extends Action
 {
 
-	private BookmarkView viewer;
+	private final ViewManager manager;
 
-	public RefreshViewAction(BookmarkView viewer)
+	public RefreshViewAction(ViewManager manager)
 	{
-		this.viewer = viewer;
 
+		this.manager = manager;
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_REFRESH_VIEW));
 		this.setToolTipText("Refreshes the view and updates the labeling (available/closed/not available)");
@@ -34,13 +34,13 @@ public class RefreshViewAction
 				.getBoolean(org.eclipselabs.recommenders.bookmark.preferences.PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES_REFRESH);
 
 		if (removeDeadReferences) {
-			TreeModel model = viewer.getModel();
+			TreeModel model = manager.getModel();
 			final BMNode root = model.getModelRoot();
 
 			TreeUtil.deleteNodesReferencingToDeadResourcesUnderNode(root, model);
 		}
 
-		viewer.getView().refresh(true);
+		manager.getActiveBookmarkView().getView().refresh(true);
 	}
 
 }

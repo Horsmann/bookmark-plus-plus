@@ -17,11 +17,11 @@ public class CategoryTreeDropListener
 	implements DropTargetListener
 {
 
-	private BookmarkView viewer = null;
+	private final ViewManager manager;
 
-	public CategoryTreeDropListener(BookmarkView viewer)
+	public CategoryTreeDropListener(ViewManager manager)
 	{
-		this.viewer = viewer;
+		this.manager = manager;
 	}
 
 	@Override
@@ -63,9 +63,8 @@ public class CategoryTreeDropListener
 
 	private void updateView()
 	{
+		BookmarkView viewer = manager.getActiveBookmarkView();
 		viewer.updateControls();
-
-		ViewManager manager = viewer.getManager();
 
 		/*
 		 * The flattened view works with a partial copy of the main model. To
@@ -73,7 +72,7 @@ public class CategoryTreeDropListener
 		 * scratch
 		 */
 		if (manager.isViewFlattened()) {
-			TreeModel model = viewer.getModel();
+			TreeModel model = manager.getModel();
 			BMNode head = model.getModelHead();
 			manager.activateFlattenedModus(head);
 		}
@@ -86,9 +85,9 @@ public class CategoryTreeDropListener
 	{
 
 		TreePath[] treePath = getTreePath(event);
-		BMNode bookmark = viewer.getModel().getModelHead();
+		BMNode bookmark = manager.getModel().getModelHead();
 
-		new AddTreepathsToExistingBookmark(viewer, bookmark, treePath)
+		new AddTreepathsToExistingBookmark(manager, bookmark, treePath)
 				.execute();
 	}
 
@@ -110,7 +109,10 @@ public class CategoryTreeDropListener
 
 	private void saveNewTreeModelState()
 	{
-		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
-				viewer.getModel());
+		BookmarkView viewer = manager.getActiveBookmarkView();
+		TreeModel model = manager.getModel();
+
+		TreeSerializerFacade
+				.serializeToDefaultLocation(viewer.getView(), model);
 	}
 }

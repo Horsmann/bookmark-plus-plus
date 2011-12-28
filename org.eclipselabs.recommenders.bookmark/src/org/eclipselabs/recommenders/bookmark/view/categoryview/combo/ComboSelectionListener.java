@@ -28,7 +28,7 @@ public class ComboSelectionListener
 	public void widgetSelected(SelectionEvent e)
 	{
 
-		TreeModel model = manager.getActiveBookmarkView().getModel();
+		TreeModel model = manager.getModel();
 
 		manager.removeCurrentlyVisibleNodesFromStorage();
 		manager.addCurrentlyExpandedNodesToStorage();
