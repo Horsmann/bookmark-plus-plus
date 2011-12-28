@@ -10,8 +10,14 @@ import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 
 public class WizardUtil
 {
-	public static BMNode buildTreeConsistingOfSelection(List<IStructuredSelection> treeSelections) {
-		
+	/**
+	 * The selected nodes and maybe entire categories are merged to a new tree
+	 * (model) which only comprises of selected elements.
+	 */
+	public static BMNode buildTreeConsistingOfSelection(
+			List<IStructuredSelection> treeSelections)
+	{
+
 		BMNode root = new TreeNode("", false, true);
 
 		// selected category nodes
@@ -25,10 +31,10 @@ public class WizardUtil
 		root = copyCategoriesAndAddToNode(listOfSelectedCategories, root);
 
 		root = copySingleSelectedNodes(root, singleSelectedNodes);
-		
+
 		return root;
 	}
-	
+
 	private static BMNode copySingleSelectedNodes(BMNode root,
 			LinkedList<BMNode> singleSelectedNodes)
 	{
@@ -49,8 +55,8 @@ public class WizardUtil
 		return root;
 	}
 
-	private static BMNode mergeTreeStructureOfNodesUnderCommonCategory(BMNode root,
-			LinkedList<BMNode> shareSameBM)
+	private static BMNode mergeTreeStructureOfNodesUnderCommonCategory(
+			BMNode root, LinkedList<BMNode> shareSameBM)
 	{
 		BMNode shared = shareSameBM.pollFirst();
 		BMNode newBookmark = TreeUtil.copyTreePathFromNodeToBookmark(shared);
