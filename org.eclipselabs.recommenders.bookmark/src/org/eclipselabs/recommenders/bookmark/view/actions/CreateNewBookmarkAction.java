@@ -49,12 +49,12 @@ public class CreateNewBookmarkAction
 		if (isFlattened) {
 			rebuildFlatModel();
 		}
-		
+
 		manager.addNodeToExpandedStorage(bookmark);
 
 		viewer.updateControls();
 
-		saveNewTreeModelState();
+		manager.saveModelState();
 	}
 
 	private void rebuildFlatModel()
@@ -79,15 +79,6 @@ public class CreateNewBookmarkAction
 			manager.activateFlattenedModus(bookmark);
 		}
 
-	}
-
-	private void saveNewTreeModelState()
-	{
-		BookmarkView viewer = manager.getActiveBookmarkView();
-		TreeModel model = manager.getModel();
-
-		TreeSerializerFacade
-				.serializeToDefaultLocation(viewer.getView(), model);
 	}
 
 }

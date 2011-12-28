@@ -31,7 +31,7 @@ public class ViewPartListener
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef)
 	{
-		saveNewTreeModelState();
+		manager.saveModelState();
 	}
 
 	@Override
@@ -64,13 +64,5 @@ public class ViewPartListener
 
 	}
 
-	private void saveNewTreeModelState()
-	{
-		BookmarkView viewer = manager.getActiveBookmarkView();
-		TreeModel model = manager.getModel();
-
-		TreeSerializerFacade
-				.serializeToDefaultLocation(viewer.getView(), model);
-	}
 
 }

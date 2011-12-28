@@ -21,6 +21,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.categoryview.CategoryView;
 import org.eclipselabs.recommenders.bookmark.view.defaultView.DefaultView;
@@ -345,5 +346,14 @@ public class BookmarkViewManager
 	public Object[] getNodesFromExpandedStorage()
 	{
 		return expandedNodes.keySet().toArray();
+	}
+
+	@Override
+	public void saveModelState()
+	{
+		TreeViewer treeViewer = getActiveBookmarkView().getView();
+		TreeModel model = getModel();
+
+		TreeSerializerFacade.serializeToDefaultLocation(treeViewer, model);
 	}
 }

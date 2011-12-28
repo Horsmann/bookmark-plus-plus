@@ -47,7 +47,7 @@ public class DefaultTreeDropListener
 				processDropEventWithDragInitiatedFromOutsideTheView(event);
 			}
 
-			saveNewTreeModelState();
+			manager.saveModelState();
 
 		}
 		catch (JavaModelException e) {
@@ -118,14 +118,6 @@ public class DefaultTreeDropListener
 	{
 	}
 
-	private void saveNewTreeModelState()
-	{
-		BookmarkView viewer = manager.getActiveBookmarkView();
-		TreeModel model = manager.getModel();
-
-		TreeSerializerFacade
-				.serializeToDefaultLocation(viewer.getView(), model);
-	}
 
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
 		throws JavaModelException

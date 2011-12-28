@@ -34,6 +34,8 @@ public interface ViewManager
 	public boolean isViewToggled();
 	
 	public TreeModel getModel();
+	
+	public void saveModelState();
 
 	public TreeModel getFlatModel();
 }

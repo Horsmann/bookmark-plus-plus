@@ -57,7 +57,7 @@ public class CategoryTreeDropListener
 		catch (JavaModelException e) {
 			e.printStackTrace();
 		}
-		saveNewTreeModelState();
+		manager.saveModelState();
 		updateView();
 	}
 
@@ -107,12 +107,4 @@ public class CategoryTreeDropListener
 		return treePath;
 	}
 
-	private void saveNewTreeModelState()
-	{
-		BookmarkView viewer = manager.getActiveBookmarkView();
-		TreeModel model = manager.getModel();
-
-		TreeSerializerFacade
-				.serializeToDefaultLocation(viewer.getView(), model);
-	}
 }
