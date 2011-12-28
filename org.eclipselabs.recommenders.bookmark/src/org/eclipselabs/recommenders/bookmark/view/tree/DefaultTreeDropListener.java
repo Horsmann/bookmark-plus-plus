@@ -75,6 +75,10 @@ public class DefaultTreeDropListener
 			BMNode head = model.getModelHead();
 			manager.activateFlattenedModus(head);
 		}
+		else {
+			manager.reinitializeExpandedStorage();
+			manager.addCurrentlyExpandedNodesToStorage();
+		}
 
 	}
 
@@ -126,7 +130,7 @@ public class DefaultTreeDropListener
 		BMNode bookmark = getBookmarkOfDropTarget(event);
 
 		if (didDropOccurInEmptyArea(bookmark)) {
-			addToNewBookmark();
+			addToNewBookmark(event);
 			return;
 		}
 
@@ -134,11 +138,12 @@ public class DefaultTreeDropListener
 
 	}
 
-	private void addToNewBookmark()
+	private void addToNewBookmark(DropTargetEvent event)
 	{
 		TreeViewer view = viewer.getView();
 		TreeModel model = viewer.getModel();
-		new AddTreeNodesToNewBookmark(view, model).execute();
+		boolean keepSource = (event.operations == DND.DROP_COPY);
+		new AddTreeNodesToNewBookmark(view, model, keepSource).execute();
 	}
 
 	private BMNode getBookmarkOfDropTarget(DropTargetEvent event)
@@ -175,8 +180,8 @@ public class DefaultTreeDropListener
 		BMNode bookmark = TreeUtil.getBookmarkNode(target);
 
 		if (bookmark != null) {
-			new AddTreepathsToExistingBookmark(viewer, bookmark,
-					treePath).execute();
+			new AddTreepathsToExistingBookmark(viewer, bookmark, treePath)
+					.execute();
 		}
 		else {
 			new CreateNewBookmarkAddAsNode(viewer, treePath).execute();

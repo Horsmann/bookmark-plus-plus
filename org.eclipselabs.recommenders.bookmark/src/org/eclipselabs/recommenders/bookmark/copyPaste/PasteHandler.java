@@ -19,6 +19,7 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
+import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmark;
@@ -52,7 +53,17 @@ public class PasteHandler
 		processAvailableClipboardData(cb);
 
 		cb.dispose();
+		
+		updateExpandedStorage();
+		
 		return null;
+	}
+
+	private void updateExpandedStorage()
+	{
+		ViewManager manager = Activator.getManager();
+		manager.reinitializeExpandedStorage();
+		manager.addCurrentlyExpandedNodesToStorage();
 	}
 
 	private void processAvailableClipboardData(Clipboard cb)

@@ -15,12 +15,15 @@ public class AddTreeNodesToNewBookmark
 
 	private TreeViewer viewer = null;
 	private TreeModel model = null;
+	private final boolean keepSource;
 
-	public AddTreeNodesToNewBookmark(TreeViewer viewer, TreeModel model)
+	public AddTreeNodesToNewBookmark(TreeViewer viewer, TreeModel model,
+			boolean keepSource)
 	{
 
 		this.viewer = viewer;
 		this.model = model;
+		this.keepSource = keepSource;
 	}
 
 	@Override
@@ -38,7 +41,7 @@ public class AddTreeNodesToNewBookmark
 		for (int i = 0; i < selections.size(); i++) {
 			BMNode node = (BMNode) selections.get(i);
 
-			BMNode nodeCopy = TreeUtil.copyTreeBelowNode(node,false);
+			BMNode nodeCopy = TreeUtil.copyTreeBelowNode(node, false);
 
 			while (nodeCopy.getParent() != null)
 				nodeCopy = nodeCopy.getParent();
@@ -57,14 +60,20 @@ public class AddTreeNodesToNewBookmark
 
 			TreeUtil.showNodeExpanded(viewer, nodeCopy);
 			nodesToUnlink.add(node);
-			// TreeUtil.unlink(node);
 
 		}
 
 		TreeUtil.showNodeExpanded(viewer, bookmark);
 
-		for (BMNode node : nodesToUnlink) {
-			TreeUtil.unlink(node);
+		performUnlink(nodesToUnlink);
+	}
+
+	private void performUnlink(LinkedList<BMNode> nodesToUnlink)
+	{
+		if (keepSource == false) {
+			for (BMNode node : nodesToUnlink) {
+				TreeUtil.unlink(node);
+			}
 		}
 	}
 }
