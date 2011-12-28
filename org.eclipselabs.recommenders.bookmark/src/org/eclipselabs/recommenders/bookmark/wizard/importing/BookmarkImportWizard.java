@@ -55,6 +55,7 @@ public class BookmarkImportWizard
 
 		try {
 			performImport(file, treeSelections);
+			Activator.getManager().saveModelState();
 		}
 		catch (JavaModelException e) {
 			e.printStackTrace();
