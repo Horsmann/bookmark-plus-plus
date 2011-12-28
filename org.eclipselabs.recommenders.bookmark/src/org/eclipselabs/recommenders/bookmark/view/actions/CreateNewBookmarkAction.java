@@ -49,6 +49,8 @@ public class CreateNewBookmarkAction
 		if (isFlattened) {
 			rebuildFlatModel();
 		}
+		
+		manager.addNodeToExpandedStorage(bookmark);
 
 		viewer.updateControls();
 
