@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.wizard.export;
+package org.eclipselabs.recommenders.bookmark.wizard.exporting;
 
 import java.io.File;
 
