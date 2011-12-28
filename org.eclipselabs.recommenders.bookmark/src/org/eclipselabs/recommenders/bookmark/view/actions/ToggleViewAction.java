@@ -19,16 +19,14 @@ public class ToggleViewAction
 	private ViewManager manager;
 	private BookmarkView actionTriggeringView;
 
-	public ToggleViewAction(ViewManager manager, BookmarkView view)
+	public ToggleViewAction(ViewManager manager)
 	{
 		this.manager = manager;
-		this.actionTriggeringView = view;
 
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_TOGGLE_VIEW));
 		this.setToolTipText("Toggles between the default view and the category the selected item is in");
 		this.setText("Toggle between levels");
-		// setEnabledStatus();
 	}
 
 	@Override

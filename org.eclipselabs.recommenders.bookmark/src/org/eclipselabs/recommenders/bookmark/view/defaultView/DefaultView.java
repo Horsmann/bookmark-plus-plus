@@ -151,7 +151,7 @@ public class DefaultView
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(this);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
-		toggleLevel = new ToggleViewAction(manager, this);
+		toggleLevel = new ToggleViewAction(manager);
 		newBookmark = new CreateNewBookmarkAction(manager);
 		deleteSelection = new DeleteAction(this);
 		renameBookmark = new RenameBookmarkAction(this);

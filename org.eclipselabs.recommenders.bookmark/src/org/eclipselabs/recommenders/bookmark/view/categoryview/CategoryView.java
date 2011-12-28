@@ -256,7 +256,7 @@ public class CategoryView
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
 		refreshView = new RefreshViewAction(this);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
-		toggleLevel = new ToggleViewAction(manager, this);
+		toggleLevel = new ToggleViewAction(manager);
 		deleteSelection = new DeleteAction(this);
 		newBookmark = new CreateNewBookmarkAction(manager);
 		toggleFlatTree = new ToggleFlatAndTreeAction(manager);

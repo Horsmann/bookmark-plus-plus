@@ -19,7 +19,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
@@ -40,6 +39,7 @@ public class BookmarkExportWizardPage
 	protected BookmarkExportWizardPage(String pageName)
 	{
 		super(pageName, pageName, null);
+		setDescription("Export bookmarks to an external file\nNo selection = export all");
 	}
 
 	@Override
@@ -83,12 +83,6 @@ public class BookmarkExportWizardPage
 
 		Object[] expanded = manager.getNodesFromExpandedStorage();
 		treeViewer.setExpandedElements(expanded);
-
-		Label label = new Label(container, SWT.NONE);
-		label.setText("Select bookmarks for export (no selection = all will be exported)");
-		data = new GridData(SWT.RIGHT, SWT.CENTER, true, false);
-		data.horizontalSpan = 2;
-		label.setLayoutData(data);
 
 		// Required to avoid an error in the system
 		setControl(container);
