@@ -5,6 +5,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.tree.commands.CloseAllOpenEditors;
 
 public class CloseAllOpenEditorsAction extends Action implements SelfEnabling{
 
@@ -17,13 +18,7 @@ public class CloseAllOpenEditorsAction extends Action implements SelfEnabling{
 
 	@Override
 	public void run() {
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		IWorkbenchWindow[] windows = PlatformUI.getWorkbench()
-				.getWorkbenchWindows();
-		for (IWorkbenchWindow window : windows) {
-			for (IWorkbenchPage page : window.getPages())
-				page.closeAllEditors(true);
-		}
+		new CloseAllOpenEditors().execute();
 	}
 
 	@Override

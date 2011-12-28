@@ -8,6 +8,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IEditorPart;
@@ -16,6 +17,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.commands.CloseAllOpenEditors;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
@@ -49,6 +51,9 @@ public class ShowBookmarksInEditorAction
 			BMNode node = (BMNode) selectedList.get(i);
 
 			if (node.isBookmarkNode()) {
+
+				checkPreferenceStore();
+
 				openAllEntriesOfBookmark(node);
 			}
 			else {
@@ -60,6 +65,25 @@ public class ShowBookmarksInEditorAction
 			}
 		}
 
+	}
+
+	private void checkPreferenceStore()
+	{
+		boolean closeEditorWindows = closeEditorWindows();
+
+		if (closeEditorWindows) {
+			new CloseAllOpenEditors().execute();
+		}
+
+	}
+
+	private boolean closeEditorWindows()
+	{
+		IPreferenceStore preferenceStore = Activator.getDefault()
+				.getPreferenceStore();
+		boolean closeEditorWindows = preferenceStore
+				.getBoolean(org.eclipselabs.recommenders.bookmark.preferences.PreferenceConstants.CLOSE_ALL_OPEN_EDITOR_WINDOWS_IF_BOOKMARK_CATEGORY_IS_OPENED);
+		return closeEditorWindows;
 	}
 
 	private boolean isReferencedResourceAvailable(BMNode node)

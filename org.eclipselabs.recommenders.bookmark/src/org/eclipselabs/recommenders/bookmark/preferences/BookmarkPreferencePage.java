@@ -42,6 +42,11 @@ public class BookmarkPreferencePage extends FieldEditorPreferencePage implements
 				PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES_REFRESH,
 				"&Refreshing removes dead links to non available projects",
 				getFieldEditorParent()));
+		
+		addField(new BooleanFieldEditor(
+				PreferenceConstants.CLOSE_ALL_OPEN_EDITOR_WINDOWS_IF_BOOKMARK_CATEGORY_IS_OPENED,
+				"&Close all open editor windows when a bookmark category is opened",
+				getFieldEditorParent()));
 
 		// addField(new RadioGroupFieldEditor(
 		// PreferenceConstants.P_CHOICE,
