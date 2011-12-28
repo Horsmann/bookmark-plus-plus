@@ -63,9 +63,7 @@ public class WizardUtil
 			BMNode next = shareSameBM.pollFirst();
 			BMNode copy = TreeUtil.copyTreeBelowNode(next, false);
 
-			if (TreeUtil.attemptMerge(newBookmark, copy) == null) {
-				newBookmark.addChild(copy);
-			}
+			TreeUtil.attemptMerge(newBookmark, copy);
 
 		}
 		root.addChild(newBookmark);

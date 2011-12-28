@@ -68,7 +68,7 @@ public class WizardUtilTest
 	@Before
 	public void setUp()
 	{
-		File file = new File("resource/testbookmark.bm");
+		File file = new File("resource/testbookmarks.bm");
 		String[] data = BookmarkFileIO.readFromFile(file);
 		RestoredTree deserialize = TreeDeserializerFacade.deserialize(data[0]);
 		root = deserialize.getRoot();
