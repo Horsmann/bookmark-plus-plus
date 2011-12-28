@@ -17,7 +17,7 @@ public class ToggleViewAction
 {
 
 	private ViewManager manager;
-	private BookmarkView actionTriggeringView;
+	private BookmarkView bookmarkView;
 
 	public ToggleViewAction(ViewManager manager)
 	{
@@ -32,8 +32,8 @@ public class ToggleViewAction
 	@Override
 	public void run()
 	{
-
-		TreeModel model = actionTriggeringView.getModel();
+		bookmarkView = manager.getActiveBookmarkView();
+		TreeModel model = bookmarkView.getModel();
 
 		if (manager.isViewToggled()) {
 			setUpDefault(model);
@@ -98,7 +98,7 @@ public class ToggleViewAction
 	private BMNode getSelectedOrDefaultNode(TreeModel model)
 	{
 		List<IStructuredSelection> selection = TreeUtil
-				.getTreeSelections(actionTriggeringView.getView());
+				.getTreeSelections(bookmarkView.getView());
 
 		if (selection.isEmpty()) {
 			BMNode node = model.getModelRoot().getChildren()[0];
