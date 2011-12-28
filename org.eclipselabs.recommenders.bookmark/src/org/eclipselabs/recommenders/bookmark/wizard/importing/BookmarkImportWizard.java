@@ -81,7 +81,9 @@ public class BookmarkImportWizard
 			List<IStructuredSelection> treeSelections)
 		throws JavaModelException
 	{
-		BMNode root = WizardUtil.buildTreeConsistingOfSelection(treeSelections);
+		BMNode[] selectedNodes = WizardUtil.getSelectedNodes(treeSelections);
+
+		BMNode root = WizardUtil.buildTreeConsistingOfSelection(selectedNodes);
 
 		if (mainPage.consolidateBookmarksAsSingleBookmark()) {
 			root = uniteBookmarksWithNewName(root);

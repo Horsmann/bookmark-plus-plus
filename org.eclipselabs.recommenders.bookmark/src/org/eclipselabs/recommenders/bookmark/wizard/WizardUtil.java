@@ -14,8 +14,7 @@ public class WizardUtil
 	 * The selected nodes and maybe entire categories are merged to a new tree
 	 * (model) which only comprises of selected elements.
 	 */
-	public static BMNode buildTreeConsistingOfSelection(
-			List<IStructuredSelection> treeSelections)
+	public static BMNode buildTreeConsistingOfSelection(BMNode[] treeSelections)
 	{
 
 		BMNode root = new TreeNode("", false, true);
@@ -117,15 +116,13 @@ public class WizardUtil
 	}
 
 	private static LinkedList<BMNode> getSingleSelectedNodesWhichAreNotBewlowAnAlreadySelectedCategory(
-			List<IStructuredSelection> treeSelections,
-			LinkedList<BMNode> listOfSelectedCategories)
+			BMNode[] treeSelections, LinkedList<BMNode> listOfSelectedCategories)
 	{
 		LinkedList<BMNode> singleSelectedNodes = new LinkedList<BMNode>();
 
 		BMNode[] selectedCategories = listOfSelectedCategories
 				.toArray(new BMNode[0]);
-		for (int i = 0; i < treeSelections.size(); i++) {
-			BMNode node = (BMNode) treeSelections.get(i);
+		for (BMNode node : treeSelections) {
 
 			if (node.isBookmarkNode()) {
 				continue;
@@ -153,12 +150,11 @@ public class WizardUtil
 	}
 
 	private static LinkedList<BMNode> getEntireSelectedCategories(
-			List<IStructuredSelection> treeSelections)
+			BMNode[] treeSelections)
 	{
 		LinkedList<BMNode> listOfSelectedCategories = new LinkedList<BMNode>();
 
-		for (int i = 0; i < treeSelections.size(); i++) {
-			BMNode node = (BMNode) treeSelections.get(i);
+		for (BMNode node : treeSelections) {
 
 			if (node.isBookmarkNode()) {
 				listOfSelectedCategories.add(node);
@@ -166,6 +162,19 @@ public class WizardUtil
 		}
 
 		return listOfSelectedCategories;
+	}
+
+	public static BMNode[] getSelectedNodes(
+			List<IStructuredSelection> treeSelections)
+	{
+		LinkedList<BMNode> nodes = new LinkedList<BMNode>();
+
+		for (int i = 0; i < treeSelections.size(); i++) {
+			BMNode node = (BMNode) treeSelections.get(i);
+			nodes.add(node);
+		}
+
+		return nodes.toArray(new BMNode[0]);
 	}
 
 }
