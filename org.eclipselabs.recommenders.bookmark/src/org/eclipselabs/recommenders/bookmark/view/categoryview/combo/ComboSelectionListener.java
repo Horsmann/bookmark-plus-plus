@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view.categoryview;
+package org.eclipselabs.recommenders.bookmark.view.categoryview.combo;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.events.SelectionEvent;

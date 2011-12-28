@@ -1,10 +1,11 @@
-package org.eclipselabs.recommenders.bookmark.view.categoryview;
+package org.eclipselabs.recommenders.bookmark.view.categoryview.combo;
 
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.view.categoryview.CategoryView;
 
 public class ComboModifyListener
 	implements ModifyListener
