@@ -15,7 +15,7 @@ public class TreeSerializer
 
 		HashMap<Object, String> map = putExpandedNodesInHashMap(expandedNodes);
 
-		SerializedTreeNode preSerialized = copyTreeAndSerializeTreeValues(root,
+		SerializedTreeNode preSerialized = copyNodeAndSerializeValue(root,
 				map);
 		String serialized = converter
 				.convertToString(new Object[] { preSerialized });
@@ -33,17 +33,6 @@ public class TreeSerializer
 				map.put(o, "");
 		}
 		return map;
-	}
-
-	private static SerializedTreeNode copyTreeAndSerializeTreeValues(
-			BMNode treeRootNode, HashMap<Object, String> map)
-	{
-
-		SerializedTreeNode newRootNode = copyNodeAndSerializeValue(
-				treeRootNode, map);
-
-		return newRootNode;
-
 	}
 
 	private static SerializedTreeNode copyNodeAndSerializeValue(BMNode node,
@@ -76,6 +65,6 @@ public class TreeSerializer
 	private static boolean isNodeExpanded(HashMap<Object, String> map,
 			BMNode node)
 	{
-		return map.get(node) == null;
+		return !(map.get(node) == null);
 	}
 }
