@@ -5,20 +5,20 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
-import org.eclipselabs.recommenders.bookmark.view.categoryview.CategoryView;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class ComboModifyListener
 	implements ModifyListener
 {
 
 	private final Button button;
-	private final CategoryView categoryView;
+	private final ViewManager manager;
 
 	public ComboModifyListener(Button saveBookmarkNameChanges,
-			CategoryView categoryView)
+			ViewManager manager)
 	{
 		this.button = saveBookmarkNameChanges;
-		this.categoryView = categoryView;
+		this.manager = manager;
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class ComboModifyListener
 		Combo combo = (Combo) e.getSource();
 		String text = combo.getText();
 
-		BMNode head = categoryView.getModel().getModelHead();
+		BMNode head = manager.getModel().getModelHead();
 		String headName = (String) head.getValue();
 
 		if (areDifferent(text, headName)) {

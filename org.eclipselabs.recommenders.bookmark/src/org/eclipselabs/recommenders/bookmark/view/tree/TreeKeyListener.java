@@ -8,23 +8,28 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelection;
 import org.eclipselabs.recommenders.bookmark.tree.commands.RenameBookmark;
-import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
-public class TreeKeyListener implements KeyListener {
-	private BookmarkView viewer = null;
+public class TreeKeyListener
+	implements KeyListener
+{
 	private Action showInEditor = null;
 
 	private boolean isAltPressed = false;
 
-	public TreeKeyListener(BookmarkView viewer, Action showInEditor) {
-		this.viewer = viewer;
+	private final ViewManager manager;
 
+	public TreeKeyListener(ViewManager manager, Action showInEditor)
+	{
+
+		this.manager = manager;
 		this.showInEditor = showInEditor;
 
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
+	public void keyPressed(KeyEvent e)
+	{
 
 		if (e.keyCode == SWT.ALT) {
 			isAltPressed = true;
@@ -35,36 +40,42 @@ public class TreeKeyListener implements KeyListener {
 		checkForRename(e);
 	}
 
-	private void checkForRename(KeyEvent e) {
+	private void checkForRename(KeyEvent e)
+	{
 		if (e.keyCode == SWT.F2 && e.stateMask == 0) {
 			checkForBookmarkAndChangeName(e);
 		}
 
 	}
 
-	private void checkForBookmarkAndChangeName(KeyEvent e) {
+	private void checkForBookmarkAndChangeName(KeyEvent e)
+	{
 		TreeItem[] items = getSelections(e);
 		performRenameForBookmarks(items);
 	}
 
-	private void performRenameForBookmarks(TreeItem[] items) {
+	private void performRenameForBookmarks(TreeItem[] items)
+	{
 
-		new RenameBookmark(viewer, items[0]).execute();
+		new RenameBookmark(manager, items[0]).execute();
 	}
 
-	private void checkForOpenNodeInEditor(KeyEvent e) {
+	private void checkForOpenNodeInEditor(KeyEvent e)
+	{
 		if (e.keyCode == SWT.CR && e.stateMask == 0) {
 			showInEditor.run();
 		}
 	}
 
-	private void checkForNodeDeletion(KeyEvent e) {
+	private void checkForNodeDeletion(KeyEvent e)
+	{
 		if (isDeleteNodeEvent(e)) {
-			new DeleteSelection(viewer).execute();
+			new DeleteSelection(manager).execute();
 		}
 	}
 
-	private TreeItem[] getSelections(KeyEvent e) {
+	private TreeItem[] getSelections(KeyEvent e)
+	{
 		TreeItem[] items = null;
 		if (e.getSource() instanceof Tree) {
 			Tree tree = (Tree) e.getSource();
@@ -74,25 +85,30 @@ public class TreeKeyListener implements KeyListener {
 		return items;
 	}
 
-	private boolean isDeleteNodeEvent(KeyEvent e) {
+	private boolean isDeleteNodeEvent(KeyEvent e)
+	{
 		return (isBackSpace(e.keyCode) || isDelete(e.keyCode))
 				&& e.stateMask == 0;
 	}
 
-	private boolean isDelete(int key) {
+	private boolean isDelete(int key)
+	{
 		return (key == SWT.DEL);
 	}
 
-	private boolean isBackSpace(int key) {
+	private boolean isBackSpace(int key)
+	{
 		return (key == 8);
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
+	public void keyReleased(KeyEvent e)
+	{
 		isAltPressed = false;
 	};
 
-	public boolean isAltPressed() {
+	public boolean isAltPressed()
+	{
 		return isAltPressed;
 	}
 

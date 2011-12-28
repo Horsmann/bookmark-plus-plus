@@ -5,7 +5,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class ToggleFlatAndTreeAction
@@ -33,11 +32,9 @@ public class ToggleFlatAndTreeAction
 		}
 		else {
 			BMNode flattenFromNode = null;
-			BookmarkView view = manager.getActiveBookmarkView();
-
 			saveExpandedState();
 
-			TreeModel model = view.getModel();
+			TreeModel model = manager.getModel();
 			flattenFromNode = model.getModelHead();
 			manager.activateFlattenedModus(flattenFromNode);
 		}

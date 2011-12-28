@@ -4,24 +4,28 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class DeleteSelection
 	implements TreeCommand
 {
 
-	private BookmarkView viewer = null;
+	private ViewManager manager;
 
-	public DeleteSelection(BookmarkView viewer)
+	public DeleteSelection(ViewManager manager)
 	{
-		this.viewer = viewer;
+		this.manager = manager;
 	}
 
 	@Override
 	public void execute()
 	{
+		BookmarkView viewer = manager.getActiveBookmarkView();
+		
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer.getView());
 		for (int i = 0; i < selections.size(); i++) {
@@ -45,7 +49,7 @@ public class DeleteSelection
 	{
 		BMNode ref = flatNode.getReference();
 
-		BMNode flatRoot = viewer.getFlatModel().getModelRoot();
+		BMNode flatRoot = manager.getFlatModel().getModelRoot();
 
 		iterateAllNodesOfFlatModelAndDeleteDescendantNodes(ref, flatRoot);
 
@@ -66,8 +70,11 @@ public class DeleteSelection
 
 	private void saveNewTreeModelState()
 	{
+		BookmarkView viewer = manager.getActiveBookmarkView();
+		TreeModel model = manager.getModel();
+		
 		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
-				viewer.getModel());
+				model);
 	}
 
 }

@@ -15,7 +15,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ResourceTransfer;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ControlNotifier;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -43,8 +42,6 @@ public class DefaultView
 
 	private TreeViewer viewer;
 	private Composite composite;
-	private TreeModel model;
-	private TreeModel flatModel;
 	private Action showInEditor;
 	private Action closeAllOpenEditors;
 	private Action refreshView;
@@ -65,11 +62,8 @@ public class DefaultView
 	private TreeDragListener dragListener;
 	private DefaultTreeDropListener dropListener;
 
-	public DefaultView(ViewManager manager, Composite parent, TreeModel model,
-			TreeModel flatModel)
+	public DefaultView(ViewManager manager, Composite parent)
 	{
-		this.model = model;
-		this.flatModel = flatModel;
 		this.manager = manager;
 
 		composite = new Composite(parent, SWT.NONE);
@@ -79,7 +73,7 @@ public class DefaultView
 
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider(manager));
-		viewer.setInput(model.getModelRoot());
+		viewer.setInput(manager.getModel().getModelRoot());
 
 		initializerActionsListenerAndMenus();
 
@@ -94,12 +88,12 @@ public class DefaultView
 		setUpContextMenu();
 		initializeControlNotifier();
 
-		keyListener = new TreeKeyListener(this, showInEditor);
+		keyListener = new TreeKeyListener(manager, showInEditor);
 		selectionListener = new TreeSelectionListener(notifier);
 		doubleClickListener = new TreeDoubleclickListener(showInEditor);
 
 		dragListener = new TreeDragListener(viewer);
-		dropListener = new DefaultTreeDropListener(this, dragListener);
+		dropListener = new DefaultTreeDropListener(manager, dragListener);
 
 	}
 
@@ -149,12 +143,12 @@ public class DefaultView
 		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
 				viewer);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
-		refreshView = new RefreshViewAction(this);
+		refreshView = new RefreshViewAction(manager);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
 		toggleLevel = new ToggleViewAction(manager);
 		newBookmark = new CreateNewBookmarkAction(manager);
-		deleteSelection = new DeleteAction(this);
-		renameBookmark = new RenameBookmarkAction(this);
+		deleteSelection = new DeleteAction(manager);
+		renameBookmark = new RenameBookmarkAction(manager);
 		toggleFlatTree = new ToggleFlatAndTreeAction(manager);
 	}
 
@@ -217,12 +211,6 @@ public class DefaultView
 		updateEnableStatusOfControls();
 	}
 
-	@Override
-	public TreeModel getModel()
-	{
-		return model;
-	}
-
 	public Composite getComposite()
 	{
 		return composite;
@@ -234,10 +222,4 @@ public class DefaultView
 		return manager;
 	}
 
-	@Override
-	public TreeModel getFlatModel()
-	{
-		return flatModel;
-
-	}
 }

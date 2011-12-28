@@ -200,15 +200,14 @@ public class PasteHandler
 	{
 		TreePath path = new TreePath(new Object[] { data });
 		TreePath[] treePath = new TreePath[] { path };
-		new AddTreepathsToExistingBookmark(activeView, bookmarkOfTarget,
+		new AddTreepathsToExistingBookmark(manager, bookmarkOfTarget,
 				treePath).execute();
 	}
 
 	private BMNode createNewBookmark()
 	{
-		BookmarkView activeView = manager.getActiveBookmarkView();
 		BMNode bookmark = TreeUtil.makeBookmarkNode();
-		TreeModel model = activeView.getModel();
+		TreeModel model = manager.getModel();
 		model.getModelRoot().addChild(bookmark);
 		return bookmark;
 	}
@@ -218,7 +217,7 @@ public class PasteHandler
 		BookmarkView activeView = manager.getActiveBookmarkView();
 		ViewManager manager = activeView.getManager();
 		if (manager.isViewFlattened()) {
-			BMNode node = activeView.getModel().getModelHead();
+			BMNode node = manager.getModel().getModelHead();
 			manager.activateFlattenedModus(node);
 		}
 		activeView.getView().refresh(true);

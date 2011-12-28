@@ -55,9 +55,6 @@ public class CategoryView
 	private Combo combo;
 	private Button saveBookmarkNameChanges;
 
-	private TreeModel model;
-	private TreeModel flatModel;
-
 	private Action showInEditor;
 	private Action closeAllOpenEditors;
 	private Action refreshView;
@@ -78,13 +75,10 @@ public class CategoryView
 	private TreeFocusListener focusListener;
 	private CategoryTreeDropListener dropListener;
 
-	public CategoryView(ViewManager manager, Composite parent, TreeModel model,
-			TreeModel flatModel)
+	public CategoryView(ViewManager manager, Composite parent)
 	{
 
 		this.manager = manager;
-		this.model = model;
-		this.flatModel = flatModel;
 
 		composite = new Composite(parent, SWT.NONE);
 
@@ -109,7 +103,7 @@ public class CategoryView
 	{
 		viewer.setContentProvider(new TreeContentProvider());
 		viewer.setLabelProvider(new TreeLabelProvider(manager));
-		viewer.setInput(model.getModelRoot());
+		viewer.setInput(manager.getModel().getModelRoot());
 	}
 
 	private void addTreeViewerToMainComposite()
@@ -147,7 +141,7 @@ public class CategoryView
 	private void addListenerToComboBox()
 	{
 		ComboModifyListener comboModifyListener = new ComboModifyListener(
-				saveBookmarkNameChanges, this);
+				saveBookmarkNameChanges, manager);
 		combo.addModifyListener(comboModifyListener);
 
 		// Switch the head node in the model if selection changes
@@ -202,12 +196,12 @@ public class CategoryView
 		setUpContextMenu();
 		initializeControlNotifier();
 
-		keyListener = new TreeKeyListener(this, showInEditor);
+		keyListener = new TreeKeyListener(manager, showInEditor);
 		selectionListener = new TreeSelectionListener(notifier);
 		doubleClickListener = new TreeDoubleclickListener(showInEditor);
 		focusListener = new TreeFocusListener(this, notifier);
 
-		dropListener = new CategoryTreeDropListener(this);
+		dropListener = new CategoryTreeDropListener(manager);
 	}
 
 	private void initializeControlNotifier()
@@ -225,6 +219,7 @@ public class CategoryView
 
 		combo.removeAll();
 
+		TreeModel model = manager.getModel();
 		BMNode head = model.getModelHead();
 
 		if (head.getValue() == null)
@@ -238,6 +233,7 @@ public class CategoryView
 	private int rebuildCategoryNamesInCombobox(BMNode currentHead)
 	{
 		int selectIndex = 0;
+		TreeModel model = manager.getModel();
 		BMNode[] bookmarks = model.getModelRoot().getChildren();
 		for (int i = 0; i < bookmarks.length; i++) {
 
@@ -257,10 +253,10 @@ public class CategoryView
 		showInEditor = new ShowBookmarksInEditorAction(manager.getViewPart(),
 				viewer);
 		closeAllOpenEditors = new CloseAllOpenEditorsAction();
-		refreshView = new RefreshViewAction(this);
+		refreshView = new RefreshViewAction(manager);
 		openInSystemFileExplorer = new OpenFileInSystemExplorerAction(viewer);
 		toggleLevel = new ToggleViewAction(manager);
-		deleteSelection = new DeleteAction(this);
+		deleteSelection = new DeleteAction(manager);
 		newBookmark = new CreateNewBookmarkAction(manager);
 		toggleFlatTree = new ToggleFlatAndTreeAction(manager);
 
@@ -283,11 +279,11 @@ public class CategoryView
 
 	private void addListenerToView()
 	{
-		addDragDropSupportToView(viewer, model);
+		addDragDropSupportToView(viewer);
 		viewer.addDoubleClickListener(doubleClickListener);
 	}
 
-	public void addDragDropSupportToView(TreeViewer viewer, TreeModel model)
+	public void addDragDropSupportToView(TreeViewer viewer)
 	{
 		int operations = DND.DROP_LINK;
 		Transfer[] transferTypes = new Transfer[] {
@@ -312,12 +308,6 @@ public class CategoryView
 		updateEnableStatusOfControls();
 	}
 
-	@Override
-	public TreeModel getModel()
-	{
-		return model;
-	}
-
 	public Composite getComposite()
 	{
 		return composite;
@@ -327,12 +317,6 @@ public class CategoryView
 	public ViewManager getManager()
 	{
 		return manager;
-	}
-
-	@Override
-	public TreeModel getFlatModel()
-	{
-		return flatModel;
 	}
 
 	private void setUpContextMenu()

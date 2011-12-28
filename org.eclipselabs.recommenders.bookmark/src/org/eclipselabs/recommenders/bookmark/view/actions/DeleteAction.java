@@ -8,13 +8,15 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.commands.DeleteSelection;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class DeleteAction extends Action implements SelfEnabling {
 
-	private BookmarkView viewer;
 
-	public DeleteAction(BookmarkView viewer) {
-		this.viewer = viewer;
+	private final ViewManager manager;
+
+	public DeleteAction(ViewManager manager) {
+		this.manager = manager;
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_DELETE));
 		this.setToolTipText("Delete selected item");
@@ -24,12 +26,12 @@ public class DeleteAction extends Action implements SelfEnabling {
 
 	@Override
 	public void run() {
-		new DeleteSelection(viewer).execute();
+		new DeleteSelection(manager).execute();
 	}
 
 	@Override
 	public void updateEnabledStatus() {
-		
+		BookmarkView viewer = manager.getActiveBookmarkView();
 		List<IStructuredSelection> list = TreeUtil.getTreeSelections(viewer.getView());
 		if (list.size() == 0) {
 			this.setEnabled(false);

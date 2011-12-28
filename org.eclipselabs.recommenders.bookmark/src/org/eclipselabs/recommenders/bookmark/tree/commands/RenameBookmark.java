@@ -9,21 +9,30 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
-public class RenameBookmark implements TreeCommand {
+public class RenameBookmark
+	implements TreeCommand
+{
 
 	private TreeItem item = null;
-	private BookmarkView viewer = null;
+	private final ViewManager manager;
 
-	public RenameBookmark(BookmarkView viewer, TreeItem bookmark) {
+	public RenameBookmark(ViewManager manager, TreeItem bookmark)
+	{
+		this.manager = manager;
 		this.item = bookmark;
-		this.viewer = viewer;
 	}
 
 	@Override
-	public void execute() {
+	public void execute()
+	{
+
+		BookmarkView viewer = manager.getActiveBookmarkView();
+
 		final TreeEditor editor = new TreeEditor(viewer.getView().getTree());
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.minimumWidth = 100;
@@ -39,16 +48,20 @@ public class RenameBookmark implements TreeCommand {
 
 		// If the text field loses focus, set its text into the tree
 		// and end the editing session
-		text.addFocusListener(new FocusAdapter() {
-			public void focusLost(FocusEvent event) {
+		text.addFocusListener(new FocusAdapter()
+		{
+			public void focusLost(FocusEvent event)
+			{
 				node.setValue(text.getText());
 				text.dispose();
 				setFocusAndSelection(item);
 			}
 		});
 
-		text.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent event) {
+		text.addKeyListener(new KeyAdapter()
+		{
+			public void keyPressed(KeyEvent event)
+			{
 				switch (event.keyCode) {
 				case SWT.CR:
 					// drop through
@@ -69,24 +82,34 @@ public class RenameBookmark implements TreeCommand {
 		editor.setEditor(text, item);
 	}
 
-	private void setNewValue(BMNode node, String newValue) {
+	private void setNewValue(BMNode node, String newValue)
+	{
 		node.setValue(newValue);
-		
+
 		if (node.hasReference()) {
 			BMNode reference = node.getReference();
 			reference.setValue(newValue);
 		}
-		
+
 	}
-	
-	private void setFocusAndSelection(TreeItem item) {
+
+	private void setFocusAndSelection(TreeItem item)
+	{
+
+		BookmarkView viewer = manager.getActiveBookmarkView();
+
 		viewer.getView().refresh();
 		viewer.getView().getTree().setSelection(item);
 		viewer.getView().getTree().setFocus();
 	}
 
-	private void saveNewTreeModelState() {
-		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
-				viewer.getModel());
+	private void saveNewTreeModelState()
+	{
+
+		BookmarkView viewer = manager.getActiveBookmarkView();
+		TreeModel model = manager.getModel();
+
+		TreeSerializerFacade
+				.serializeToDefaultLocation(viewer.getView(), model);
 	}
 }

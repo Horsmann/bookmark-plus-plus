@@ -37,7 +37,7 @@ public class CreateNewBookmarkAction
 		BookmarkView viewer = manager.getActiveBookmarkView();
 
 		BMNode bookmark = TreeUtil.makeBookmarkNode();
-		TreeModel model = viewer.getModel();
+		TreeModel model = manager.getModel();
 		model.getModelRoot().addChild(bookmark);
 
 		boolean isToggled = manager.isViewToggled();
@@ -57,7 +57,7 @@ public class CreateNewBookmarkAction
 
 	private void rebuildFlatModel()
 	{
-		TreeModel model = manager.getActiveBookmarkView().getModel();
+		TreeModel model = manager.getModel();
 		BMNode currentHead = model.getModelHead();
 		manager.activateFlattenedModus(currentHead);
 	}
@@ -65,7 +65,7 @@ public class CreateNewBookmarkAction
 	private void setNewlyCreatedNodeAsCurrentCategory(BMNode bookmark)
 	{
 		BookmarkView viewer = manager.getActiveBookmarkView();
-		TreeModel model = viewer.getModel();
+		TreeModel model = manager.getModel();
 
 		model.setHeadNode(bookmark);
 		TreeViewer view = viewer.getView();
@@ -82,7 +82,7 @@ public class CreateNewBookmarkAction
 	private void saveNewTreeModelState()
 	{
 		BookmarkView viewer = manager.getActiveBookmarkView();
-		TreeModel model = viewer.getModel();
+		TreeModel model = manager.getModel();
 
 		TreeSerializerFacade
 				.serializeToDefaultLocation(viewer.getView(), model);
