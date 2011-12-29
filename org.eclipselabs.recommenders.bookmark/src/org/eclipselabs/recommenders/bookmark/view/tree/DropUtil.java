@@ -22,8 +22,8 @@ public class DropUtil {
 			if (node == target)
 				return false;
 
-			if (node.isBookmarkNode())
-				return false;
+//			if (node.isBookmarkNode())
+//				return false;
 
 		}
 		return true;

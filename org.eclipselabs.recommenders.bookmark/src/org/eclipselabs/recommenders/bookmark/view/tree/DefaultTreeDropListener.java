@@ -1,5 +1,6 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.core.JavaModelException;
@@ -10,13 +11,15 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToNewBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.CreateNewBookmarkAddAsNode;
-import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -38,6 +41,9 @@ public class DefaultTreeDropListener
 	@Override
 	public void drop(DropTargetEvent event)
 	{
+		
+		manager.reinitializeExpandedStorage();
+		manager.addCurrentlyExpandedNodesToStorage();
 
 		try {
 			if (dragListener.isDragInProgress()) {
@@ -118,10 +124,11 @@ public class DefaultTreeDropListener
 	{
 	}
 
-
 	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
 		throws JavaModelException
 	{
+		if (test(event))
+			return;
 
 		BMNode bookmark = getBookmarkOfDropTarget(event);
 
@@ -132,6 +139,109 @@ public class DefaultTreeDropListener
 
 		addToExistingBookmark(event, bookmark);
 
+	}
+
+	private boolean test(DropTargetEvent event)
+	{
+		BookmarkView activeBookmarkView = manager.getActiveBookmarkView();
+		List<IStructuredSelection> treeSelections = TreeUtil
+				.getTreeSelections(activeBookmarkView.getView());
+
+		LinkedList<BMNode> modelCategories = getModelCategories();
+
+		LinkedList<BMNode> selectedNodes = new LinkedList<BMNode>();
+		BMNode target = (BMNode) getTarget(event);
+
+		for (int i = 0; i < treeSelections.size(); i++) {
+			BMNode node = (BMNode) treeSelections.get(i);
+			if (invalidNodeForOperation(node, target)) {
+				return false;
+			}
+
+			selectedNodes.add(node);
+			// remove a selected category since this node is going to be moved
+			modelCategories.remove(node);
+		}
+
+		WidgetElementLocation wel = new WidgetElementLocation(event,
+				activeBookmarkView);
+
+		reorderCategoryNodesInModel(wel, modelCategories, selectedNodes);
+
+		return true;
+	}
+
+	private void reorderCategoryNodesInModel(WidgetElementLocation wel,
+			LinkedList<BMNode> modelCategories, LinkedList<BMNode> selectedNodes)
+	{
+		BMNode target = wel.element;
+		LinkedList<BMNode> newCategoryOrder = new LinkedList<BMNode>();
+
+		int modelIndex=0;
+		for (BMNode node : modelCategories) {
+			if (node != target) {
+				newCategoryOrder.add(node);
+			}
+			else {
+				break;
+			}
+			modelIndex++;
+		}
+		
+		if (wel.isInUpperHalf) {
+			for (BMNode node : selectedNodes) {
+				newCategoryOrder.add(node);
+			}
+			for (int i=modelIndex; i < modelCategories.size(); i++){
+				newCategoryOrder.add(modelCategories.get(i));
+			}
+		}
+		else { 
+			
+			newCategoryOrder.add(modelCategories.get(modelIndex));
+			
+			for (BMNode node : selectedNodes) {
+				newCategoryOrder.add(node);
+			}
+			
+			for (int i=(modelIndex+1); i < modelCategories.size(); i++){
+				newCategoryOrder.add(modelCategories.get(i));
+			}
+			
+		}
+
+		BMNode root = manager.getModel().getModelRoot();
+		root.removeAllChildren();
+		
+		for (BMNode node: newCategoryOrder) {
+			root.addChild(node);
+		}
+		
+		manager.getActiveBookmarkView().updateControls();
+//		manager.setStoredExpandedNodesForActiveView();
+	}
+
+	private boolean invalidNodeForOperation(BMNode node, BMNode target)
+	{
+		if (!node.isBookmarkNode()) {
+			return true;// DUMMY return
+		}
+		if (node == target) {
+			return true;
+		}
+		return false;
+	}
+
+	private LinkedList<BMNode> getModelCategories()
+	{
+		LinkedList<BMNode> modelCategories = new LinkedList<BMNode>();
+
+		BMNode[] modelCategoryNodes = manager.getModel().getModelRoot()
+				.getChildren();
+		for (BMNode node : modelCategoryNodes) {
+			modelCategories.add(node);
+		}
+		return modelCategories;
 	}
 
 	private void addToNewBookmark(DropTargetEvent event)
@@ -218,5 +328,39 @@ public class DefaultTreeDropListener
 	private Object getTarget(DropTargetEvent event)
 	{
 		return ((event.item == null) ? null : event.item.getData());
+	}
+
+	class WidgetElementLocation
+	{
+
+		boolean isInUpperHalf;
+		boolean isInLowerHalf;
+		BMNode element;
+
+		public WidgetElementLocation(DropTargetEvent event,
+				BookmarkView bookmarView)
+		{
+			Point p = new Point(event.x, event.y);
+
+			element = (BMNode) getTarget(event);
+
+			TreeViewer viewer = bookmarView.getView();
+
+			Point control = viewer.getTree().toControl(p);
+
+			TreeItem item = viewer.getTree().getItem(control);
+
+			Rectangle bounds = item.getBounds();
+
+			Rectangle upperHalf = new Rectangle(bounds.x, bounds.y,
+					bounds.width, bounds.height / 2);
+
+			Rectangle lowerHalf = new Rectangle(bounds.x, bounds.y
+					+ (bounds.height / 2), bounds.width, bounds.height / 2);
+
+			isInUpperHalf = upperHalf.contains(control);
+			isInLowerHalf = lowerHalf.contains(control);
+		}
+
 	}
 }
