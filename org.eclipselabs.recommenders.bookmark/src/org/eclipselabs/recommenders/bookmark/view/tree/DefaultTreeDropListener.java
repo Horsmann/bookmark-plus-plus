@@ -16,7 +16,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreeNodesToNewBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmark;
@@ -145,11 +144,14 @@ public class DefaultTreeDropListener
 
 	private boolean performReorderNodeOperation(DropTargetEvent event)
 	{
+		BMNode target = (BMNode) getTarget(event);
+		if (target == null) {
+			return false;
+		}
+
 		BookmarkView activeBookmarkView = manager.getActiveBookmarkView();
 		List<IStructuredSelection> treeSelections = TreeUtil
 				.getTreeSelections(activeBookmarkView.getView());
-
-		BMNode target = (BMNode) getTarget(event);
 
 		LinkedList<BMNode> silblings = getSilblings(target);
 
