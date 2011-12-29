@@ -132,6 +132,10 @@ public class DefaultTreeDropListener
 			return;
 		}
 
+		if (isBookmarkNodeAmongSelections()) {
+			return;
+		}
+
 		BMNode bookmark = getBookmarkOfDropTarget(event);
 
 		if (didDropOccurInEmptyArea(bookmark)) {
@@ -141,6 +145,22 @@ public class DefaultTreeDropListener
 
 		addToExistingBookmark(event, bookmark);
 
+	}
+
+	private boolean isBookmarkNodeAmongSelections()
+	{
+		TreeViewer viewer = manager.getActiveBookmarkView().getView();
+		List<IStructuredSelection> treeSelections = TreeUtil
+				.getTreeSelections(viewer);
+
+		for (int i = 0; i < treeSelections.size(); i++) {
+			BMNode node = (BMNode) treeSelections.get(i);
+			if (node.isBookmarkNode()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private boolean performReorderNodeOperation(DropTargetEvent event)
