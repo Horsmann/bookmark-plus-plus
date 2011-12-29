@@ -8,27 +8,33 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 
-public class TreeDragListener implements DragSourceListener {
+public class TreeDragListener
+	implements DragSourceListener
+{
 
 	private final TreeViewer viewer;
 	private BMNode dragNode;
 	private boolean refreshView;
-	
+
 	private boolean isDragInProgress;
 
-	public TreeDragListener(TreeViewer viewer) {
+	public TreeDragListener(TreeViewer viewer)
+	{
 		this.viewer = viewer;
 	}
 
 	@Override
-	public void dragFinished(DragSourceEvent event) {
-		if (refreshView)
+	public void dragFinished(DragSourceEvent event)
+	{
+		if (refreshView) {
 			viewer.refresh();
+		}
 		isDragInProgress = false;
 	}
 
 	@Override
-	public void dragSetData(DragSourceEvent event) {
+	public void dragSetData(DragSourceEvent event)
+	{
 		IStructuredSelection selection = (IStructuredSelection) viewer
 				.getSelection();
 		dragNode = (BMNode) selection.getFirstElement();
@@ -41,19 +47,21 @@ public class TreeDragListener implements DragSourceListener {
 		if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 			event.data = dragNode.getValue();
 			refreshView = true;
-		} else if (ResourceTransfer.getInstance().isSupportedType(
-				event.dataType)) {
+		}
+		else if (ResourceTransfer.getInstance().isSupportedType(event.dataType)) {
 			event.data = dragNode.getValue();
 			refreshView = true;
 		}
 	}
 
-	public boolean isDragInProgress() {
+	public boolean isDragInProgress()
+	{
 		return isDragInProgress;
 	}
 
 	@Override
-	public void dragStart(DragSourceEvent event) {
+	public void dragStart(DragSourceEvent event)
+	{
 		refreshView = false;
 		isDragInProgress = true;
 	}

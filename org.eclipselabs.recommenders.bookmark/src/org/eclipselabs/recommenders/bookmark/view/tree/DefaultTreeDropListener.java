@@ -93,8 +93,9 @@ public class DefaultTreeDropListener
 	public void dropAccept(DropTargetEvent event)
 	{
 
-		if (!isValidDrop(event))
+		if (!isValidDrop(event)) {
 			event.detail = DND.DROP_NONE;
+		}
 	}
 
 	@Override

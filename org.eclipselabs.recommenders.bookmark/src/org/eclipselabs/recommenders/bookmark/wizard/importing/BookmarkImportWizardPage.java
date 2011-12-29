@@ -67,12 +67,14 @@ public class BookmarkImportWizardPage
 		setPageComplete(false);
 
 	}
-	
-	public boolean consolidateBookmarksAsSingleBookmark() {
+
+	public boolean consolidateBookmarksAsSingleBookmark()
+	{
 		return checkBoxListener.isEnabled();
 	}
-	
-	public String getNameOfNewBookmarkName() {
+
+	public String getNameOfNewBookmarkName()
+	{
 		return nameOfNewCategory.getText();
 	}
 

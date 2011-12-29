@@ -14,9 +14,11 @@ import java.io.UnsupportedEncodingException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipselabs.recommenders.bookmark.Activator;
 
-public class BookmarkFileIO {
+public class BookmarkFileIO
+{
 
-	public static void writeToFile(File file, String serializedTree) {
+	public static void writeToFile(File file, String serializedTree)
+	{
 		BufferedWriter writer;
 		try {
 			writer = new BufferedWriter(new OutputStreamWriter(
@@ -24,26 +26,32 @@ public class BookmarkFileIO {
 
 			writer.write(serializedTree);
 			writer.close();
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
+		}
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static String[] readFromFile(File file) {
+	public static String[] readFromFile(File file)
+	{
 		return readFileContent(file);
 	}
 
-	public static String[] loadFromDefaultFile() {
+	public static String[] loadFromDefaultFile()
+	{
 		IPath stateLocation = Activator.getDefault().getStateLocation();
 		File stateFile = stateLocation.append(Activator.AUTOSAVE_FILE).toFile();
 		return readFileContent(stateFile);
 	}
 
-	private static String[] readFileContent(File file) {
+	private static String[] readFileContent(File file)
+	{
 		BufferedReader reader = null;
 		String[] lines = null;
 		try {
@@ -61,12 +69,15 @@ public class BookmarkFileIO {
 
 			lines = serialized.split("\n");
 
-		} catch (UnsupportedEncodingException e) {
+		}
+		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
+		}
+		catch (FileNotFoundException e) {
 			// Ignore silently
 			// There is no file at first start up
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 

@@ -89,8 +89,9 @@ public class BookmarkExportWizardPage
 		setPageComplete(false);
 
 	}
-	
-	public void setExportFile(File file) {
+
+	public void setExportFile(File file)
+	{
 		this.file = file;
 	}
 
@@ -103,6 +104,5 @@ public class BookmarkExportWizardPage
 	{
 		return treeViewer;
 	}
-
 
 }

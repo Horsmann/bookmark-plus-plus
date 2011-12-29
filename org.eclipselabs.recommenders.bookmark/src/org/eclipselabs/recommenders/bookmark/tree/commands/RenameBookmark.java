@@ -72,7 +72,7 @@ public class RenameBookmark
 					text.dispose();
 					setFocusAndSelection(item);
 
-					saveNewTreeModelState();
+					manager.saveModelState();
 					break;
 				}
 			}
@@ -103,13 +103,4 @@ public class RenameBookmark
 		viewer.getView().getTree().setFocus();
 	}
 
-	private void saveNewTreeModelState()
-	{
-
-		BookmarkView viewer = manager.getActiveBookmarkView();
-		TreeModel model = manager.getModel();
-
-		TreeSerializerFacade
-				.serializeToDefaultLocation(viewer.getView(), model);
-	}
 }

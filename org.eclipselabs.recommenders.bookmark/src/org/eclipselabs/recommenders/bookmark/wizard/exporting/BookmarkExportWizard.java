@@ -65,7 +65,7 @@ public class BookmarkExportWizard
 	private void exportSelectedNodesToFile(File file,
 			List<IStructuredSelection> treeSelections)
 	{
-		BMNode [] selectedNodes = WizardUtil.getSelectedNodes(treeSelections);
+		BMNode[] selectedNodes = WizardUtil.getSelectedNodes(treeSelections);
 		BMNode root = WizardUtil.buildTreeConsistingOfSelection(selectedNodes);
 
 		export(root, file);

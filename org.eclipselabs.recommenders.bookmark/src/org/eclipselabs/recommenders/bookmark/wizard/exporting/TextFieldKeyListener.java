@@ -35,7 +35,6 @@ public class TextFieldKeyListener
 		bookmarkExportWizardPage.setPageComplete(false);
 	}
 
-
 	private boolean isValid(File file)
 	{
 		return file != null && hasCorrectFileEnding(file);

@@ -4,7 +4,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-public class CloseAllOpenEditors implements TreeCommand
+public class CloseAllOpenEditors
+	implements TreeCommand
 {
 
 	@Override
@@ -16,7 +17,7 @@ public class CloseAllOpenEditors implements TreeCommand
 		for (IWorkbenchWindow window : windows) {
 			for (IWorkbenchPage page : window.getPages())
 				page.closeAllEditors(true);
-		}		
+		}
 	}
 
 }

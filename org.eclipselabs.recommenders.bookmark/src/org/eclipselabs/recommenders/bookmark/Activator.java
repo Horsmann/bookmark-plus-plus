@@ -19,7 +19,7 @@ public class Activator
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.eclipselabs.recommenders.bookmark"; //$NON-NLS-1$
-	
+
 	public static final String fileEnding = ".bm";
 
 	// The shared instance

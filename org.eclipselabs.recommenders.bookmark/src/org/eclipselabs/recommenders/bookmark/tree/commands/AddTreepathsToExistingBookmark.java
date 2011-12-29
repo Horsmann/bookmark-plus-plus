@@ -15,8 +15,8 @@ public class AddTreepathsToExistingBookmark
 	private TreePath[] treePath = null;
 	private final ViewManager manager;
 
-	public AddTreepathsToExistingBookmark(ViewManager manager,
-			BMNode bookmark, TreePath[] treePath)
+	public AddTreepathsToExistingBookmark(ViewManager manager, BMNode bookmark,
+			TreePath[] treePath)
 	{
 
 		this.manager = manager;

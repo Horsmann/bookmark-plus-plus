@@ -151,8 +151,9 @@ public class TreeUtil
 			deleteNodesReferencingToDeadResourcesUnderNode(child, model);
 		}
 
-		if (node.isBookmarkNode() || isNodeModelRoot(node, model))
+		if (node.isBookmarkNode() || isNodeModelRoot(node, model)) {
 			return;
+		}
 
 		Object value = node.getValue();
 		boolean isProjectOpen = ResourceAvailabilityValidator
@@ -184,8 +185,9 @@ public class TreeUtil
 					.getValue());
 
 			boolean duplicateFound = TreeUtil.isDuplicate(bookmark, id);
-			if (duplicateFound)
+			if (duplicateFound) {
 				return true;
+			}
 		}
 
 		return false;
@@ -194,8 +196,9 @@ public class TreeUtil
 	public static BMNode getBookmarkNode(BMNode node)
 	{
 
-		if (node == null)
+		if (node == null) {
 			return null;
+		}
 
 		node = getReference(node);
 
@@ -209,8 +212,9 @@ public class TreeUtil
 	{
 		node = getReference(node);
 
-		if (doesNodeMatchId(id, node))
+		if (doesNodeMatchId(id, node)) {
 			return node;
+		}
 		for (BMNode child : node.getChildren()) {
 			BMNode located = locateNodeWithEqualID(id, child);
 			if (located != null)
@@ -225,8 +229,9 @@ public class TreeUtil
 		viewer.refresh();
 		BMNode leaf = TreeUtil.getLeafOfTreePath((node));
 
-		if (leaf == null)
+		if (leaf == null) {
 			return;
+		}
 
 		viewer.expandToLevel(leaf, AbstractTreeViewer.ALL_LEVELS);
 		viewer.update(leaf, null);
@@ -244,17 +249,21 @@ public class TreeUtil
 	public static boolean causesRecursion(BMNode source, BMNode target)
 	{
 
-		if (target == null)
+		if (target == null) {
 			return false;
+		}
 
 		BMNode targetParent = target.getParent();
 
-		if (targetParent == null)
+		if (targetParent == null) {
 			return false;
-		else if (targetParent == source)
+		}
+		else if (targetParent == source) {
 			return true;
-		else
+		}
+		else {
 			return causesRecursion(source, targetParent);
+		}
 
 	}
 
@@ -266,8 +275,9 @@ public class TreeUtil
 	public static void unlink(BMNode node)
 	{
 
-		if (node == null)
+		if (node == null) {
 			return;
+		}
 
 		node.getParent().removeChild(node);
 		node.setParent(null);
@@ -302,8 +312,9 @@ public class TreeUtil
 		throws JavaModelException
 	{
 
-		if (TreeUtil.attemptMerge(bookmark, node) == null)
+		if (TreeUtil.attemptMerge(bookmark, node) == null) {
 			bookmark.addChild(node);
+		}
 	}
 
 	private static boolean implementsRequiredInterfaces(Object value)
@@ -336,15 +347,17 @@ public class TreeUtil
 	 */
 	public static BMNode getLeafOfTreePath(BMNode node)
 	{
-		if (node == null)
+		if (node == null) {
 			return null;
+		}
 
 		if (node.hasChildren()) {
 			BMNode child = node.getChildren()[0];
 			return getLeafOfTreePath(child);
 		}
-		else
+		else {
 			return node;
+		}
 	}
 
 	public static LinkedList<BMNode> getLeafs(BMNode node)
@@ -353,18 +366,22 @@ public class TreeUtil
 
 		LinkedList<BMNode> leafs = new LinkedList<BMNode>();
 
-		if (node.hasChildren())
-			for (BMNode child : node.getChildren())
+		if (node.hasChildren()) {
+			for (BMNode child : node.getChildren()) {
 				leafs.addAll(getLeafs(child));
-		else
+			}
+		}
+		else {
 			leafs.add(node);
+		}
 		return leafs;
 	}
-	
+
 	public static BMNode copyTreePathFromNodeToBookmark(BMNode node)
 	{
-		if (node == null)
+		if (node == null) {
 			return null;
+		}
 
 		node = getReference(node);
 
@@ -377,8 +394,8 @@ public class TreeUtil
 	/**
 	 * Copies the <b>tree structure</b> below the provided node. Starting from
 	 * the provided node upwards a <b>path</b> to the bookmark the node belongs
-	 * to will be copied too. The upward-path can either include or
-	 * exclude the bookmark node
+	 * to will be copied too. The upward-path can either include or exclude the
+	 * bookmark node
 	 * 
 	 * @param node
 	 * @return
@@ -386,24 +403,28 @@ public class TreeUtil
 	public static BMNode copyTreeBelowNode(BMNode node,
 			boolean inclusiveBookmark)
 	{
-		if (node == null)
+		if (node == null) {
 			return null;
+		}
 
 		node = getReference(node);
 
 		LinkedList<BMNode> newChilds = new LinkedList<BMNode>();
-		for (BMNode child : node.getChildren())
+		for (BMNode child : node.getChildren()) {
 			newChilds.add(copyTreePathNodeToLeafs(child));
+		}
 
 		BMNode upPath = copyTreePathNodeToBookmark(node, inclusiveBookmark);
 
-		if (upPath == null)
+		if (upPath == null) {
 			return null;
+		}
 
 		BMNode leafOfUpPath = TreeUtil.getLeafOfTreePath(upPath);
 
-		for (BMNode child : newChilds)
+		for (BMNode child : newChilds) {
 			leafOfUpPath.addChild(child);
+		}
 
 		return upPath;
 
@@ -468,13 +489,15 @@ public class TreeUtil
 
 		String compareID = TreeValueConverter.getStringIdentification(node
 				.getValue());
-		if (compareID.compareTo(masterID) == 0)
+		if (compareID.compareTo(masterID) == 0) {
 			return true;
+		}
 
 		for (BMNode child : node.getChildren()) {
 			boolean duplicateFound = TreeUtil.isDuplicate(child, masterID);
-			if (duplicateFound)
+			if (duplicateFound) {
 				return true;
+			}
 		}
 
 		return false;
@@ -497,8 +520,9 @@ public class TreeUtil
 	public static List<IStructuredSelection> getTreeSelections(TreeViewer viewer)
 	{
 		ISelection selection = viewer.getSelection();
-		if (selection instanceof IStructuredSelection && !selection.isEmpty())
+		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
 			return ((IStructuredSelection) selection).toList();
+		}
 
 		return Collections.emptyList();
 	}
@@ -521,8 +545,9 @@ public class TreeUtil
 
 		for (BMNode leaf : leafs) {
 			BMNode parent = leaf.getParent();
-			if (climbUpTreeHierarchyMergeIfIDMatches(bookmark, parent))
+			if (climbUpTreeHierarchyMergeIfIDMatches(bookmark, parent)) {
 				return parent;
+			}
 		}
 
 		return null;
@@ -548,8 +573,9 @@ public class TreeUtil
 	{
 		Object value = parent.getValue();
 
-		if (value == null)
+		if (value == null) {
 			return null;
+		}
 
 		String id = TreeValueConverter.getStringIdentification(value);
 		return TreeUtil.locateNodeWithEqualID(id, bookmark);

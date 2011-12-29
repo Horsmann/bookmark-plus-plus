@@ -14,14 +14,14 @@ public interface ViewManager
 	public BookmarkView getActiveBookmarkView();
 
 	public void addCurrentlyExpandedNodesToStorage();
-	
+
 	public void addNodeToExpandedStorage(BMNode node);
 
 	public void setStoredExpandedNodesForActiveView();
-	
+
 	public void removeCurrentlyVisibleNodesFromStorage();
-	
-	public Object [] getNodesFromExpandedStorage();
+
+	public Object[] getNodesFromExpandedStorage();
 
 	public void reinitializeExpandedStorage();
 
@@ -30,11 +30,11 @@ public interface ViewManager
 	public void deactivateFlattenedModus();
 
 	public boolean isViewFlattened();
-	
+
 	public boolean isViewToggled();
-	
+
 	public TreeModel getModel();
-	
+
 	public void saveModelState();
 
 	public TreeModel getFlatModel();

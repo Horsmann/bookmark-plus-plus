@@ -21,12 +21,12 @@ public interface BMNode
 	public void setValue(Object value);
 
 	public Object getValue();
-	
+
 	public boolean hasParent();
-	
+
 	public void removeAllChildren();
-	
+
 	public BMNode getReference();
-	
+
 	public boolean hasReference();
 }

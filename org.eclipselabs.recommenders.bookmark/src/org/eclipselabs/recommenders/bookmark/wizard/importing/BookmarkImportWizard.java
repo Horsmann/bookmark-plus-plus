@@ -50,8 +50,9 @@ public class BookmarkImportWizard
 		TreeViewer viewer = mainPage.getView();
 		List<IStructuredSelection> treeSelections = TreeUtil
 				.getTreeSelections(viewer);
-		if (file == null)
+		if (file == null) {
 			return false;
+		}
 
 		try {
 			performImport(file, treeSelections);

@@ -43,8 +43,9 @@ public class TreeLabelProvider
 
 			text = updateTextIfViewIsFlattened(text, node);
 
-			if (text.compareTo("") != 0)
+			if (text.compareTo("") != 0) {
 				return text;
+			}
 
 			return (String) node.getValue();
 
@@ -60,8 +61,9 @@ public class TreeLabelProvider
 
 		Object value = node.getValue();
 
-		if (!showExtendInformationInName(value))
+		if (!showExtendInformationInName(value)) {
 			return text;
+		}
 
 		String prefix = generatePrefix(value);
 		String suffix = generateSuffix(value);
@@ -177,12 +179,14 @@ public class TreeLabelProvider
 	public String getImageKeyForType(Object element)
 	{
 
-		if (!(element instanceof BMNode))
+		if (!(element instanceof BMNode)) {
 			return Activator.ICON_DEFAULT;
+		}
 
 		BMNode node = (BMNode) element;
-		if (node.isBookmarkNode())
+		if (node.isBookmarkNode()) {
 			return Activator.ICON_BOOKMARK;
+		}
 
 		return Activator.ICON_DEFAULT;
 	}

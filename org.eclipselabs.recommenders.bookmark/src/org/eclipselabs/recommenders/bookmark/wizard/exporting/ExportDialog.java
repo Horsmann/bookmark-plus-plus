@@ -18,8 +18,9 @@ public class ExportDialog
 		fileDialog.setFilterExtensions(new String[] { "*"
 				+ Activator.fileEnding });
 		String fileName = fileDialog.open();
-		if (fileName != null)
+		if (fileName != null) {
 			return new File(fileName);
+		}
 
 		return null;
 	}

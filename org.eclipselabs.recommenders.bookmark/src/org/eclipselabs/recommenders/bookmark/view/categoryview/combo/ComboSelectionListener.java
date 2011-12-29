@@ -17,7 +17,8 @@ public class ComboSelectionListener
 	private ViewManager manager;
 	private final Button saveBookmarkNameChanges;
 
-	public ComboSelectionListener(Button saveBookmarkNameChanges, Combo combo, ViewManager manager)
+	public ComboSelectionListener(Button saveBookmarkNameChanges, Combo combo,
+			ViewManager manager)
 	{
 		this.saveBookmarkNameChanges = saveBookmarkNameChanges;
 		this.combo = combo;

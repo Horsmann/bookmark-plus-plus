@@ -17,12 +17,15 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 
-public class OpenFileInSystemExplorerAction extends Action implements
-		SelfEnabling {
+public class OpenFileInSystemExplorerAction
+	extends Action
+	implements SelfEnabling
+{
 
 	private TreeViewer viewer = null;
 
-	public OpenFileInSystemExplorerAction(TreeViewer viewer) {
+	public OpenFileInSystemExplorerAction(TreeViewer viewer)
+	{
 		this.viewer = viewer;
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
 				.getDescriptor(Activator.ICON_OPEN_IN_SYSTEM_EXPLORER));
@@ -31,7 +34,8 @@ public class OpenFileInSystemExplorerAction extends Action implements
 	}
 
 	@Override
-	public void run() {
+	public void run()
+	{
 		List<IStructuredSelection> selectedList = TreeUtil
 				.getTreeSelections(viewer);
 		for (int i = 0; i < selectedList.size(); i++) {
@@ -50,7 +54,8 @@ public class OpenFileInSystemExplorerAction extends Action implements
 		}
 	}
 
-	private File getOpenableFileHandle(Object value) {
+	private File getOpenableFileHandle(Object value)
+	{
 		File file = null;
 
 		if (value instanceof IFile) {
@@ -65,8 +70,9 @@ public class OpenFileInSystemExplorerAction extends Action implements
 
 			IResource resource = tryToObtainTheCompilationUnit(javElement);
 
-			if (resource == null)
+			if (resource == null) {
 				return null;
+			}
 
 			targetFile = resource.getRawLocation().toFile();
 
@@ -75,13 +81,15 @@ public class OpenFileInSystemExplorerAction extends Action implements
 		return file;
 	}
 
-	private IResource tryToObtainTheCompilationUnit(IJavaElement element) {
+	private IResource tryToObtainTheCompilationUnit(IJavaElement element)
+	{
 		IResource resource = null;
 		try {
 			resource = element.getCorrespondingResource();
 
-			if (resource != null)
+			if (resource != null) {
 				return resource;
+			}
 
 			IJavaElement compUnit = element;
 
@@ -91,23 +99,27 @@ public class OpenFileInSystemExplorerAction extends Action implements
 			}
 
 			resource = compUnit.getCorrespondingResource();
-		} catch (JavaModelException e) {
+		}
+		catch (JavaModelException e) {
 			e.printStackTrace();
 		}
 
 		return resource;
 	}
 
-	private boolean notInstanceOfICompilationUnit(IJavaElement ele) {
+	private boolean notInstanceOfICompilationUnit(IJavaElement ele)
+	{
 		return !(ele instanceof ICompilationUnit);
 	}
 
-	private boolean hasParent(IJavaElement ele) {
+	private boolean hasParent(IJavaElement ele)
+	{
 		return ele.getParent() != null;
 	}
 
 	@Override
-	public void updateEnabledStatus() {
+	public void updateEnabledStatus()
+	{
 		List<IStructuredSelection> list = TreeUtil.getTreeSelections(viewer);
 
 		if (list.size() == 0) {

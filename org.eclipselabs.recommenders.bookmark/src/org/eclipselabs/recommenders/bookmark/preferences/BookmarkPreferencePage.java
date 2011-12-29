@@ -16,10 +16,13 @@ import org.eclipselabs.recommenders.bookmark.Activator;
  * preferences can be accessed directly via the preference store.
  */
 
-public class BookmarkPreferencePage extends FieldEditorPreferencePage implements
-		IWorkbenchPreferencePage {
+public class BookmarkPreferencePage
+	extends FieldEditorPreferencePage
+	implements IWorkbenchPreferencePage
+{
 
-	public BookmarkPreferencePage() {
+	public BookmarkPreferencePage()
+	{
 		super(GRID);
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		setDescription("Bookmark++ Preferences");
@@ -30,7 +33,8 @@ public class BookmarkPreferencePage extends FieldEditorPreferencePage implements
 	 * GUI blocks needed to manipulate various types of preferences. Each field
 	 * editor knows how to save and restore itself.
 	 */
-	public void createFieldEditors() {
+	public void createFieldEditors()
+	{
 		// addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH,
 		// "&Directory preference:", getFieldEditorParent()));
 		addField(new BooleanFieldEditor(
@@ -42,7 +46,7 @@ public class BookmarkPreferencePage extends FieldEditorPreferencePage implements
 				PreferenceConstants.REMOVE_DEAD_BOOKMARK_REFERENCES_REFRESH,
 				"&Refreshing removes dead links to non available projects",
 				getFieldEditorParent()));
-		
+
 		addField(new BooleanFieldEditor(
 				PreferenceConstants.CLOSE_ALL_OPEN_EDITOR_WINDOWS_IF_BOOKMARK_CATEGORY_IS_OPENED,
 				"&Close all open editor windows when a bookmark category is opened",
@@ -66,7 +70,8 @@ public class BookmarkPreferencePage extends FieldEditorPreferencePage implements
 	 * @see
 	 * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
-	public void init(IWorkbench workbench) {
+	public void init(IWorkbench workbench)
+	{
 	}
 
 }

@@ -53,9 +53,9 @@ public class PasteHandler
 		processAvailableClipboardData(cb);
 
 		cb.dispose();
-		
+
 		updateExpandedStorage();
-		
+
 		return null;
 	}
 
@@ -200,8 +200,8 @@ public class PasteHandler
 	{
 		TreePath path = new TreePath(new Object[] { data });
 		TreePath[] treePath = new TreePath[] { path };
-		new AddTreepathsToExistingBookmark(manager, bookmarkOfTarget,
-				treePath).execute();
+		new AddTreepathsToExistingBookmark(manager, bookmarkOfTarget, treePath)
+				.execute();
 	}
 
 	private BMNode createNewBookmark()

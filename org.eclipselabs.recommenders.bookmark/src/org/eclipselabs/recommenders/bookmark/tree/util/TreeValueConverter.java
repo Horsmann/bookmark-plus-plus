@@ -7,12 +7,15 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 
-public class TreeValueConverter {
-	
-	public static String getStringIdentification(Object value) {
+public class TreeValueConverter
+{
+
+	public static String getStringIdentification(Object value)
+	{
 		String id = null;
-		if (value instanceof IJavaElement)
+		if (value instanceof IJavaElement) {
 			id = ((IJavaElement) value).getHandleIdentifier();
+		}
 		else if (value instanceof IFile) {
 
 			IFile file = (IFile) value;
@@ -20,24 +23,29 @@ public class TreeValueConverter {
 			id = file.getFullPath()
 					.makeRelativeTo(file.getProjectRelativePath()).toOSString();
 
-		} else if (value instanceof String)
+		}
+		else if (value instanceof String) {
 			id = (String) value;
+		}
 
 		return id;
 	}
 
-	public static IFile attemptTransformationToIFile(String value) {
+	public static IFile attemptTransformationToIFile(String value)
+	{
 		try {
 			IPath location = Path.fromOSString((String) value);
 			IFile file = ResourcesPlugin.getWorkspace().getRoot()
 					.getFile(location);
 			return file;
-		} catch (IllegalArgumentException e) {
+		}
+		catch (IllegalArgumentException e) {
 			return null;
 		}
 	}
 
-	public static IJavaElement attemptTransformationToIJavaElement(String value) {
+	public static IJavaElement attemptTransformationToIJavaElement(String value)
+	{
 		IJavaElement element = JavaCore.create(value);
 		return element;
 	}

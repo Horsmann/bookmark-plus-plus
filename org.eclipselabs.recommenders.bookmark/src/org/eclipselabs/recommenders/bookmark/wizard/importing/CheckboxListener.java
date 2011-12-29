@@ -29,10 +29,10 @@ public class CheckboxListener
 		}
 		bookmarkImportWizardPage.getChecker().checkCompletion();
 	}
-	
-	public boolean isEnabled() {
+
+	public boolean isEnabled()
+	{
 		return nameOfNewCategory.isEnabled();
 	}
-
 
 }

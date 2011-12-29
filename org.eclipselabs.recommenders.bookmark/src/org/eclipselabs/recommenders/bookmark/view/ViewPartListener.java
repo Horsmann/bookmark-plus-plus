@@ -2,8 +2,6 @@ package org.eclipselabs.recommenders.bookmark.view;
 
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 
 public class ViewPartListener
 	implements IPartListener2
@@ -63,6 +61,5 @@ public class ViewPartListener
 	{
 
 	}
-
 
 }

@@ -28,8 +28,9 @@ public class AddTreeNodesToExistingBookmark
 
 		BMNode nodeCopy = TreeUtil.copyTreeBelowNode(node, false);
 
-		if (TreeUtil.isDuplicate(bookmark, nodeCopy)){
-			return;}
+		if (TreeUtil.isDuplicate(bookmark, nodeCopy)) {
+			return;
+		}
 
 		BMNode merged = null;
 		if ((merged = TreeUtil.attemptMerge(bookmark, nodeCopy)) != null) {

@@ -8,15 +8,19 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.Activator;
 
-public class ImportDialog {
-	
-	public static File showDialog() {
+public class ImportDialog
+{
+
+	public static File showDialog()
+	{
 		Shell shell = Display.getCurrent().getActiveShell();
 		FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-		fileDialog.setFilterExtensions(new String[] { "*" + Activator.fileEnding });
+		fileDialog.setFilterExtensions(new String[] { "*"
+				+ Activator.fileEnding });
 		String fileName = fileDialog.open();
-		if (fileName != null)
+		if (fileName != null) {
 			return new File(fileName);
+		}
 
 		return null;
 	}

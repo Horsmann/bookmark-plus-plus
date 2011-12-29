@@ -9,9 +9,12 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.GsonConverter;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.ObjectConverter;
 
-public class TreeSerializerFacade {
+public class TreeSerializerFacade
+{
 
-	public static void serialize(TreeModel model, Object [] expandedNodes, File file) {
+	public static void serialize(TreeModel model, Object[] expandedNodes,
+			File file)
+	{
 
 		ObjectConverter converter = new GsonConverter();
 		String serializedTree = TreeSerializer.serializeTree(
@@ -20,9 +23,10 @@ public class TreeSerializerFacade {
 			BookmarkFileIO.writeToFile(file, serializedTree);
 		}
 	}
-	
-	public static void serializeToDefaultLocation(TreeViewer viewer, TreeModel model) {
 
+	public static void serializeToDefaultLocation(TreeViewer viewer,
+			TreeModel model)
+	{
 		ObjectConverter converter = new GsonConverter();
 		String serializedTree = TreeSerializer.serializeTree(
 				model.getModelRoot(), viewer.getExpandedElements(), converter);

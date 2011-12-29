@@ -16,9 +16,10 @@ public class FlatTreeNode
 	{
 		return ref;
 	}
-	
+
 	@Override
-	public boolean hasReference() {
+	public boolean hasReference()
+	{
 		return true;
 	}
 

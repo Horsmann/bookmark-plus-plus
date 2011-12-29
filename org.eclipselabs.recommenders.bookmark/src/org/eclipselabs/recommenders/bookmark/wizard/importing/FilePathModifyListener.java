@@ -55,7 +55,7 @@ public class FilePathModifyListener
 		}
 
 	}
-	
+
 	public boolean isValid()
 	{
 		File file = new File(textField.getText());

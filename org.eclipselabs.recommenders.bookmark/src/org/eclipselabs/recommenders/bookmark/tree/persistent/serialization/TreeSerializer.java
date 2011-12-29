@@ -26,13 +26,13 @@ public class TreeSerializer
 	private static HashMap<Object, String> putExpandedNodesInHashMap(
 			Object[] expandedNodes)
 	{
-		HashMap<Object, String> map = new HashMap<Object, String>();
+		HashMap<Object, String> expandedMap = new HashMap<Object, String>();
 
 		if (expandedNodes != null) {
 			for (Object o : expandedNodes)
-				map.put(o, "");
+				expandedMap.put(o, "");
 		}
-		return map;
+		return expandedMap;
 	}
 
 	private static SerializedTreeNode copyNodeAndSerializeValue(BMNode node,

@@ -97,8 +97,9 @@ public class ShowBookmarksInEditorAction
 	{
 		for (BMNode child : bookmark.getChildren()) {
 			LinkedList<BMNode> leafs = TreeUtil.getLeafs(child);
-			for (BMNode leaf : leafs)
+			for (BMNode leaf : leafs) {
 				openInEditor(leaf);
+			}
 		}
 	}
 

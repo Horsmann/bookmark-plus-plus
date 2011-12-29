@@ -222,8 +222,9 @@ public class CategoryView
 		TreeModel model = manager.getModel();
 		BMNode head = model.getModelHead();
 
-		if (head.getValue() == null)
+		if (head.getValue() == null) {
 			return;
+		}
 
 		BMNode currentHead = model.getModelHead();
 		int selectIndex = rebuildCategoryNamesInCombobox(currentHead);

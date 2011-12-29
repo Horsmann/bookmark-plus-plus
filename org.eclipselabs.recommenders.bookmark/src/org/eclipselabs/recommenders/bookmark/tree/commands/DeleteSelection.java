@@ -25,7 +25,7 @@ public class DeleteSelection
 	public void execute()
 	{
 		BookmarkView viewer = manager.getActiveBookmarkView();
-		
+
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer.getView());
 		for (int i = 0; i < selections.size(); i++) {
@@ -72,9 +72,9 @@ public class DeleteSelection
 	{
 		BookmarkView viewer = manager.getActiveBookmarkView();
 		TreeModel model = manager.getModel();
-		
-		TreeSerializerFacade.serializeToDefaultLocation(viewer.getView(),
-				model);
+
+		TreeSerializerFacade
+				.serializeToDefaultLocation(viewer.getView(), model);
 	}
 
 }
