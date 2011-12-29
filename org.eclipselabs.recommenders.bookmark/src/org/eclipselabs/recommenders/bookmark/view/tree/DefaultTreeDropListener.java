@@ -218,7 +218,7 @@ public class DefaultTreeDropListener
 		}
 		
 		manager.getActiveBookmarkView().updateControls();
-//		manager.setStoredExpandedNodesForActiveView();
+		manager.setStoredExpandedNodesForActiveView();
 	}
 
 	private boolean invalidNodeForOperation(BMNode node, BMNode target)
