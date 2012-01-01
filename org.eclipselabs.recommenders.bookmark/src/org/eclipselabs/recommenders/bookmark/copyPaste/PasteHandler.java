@@ -26,6 +26,7 @@ import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistin
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ExpandedStorage;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 @SuppressWarnings("restriction")
@@ -62,8 +63,10 @@ public class PasteHandler
 	private void updateExpandedStorage()
 	{
 		ViewManager manager = Activator.getManager();
-		manager.reinitializeExpandedStorage();
-		manager.addCurrentlyExpandedNodesToStorage();
+		ExpandedStorage storage = manager.getExpandedStorage();
+		
+		storage.reinitialize();
+		storage.addCurrentlyExpandedNodes();
 	}
 
 	private void processAvailableClipboardData(Clipboard cb)

@@ -13,6 +13,7 @@ import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
+import org.eclipselabs.recommenders.bookmark.view.ExpandedStorage;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardUtil;
 
@@ -86,7 +87,9 @@ public class BookmarkExportWizard
 	{
 		ViewManager manager = Activator.getManager();
 		TreeModel model = manager.getModel();
-		Object[] expanded = manager.getNodesFromExpandedStorage();
+		ExpandedStorage storage = manager.getExpandedStorage();
+		
+		Object[] expanded = storage.getExpandedNodes();
 
 		TreeSerializerFacade.serialize(model, expanded, file, null);
 	}

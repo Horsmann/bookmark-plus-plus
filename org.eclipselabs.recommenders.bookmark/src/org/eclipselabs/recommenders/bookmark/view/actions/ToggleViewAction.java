@@ -10,6 +10,7 @@ import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ExpandedStorage;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class ToggleViewAction
@@ -58,8 +59,9 @@ public class ToggleViewAction
 
 			setNewModelHead(model);
 
-			manager.reinitializeExpandedStorage();
-			manager.addCurrentlyExpandedNodesToStorage();
+			ExpandedStorage storage = manager.getExpandedStorage();
+			storage.reinitialize();
+			storage.addCurrentlyExpandedNodes();
 
 			setUpViewUnflattened(model.getModelHead());
 		}
@@ -87,9 +89,9 @@ public class ToggleViewAction
 			setUpViewFlattened(model);
 		}
 		else {
-
-			manager.removeCurrentlyVisibleNodesFromStorage();
-			manager.addCurrentlyExpandedNodesToStorage();
+			ExpandedStorage storage = manager.getExpandedStorage();
+			storage.removeCurrentlyVisibleNodes();
+			storage.addCurrentlyExpandedNodes();
 			model.resetHeadToRoot();
 			setUpViewUnflattened(model.getModelHead());
 		}
@@ -112,11 +114,12 @@ public class ToggleViewAction
 	private void setUpViewUnflattened(BMNode input)
 	{
 		BookmarkView activatedView = manager.activateNextView();
+		ExpandedStorage storage = manager.getExpandedStorage();
 
 		activatedView.getView().setInput(null);
 		activatedView.getView().setInput(input);
 
-		manager.setStoredExpandedNodesForActiveView();
+		storage.expandStoredNodesForActiveView();
 		activatedView.updateControls();
 	}
 

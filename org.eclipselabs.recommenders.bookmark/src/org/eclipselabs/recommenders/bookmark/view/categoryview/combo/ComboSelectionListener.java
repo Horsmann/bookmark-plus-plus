@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.view.ExpandedStorage;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class ComboSelectionListener
@@ -28,11 +29,11 @@ public class ComboSelectionListener
 	@Override
 	public void widgetSelected(SelectionEvent e)
 	{
-
+		ExpandedStorage storage = manager.getExpandedStorage();
 		TreeModel model = manager.getModel();
 
-		manager.removeCurrentlyVisibleNodesFromStorage();
-		manager.addCurrentlyExpandedNodesToStorage();
+		storage.removeCurrentlyVisibleNodes();
+		storage.addCurrentlyExpandedNodes();
 
 		int index = combo.getSelectionIndex();
 		BMNode[] bookmarks = model.getModelRoot().getChildren();
@@ -42,7 +43,7 @@ public class ComboSelectionListener
 
 		viewer.setInput(null);
 		viewer.setInput(model.getModelHead());
-		manager.setStoredExpandedNodesForActiveView();
+		storage.expandStoredNodesForActiveView();
 
 		if (manager.isViewFlattened()) {
 			manager.activateFlattenedModus(bookmarks[index]);

@@ -22,6 +22,7 @@ import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistin
 import org.eclipselabs.recommenders.bookmark.tree.commands.CreateNewBookmarkAddAsNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ExpandedStorage;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class DefaultTreeDropListener
@@ -41,9 +42,11 @@ public class DefaultTreeDropListener
 	@Override
 	public void drop(DropTargetEvent event)
 	{
+		
+		ExpandedStorage storage = manager.getExpandedStorage();
 
-		manager.reinitializeExpandedStorage();
-		manager.addCurrentlyExpandedNodesToStorage();
+		storage.reinitialize();
+		storage.addCurrentlyExpandedNodes();
 
 		try {
 			if (dragListener.isDragInProgress()) {
@@ -67,6 +70,7 @@ public class DefaultTreeDropListener
 	private void updateView()
 	{
 		BookmarkView viewer = manager.getActiveBookmarkView();
+		ExpandedStorage storage = manager.getExpandedStorage();
 
 		viewer.updateControls();
 
@@ -83,8 +87,8 @@ public class DefaultTreeDropListener
 			manager.activateFlattenedModus(head);
 		}
 		else {
-			manager.reinitializeExpandedStorage();
-			manager.addCurrentlyExpandedNodesToStorage();
+			storage.reinitialize();
+			storage.addCurrentlyExpandedNodes();
 		}
 
 	}
@@ -220,7 +224,7 @@ public class DefaultTreeDropListener
 		setNewOrder(target, newOrder);
 
 		manager.getActiveBookmarkView().updateControls();
-		manager.setStoredExpandedNodesForActiveView();
+		manager.getExpandedStorage().expandStoredNodesForActiveView();
 	}
 
 	private void setNewOrder(BMNode target, LinkedList<BMNode> newOrder)
@@ -344,7 +348,7 @@ public class DefaultTreeDropListener
 		BMNode target = (BMNode) getTarget(event);
 
 		BMNode bookmark = TreeUtil.getBookmarkNode(target);
-		BookmarkView viewer = manager.getActiveBookmarkView();
+		ExpandedStorage storage = manager.getExpandedStorage();
 
 		if (bookmark != null) {
 			new AddTreepathsToExistingBookmark(manager, bookmark, treePath)
@@ -352,9 +356,9 @@ public class DefaultTreeDropListener
 		}
 		else {
 			new CreateNewBookmarkAddAsNode(manager, treePath).execute();
-
 		}
-		viewer.getManager().addCurrentlyExpandedNodesToStorage();
+		
+		storage.addCurrentlyExpandedNodes();
 	}
 
 	private boolean isValidDrop(DropTargetEvent event)

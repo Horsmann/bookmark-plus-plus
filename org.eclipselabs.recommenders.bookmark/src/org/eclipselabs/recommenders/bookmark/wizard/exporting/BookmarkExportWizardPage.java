@@ -81,7 +81,7 @@ public class BookmarkExportWizardPage
 		treeViewer.setInput(model.getModelRoot());
 		treeViewer.getTree().setLayoutData(data);
 
-		Object[] expanded = manager.getNodesFromExpandedStorage();
+		Object[] expanded = manager.getExpandedStorage().getExpandedNodes();
 		treeViewer.setExpandedElements(expanded);
 
 		// Required to avoid an error in the system

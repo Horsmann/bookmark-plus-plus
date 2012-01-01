@@ -29,6 +29,7 @@ import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.Res
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ExpandedStorage;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardUtil;
 
@@ -186,13 +187,15 @@ public class BookmarkImportWizard
 		ViewManager manager = Activator.getManager();
 		TreeModel model = manager.getModel();
 		BMNode head = model.getModelHead();
+		ExpandedStorage storage = manager.getExpandedStorage();
+		
 		manager.activateFlattenedModus(head);
 
 		// there won't be any expanded nodes in the flat view, place the
 		// restored-expanded nodes in the storage for a later switch-back to the
 		// tree-representation
 		for (BMNode expand : expanded) {
-			manager.addNodeToExpandedStorage(expand);
+			storage.addNodeToExpandedStorage(expand);
 		}
 	}
 

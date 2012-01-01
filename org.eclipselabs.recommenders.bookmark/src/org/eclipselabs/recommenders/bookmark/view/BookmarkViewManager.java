@@ -1,7 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.view;
 
-import java.util.HashMap;
-
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -51,13 +49,14 @@ public class BookmarkViewManager
 	private boolean isFlattenedActive;
 	private boolean isViewToggled;
 
-	private HashMap<Object, String> expandedNodes = new HashMap<Object, String>();
+	private ExpandedStorage expandedStorage;
 
 	@Override
 	public void createPartControl(Composite parent)
 	{
 		model = new TreeModel();
 		flatModel = new TreeModel();
+		expandedStorage = new ExpandedStorage(this);
 		// //
 		container = new Composite(parent, SWT.NONE);
 		stackLayout = new StackLayout();
@@ -148,7 +147,7 @@ public class BookmarkViewManager
 				restoredTree.getExpanded());
 		checkPreferencesForDeletionOfDeadReferences();
 
-		addCurrentlyExpandedNodesToStorage();
+		expandedStorage.addCurrentlyExpandedNodes();
 	}
 
 	private void checkPreferencesForDeletionOfDeadReferences()
@@ -201,39 +200,6 @@ public class BookmarkViewManager
 		return null;
 	}
 
-	public void addCurrentlyExpandedNodesToStorage()
-	{
-		Object[] expanded = activeView.getView().getExpandedElements();
-		for (Object o : expanded) {
-			expandedNodes.put(o, "");
-		}
-		if (!model.isHeadEqualRoot()) {
-			expandedNodes.put(model.getModelHead(), "");
-		}
-	}
-
-	public void setStoredExpandedNodesForActiveView()
-	{
-		Object[] expanded = expandedNodes.keySet().toArray();
-		activeView.getView().setExpandedElements(expanded);
-	}
-
-	@Override
-	public void removeCurrentlyVisibleNodesFromStorage()
-	{
-		Object[] currentlyVisibleNodes = TreeUtil.getTreeBelowNode(model
-				.getModelHead());
-		for (Object o : currentlyVisibleNodes) {
-			expandedNodes.remove(o);
-		}
-	}
-
-	@Override
-	public void reinitializeExpandedStorage()
-	{
-		expandedNodes = new HashMap<Object, String>();
-	}
-
 	@Override
 	public void activateFlattenedModus(BMNode node)
 	{
@@ -243,7 +209,7 @@ public class BookmarkViewManager
 
 		boolean setUpForDefault = setUpForDefaultView(node);
 		if (setUpForDefault) {
-			addCurrentlyExpandedNodesToStorage();
+			expandedStorage.addCurrentlyExpandedNodes();
 
 			buildFlatModelForDefaultView(flattenedRoot, node);
 		}
@@ -270,7 +236,7 @@ public class BookmarkViewManager
 	{
 		activeView.getView().setInput(null);
 		activeView.getView().setInput(model.getModelHead());
-		setStoredExpandedNodesForActiveView();
+		expandedStorage.expandStoredNodesForActiveView();
 		isFlattenedActive = false;
 	}
 
@@ -348,15 +314,9 @@ public class BookmarkViewManager
 	}
 
 	@Override
-	public void addNodeToExpandedStorage(BMNode node)
+	public ExpandedStorage getExpandedStorage()
 	{
-		expandedNodes.put(node, "");
-	}
-
-	@Override
-	public Object[] getNodesFromExpandedStorage()
-	{
-		return expandedNodes.keySet().toArray();
+		return expandedStorage;
 	}
 
 	@Override

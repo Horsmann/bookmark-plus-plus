@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.view.ExpandedStorage;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class ToggleFlatAndTreeAction
@@ -28,7 +29,7 @@ public class ToggleFlatAndTreeAction
 	{
 		if (manager.isViewFlattened()) {
 			manager.deactivateFlattenedModus();
-			manager.setStoredExpandedNodesForActiveView();
+			manager.getExpandedStorage().expandStoredNodesForActiveView();
 		}
 		else {
 			BMNode flattenFromNode = null;
@@ -45,8 +46,9 @@ public class ToggleFlatAndTreeAction
 
 	private void saveExpandedState()
 	{
-		manager.removeCurrentlyVisibleNodesFromStorage();
-		manager.addCurrentlyExpandedNodesToStorage();
+		ExpandedStorage storage = manager.getExpandedStorage();
+		storage.removeCurrentlyVisibleNodes();
+		storage.addCurrentlyExpandedNodes();
 	}
 
 	private void refreshView()

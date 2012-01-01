@@ -7,6 +7,7 @@ import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.GsonConverter;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.ObjectConverter;
+import org.eclipselabs.recommenders.bookmark.view.ExpandedStorage;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class TreeSerializerFacade
@@ -33,7 +34,9 @@ public class TreeSerializerFacade
 	public static void serializeToDefaultLocation(ViewManager manager)
 	{
 		TreeModel model = manager.getModel();
-		Object[] expanded = manager.getNodesFromExpandedStorage();
+		ExpandedStorage storage = manager.getExpandedStorage();
+		
+		Object[] expanded = storage.getExpandedNodes();
 
 		ObjectConverter converter = new GsonConverter();
 		String serializedTree = TreeSerializer.serializeTree(

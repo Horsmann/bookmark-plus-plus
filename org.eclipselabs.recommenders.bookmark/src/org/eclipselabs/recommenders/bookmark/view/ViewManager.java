@@ -12,18 +12,8 @@ public interface ViewManager
 	public BookmarkView activateNextView();
 
 	public BookmarkView getActiveBookmarkView();
-
-	public void addCurrentlyExpandedNodesToStorage();
-
-	public void addNodeToExpandedStorage(BMNode node);
-
-	public void setStoredExpandedNodesForActiveView();
-
-	public void removeCurrentlyVisibleNodesFromStorage();
-
-	public Object[] getNodesFromExpandedStorage();
-
-	public void reinitializeExpandedStorage();
+	
+	public ExpandedStorage getExpandedStorage();
 
 	public void activateFlattenedModus(BMNode parentThatsChildsShallBeFlattened);
 

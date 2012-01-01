@@ -7,6 +7,7 @@ import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
+import org.eclipselabs.recommenders.bookmark.view.ExpandedStorage;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class CreateNewBookmarkAction
@@ -49,7 +50,8 @@ public class CreateNewBookmarkAction
 			rebuildFlatModel();
 		}
 
-		manager.addNodeToExpandedStorage(bookmark);
+		ExpandedStorage storage = manager.getExpandedStorage();
+		storage.addNodeToExpandedStorage(bookmark);
 
 		viewer.updateControls();
 
@@ -67,12 +69,14 @@ public class CreateNewBookmarkAction
 	{
 		BookmarkView viewer = manager.getActiveBookmarkView();
 		TreeModel model = manager.getModel();
+		ExpandedStorage storage = manager.getExpandedStorage();
 
 		model.setHeadNode(bookmark);
 		TreeViewer view = viewer.getView();
 		view.setInput(null);
 		view.setInput(model.getModelHead());
-		manager.setStoredExpandedNodesForActiveView();
+		
+		storage.expandStoredNodesForActiveView();
 
 		if (manager.isViewFlattened()) {
 			manager.activateFlattenedModus(bookmark);
