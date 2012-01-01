@@ -79,7 +79,7 @@ public class BookmarkExportWizard
 
 		Object[] expanded = TreeUtil.getTreeBelowNode(root);
 
-		TreeSerializerFacade.serialize(model, expanded, file);
+		TreeSerializerFacade.serialize(model, expanded, file, null);
 	}
 
 	private void exportEntireModelToFile(File file)
@@ -88,7 +88,7 @@ public class BookmarkExportWizard
 		TreeModel model = manager.getModel();
 		Object[] expanded = manager.getNodesFromExpandedStorage();
 
-		TreeSerializerFacade.serialize(model, expanded, file);
+		TreeSerializerFacade.serialize(model, expanded, file, null);
 	}
 
 }

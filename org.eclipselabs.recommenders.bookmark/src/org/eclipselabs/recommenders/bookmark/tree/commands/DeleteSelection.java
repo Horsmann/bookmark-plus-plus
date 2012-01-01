@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
-import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
-import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
@@ -42,7 +40,7 @@ public class DeleteSelection
 		viewer.getView().refresh(true);
 		viewer.updateControls();
 
-		saveNewTreeModelState();
+		manager.saveModelState();
 	}
 
 	private void processFlattened(BMNode flatNode)
@@ -66,15 +64,6 @@ public class DeleteSelection
 				TreeUtil.unlink(child);
 			}
 		}
-	}
-
-	private void saveNewTreeModelState()
-	{
-		BookmarkView viewer = manager.getActiveBookmarkView();
-		TreeModel model = manager.getModel();
-
-		TreeSerializerFacade
-				.serializeToDefaultLocation(viewer.getView(), model);
 	}
 
 }

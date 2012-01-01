@@ -19,6 +19,7 @@ import org.eclipselabs.recommenders.bookmark.tree.FlatTreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.Persistent;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
@@ -70,8 +71,9 @@ public class BookmarkViewManager
 		defaultView.setUpToolbarForViewPart();
 
 		addPartViewFeatures();
-		restoreBookmarks();
-		activeView.getView().refresh();
+		restoreSavedState();
+
+		activeView.updateControls();
 
 		Activator.setManager(this);
 	}
@@ -123,22 +125,58 @@ public class BookmarkViewManager
 		toggledView.updateControls();
 	}
 
-	private void restoreBookmarks()
+	private void restoreSavedState()
 	{
 		String[] lines = BookmarkFileIO.loadFromDefaultFile();
+
 		if (lines != null && lines.length > 0) {
-			RestoredTree restoredTree = TreeDeserializerFacade
-					.deserialize(lines[0]);
-			model.setModelRoot(restoredTree.getRoot());
-			activeView.getView().setInput(model.getModelRoot());
-			TreeDeserializerFacade.setExpandedNodesForView(
-					activeView.getView(), restoredTree.getExpanded());
+			loadBookmarkData(lines[0]);
+
+			restoreViewState(lines[1]);
 		}
 
+	}
+
+	private void restoreViewState(String data)
+	{
+		String[] split = data.split("\t");
+		if (split.length == 0) {
+			return;
+		}
+
+		Integer index = Integer.parseInt(split[0]);
+
+		if (split.length >= 2 && split[1].compareTo(Persistent.TOGGLED) == 0) {
+			BMNode[] children = getModel().getModelRoot().getChildren();
+			getModel().setHeadNode(children[index]);
+			activateToggledView();
+			activeView.getView().setInput(children[index]);
+		}
+
+		if (split.length >= 3 && split[2].compareTo(Persistent.FLAT) == 0) {
+			if (index > -1) {
+				BMNode[] children = getModel().getModelRoot().getChildren();
+
+				activateFlattenedModus(children[index]);
+			}
+			else {
+
+				activateFlattenedModus(getModel().getModelRoot());
+			}
+		}
+
+	}
+
+	private void loadBookmarkData(String data)
+	{
+		RestoredTree restoredTree = TreeDeserializerFacade.deserialize(data);
+		model.setModelRoot(restoredTree.getRoot());
+		activeView.getView().setInput(model.getModelRoot());
+		TreeDeserializerFacade.setExpandedNodesForView(activeView.getView(),
+				restoredTree.getExpanded());
 		checkPreferencesForDeletionOfDeadReferences();
 
 		addCurrentlyExpandedNodesToStorage();
-
 	}
 
 	private void checkPreferencesForDeletionOfDeadReferences()
@@ -242,6 +280,7 @@ public class BookmarkViewManager
 		}
 
 		TreeViewer view = activeView.getView();
+
 		flatModel.setModelRoot(flattenedRoot);
 		view.setInput(null);
 		view.setInput(flatModel.getModelRoot());
@@ -351,9 +390,6 @@ public class BookmarkViewManager
 	@Override
 	public void saveModelState()
 	{
-		TreeViewer treeViewer = getActiveBookmarkView().getView();
-		TreeModel model = getModel();
-
-		TreeSerializerFacade.serializeToDefaultLocation(treeViewer, model);
+		TreeSerializerFacade.serializeToDefaultLocation(this);
 	}
 }

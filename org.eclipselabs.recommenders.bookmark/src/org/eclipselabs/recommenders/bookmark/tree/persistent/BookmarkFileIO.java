@@ -13,16 +13,20 @@ import java.io.UnsupportedEncodingException;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
+import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
+import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
 public class BookmarkFileIO
 {
 
-	public static void writeToFile(File file, String serializedTree)
+	public static void writeSerializedTreeToFile(File file,
+			String serializedTree)
 	{
 		BufferedWriter writer;
 		try {
 			writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(file), "UTF-8"));
+					new FileOutputStream(file), Persistent.ENCODING));
 
 			writer.write(serializedTree);
 			writer.close();
@@ -36,6 +40,61 @@ public class BookmarkFileIO
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void appendFlatAndToggledStateToFile(File file,
+			ViewManager manager)
+	{
+		BufferedWriter writer;
+		try {
+			writer = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(file, true), Persistent.ENCODING));
+
+			writer.append("\n");
+
+			TreeModel model = manager.getModel();
+			Integer index = getIndexOfSelectedCategoryInModel(model);
+			writer.append(index.toString());
+
+			writer.append("\t");
+
+			if (manager.isViewToggled()) {
+				writer.append(Persistent.TOGGLED);
+			}
+
+			writer.append("\t");
+			if (manager.isViewFlattened()) {
+				writer.append(Persistent.FLAT);
+			}
+
+			writer.close();
+		}
+		catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static int getIndexOfSelectedCategoryInModel(TreeModel model)
+	{
+		int index = -1;
+		int numCat = model.getModelRoot().getChildren().length;
+		BMNode head = model.getModelHead();
+
+		for (int i = 0; i < numCat; i++) {
+			BMNode node = model.getModelRoot().getChildren()[i];
+			if (node == head) {
+				index = i;
+				break;
+			}
+		}
+
+		return index;
 	}
 
 	public static String[] readFromFile(File file)
@@ -56,7 +115,7 @@ public class BookmarkFileIO
 		String[] lines = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(
-					new FileInputStream(file), "UTF-8"));
+					new FileInputStream(file), Persistent.ENCODING));
 
 			String line = null;
 			String serialized = "";
@@ -64,8 +123,9 @@ public class BookmarkFileIO
 				serialized += line + "\n";
 			}
 
-			if (serialized.compareTo("") == 0) // No file exist
+			if (serialized.compareTo("") == 0) {
 				return new String[] {};
+			}
 
 			lines = serialized.split("\n");
 
