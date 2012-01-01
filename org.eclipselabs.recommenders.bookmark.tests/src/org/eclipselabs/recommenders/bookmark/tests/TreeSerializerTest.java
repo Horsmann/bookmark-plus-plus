@@ -28,9 +28,6 @@ public class TreeSerializerTest
 	{
 		Display display = Display.getCurrent();
 		Shell shell = new Shell(display, SWT.NONE);
-		// org.eclipse.swt.widgets.Composite composite = new
-		// org.eclipse.swt.widgets.Composite(
-		// shell, SWT.NONE);
 		TreeViewer viewer = new TreeViewer(shell, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 
