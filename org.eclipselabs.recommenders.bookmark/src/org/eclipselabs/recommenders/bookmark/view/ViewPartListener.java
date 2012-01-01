@@ -29,7 +29,11 @@ public class ViewPartListener
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef)
 	{
-		manager.getExpandedStorage().addCurrentlyExpandedNodes();
+		if (!manager.isViewFlattened() && !manager.isViewToggled()) {
+			manager.getExpandedStorage().reinitialize();
+			manager.getExpandedStorage().addCurrentlyExpandedNodes();
+		}
+
 		manager.saveModelState();
 	}
 
