@@ -38,4 +38,8 @@ public interface ViewManager
 	public void saveModelState();
 
 	public TreeModel getFlatModel();
+
+	public void activateToggledView();
+
+	public void activateDefaultView();
 }

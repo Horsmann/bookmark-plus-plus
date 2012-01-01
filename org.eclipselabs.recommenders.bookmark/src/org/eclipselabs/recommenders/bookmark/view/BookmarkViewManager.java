@@ -19,7 +19,7 @@ import org.eclipselabs.recommenders.bookmark.tree.FlatTreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
-import org.eclipselabs.recommenders.bookmark.tree.persistent.Persistent;
+import org.eclipselabs.recommenders.bookmark.tree.persistent.ViewStateRestorer;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.RestoredTree;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization.TreeDeserializerFacade;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.serialization.TreeSerializerFacade;
@@ -99,6 +99,7 @@ public class BookmarkViewManager
 		return activeView;
 	}
 
+	@Override
 	public void activateToggledView()
 	{
 		isViewToggled = true;
@@ -112,6 +113,7 @@ public class BookmarkViewManager
 		toggledView.updateControls();
 	}
 
+	@Override
 	public void activateDefaultView()
 	{
 		isViewToggled = false;
@@ -132,40 +134,60 @@ public class BookmarkViewManager
 		if (lines != null && lines.length > 0) {
 			loadBookmarkData(lines[0]);
 
-			restoreViewState(lines[1]);
+			new ViewStateRestorer(this).restoreViewState(lines[1]);
 		}
 
 	}
 
-	private void restoreViewState(String data)
-	{
-		String[] split = data.split("\t");
-		if (split.length == 0) {
-			return;
-		}
+//	private void restoreViewState(String data)
+//	{
+//		String[] split = data.split("\t");
+//		if (split.length == 0) {
+//			return;
+//		}
+//
+//		Integer index = Integer.parseInt(split[0]);
+//
+//		if (restoreInToggledState(split)) {
+//			restoreToggled(index);
+//		}
+//
+//		if (restoreInFlattenedState(split)) {
+//			restoreFlattened(index);
+//		}
+//
+//	}
 
-		Integer index = Integer.parseInt(split[0]);
-
-		if (split.length >= 2 && split[1].compareTo(Persistent.TOGGLED) == 0) {
-			BMNode[] children = getModel().getModelRoot().getChildren();
-			getModel().setHeadNode(children[index]);
-			activateToggledView();
-			activeView.getView().setInput(children[index]);
-		}
-
-		if (split.length >= 3 && split[2].compareTo(Persistent.FLAT) == 0) {
-			if (index > -1) {
-				BMNode[] children = getModel().getModelRoot().getChildren();
-
-				activateFlattenedModus(children[index]);
-			}
-			else {
-
-				activateFlattenedModus(getModel().getModelRoot());
-			}
-		}
-
-	}
+//	private void restoreFlattened(Integer index)
+//	{
+//		if (index > -1) {
+//			BMNode[] children = getModel().getModelRoot().getChildren();
+//
+//			activateFlattenedModus(children[index]);
+//		}
+//		else {
+//			activateFlattenedModus(getModel().getModelRoot());
+//		}
+//	}
+//
+//	private boolean restoreInFlattenedState(String[] split)
+//	{
+//		return (split.length >= 3 && split[2].compareTo(Persistent.FLAT) == 0);
+//	}
+//
+//	private void restoreToggled(Integer index)
+//	{
+//		BMNode[] children = getModel().getModelRoot().getChildren();
+//		getModel().setHeadNode(children[index]);
+//		activateToggledView();
+//		activeView.getView().setInput(children[index]);
+//
+//	}
+//
+//	private boolean restoreInToggledState(String[] split)
+//	{
+//		return (split.length >= 2 && split[1].compareTo(Persistent.TOGGLED) == 0);
+//	}
 
 	private void loadBookmarkData(String data)
 	{
