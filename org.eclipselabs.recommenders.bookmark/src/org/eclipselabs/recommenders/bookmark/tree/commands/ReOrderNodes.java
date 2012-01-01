@@ -30,7 +30,7 @@ public class ReOrderNodes
 	public boolean isValidDragforReordering()
 	{
 
-		BMNode target = (BMNode) getTarget(event);
+		BMNode target = (BMNode) DropUtil.getTarget(event);
 		if (target == null) {
 			return false;
 		}
@@ -200,7 +200,7 @@ public class ReOrderNodes
 		public WidgetElementLocation(DropTargetEvent event,
 				BookmarkView bookmarView)
 		{
-			element = (BMNode) getTarget(event);
+			element = (BMNode) DropUtil.getTarget(event);
 
 			TreeViewer viewer = bookmarView.getView();
 

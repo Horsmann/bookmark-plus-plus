@@ -9,6 +9,7 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmark;
+import org.eclipselabs.recommenders.bookmark.tree.commands.ReOrderNodes;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
@@ -17,16 +18,19 @@ public class CategoryTreeDropListener
 {
 
 	private final ViewManager manager;
+	private final TreeDragListener dragListener;
 
-	public CategoryTreeDropListener(ViewManager manager)
+	public CategoryTreeDropListener(ViewManager manager,
+			TreeDragListener dragListener)
 	{
 		this.manager = manager;
+		this.dragListener = dragListener;
 	}
 
 	@Override
 	public void dragEnter(DropTargetEvent event)
 	{
-		event.detail = DND.DROP_LINK | DND.DROP_COPY;
+		event.detail = DND.DROP_LINK;
 	}
 
 	@Override
@@ -51,13 +55,37 @@ public class CategoryTreeDropListener
 	public void drop(DropTargetEvent event)
 	{
 		try {
-			processDropEventWithDragInitiatedFromOutsideTheView(event);
+			if (dragListener.isDragInProgress()) {
+				processDropEventWithDragFromWithinTheView(event);
+			}
+			else {
+				processDropEventWithDragInitiatedFromOutsideTheView(event);
+			}
+
+			manager.saveModelState();
+			updateView();
 		}
 		catch (JavaModelException e) {
 			e.printStackTrace();
 		}
-		manager.saveModelState();
-		updateView();
+	}
+
+	private void processDropEventWithDragFromWithinTheView(DropTargetEvent event)
+	{
+		if (performReorderNodeOperation(event)) {
+			return;
+		}
+	}
+
+	private boolean performReorderNodeOperation(DropTargetEvent event)
+	{
+		ReOrderNodes reorder = new ReOrderNodes(manager, event);
+
+		if (!reorder.isValidDragforReordering()) {
+			return false;
+		}
+
+		return reorder.execute();
 	}
 
 	private void updateView()

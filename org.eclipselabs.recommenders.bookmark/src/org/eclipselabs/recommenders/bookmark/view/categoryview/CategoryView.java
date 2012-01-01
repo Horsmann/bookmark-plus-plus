@@ -41,6 +41,7 @@ import org.eclipselabs.recommenders.bookmark.view.categoryview.combo.ComboSelect
 import org.eclipselabs.recommenders.bookmark.view.tree.CategoryTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeDoubleclickListener;
+import org.eclipselabs.recommenders.bookmark.view.tree.TreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeKeyListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeSelectionListener;
@@ -74,6 +75,7 @@ public class CategoryView
 	private TreeDoubleclickListener doubleClickListener;
 	private TreeFocusListener focusListener;
 	private CategoryTreeDropListener dropListener;
+	private TreeDragListener dragListener;
 
 	public CategoryView(ViewManager manager, Composite parent)
 	{
@@ -201,7 +203,8 @@ public class CategoryView
 		doubleClickListener = new TreeDoubleclickListener(showInEditor);
 		focusListener = new TreeFocusListener(this, notifier);
 
-		dropListener = new CategoryTreeDropListener(manager);
+		dragListener = new TreeDragListener(viewer);
+		dropListener = new CategoryTreeDropListener(manager, dragListener);
 	}
 
 	private void initializeControlNotifier()
@@ -280,18 +283,20 @@ public class CategoryView
 
 	private void addListenerToView()
 	{
-		addDragDropSupportToView(viewer);
+		addDragDropSupportToView();
 		viewer.addDoubleClickListener(doubleClickListener);
 	}
 
-	public void addDragDropSupportToView(TreeViewer viewer)
+
+	public void addDragDropSupportToView()
 	{
-		int operations = DND.DROP_LINK;
+		int operations = DND.DROP_LINK | DND.DROP_COPY;
 		Transfer[] transferTypes = new Transfer[] {
 				ResourceTransfer.getInstance(),
 				LocalSelectionTransfer.getTransfer() };
 
 		viewer.addDropSupport(operations, transferTypes, dropListener);
+		viewer.addDragSupport(operations, transferTypes, dragListener);
 	}
 
 	@Override
