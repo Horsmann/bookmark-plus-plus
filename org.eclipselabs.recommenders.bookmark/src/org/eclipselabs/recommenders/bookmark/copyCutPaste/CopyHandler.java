@@ -85,6 +85,13 @@ public class CopyHandler
 
 			transferObjects.add(id);
 
+			BMNode[] tree = TreeUtil.getTreeBelowNode(node);
+			for (BMNode child : tree) {
+				value = child.getValue();
+				id = TreeValueConverter.getStringIdentification(value);
+				transferObjects.add(id);
+			}
+
 		}
 		return transferObjects;
 	}
