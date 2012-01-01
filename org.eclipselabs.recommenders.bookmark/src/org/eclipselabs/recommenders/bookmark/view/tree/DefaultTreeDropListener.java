@@ -186,7 +186,7 @@ public class DefaultTreeDropListener
 
 	private BMNode getBookmarkOfDropTarget(DropTargetEvent event)
 	{
-		BMNode dropTarget = (BMNode) getTarget(event);
+		BMNode dropTarget = (BMNode) DropUtil.getTarget(event);
 
 		BMNode bookmarkOfDropTarget = TreeUtil.getBookmarkNode(dropTarget);
 		return bookmarkOfDropTarget;
@@ -214,7 +214,7 @@ public class DefaultTreeDropListener
 		throws JavaModelException
 	{
 		TreePath[] treePath = getTreePath(event);
-		BMNode target = (BMNode) getTarget(event);
+		BMNode target = (BMNode) DropUtil.getTarget(event);
 
 		BMNode bookmark = TreeUtil.getBookmarkNode(target);
 		ExpandedStorage storage = manager.getExpandedStorage();
@@ -234,7 +234,7 @@ public class DefaultTreeDropListener
 	{
 		BookmarkView viewer = manager.getActiveBookmarkView();
 		if (dragListener.isDragInProgress()) {
-			BMNode target = (BMNode) getTarget(event);
+			BMNode target = (BMNode) DropUtil.getTarget(event);
 			return DropUtil.isValidDrop(viewer.getView(), target);
 		}
 		return true;
@@ -254,11 +254,6 @@ public class DefaultTreeDropListener
 	private boolean didDropOccurInEmptyArea(BMNode node)
 	{
 		return node == null;
-	}
-
-	private Object getTarget(DropTargetEvent event)
-	{
-		return ((event.item == null) ? null : event.item.getData());
 	}
 
 }

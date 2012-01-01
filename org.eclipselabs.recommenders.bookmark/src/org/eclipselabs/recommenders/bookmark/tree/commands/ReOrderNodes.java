@@ -13,6 +13,7 @@ import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
+import org.eclipselabs.recommenders.bookmark.view.tree.DropUtil;
 
 public class ReOrderNodes
 	implements TreeCommand
@@ -51,7 +52,7 @@ public class ReOrderNodes
 	@Override
 	public boolean execute()
 	{
-		BMNode target = (BMNode) getTarget(event);
+		BMNode target = (BMNode) DropUtil.getTarget(event);
 		if (target == null) {
 			return false;
 		}
@@ -188,10 +189,6 @@ public class ReOrderNodes
 		return silblings;
 	}
 
-	private Object getTarget(DropTargetEvent event)
-	{
-		return ((event.item == null) ? null : event.item.getData());
-	}
 
 	class WidgetElementLocation
 	{
