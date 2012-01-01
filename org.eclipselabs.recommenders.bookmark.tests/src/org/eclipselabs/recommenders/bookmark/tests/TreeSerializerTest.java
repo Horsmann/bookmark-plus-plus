@@ -20,10 +20,12 @@ import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
 import org.junit.Test;
 
-public class TreeSerializerTest {
+public class TreeSerializerTest
+{
 
 	@Test
-	public void testSerializationFacade() {
+	public void testSerializationFacade()
+	{
 		Display display = Display.getCurrent();
 		Shell shell = new Shell(display, SWT.NONE);
 		// org.eclipse.swt.widgets.Composite composite = new
@@ -39,7 +41,8 @@ public class TreeSerializerTest {
 		viewer.setInput(model.getModelRoot());
 
 		File file = new File("file");
-		TreeSerializerFacade.serialize(model, viewer.getExpandedElements(), file);
+		TreeSerializerFacade.serialize(model, viewer.getExpandedElements(),
+				file, null);
 
 		String[] read = BookmarkFileIO.readFromFile(file);
 
@@ -49,7 +52,8 @@ public class TreeSerializerTest {
 	}
 
 	@Test
-	public void testSerialization() {
+	public void testSerialization()
+	{
 		TreeNode node = new TreeNode("", true, true);
 		node.addChild(new TreeNode("A", false, false));
 		node.addChild(new TreeNode("B", false, false));
@@ -66,7 +70,8 @@ public class TreeSerializerTest {
 
 	}
 
-	private TreeNode createTestTree() {
+	private TreeNode createTestTree()
+	{
 		TreeNode root = new TreeNode("", false, true);
 
 		TreeNode bm1 = new TreeNode("BM#1", true, false);
