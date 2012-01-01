@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.BookmarkFileIO;
 import org.eclipselabs.recommenders.bookmark.tree.persistent.GsonConverter;
@@ -34,11 +35,11 @@ public class TreeSerializerFacade
 	public static void serializeToDefaultLocation(ViewManager manager)
 	{
 		TreeModel model = manager.getModel();
-		TreeViewer viewer = manager.getActiveBookmarkView().getView();
+		Object[] expanded = manager.getNodesFromExpandedStorage();
 
 		ObjectConverter converter = new GsonConverter();
 		String serializedTree = TreeSerializer.serializeTree(
-				model.getModelRoot(), viewer.getExpandedElements(), converter);
+				model.getModelRoot(), expanded, converter);
 		if (serializedTree != null) {
 			File file = Activator.getDefaultLocationForStoringBookmark();
 			BookmarkFileIO.writeSerializedTreeToFile(file, serializedTree);
