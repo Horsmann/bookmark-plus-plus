@@ -25,7 +25,7 @@ public class AddTreepathsToExistingBookmark
 	}
 
 	@Override
-	public void execute()
+	public boolean execute()
 	{
 		try {
 
@@ -43,5 +43,6 @@ public class AddTreepathsToExistingBookmark
 			e.printStackTrace();
 		}
 
+		return true;
 	}
 }

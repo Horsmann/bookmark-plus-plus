@@ -23,13 +23,13 @@ public class AddTreeNodesToExistingBookmark
 	}
 
 	@Override
-	public void execute()
+	public boolean execute()
 	{
 
 		BMNode nodeCopy = TreeUtil.copyTreeBelowNode(node, false);
 
 		if (TreeUtil.isDuplicate(bookmark, nodeCopy)) {
-			return;
+			return false;
 		}
 
 		BMNode merged = null;
@@ -40,7 +40,7 @@ public class AddTreeNodesToExistingBookmark
 			}
 
 			TreeUtil.showNodeExpanded(viewer.getView(), merged);
-			return;
+			return true;
 		}
 
 		if (!keepSourceNode) {
@@ -52,6 +52,7 @@ public class AddTreeNodesToExistingBookmark
 
 		TreeUtil.showNodeExpanded(viewer.getView(), head);
 
+		return true;
 	}
 
 }

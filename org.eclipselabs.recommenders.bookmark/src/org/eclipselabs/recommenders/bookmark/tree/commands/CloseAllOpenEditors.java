@@ -9,7 +9,7 @@ public class CloseAllOpenEditors
 {
 
 	@Override
-	public void execute()
+	public boolean execute()
 	{
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchWindow[] windows = PlatformUI.getWorkbench()
@@ -18,6 +18,8 @@ public class CloseAllOpenEditors
 			for (IWorkbenchPage page : window.getPages())
 				page.closeAllEditors(true);
 		}
+		
+		return true;
 	}
 
 }

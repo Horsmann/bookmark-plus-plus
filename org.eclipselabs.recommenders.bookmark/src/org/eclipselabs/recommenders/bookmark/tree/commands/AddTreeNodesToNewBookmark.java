@@ -27,7 +27,7 @@ public class AddTreeNodesToNewBookmark
 	}
 
 	@Override
-	public void execute()
+	public boolean execute()
 	{
 
 		BMNode bookmark = TreeUtil.makeBookmarkNode();
@@ -66,6 +66,8 @@ public class AddTreeNodesToNewBookmark
 		TreeUtil.showNodeExpanded(viewer, bookmark);
 
 		performUnlink(nodesToUnlink);
+		
+		return true;
 	}
 
 	private void performUnlink(LinkedList<BMNode> nodesToUnlink)

@@ -26,7 +26,7 @@ public class RenameBookmark
 	}
 
 	@Override
-	public void execute()
+	public boolean execute()
 	{
 
 		BookmarkView viewer = manager.getActiveBookmarkView();
@@ -37,7 +37,7 @@ public class RenameBookmark
 
 		final BMNode node = (BMNode) item.getData();
 		if (!node.isBookmarkNode())
-			return;
+			return false;
 
 		final Text text = new Text(viewer.getView().getTree(), SWT.NONE);
 		text.setText((String) node.getValue());
@@ -78,6 +78,7 @@ public class RenameBookmark
 
 		// Set the text field into the editor
 		editor.setEditor(text, item);
+		return true;
 	}
 
 	private void setNewValue(BMNode node, String newValue)

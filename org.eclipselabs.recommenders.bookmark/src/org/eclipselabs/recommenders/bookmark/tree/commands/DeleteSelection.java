@@ -20,7 +20,7 @@ public class DeleteSelection
 	}
 
 	@Override
-	public void execute()
+	public boolean execute()
 	{
 		BookmarkView viewer = manager.getActiveBookmarkView();
 
@@ -41,6 +41,8 @@ public class DeleteSelection
 		viewer.updateControls();
 
 		manager.saveModelState();
+		
+		return true;
 	}
 
 	private void processFlattened(BMNode flatNode)

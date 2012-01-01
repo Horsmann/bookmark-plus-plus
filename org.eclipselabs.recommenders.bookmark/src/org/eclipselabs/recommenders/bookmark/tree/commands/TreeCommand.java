@@ -4,6 +4,6 @@ public interface TreeCommand
 {
 
 	/** Performs the command */
-	public void execute();
+	public boolean execute();
 
 }

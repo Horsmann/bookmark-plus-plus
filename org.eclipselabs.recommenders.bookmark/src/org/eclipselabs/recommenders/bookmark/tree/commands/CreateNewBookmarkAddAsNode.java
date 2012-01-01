@@ -25,13 +25,13 @@ public class CreateNewBookmarkAddAsNode
 	}
 
 	@Override
-	public void execute()
+	public boolean execute()
 	{
 
 		manager.getModel().getModelRoot().addChild(bookmark);
 
 		addToExistingBookmarkCommand.execute();
-
+		return true;
 	}
 
 }
