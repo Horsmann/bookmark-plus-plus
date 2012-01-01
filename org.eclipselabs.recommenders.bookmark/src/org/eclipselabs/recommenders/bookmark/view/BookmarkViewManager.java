@@ -91,7 +91,7 @@ public class BookmarkViewManager
 
 		CopyHandler copy = new CopyHandler(this);
 		handlerServ.activateHandler("org.eclipse.ui.edit.copy", copy);
-		
+
 		CutHandler cut = new CutHandler(this);
 		handlerServ.activateHandler("org.eclipse.ui.edit.cut", cut);
 	}
@@ -134,9 +134,15 @@ public class BookmarkViewManager
 	{
 		String[] lines = BookmarkFileIO.loadFromDefaultFile();
 
-		if (lines != null && lines.length > 0) {
-			loadBookmarkData(lines[0]);
+		if (lines == null) {
+			return;
+		}
 
+		if (lines.length >= 1) {
+			loadBookmarkData(lines[0]);
+		}
+
+		if (lines.length >= 2) {
 			new ViewStateRestorer(this).restoreViewState(lines[1]);
 		}
 
