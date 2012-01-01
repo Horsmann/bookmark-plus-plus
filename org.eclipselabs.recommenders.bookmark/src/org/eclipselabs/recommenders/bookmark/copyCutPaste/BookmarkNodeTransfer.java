@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.copyPaste;
+package org.eclipselabs.recommenders.bookmark.copyCutPaste;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

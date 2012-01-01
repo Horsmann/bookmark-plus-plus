@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.copyPaste;
+package org.eclipselabs.recommenders.bookmark.copyCutPaste;
 
 public class BookmarkNodeTransferObject
 {
