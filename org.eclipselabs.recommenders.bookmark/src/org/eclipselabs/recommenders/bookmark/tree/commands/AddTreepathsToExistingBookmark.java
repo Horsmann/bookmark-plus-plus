@@ -35,6 +35,7 @@ public class AddTreepathsToExistingBookmark
 				if (added != null) {
 					BookmarkView viewer = manager.getActiveBookmarkView();
 					TreeUtil.showNodeExpanded(viewer.getView(), added);
+					manager.getExpandedStorage().addNodeToExpandedStorage(added);
 				}
 			}
 

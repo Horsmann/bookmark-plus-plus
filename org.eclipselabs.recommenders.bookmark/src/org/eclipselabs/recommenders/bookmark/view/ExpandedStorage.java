@@ -60,6 +60,10 @@ public class ExpandedStorage
 			expandedNodes.remove(o);
 		}
 	}
+	
+	public void removeNode(Object object) {
+		expandedNodes.remove(object);
+	}
 
 	public void reinitialize()
 	{

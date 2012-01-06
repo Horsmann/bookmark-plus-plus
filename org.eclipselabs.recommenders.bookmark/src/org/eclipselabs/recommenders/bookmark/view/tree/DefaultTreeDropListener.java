@@ -226,6 +226,7 @@ public class DefaultTreeDropListener
 		for (int i = 0; i < selections.size(); i++) {
 
 			BMNode node = (BMNode) selections.get(i);
+			node = TreeUtil.getReference(node);
 
 			boolean keepSource = (event.operations == DND.DROP_COPY);
 			new AddTreeNodesToExistingBookmark(viewer, bookmark, node,
