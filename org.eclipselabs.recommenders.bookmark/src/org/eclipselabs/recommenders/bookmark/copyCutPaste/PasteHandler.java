@@ -39,6 +39,8 @@ public class PasteHandler
 			BookmarkNodeTransfer.getInstance(),
 			JavaElementTransfer.getInstance(), FileTransfer.getInstance() };
 
+	private boolean createdNewCategoryNodeForPasteOperation = false;
+
 	public PasteHandler(ViewManager manager)
 	{
 		this.manager = manager;
@@ -48,10 +50,10 @@ public class PasteHandler
 	public Object execute(ExecutionEvent event)
 		throws ExecutionException
 	{
-
+		createdNewCategoryNodeForPasteOperation = false;
 		Clipboard cb = new Clipboard(Display.getCurrent());
 
-		processAvailableClipboardData(cb);
+		iterateTransferHandlesOnClipboardData(cb);
 
 		cb.dispose();
 
@@ -64,34 +66,57 @@ public class PasteHandler
 	{
 		ViewManager manager = Activator.getManager();
 		ExpandedStorage storage = manager.getExpandedStorage();
-		
+
 		storage.reinitialize();
 		storage.addCurrentlyExpandedNodes();
 	}
 
-	private void processAvailableClipboardData(Clipboard cb)
+	private void iterateTransferHandlesOnClipboardData(Clipboard cb)
 	{
+		BMNode bookmarkOfTarget = getBookmark();
+		if (bookmarkOfTarget == null) {
+			return;
+		}
+
+		boolean somethingAdded = false;
 		for (Transfer transfer : supportedTransfers) {
 			Object object = cb.getContents(transfer);
+
+			boolean added = false;
 			if (object instanceof Object[]) {
 				Object[] objects = (Object[]) object;
-				performPaste(objects);
+				added = processClipboardData(objects, bookmarkOfTarget);
+
+				if (added) {
+					somethingAdded = true;
+				}
 			}
 		}
 
+		if (newlyCreatedCategoryNodeHasNoChilds(somethingAdded)) {
+			TreeUtil.unlink(bookmarkOfTarget);
+		}
+
+		updateView();
+
 	}
 
-	private void performPaste(Object[] objects)
+	private boolean newlyCreatedCategoryNodeHasNoChilds(boolean somethingAdded)
+	{
+		return somethingAdded == false
+				&& createdNewCategoryNodeForPasteOperation;
+	}
+
+	private BMNode getBookmark()
 	{
 		BMNode target = getTargetNode();
 
 		if (target == null) {
-			return;
+			return null;
 		}
+		BMNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
 
-		processClipboardData(objects, target);
-
-		updateView();
+		return bookmarkOfTarget;
 	}
 
 	private BMNode getTargetNode()
@@ -122,37 +147,70 @@ public class PasteHandler
 		}
 		else {
 			target = createNewBookmark();
+			createdNewCategoryNodeForPasteOperation = true;
 		}
 		return target;
 	}
 
-	private void processClipboardData(Object[] objects, BMNode target)
+	private boolean processClipboardData(Object[] objects,
+			BMNode bookmarkOfTarget)
 	{
 		BookmarkView activeView = manager.getActiveBookmarkView();
-		BMNode bookmarkOfTarget = TreeUtil.getBookmarkNode(target);
 
-		attemptProcessingForBookmarkNodes(objects, activeView, bookmarkOfTarget);
+		boolean bookmarks = attemptProcessingForBookmarkNodes(objects,
+				activeView, bookmarkOfTarget);
 
-		if (objects instanceof Object[]) {
-			Object[] dataset = (Object[]) objects;
-			for (Object data : dataset) {
-				attemptProcessingForIJavaElements(data, activeView,
-						bookmarkOfTarget);
-				attemptProcessingForStrings(data, activeView, bookmarkOfTarget);
-			}
+		if (bookmarks) {
+			return true;
 		}
+
+		boolean separatly = false;
+		separatly = processObjectsSeparatly(objects, activeView,
+				bookmarkOfTarget);
+
+		if (separatly) {
+			return true;
+		}
+
+		return false;
 	}
 
-	private void attemptProcessingForStrings(Object data,
+	private boolean processObjectsSeparatly(Object[] dataset,
+			BookmarkView activeView, BMNode bookmarkOfTarget)
+	{
+		boolean somethingAdded = false;
+		for (Object data : dataset) {
+			boolean success = false;
+			success = attemptProcessingForIJavaElements(data, activeView,
+					bookmarkOfTarget);
+
+			if (success) {
+				somethingAdded = true;
+				continue;
+			}
+
+			success = attemptProcessingForStrings(data, activeView,
+					bookmarkOfTarget);
+
+			if (success) {
+				somethingAdded = true;
+			}
+		}
+
+		return somethingAdded;
+	}
+
+	private boolean attemptProcessingForStrings(Object data,
 			BookmarkView activeView, BMNode bookmarkOfTarget)
 	{
 		if (data instanceof String) {
-			attemptProcessingForIFileStringRepresentation(data, activeView,
-					bookmarkOfTarget);
+			return attemptProcessingForIFileStringRepresentation(data,
+					activeView, bookmarkOfTarget);
 		}
+		return false;
 	}
 
-	private void attemptProcessingForIFileStringRepresentation(Object data,
+	private boolean attemptProcessingForIFileStringRepresentation(Object data,
 			BookmarkView activeView, BMNode bookmarkOfTarget)
 	{
 		String dataString = (String) data;
@@ -163,7 +221,7 @@ public class PasteHandler
 		 * files with '.java' ending
 		 */
 		if (dataString.indexOf(".java") != -1) {
-			return;
+			return false;
 		}
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -172,18 +230,22 @@ public class PasteHandler
 
 		if (ifile != null) {
 			paste(ifile, activeView, bookmarkOfTarget);
+			return true;
 		}
+		return false;
 	}
 
-	private void attemptProcessingForIJavaElements(Object data,
+	private boolean attemptProcessingForIJavaElements(Object data,
 			BookmarkView activeView, BMNode bookmarkOfTarget)
 	{
 		if (data instanceof IJavaElement) {
 			paste(data, activeView, bookmarkOfTarget);
+			return true;
 		}
+		return false;
 	}
 
-	private void attemptProcessingForBookmarkNodes(Object[] objects,
+	private boolean attemptProcessingForBookmarkNodes(Object[] objects,
 			BookmarkView activeView, BMNode bookmarkOfTarget)
 	{
 		if (objects instanceof BookmarkNodeTransferObject[]) {
@@ -194,8 +256,9 @@ public class PasteHandler
 				Object restoredValue = restoreValue(id);
 				paste(restoredValue, activeView, bookmarkOfTarget);
 			}
+			return true;
 		}
-
+		return false;
 	}
 
 	private void paste(Object data, BookmarkView activeView,
