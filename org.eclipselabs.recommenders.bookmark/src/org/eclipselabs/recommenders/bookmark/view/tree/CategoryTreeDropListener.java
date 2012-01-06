@@ -1,6 +1,10 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.dnd.DND;
@@ -10,6 +14,7 @@ import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.tree.commands.AddTreepathsToExistingBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.commands.ReOrderNodes;
+import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 
@@ -79,7 +84,24 @@ public class CategoryTreeDropListener
 
 	private boolean performReorderNodeOperation(DropTargetEvent event)
 	{
-		ReOrderNodes reorder = new ReOrderNodes(manager, event);
+		BookmarkView activeBookmarkView = manager.getActiveBookmarkView();
+		List<IStructuredSelection> treeSelections = TreeUtil
+				.getTreeSelections(activeBookmarkView.getView());
+
+		LinkedList<BMNode> selectedNodesList = new LinkedList<BMNode>();
+
+		for (int i = 0; i < treeSelections.size(); i++) {
+			BMNode node = (BMNode) treeSelections.get(i);
+			node = TreeUtil.getReference(node);
+			selectedNodesList.add(node);
+		}
+		BMNode[] selectedNodes = selectedNodesList.toArray(new BMNode[0]);
+
+		BMNode target = (BMNode) DropUtil.getTarget(event);
+		target = TreeUtil.getReference(target);
+
+		ReOrderNodes reorder = new ReOrderNodes(manager, event, selectedNodes,
+				target);
 
 		if (!reorder.isValidDragforReordering()) {
 			return false;

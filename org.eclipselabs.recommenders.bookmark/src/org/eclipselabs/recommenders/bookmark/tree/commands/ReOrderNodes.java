@@ -1,9 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.tree.commands;
 
 import java.util.LinkedList;
-import java.util.List;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.graphics.Point;
@@ -20,27 +18,31 @@ public class ReOrderNodes
 {
 	private final ViewManager manager;
 	private final DropTargetEvent event;
+	private final BMNode[] selectedNodes;
+	private final BMNode target;
 
-	public ReOrderNodes(ViewManager manager, DropTargetEvent event)
+	public ReOrderNodes(ViewManager manager, DropTargetEvent event,
+			BMNode[] selectedNodes, BMNode target)
 	{
 		this.manager = manager;
 		this.event = event;
+		this.selectedNodes = selectedNodes;
+		this.target = target;
 	}
 
 	public boolean isValidDragforReordering()
 	{
 
-		BMNode target = (BMNode) DropUtil.getTarget(event);
+//		BMNode target = (BMNode) DropUtil.getTarget(event);
 		if (target == null) {
 			return false;
 		}
 
-		BookmarkView activeBookmarkView = manager.getActiveBookmarkView();
-		List<IStructuredSelection> treeSelections = TreeUtil
-				.getTreeSelections(activeBookmarkView.getView());
+//		BookmarkView activeBookmarkView = manager.getActiveBookmarkView();
+//		List<IStructuredSelection> treeSelections = TreeUtil
+//				.getTreeSelections(activeBookmarkView.getView());
 
-		for (int i = 0; i < treeSelections.size(); i++) {
-			BMNode node = (BMNode) treeSelections.get(i);
+		for (BMNode node : selectedNodes) {
 			if (isInvalidNodeForReorderOperation(node, target)) {
 				return false;
 			}
@@ -52,14 +54,14 @@ public class ReOrderNodes
 	@Override
 	public boolean execute()
 	{
-		BMNode target = (BMNode) DropUtil.getTarget(event);
+//		BMNode target = (BMNode) DropUtil.getTarget(event);
 		if (target == null) {
 			return false;
 		}
 
 		BookmarkView activeBookmarkView = manager.getActiveBookmarkView();
-		List<IStructuredSelection> treeSelections = TreeUtil
-				.getTreeSelections(activeBookmarkView.getView());
+//		List<IStructuredSelection> treeSelections = TreeUtil
+//				.getTreeSelections(activeBookmarkView.getView());
 
 		LinkedList<BMNode> silblings = getSilblings(target);
 
@@ -67,8 +69,7 @@ public class ReOrderNodes
 		LinkedList<BMNode> unselectedSilblings = new LinkedList<BMNode>(
 				silblings);
 
-		for (int i = 0; i < treeSelections.size(); i++) {
-			BMNode node = (BMNode) treeSelections.get(i);
+		for (BMNode node : selectedNodes) {
 			if (isInvalidNodeForReorderOperation(node, target)) {
 				return false;
 			}
@@ -90,6 +91,8 @@ public class ReOrderNodes
 			LinkedList<BMNode> selectedSilblings)
 	{
 		BMNode target = wel.element;
+		target = TreeUtil.getReference(target);
+		
 		LinkedList<BMNode> newOrder = new LinkedList<BMNode>();
 
 		int index = moveUnselectedNodesToNewOrderUntilTargetNode(
@@ -188,7 +191,6 @@ public class ReOrderNodes
 		}
 		return silblings;
 	}
-
 
 	class WidgetElementLocation
 	{

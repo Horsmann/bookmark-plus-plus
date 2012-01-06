@@ -27,7 +27,7 @@ import org.eclipselabs.recommenders.bookmark.util.ResourceAvailabilityValidator;
 public class TreeUtil
 {
 
-	private static BMNode getReference(BMNode node)
+	public static BMNode getReference(BMNode node)
 	{
 		if (node == null) {
 			return null;
