@@ -112,7 +112,7 @@ public class TreeNode
 	@Override
 	public BMNode getReference()
 	{
-		throw new UnsupportedOperationException();
+		return this;
 	}
 
 	@Override

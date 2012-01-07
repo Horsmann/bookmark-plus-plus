@@ -1,10 +1,8 @@
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.dnd.DND;
