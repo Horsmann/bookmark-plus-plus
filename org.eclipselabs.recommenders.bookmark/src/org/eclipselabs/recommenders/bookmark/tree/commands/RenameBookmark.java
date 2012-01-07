@@ -65,7 +65,9 @@ public class RenameBookmark
 				case SWT.CR:
 					// drop through
 					String newValue = text.getText();
-					setNewValue(node, newValue);
+					if (isNotBlank(newValue)) {
+						setNewValue(node, newValue);
+					}
 				case SWT.ESC:
 					// End editing session
 					text.dispose();
@@ -74,6 +76,11 @@ public class RenameBookmark
 					manager.saveModelState();
 					break;
 				}
+			}
+
+			private boolean isNotBlank(String newValue)
+			{
+				return newValue.trim().compareTo("") != 0;
 			}
 		});
 
