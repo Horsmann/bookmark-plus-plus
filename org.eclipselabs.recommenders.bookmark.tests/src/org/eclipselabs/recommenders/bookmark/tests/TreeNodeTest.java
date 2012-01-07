@@ -40,11 +40,11 @@ public class TreeNodeTest {
 		return node;
 	}
 
-	@Test(expected=UnsupportedOperationException.class)
-	public void testExceptionForNonAvailableReference() {
+	@Test
+	public void testSelfReference() {
 		TreeNode node = new TreeNode("node", false, true);
 		assertFalse(node.hasReference());
-		node.getReference();
+		assertEquals(node, node.getReference());
 	}
 
 	@Test
