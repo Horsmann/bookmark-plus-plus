@@ -63,6 +63,12 @@ public class BookmarkImportWizard
 			e.printStackTrace();
 		}
 
+		ViewManager manager = Activator.getManager();
+		if (manager.isViewFlattened()) {
+			BMNode head = manager.getModel().getModelHead();
+			manager.activateFlattenedModus(head);
+		}
+
 		return true;
 	}
 
@@ -188,7 +194,7 @@ public class BookmarkImportWizard
 		TreeModel model = manager.getModel();
 		BMNode head = model.getModelHead();
 		ExpandedStorage storage = manager.getExpandedStorage();
-		
+
 		manager.activateFlattenedModus(head);
 
 		// there won't be any expanded nodes in the flat view, place the
