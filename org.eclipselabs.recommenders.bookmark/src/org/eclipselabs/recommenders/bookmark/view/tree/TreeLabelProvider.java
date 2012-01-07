@@ -133,7 +133,7 @@ public class TreeLabelProvider
 		return viewNode;
 	}
 
-	private boolean showExtendInformationInName(Object value)
+	protected boolean showExtendInformationInName(Object value)
 	{
 		return manager.isViewFlattened()
 				&& ((value instanceof IJavaElement) || (value instanceof IFile));

@@ -24,7 +24,7 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.tree.TreeModel;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.eclipselabs.recommenders.bookmark.view.tree.TreeContentProvider;
-import org.eclipselabs.recommenders.bookmark.view.tree.TreeLabelProvider;
+import org.eclipselabs.recommenders.bookmark.wizard.WizardTreeViewerLabelProvider;
 
 public class BookmarkExportWizardPage
 	extends WizardPage
@@ -75,7 +75,7 @@ public class BookmarkExportWizardPage
 		data.horizontalSpan = 2;
 		treeViewer = new TreeViewer(container, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
-		treeViewer.setLabelProvider(new TreeLabelProvider(Activator
+		treeViewer.setLabelProvider(new WizardTreeViewerLabelProvider(Activator
 				.getManager()));
 		treeViewer.setContentProvider(new TreeContentProvider());
 		treeViewer.setInput(model.getModelRoot());
