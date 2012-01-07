@@ -30,12 +30,17 @@ public class ComboModifyListener
 		BMNode head = manager.getModel().getModelHead();
 		String headName = (String) head.getValue();
 
-		if (areDifferent(text, headName)) {
+		if (areDifferent(text, headName) && textIsNotBlank(text)) {
 			button.setEnabled(true);
 		}
 		else {
 			button.setEnabled(false);
 		}
+	}
+
+	private boolean textIsNotBlank(String text)
+	{
+		return text.trim().compareTo("") != 0;
 	}
 
 	private boolean areDifferent(String text, String headName)
