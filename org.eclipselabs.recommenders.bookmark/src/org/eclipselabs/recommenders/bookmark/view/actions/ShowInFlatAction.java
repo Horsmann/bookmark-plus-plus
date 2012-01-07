@@ -14,6 +14,8 @@ public class ShowInFlatAction
 	implements SelfEnabling
 {
 	private final ViewManager manager;
+	private final String hidden = "Hide in flat-modus";
+	private final String show = "Show in flat-modus";
 
 	public ShowInFlatAction(ViewManager manager)
 	{
@@ -29,11 +31,40 @@ public class ShowInFlatAction
 		List<IStructuredSelection> list = TreeUtil.getTreeSelections(viewer
 				.getView());
 		changeFlatStatusOfNodes(list);
+
+		update();
+	}
+
+	private void update()
+	{
+		updateEnabledStatus();
+
+		if (manager.isViewFlattened()) {
+			BMNode head = manager.getModel().getModelHead();
+			manager.activateFlattenedModus(head);
+		}
+
 	}
 
 	private void changeFlatStatusOfNodes(List<IStructuredSelection> list)
 	{
+		for (int i = 0; i < list.size(); i++) {
+			BMNode node = (BMNode) list.get(i);
 
+			node = TreeUtil.getReference(node);
+
+			if (node.isBookmarkNode()) {
+				continue;
+			}
+
+			if (node.showInFlatModus()) {
+				node.setShowInFlatModus(false);
+			}
+			else {
+				node.setShowInFlatModus(true);
+			}
+
+		}
 	}
 
 	@Override
@@ -96,10 +127,10 @@ public class ShowInFlatAction
 
 		this.setEnabled(true);
 		if (node.showInFlatModus()) {
-			this.setText("Hide in flat");
+			this.setText(hidden);
 		}
 		else {
-			this.setText("Show in flat");
+			this.setText(show);
 		}
 
 	}

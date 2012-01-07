@@ -120,7 +120,7 @@ public class TreeUtil
 		}
 
 		if (value instanceof IFile || value instanceof ICompilationUnit) {
-			return new TreeNode(path.getSegment(segNr), false, false);
+			return new TreeNode(path.getSegment(segNr), false, true);
 		}
 
 		return null;
@@ -593,30 +593,31 @@ public class TreeUtil
 		return mergeTargetExistingTree != null;
 	}
 
-	public static BMNode[] getNodesThatAreHiddenInFlatModusUnderNode(BMNode node)
+	public static BMNode[] getNodesThatShallBeVisibleInFlatModusUnderNode(
+			BMNode node)
 	{
 		LinkedList<BMNode> hidden = new LinkedList<BMNode>();
 
 		for (BMNode child : node.getChildren()) {
-			if (!child.showInFlatModus()) {
+			if (child.showInFlatModus()) {
 				hidden.add(child);
 			}
-			hidden.addAll(getNodesThatAreHiddenInFlatModusUnderNodeRecursive(child));
+			hidden.addAll(getNodesThatShallBeVisibleInFlatModusUnderNodeRecursive(child));
 		}
 
 		return hidden.toArray(new BMNode[0]);
 	}
 
-	private static LinkedList<BMNode> getNodesThatAreHiddenInFlatModusUnderNodeRecursive(
+	private static LinkedList<BMNode> getNodesThatShallBeVisibleInFlatModusUnderNodeRecursive(
 			BMNode node)
 	{
 		LinkedList<BMNode> children = new LinkedList<BMNode>();
 
 		for (BMNode child : node.getChildren()) {
-			if (!child.showInFlatModus()) {
+			if (child.showInFlatModus()) {
 				children.add(child);
 			}
-			children.addAll(getNodesThatAreHiddenInFlatModusUnderNodeRecursive(child));
+			children.addAll(getNodesThatShallBeVisibleInFlatModusUnderNodeRecursive(child));
 		}
 
 		return children;

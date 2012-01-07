@@ -215,7 +215,7 @@ public class BookmarkViewManager
 	{
 		flatModel.getModelRoot().removeAllChildren();
 
-		BMNode flattenedRoot = new TreeNode(null, false, true);
+		BMNode flattenedRoot = new TreeNode(null, false, false);
 
 		boolean setUpForDefault = setUpForDefaultView(node);
 		if (setUpForDefault) {
@@ -260,7 +260,7 @@ public class BookmarkViewManager
 	private void buildFlatModelForCategoryView(BMNode flattenedRoot, BMNode node)
 	{
 		BMNode[] userAddedNodes = TreeUtil
-				.getNodesThatAreHiddenInFlatModusUnderNode(node);
+				.getNodesThatShallBeVisibleInFlatModusUnderNode(node);
 
 		for (BMNode userAdded : userAddedNodes) {
 
@@ -289,7 +289,7 @@ public class BookmarkViewManager
 			BMNode nodeWhichUserAddedNodesShallBeAddedToTargetNode)
 	{
 		BMNode[] userAddedNodes = TreeUtil
-				.getNodesThatAreHiddenInFlatModusUnderNode(nodeWhichUserAddedNodesShallBeAddedToTargetNode);
+				.getNodesThatShallBeVisibleInFlatModusUnderNode(nodeWhichUserAddedNodesShallBeAddedToTargetNode);
 
 		for (BMNode userAdded : userAddedNodes) {
 
