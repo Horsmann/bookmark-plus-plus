@@ -14,11 +14,13 @@ public class CloseAllOpenEditors
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchWindow[] windows = PlatformUI.getWorkbench()
 				.getWorkbenchWindows();
-		for (IWorkbenchWindow window : windows) {
-			for (IWorkbenchPage page : window.getPages())
-				page.closeAllEditors(true);
-		}
 		
+		for (IWorkbenchWindow window : windows) {
+			for (IWorkbenchPage page : window.getPages()) {
+				page.closeAllEditors(true);
+			}
+		}
+
 		return true;
 	}
 

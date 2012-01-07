@@ -46,8 +46,9 @@ public class AddTreeNodesToNewBookmark
 			while (nodeCopy.getParent() != null)
 				nodeCopy = nodeCopy.getParent();
 
-			if (TreeUtil.isDuplicate(bookmark, node))
+			if (TreeUtil.isDuplicate(bookmark, node)) {
 				continue;
+			}
 
 			BMNode merged = null;
 			if ((merged = TreeUtil.attemptMerge(bookmark, nodeCopy)) != null) {
@@ -66,7 +67,7 @@ public class AddTreeNodesToNewBookmark
 		TreeUtil.showNodeExpanded(viewer, bookmark);
 
 		performUnlink(nodesToUnlink);
-		
+
 		return true;
 	}
 

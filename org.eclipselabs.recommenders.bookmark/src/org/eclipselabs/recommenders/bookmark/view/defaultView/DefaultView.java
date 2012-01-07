@@ -26,6 +26,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.RenameBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.ShowInFlatAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleFlatAndTreeAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleViewAction;
 import org.eclipselabs.recommenders.bookmark.view.tree.DefaultTreeDropListener;
@@ -51,6 +52,7 @@ public class DefaultView
 	private Action deleteSelection;
 	private Action renameBookmark;
 	private Action toggleFlatTree;
+	private Action showInFlatModus;
 
 	private ViewManager manager;
 
@@ -91,7 +93,7 @@ public class DefaultView
 		keyListener = new TreeKeyListener(manager, showInEditor);
 		selectionListener = new TreeSelectionListener(notifier);
 		doubleClickListener = new TreeDoubleclickListener(showInEditor);
-
+		
 		dragListener = new TreeDragListener(viewer);
 		dropListener = new DefaultTreeDropListener(manager, dragListener);
 
@@ -105,6 +107,7 @@ public class DefaultView
 		notifier.add((SelfEnabling) showInEditor);
 		notifier.add((SelfEnabling) deleteSelection);
 		notifier.add((SelfEnabling) renameBookmark);
+		notifier.add((SelfEnabling) showInFlatModus);
 
 	}
 
@@ -150,6 +153,7 @@ public class DefaultView
 		deleteSelection = new DeleteAction(manager);
 		renameBookmark = new RenameBookmarkAction(manager);
 		toggleFlatTree = new ToggleFlatAndTreeAction(manager);
+		showInFlatModus = new ShowInFlatAction(manager);
 	}
 
 	public void setUpToolbarForViewPart()
@@ -187,6 +191,7 @@ public class DefaultView
 				menuMgr.add(deleteSelection);
 				menuMgr.add(new Separator());
 				menuMgr.add(openInSystemFileExplorer);
+				menuMgr.add(showInFlatModus);
 			}
 		});
 

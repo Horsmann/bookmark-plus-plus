@@ -33,14 +33,9 @@ public class ReOrderNodes
 	public boolean isValidDragforReordering()
 	{
 
-//		BMNode target = (BMNode) DropUtil.getTarget(event);
 		if (target == null) {
 			return false;
 		}
-
-//		BookmarkView activeBookmarkView = manager.getActiveBookmarkView();
-//		List<IStructuredSelection> treeSelections = TreeUtil
-//				.getTreeSelections(activeBookmarkView.getView());
 
 		for (BMNode node : selectedNodes) {
 			if (isInvalidNodeForReorderOperation(node, target)) {
@@ -54,14 +49,11 @@ public class ReOrderNodes
 	@Override
 	public boolean execute()
 	{
-//		BMNode target = (BMNode) DropUtil.getTarget(event);
 		if (target == null) {
 			return false;
 		}
 
 		BookmarkView activeBookmarkView = manager.getActiveBookmarkView();
-//		List<IStructuredSelection> treeSelections = TreeUtil
-//				.getTreeSelections(activeBookmarkView.getView());
 
 		LinkedList<BMNode> silblings = getSilblings(target);
 

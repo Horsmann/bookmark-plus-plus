@@ -16,7 +16,7 @@ public class TreeModel
 
 	public TreeModel()
 	{
-		root = new TreeNode("", false, true);
+		root = new TreeNode("", false, false);
 		head = root;
 	}
 

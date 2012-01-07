@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.tree.TreeNode;
+import org.eclipselabs.recommenders.bookmark.tree.BMNode;
 import org.eclipselabs.recommenders.bookmark.tree.commands.RenameBookmark;
 import org.eclipselabs.recommenders.bookmark.tree.util.TreeUtil;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
@@ -62,7 +62,7 @@ public class RenameBookmarkAction
 
 	private boolean isSingleBookmarkNodeSelected(List<IStructuredSelection> list)
 	{
-		return list.size() == 1 && list.get(0) instanceof TreeNode
-				&& ((TreeNode) list.get(0)).isBookmarkNode();
+		return list.size() == 1 && list.get(0) instanceof BMNode
+				&& ((BMNode) list.get(0)).isBookmarkNode();
 	}
 }

@@ -36,8 +36,9 @@ public class RenameBookmark
 		editor.minimumWidth = 100;
 
 		final BMNode node = (BMNode) item.getData();
-		if (!node.isBookmarkNode())
+		if (!node.isBookmarkNode()) {
 			return false;
+		}
 
 		final Text text = new Text(viewer.getView().getTree(), SWT.NONE);
 		text.setText((String) node.getValue());
