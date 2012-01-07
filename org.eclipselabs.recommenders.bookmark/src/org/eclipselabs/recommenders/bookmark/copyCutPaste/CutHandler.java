@@ -48,8 +48,10 @@ public class CutHandler
 
 			manager.getExpandedStorage().removeNode(refNode);
 
+			if (refNode != node) {
+				TreeUtil.unlink(refNode);
+			}
 			TreeUtil.unlink(node);
-			TreeUtil.unlink(refNode);
 		}
 	}
 

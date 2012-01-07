@@ -521,7 +521,8 @@ public class TreeUtil
 	 * view is flattened, selected nodes and the returned nodes from the model
 	 * are not equal. A flattened node is referencing to a node in the main
 	 * model. This reference is returned if this method is called while the view
-	 * is in flattened mode.
+	 * is in flattened mode. If the view is in unflattened mode this method
+	 * returns the same nodes as {@link getTreeSelections}
 	 */
 	public static BMNode[] getNodesFromModelThatAreSelectedInTreeViewer(
 			TreeViewer viewer)

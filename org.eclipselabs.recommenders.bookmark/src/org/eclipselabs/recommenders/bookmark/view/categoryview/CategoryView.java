@@ -33,6 +33,7 @@ import org.eclipselabs.recommenders.bookmark.view.actions.OpenFileInSystemExplor
 import org.eclipselabs.recommenders.bookmark.view.actions.RefreshViewAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.view.actions.ShowBookmarksInEditorAction;
+import org.eclipselabs.recommenders.bookmark.view.actions.ShowInFlatAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleFlatAndTreeAction;
 import org.eclipselabs.recommenders.bookmark.view.actions.ToggleViewAction;
 import org.eclipselabs.recommenders.bookmark.view.categoryview.combo.ComboModifyListener;
@@ -64,6 +65,7 @@ public class CategoryView
 	private Action deleteSelection;
 	private Action newBookmark;
 	private Action toggleFlatTree;
+	private Action showInFlatModus;
 
 	private ViewManager manager;
 
@@ -214,6 +216,7 @@ public class CategoryView
 		notifier.add((SelfEnabling) openInSystemFileExplorer);
 		notifier.add((SelfEnabling) showInEditor);
 		notifier.add((SelfEnabling) deleteSelection);
+		notifier.add((SelfEnabling) showInFlatModus);
 
 	}
 
@@ -263,6 +266,7 @@ public class CategoryView
 		deleteSelection = new DeleteAction(manager);
 		newBookmark = new CreateNewBookmarkAction(manager);
 		toggleFlatTree = new ToggleFlatAndTreeAction(manager);
+		showInFlatModus = new ShowInFlatAction(manager);
 
 	}
 
@@ -286,7 +290,6 @@ public class CategoryView
 		addDragDropSupportToView();
 		viewer.addDoubleClickListener(doubleClickListener);
 	}
-
 
 	public void addDragDropSupportToView()
 	{
@@ -342,6 +345,7 @@ public class CategoryView
 				menuMgr.add(deleteSelection);
 				menuMgr.add(new Separator());
 				menuMgr.add(openInSystemFileExplorer);
+				menuMgr.add(showInFlatModus);
 			}
 		});
 

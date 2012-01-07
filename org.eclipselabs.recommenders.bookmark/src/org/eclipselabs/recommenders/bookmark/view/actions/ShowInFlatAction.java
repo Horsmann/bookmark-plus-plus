@@ -16,6 +16,7 @@ public class ShowInFlatAction
 	private final ViewManager manager;
 	private final String hidden = "Hide in flat-modus";
 	private final String show = "Show in flat-modus";
+	private final String showHidden = "Show/Hide in flat-modus";
 
 	public ShowInFlatAction(ViewManager manager)
 	{
@@ -84,11 +85,17 @@ public class ShowInFlatAction
 	{
 		if (allSelectionsAreCategoryNodes(list)) {
 			this.setEnabled(false);
-			this.setText("N/A");
+			this.setText(showHidden);
 		}
 
 		this.setEnabled(true);
-		this.setText("Show/Hide in flat");
+
+		if (manager.isViewFlattened()) {
+			this.setText(hidden);
+			return;
+		}
+
+		this.setText(showHidden);
 	}
 
 	private boolean allSelectionsAreCategoryNodes(
