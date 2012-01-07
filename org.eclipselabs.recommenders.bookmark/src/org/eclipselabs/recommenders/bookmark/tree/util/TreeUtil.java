@@ -516,11 +516,43 @@ public class TreeUtil
 		return climber;
 	}
 
+	/**
+	 * Returns the nodes from the model that are selected in the view. If the
+	 * view is flattened, selected nodes and the returned nodes from the model
+	 * are not equal. A flattened node is referencing to a node in the main
+	 * model. This reference is returned if this method is called while the view
+	 * is in flattened mode.
+	 */
+	public static BMNode[] getNodesFromModelThatAreSelectedInTreeViewer(
+			TreeViewer viewer)
+	{
+		ISelection selection = viewer.getSelection();
+		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
+
+			LinkedList<BMNode> selectedNodes = new LinkedList<BMNode>();
+
+			@SuppressWarnings("unchecked")
+			List<IStructuredSelection> selections = ((IStructuredSelection) selection)
+					.toList();
+
+			for (int i = 0; i < selections.size(); i++) {
+				BMNode node = (BMNode) selections.get(i);
+				node = node.getReference();
+				selectedNodes.add(node);
+			}
+
+			return selectedNodes.toArray(new BMNode[0]);
+		}
+
+		return Collections.emptyList().toArray(new BMNode[0]);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static List<IStructuredSelection> getTreeSelections(TreeViewer viewer)
 	{
 		ISelection selection = viewer.getSelection();
 		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
+
 			return ((IStructuredSelection) selection).toList();
 		}
 

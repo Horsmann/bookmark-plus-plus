@@ -1,12 +1,10 @@
 package org.eclipselabs.recommenders.bookmark.copyCutPaste;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
@@ -69,13 +67,11 @@ public class CopyHandler
 	private LinkedList<String> getIDsOfSelection()
 	{
 		TreeViewer viewer = manager.getActiveBookmarkView().getView();
-		List<IStructuredSelection> selections = TreeUtil
-				.getTreeSelections(viewer);
+		BMNode[] selections = TreeUtil
+				.getNodesFromModelThatAreSelectedInTreeViewer(viewer);
 
 		LinkedList<String> transferObjects = new LinkedList<String>();
-		for (int i = 0; i < selections.size(); i++) {
-			BMNode node = (BMNode) selections.get(i);
-			node = TreeUtil.getReference(node);
+		for (BMNode node : selections) {
 
 			if (node.isBookmarkNode()) {
 				continue;

@@ -159,14 +159,13 @@ public class DefaultTreeDropListener
 	private boolean performReorderNodeOperation(DropTargetEvent event)
 	{
 		BookmarkView activeBookmarkView = manager.getActiveBookmarkView();
-		List<IStructuredSelection> treeSelections = TreeUtil
-				.getTreeSelections(activeBookmarkView.getView());
+		BMNode[] treeSelections = TreeUtil
+				.getNodesFromModelThatAreSelectedInTreeViewer(activeBookmarkView
+						.getView());
 
 		LinkedList<BMNode> selectedNodesList = new LinkedList<BMNode>();
 
-		for (int i = 0; i < treeSelections.size(); i++) {
-			BMNode node = (BMNode) treeSelections.get(i);
-			node = TreeUtil.getReference(node);
+		for (BMNode node : treeSelections) {
 			selectedNodesList.add(node);
 		}
 		BMNode[] selectedNodes = selectedNodesList.toArray(new BMNode[0]);
@@ -220,13 +219,10 @@ public class DefaultTreeDropListener
 	private void addToExistingBookmark(DropTargetEvent event, BMNode bookmark)
 	{
 		BookmarkView viewer = manager.getActiveBookmarkView();
-		List<IStructuredSelection> selections = TreeUtil
-				.getTreeSelections(viewer.getView());
+		BMNode[] selections = TreeUtil
+				.getNodesFromModelThatAreSelectedInTreeViewer(viewer.getView());
 
-		for (int i = 0; i < selections.size(); i++) {
-
-			BMNode node = (BMNode) selections.get(i);
-			node = TreeUtil.getReference(node);
+		for (BMNode node : selections) {
 
 			boolean keepSource = (event.operations == DND.DROP_COPY);
 			new AddTreeNodesToExistingBookmark(viewer, bookmark, node,

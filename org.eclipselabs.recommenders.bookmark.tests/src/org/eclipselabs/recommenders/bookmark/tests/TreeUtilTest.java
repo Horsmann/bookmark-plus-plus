@@ -582,23 +582,23 @@ public class TreeUtilTest
 	{
 		TreeNode root = new TreeNode("", false, false);
 
-		TreeNode bm1 = new TreeNode("BM#1", true, true);
-		TreeNode bm2 = new TreeNode("BM#2", true, true);
+		TreeNode bm1 = new TreeNode("BM#1", true, false);
+		TreeNode bm2 = new TreeNode("BM#2", true, false);
 
 		IFile ifile = TreeValueConverter
 				.attemptTransformationToIFile("../../TestProj/resource/project.properties");
-		TreeNode bm1c1 = new TreeNode(ifile, false, false);
-		TreeNode bm1c2 = new TreeNode("bm1c2", false, true);
+		TreeNode bm1c1 = new TreeNode(ifile, false, true);
+		TreeNode bm1c2 = new TreeNode("bm1c2", false, false);
 
-		TreeNode bm1c1c1 = new TreeNode("bm1c1c1", false, false);
-		TreeNode bm1c1c2 = new TreeNode("bm1c1c2", false, false);
+		TreeNode bm1c1c1 = new TreeNode("bm1c1c1", false, true);
+		TreeNode bm1c1c2 = new TreeNode("bm1c1c2", false, true);
 
-		TreeNode bm1c1c2c1 = new TreeNode("bm1c1c2c1", false, true);
+		TreeNode bm1c1c2c1 = new TreeNode("bm1c1c2c1", false, false);
 
-		TreeNode bm2c1 = new TreeNode("bm2c1", false, true);
+		TreeNode bm2c1 = new TreeNode("bm2c1", false, false);
 		IJavaElement element = TreeValueConverter
 				.attemptTransformationToIJavaElement("=LKJLD/src<test.project{MyTest.java");
-		TreeNode bm2c2 = new TreeNode(element, false, true);
+		TreeNode bm2c2 = new TreeNode(element, false, false);
 
 		// Link
 		bm1c1c2.addChild(bm1c1c2c1);

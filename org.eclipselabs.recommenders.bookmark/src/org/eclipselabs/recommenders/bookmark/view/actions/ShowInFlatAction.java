@@ -28,8 +28,8 @@ public class ShowInFlatAction
 	{
 		BookmarkView viewer = manager.getActiveBookmarkView();
 
-		List<IStructuredSelection> list = TreeUtil.getTreeSelections(viewer
-				.getView());
+		BMNode[] list = TreeUtil
+				.getNodesFromModelThatAreSelectedInTreeViewer(viewer.getView());
 		changeFlatStatusOfNodes(list);
 
 		update();
@@ -46,12 +46,9 @@ public class ShowInFlatAction
 
 	}
 
-	private void changeFlatStatusOfNodes(List<IStructuredSelection> list)
+	private void changeFlatStatusOfNodes(BMNode[] list)
 	{
-		for (int i = 0; i < list.size(); i++) {
-			BMNode node = (BMNode) list.get(i);
-
-			node = TreeUtil.getReference(node);
+		for (BMNode node : list) {
 
 			if (node.isBookmarkNode()) {
 				continue;

@@ -85,14 +85,12 @@ public class CategoryTreeDropListener
 	private boolean performReorderNodeOperation(DropTargetEvent event)
 	{
 		BookmarkView activeBookmarkView = manager.getActiveBookmarkView();
-		List<IStructuredSelection> treeSelections = TreeUtil
-				.getTreeSelections(activeBookmarkView.getView());
+		BMNode[] treeSelections = TreeUtil
+				.getNodesFromModelThatAreSelectedInTreeViewer(activeBookmarkView.getView());
 
 		LinkedList<BMNode> selectedNodesList = new LinkedList<BMNode>();
 
-		for (int i = 0; i < treeSelections.size(); i++) {
-			BMNode node = (BMNode) treeSelections.get(i);
-			node = TreeUtil.getReference(node);
+		for (BMNode node : treeSelections) {
 			selectedNodesList.add(node);
 		}
 		BMNode[] selectedNodes = selectedNodesList.toArray(new BMNode[0]);

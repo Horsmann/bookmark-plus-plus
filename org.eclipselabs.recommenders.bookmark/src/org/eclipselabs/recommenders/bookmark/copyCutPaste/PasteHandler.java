@@ -125,8 +125,9 @@ public class PasteHandler
 		List<IStructuredSelection> selections = TreeUtil
 				.getTreeSelections(viewer);
 
-		if (selections.size() > 1)
+		if (selections.size() > 1) {
 			return null;
+		}
 
 		BMNode target = null;
 		if (selections.size() == 0) { // Also paste in empty area
