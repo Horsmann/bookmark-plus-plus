@@ -9,7 +9,7 @@
       </category>
       <view
             category="org.eclipselabs.recommenders.bookmark"
-            class="org.eclipselabs.recommenders.bookmark.view.BookmarkViewManager"
+            class="org.eclipselabs.recommenders.bookmark.aaa.BookmarkView"
             icon="icons/bfolder_obj.gif"
             id="org.eclipselabs.recommenders.bookmark.views.BookmarkView"
             name="Bookmarks++">
