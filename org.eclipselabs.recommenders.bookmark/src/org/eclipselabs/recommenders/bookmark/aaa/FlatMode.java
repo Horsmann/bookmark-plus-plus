@@ -10,11 +10,15 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa;
 
+import org.eclipse.jdt.ui.JavaElementLabelProvider;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 
@@ -75,7 +79,24 @@ public class FlatMode extends LabelProvider implements ITreeContentProvider {
 
     @Override
     public Image getImage(final Object element) {
-        // TODO Auto-generated method stub
+    	
+    	if (element instanceof Category){
+    		AbstractUIPlugin plugin = Activator.getDefault();
+			ImageRegistry registry = plugin.getImageRegistry();
+
+			return registry.get(Activator.ICON_BOOKMARK);
+    	}
+    	
+    	if (element instanceof FileBookmark){
+    		JavaElementLabelProvider jelp = new JavaElementLabelProvider(
+    				JavaElementLabelProvider.SHOW_RETURN_TYPE
+    						| JavaElementLabelProvider.SHOW_SMALL_ICONS
+    						| JavaElementLabelProvider.SHOW_DEFAULT);
+    		
+    		FileBookmark filebookmark = (FileBookmark) element;
+    		return jelp.getImage(filebookmark.getFile());
+    	}
+    	
         return null;
     }
 
