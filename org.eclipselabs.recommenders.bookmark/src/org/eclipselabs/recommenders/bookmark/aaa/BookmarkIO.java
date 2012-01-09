@@ -15,12 +15,18 @@ import org.eclipse.core.runtime.Path;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 
-public class BookmarkIO {
+public class BookmarkIO
+{
 
-    public static BookmarkModel load() {
-        final BookmarkModel model = new BookmarkModel();
-        model.add(new Category("Test", new FileBookmark(ResourcesPlugin.getWorkspace().getRoot()
-                .getFile(Path.fromOSString("project/test.bm")))));
-        return model;
-    }
+	public static BookmarkModel load()
+	{
+		final BookmarkModel model = new BookmarkModel();
+		model.add(new Category("Test", new FileBookmark(ResourcesPlugin
+				.getWorkspace().getRoot()
+				.getFile(Path.fromOSString("project/test.bm"))),
+				new JavaElementBookmark("=LKJLD/src<test.project{MyTest.java"),
+				new JavaElementBookmark(
+						"=LKJLD/src<test.project{IMy.java[IMy~add~I")));
+		return model;
+	}
 }
