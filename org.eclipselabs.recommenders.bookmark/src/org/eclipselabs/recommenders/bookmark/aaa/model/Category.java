@@ -15,11 +15,11 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-public class Category {
+public class Category implements IBookmarkModelComponent {
 
     private final String label;
     private final List<IBookmark> bookmarks = Lists.newLinkedList();
-    private boolean expanded;
+    private boolean expanded = true;
 
     public Category(final String label, final IBookmark... bookmarks) {
         this.label = label;
@@ -32,5 +32,18 @@ public class Category {
 
     public List<IBookmark> getBookmarks() {
         return bookmarks;
+    }
+
+    @Override
+    public void accept(final IModelVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    public void setExpanded(final boolean expanded) {
+        this.expanded = expanded;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
     }
 }

@@ -10,43 +10,51 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa;
 
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.aaa.tree.FlatRepresentationMode;
+import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
+import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
 
 public class BookmarkView extends ViewPart {
 
-    private TreeViewer treeViewer;
     private BookmarkModel model;
-    private FlatMode flatMode;
+    private FlatRepresentationMode flatMode;
+    private HierarchicalRepresentationMode hierarchicalMode;
+    private RepresentationSwitchableTreeViewer treeViewer;
 
     @Override
     public void createPartControl(final Composite parent) {
-        treeViewer = new TreeViewer(parent);
-        flatMode = new FlatMode(treeViewer);
+        flatMode = new FlatRepresentationMode();
+        hierarchicalMode = new HierarchicalRepresentationMode();
 
-        activateFlatMode();
+        treeViewer = new RepresentationSwitchableTreeViewer(parent, hierarchicalMode);
+
         loadDefaultModel();
+        activateFlatMode();
+        // activateHierarchicalMode();
+    }
+
+    private void activateHierarchicalMode() {
+        treeViewer.setRepresentation(hierarchicalMode);
     }
 
     private void activateFlatMode() {
-        flatMode.activate();
+        treeViewer.setRepresentation(flatMode);
     }
 
     private void loadDefaultModel() {
-        final BookmarkModel model = BookmarkIO.load();
-        setModel(model);
+        setModel(BookmarkIO.load());
     }
 
     private void setModel(final BookmarkModel model) {
         this.model = model;
-        flatMode.setModel(model);
+        treeViewer.setInput(model);
     }
 
     @Override
     public void setFocus() {
-        // TODO Auto-generated method stub
     }
 
 }

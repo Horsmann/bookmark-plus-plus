@@ -10,8 +10,28 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa.model;
 
+import org.eclipse.core.resources.IFile;
 
-public interface IBookmark extends IBookmarkModelComponent {
+public class FileBookmark implements IBookmark {
 
-    boolean isInferredNode();
+    private final IFile file;
+
+    public FileBookmark(final IFile file) {
+        this.file = file;
+    }
+
+    @Override
+    public boolean isInferredNode() {
+        return false;
+    }
+
+    public IFile getFile() {
+        return file;
+    }
+
+    @Override
+    public void accept(final IModelVisitor visitor) {
+        visitor.visit(this);
+    }
+
 }
