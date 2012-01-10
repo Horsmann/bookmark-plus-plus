@@ -17,4 +17,6 @@ public interface IModelVisitor {
 
     void visit(Category category);
 
+    void visit(JavaElementBookmark javaElementBookmark);
+
 }

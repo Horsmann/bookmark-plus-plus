@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
@@ -116,6 +117,13 @@ public class RepresentationSwitchableTreeViewer {
             final ILabelProviderVisitor visitor = currentMode.createLabelProviderVisitor();
             TreeModelUtil.acceptVisitor(element, visitor);
             return visitor.getLabel();
+        }
+
+        @Override
+        public Image getImage(final Object element) {
+            final ILabelProviderVisitor visitor = currentMode.createLabelProviderVisitor();
+            TreeModelUtil.acceptVisitor(element, visitor);
+            return visitor.getImage();
         }
     }
 
