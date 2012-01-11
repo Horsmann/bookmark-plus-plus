@@ -32,8 +32,8 @@ public class BookmarkView extends ViewPart {
         treeViewer = new RepresentationSwitchableTreeViewer(parent, hierarchicalMode);
 
         loadDefaultModel();
-        activateFlatMode();
-        // activateHierarchicalMode();
+        // activateFlatMode();
+        activateHierarchicalMode();
     }
 
     private void activateHierarchicalMode() {

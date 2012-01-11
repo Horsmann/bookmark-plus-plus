@@ -59,7 +59,7 @@ public class HierarchicalRepresentationMode implements IRepresentationMode {
 
             @Override
             public void visit(final JavaElementBookmark javaElementBookmark) {
-                childBookmarks = Lists.newLinkedList();
+                childBookmarks = javaElementBookmark.getChildElements();
             }
         };
     }

@@ -35,7 +35,7 @@ public class FlatRepresentationMode implements IRepresentationMode {
     public IChildrenResolverVisitor createChildrenResolverVisitor() {
         return new IChildrenResolverVisitor() {
 
-            private List<? extends IBookmark> childBookmarks;
+            private List<IBookmark> childBookmarks;
 
             @Override
             public boolean hasChildren() {
@@ -49,17 +49,30 @@ public class FlatRepresentationMode implements IRepresentationMode {
 
             @Override
             public void visit(final FileBookmark fileBookmark) {
-                childBookmarks = Lists.newLinkedList();
             }
 
             @Override
             public void visit(final Category category) {
-                childBookmarks = category.getBookmarks();
+                childBookmarks = Lists.newLinkedList();
+                for (final IBookmark bookmark : category.getBookmarks()) {
+                    bookmark.accept(this);
+                }
             }
 
             @Override
             public void visit(final JavaElementBookmark javaElementBookmark) {
-                childBookmarks = Lists.newLinkedList();
+                if (childBookmarks == null) {
+                    childBookmarks = Lists.newLinkedList();
+                } else if (!javaElementBookmark.isInferredNode()) {
+                    childBookmarks.add(javaElementBookmark);
+                }
+                visitChilds(javaElementBookmark);
+            }
+
+            private void visitChilds(final JavaElementBookmark javaElementBookmark) {
+                for (final JavaElementBookmark childElement : javaElementBookmark.getChildElements()) {
+                    childElement.accept(this);
+                }
             }
 
         };

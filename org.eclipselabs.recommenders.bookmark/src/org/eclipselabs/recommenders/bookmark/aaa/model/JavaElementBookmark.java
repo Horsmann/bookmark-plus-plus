@@ -1,21 +1,35 @@
 package org.eclipselabs.recommenders.bookmark.aaa.model;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 public class JavaElementBookmark implements IBookmark {
 
     private final String handleId;
+    private final boolean isInferred;
+    private final List<JavaElementBookmark> childElements = Lists.newLinkedList();
 
-    public JavaElementBookmark(final String handleId) {
+    public JavaElementBookmark(final String handleId, final boolean isInferred) {
         this.handleId = handleId;
+        this.isInferred = isInferred;
     }
 
     @Override
     public boolean isInferredNode() {
-        return false;
+        return isInferred;
     }
 
     public String getHandleId() {
         return handleId;
+    }
+
+    public void addChildElement(final JavaElementBookmark childElement) {
+        childElements.add(childElement);
+    }
+
+    public List<JavaElementBookmark> getChildElements() {
+        return childElements;
     }
 
     @Override

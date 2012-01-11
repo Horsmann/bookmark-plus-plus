@@ -22,6 +22,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
+import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
+import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 
 public class RepresentationSwitchableTreeViewer {
 
@@ -34,7 +36,6 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.setContentProvider(new SwitchableContentProvider());
         treeViewer.setLabelProvider(new SwitchableLabelProvider());
         treeViewer.addTreeListener(new TreeViewListener());
-
     }
 
     public void setRepresentation(final IRepresentationMode mode) {
@@ -53,14 +54,14 @@ public class RepresentationSwitchableTreeViewer {
         public void treeCollapsed(final TreeExpansionEvent event) {
             final ITreeExpansionVisitor visitor = currentMode
                     .createTreeExpansionVisitor(ITreeExpansionVisitor.Action.COLLAPSE);
-            TreeModelUtil.acceptVisitor(event.getElement(), visitor);
+            acceptVisitor(event.getElement(), visitor);
         }
 
         @Override
         public void treeExpanded(final TreeExpansionEvent event) {
             final ITreeExpansionVisitor visitor = currentMode
                     .createTreeExpansionVisitor(ITreeExpansionVisitor.Action.EXPAND);
-            TreeModelUtil.acceptVisitor(event.getElement(), visitor);
+            acceptVisitor(event.getElement(), visitor);
         }
 
     }
@@ -94,7 +95,7 @@ public class RepresentationSwitchableTreeViewer {
         @Override
         public Object[] getChildren(final Object parentElement) {
             final IChildrenResolverVisitor visitor = currentMode.createChildrenResolverVisitor();
-            TreeModelUtil.acceptVisitor(parentElement, visitor);
+            acceptVisitor(parentElement, visitor);
             return visitor.getChildren().toArray();
         }
 
@@ -106,7 +107,7 @@ public class RepresentationSwitchableTreeViewer {
         @Override
         public boolean hasChildren(final Object element) {
             final IChildrenResolverVisitor visitor = currentMode.createChildrenResolverVisitor();
-            TreeModelUtil.acceptVisitor(element, visitor);
+            acceptVisitor(element, visitor);
             return visitor.hasChildren();
         }
     }
@@ -115,16 +116,23 @@ public class RepresentationSwitchableTreeViewer {
         @Override
         public String getText(final Object element) {
             final ILabelProviderVisitor visitor = currentMode.createLabelProviderVisitor();
-            TreeModelUtil.acceptVisitor(element, visitor);
+            acceptVisitor(element, visitor);
             return visitor.getLabel();
         }
 
         @Override
         public Image getImage(final Object element) {
             final ILabelProviderVisitor visitor = currentMode.createLabelProviderVisitor();
-            TreeModelUtil.acceptVisitor(element, visitor);
+            acceptVisitor(element, visitor);
             return visitor.getImage();
         }
     }
 
+    private static void acceptVisitor(final Object element, final IModelVisitor visitor) {
+        if (element instanceof IBookmarkModelComponent) {
+            ((IBookmarkModelComponent) element).accept(visitor);
+        } else {
+            throw new RuntimeException("Should not be reachable. Visitor can only be used on IBookmarkModelComponents.");
+        }
+    }
 }
