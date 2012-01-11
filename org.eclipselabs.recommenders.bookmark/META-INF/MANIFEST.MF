@@ -12,6 +12,8 @@ Import-Package: org.eclipse.core.resources,
  org.eclipse.ui.part,
  org.osgi.framework;version="1.5.0"
 Export-Package: org.eclipselabs.recommenders.bookmark,
+ org.eclipselabs.recommenders.bookmark.aaa,
+ org.eclipselabs.recommenders.bookmark.aaa.model,
  org.eclipselabs.recommenders.bookmark.tree,
  org.eclipselabs.recommenders.bookmark.tree.persistent,
  org.eclipselabs.recommenders.bookmark.tree.persistent.deserialization,

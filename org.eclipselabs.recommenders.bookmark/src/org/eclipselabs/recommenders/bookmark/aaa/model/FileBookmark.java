@@ -10,28 +10,57 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa.model;
 
+import java.io.Serializable;
+
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
-public class FileBookmark implements IBookmark {
+public class FileBookmark
+	implements IBookmark, Serializable
+{
 
-    private final IFile file;
+	private static final long serialVersionUID = -224963828339478664L;
+	private final String relativeFilePath;
 
-    public FileBookmark(final IFile file) {
-        this.file = file;
-    }
+	public FileBookmark(final IFile file)
+	{
+		this.relativeFilePath = getRelativeFilePath(file);
+	}
 
-    @Override
-    public boolean isInferredNode() {
-        return false;
-    }
+	private String getRelativeFilePath(IFile file)
+	{
+		IPath path = file.getFullPath();
 
-    public IFile getFile() {
-        return file;
-    }
+		IPath projectRelativePath = file.getProjectRelativePath();
 
-    @Override
-    public void accept(final IModelVisitor visitor) {
-        visitor.visit(this);
-    }
+		return path.makeRelativeTo(projectRelativePath).toOSString();
+	}
+
+	@Override
+	public boolean isInferredNode()
+	{
+		return false;
+	}
+
+	public IFile getFile()
+	{
+		IFile file = createIFileFromRelativePath();
+		return file;
+	}
+
+	private IFile createIFileFromRelativePath()
+	{
+		IPath location = Path.fromOSString(relativeFilePath);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
+		return file;
+	}
+
+	@Override
+	public void accept(final IModelVisitor visitor)
+	{
+		visitor.visit(this);
+	}
 
 }
