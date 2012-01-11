@@ -100,7 +100,8 @@ public class AddElementToModelCommand
 
 	}
 
-	private JavaElementBookmark createJavaElementBookmark(IJavaElement javaElement)
+	private JavaElementBookmark createJavaElementBookmark(
+			IJavaElement javaElement)
 	{
 		IJavaElement parent = javaElement.getParent();
 		if (isBookmarkable(parent)) {
@@ -233,12 +234,14 @@ public class AddElementToModelCommand
 		{
 			if (javaElementBookmark.getHandleId().equals(javaElementHandleId)) {
 				foundJavaElement = Optional.of(javaElementBookmark);
-			}else{
-				for (JavaElementBookmark child: javaElementBookmark.getChildElements()){
+			}
+			else {
+				for (JavaElementBookmark child : javaElementBookmark
+						.getChildElements()) {
 					child.accept(this);
 				}
 			}
-			
+
 		}
 
 		public Optional<JavaElementBookmark> getFoundElement()
