@@ -17,58 +17,68 @@ import org.eclipselabs.recommenders.bookmark.aaa.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
 
-public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
+public class BookmarkView
+	extends ViewPart
+	implements BookmarkCommandInvoker
+{
 
-    private BookmarkModel model;
-    private FlatRepresentationMode flatMode;
-    private HierarchicalRepresentationMode hierarchicalMode;
-    private RepresentationSwitchableTreeViewer treeViewer;
+	private BookmarkModel model;
+	private RepresentationSwitchableTreeViewer treeViewer;
 
-    @Override
-    public void createPartControl(final Composite parent) {
-        flatMode = new FlatRepresentationMode();
-        hierarchicalMode = new HierarchicalRepresentationMode();
+	@Override
+	public void createPartControl(final Composite parent)
+	{
 
-        treeViewer = new RepresentationSwitchableTreeViewer(parent, hierarchicalMode);
-        addDragDropListeners(treeViewer);
+		treeViewer = new RepresentationSwitchableTreeViewer(parent,
+				new HierarchicalRepresentationMode());
+		addDragDropListeners(treeViewer);
 
-        loadDefaultModel();
-        // activateFlatMode();
-        activateHierarchicalMode();
-    }
+		loadDefaultModel();
+		// activateFlatMode();
+		activateHierarchicalMode();
+	}
 
-    private void activateHierarchicalMode() {
-        treeViewer.setRepresentation(hierarchicalMode);
-    }
+	private void activateHierarchicalMode()
+	{
+		treeViewer.setRepresentation(new HierarchicalRepresentationMode());
+	}
 
-    private void activateFlatMode() {
-        treeViewer.setRepresentation(flatMode);
-    }
+	private void activateFlatMode()
+	{
+		treeViewer.setRepresentation(new FlatRepresentationMode());
+	}
 
-    public void addDragDropListeners(final RepresentationSwitchableTreeViewer treeViewer) {
-        final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(this);
-        treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
-                dropListener);
-        // treeViewer.addDragSupport(operations, transferTypes, dragListener);
-    }
+	public void addDragDropListeners(
+			final RepresentationSwitchableTreeViewer treeViewer)
+	{
+		final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(
+				this);
+		treeViewer.addDropSupport(dropListener.getSupportedOperations(),
+				dropListener.getSupportedTransfers(), dropListener);
+		// treeViewer.addDragSupport(operations, transferTypes, dragListener);
+	}
 
-    private void loadDefaultModel() {
-        setModel(BookmarkIO.load());
-    }
+	private void loadDefaultModel()
+	{
+		setModel(BookmarkIO.load());
+	}
 
-    private void setModel(final BookmarkModel model) {
-        this.model = model;
-        treeViewer.setInput(model);
-    }
+	private void setModel(final BookmarkModel model)
+	{
+		this.model = model;
+		treeViewer.setInput(model);
+	}
 
-    @Override
-    public void setFocus() {
-    }
+	@Override
+	public void setFocus()
+	{
+	}
 
-    @Override
-    public void invoke(final IBookmarkModelCommand command) {
-        command.execute(model);
-        treeViewer.refresh();
-    }
+	@Override
+	public void invoke(final IBookmarkModelCommand command)
+	{
+		command.execute(model);
+		treeViewer.refresh();
+	}
 
 }
