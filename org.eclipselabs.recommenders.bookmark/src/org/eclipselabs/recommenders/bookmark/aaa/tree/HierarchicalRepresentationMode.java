@@ -64,6 +64,7 @@ public class HierarchicalRepresentationMode implements IRepresentationMode {
         };
     }
 
+    // TODO: Split ILabelProviderVisitor to Label- and Image-ProviderVisitor
     @Override
     public ILabelProviderVisitor createLabelProviderVisitor() {
         return new ILabelProviderVisitor() {

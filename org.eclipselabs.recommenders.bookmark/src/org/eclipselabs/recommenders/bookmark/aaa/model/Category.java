@@ -46,4 +46,8 @@ public class Category implements IBookmarkModelComponent {
     public boolean isExpanded() {
         return expanded;
     }
+
+    public void add(final IBookmark bookmark) {
+        bookmarks.add(bookmark);
+    }
 }

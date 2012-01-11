@@ -17,7 +17,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
 
-public class BookmarkView extends ViewPart {
+public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private BookmarkModel model;
     private FlatRepresentationMode flatMode;
@@ -30,6 +30,7 @@ public class BookmarkView extends ViewPart {
         hierarchicalMode = new HierarchicalRepresentationMode();
 
         treeViewer = new RepresentationSwitchableTreeViewer(parent, hierarchicalMode);
+        addDragDropListeners(treeViewer);
 
         loadDefaultModel();
         // activateFlatMode();
@@ -44,6 +45,13 @@ public class BookmarkView extends ViewPart {
         treeViewer.setRepresentation(flatMode);
     }
 
+    public void addDragDropListeners(final RepresentationSwitchableTreeViewer treeViewer) {
+        final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(this);
+        treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
+                dropListener);
+        // treeViewer.addDragSupport(operations, transferTypes, dragListener);
+    }
+
     private void loadDefaultModel() {
         setModel(BookmarkIO.load());
     }
@@ -55,6 +63,12 @@ public class BookmarkView extends ViewPart {
 
     @Override
     public void setFocus() {
+    }
+
+    @Override
+    public void invoke(final IBookmarkModelCommand command) {
+        command.execute(model);
+        treeViewer.refresh();
     }
 
 }

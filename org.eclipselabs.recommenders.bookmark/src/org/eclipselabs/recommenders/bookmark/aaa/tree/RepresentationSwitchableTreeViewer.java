@@ -18,6 +18,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
@@ -46,6 +48,15 @@ public class RepresentationSwitchableTreeViewer {
     public void setInput(final BookmarkModel model) {
         treeViewer.setInput(model);
         treeViewer.setExpandedElements(currentMode.getExpandedItems(model));
+    }
+
+    public void addDropSupport(final int operations, final Transfer[] transferTypes,
+            final DropTargetListener dropListener) {
+        treeViewer.addDropSupport(operations, transferTypes, dropListener);
+    }
+
+    public void refresh() {
+        treeViewer.refresh();
     }
 
     private class TreeViewListener implements ITreeViewerListener {
@@ -135,4 +146,5 @@ public class RepresentationSwitchableTreeViewer {
             throw new RuntimeException("Should not be reachable. Visitor can only be used on IBookmarkModelComponents.");
         }
     }
+
 }
