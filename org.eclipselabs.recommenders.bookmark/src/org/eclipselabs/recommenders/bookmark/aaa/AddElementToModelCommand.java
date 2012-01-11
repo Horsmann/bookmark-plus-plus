@@ -95,17 +95,19 @@ public class AddElementToModelCommand
 	{
 
 		if (isBookmarkable(javaElement)) {
-			createJavaElementBookmark(javaElement);
+			createJavaElementBookmark(javaElement,
+					javaElement.getHandleIdentifier());
 		}
 
 	}
 
 	private JavaElementBookmark createJavaElementBookmark(
-			IJavaElement javaElement)
+			IJavaElement javaElement, String javaElementHandleId)
 	{
 		IJavaElement parent = javaElement.getParent();
 		if (isBookmarkable(parent)) {
-			JavaElementBookmark bookmarkParent = createJavaElementBookmark(parent);
+			JavaElementBookmark bookmarkParent = createJavaElementBookmark(
+					parent, javaElementHandleId);
 			FindJavaElementHandleVisitor visitor = new FindJavaElementHandleVisitor(
 					javaElement.getHandleIdentifier());
 			bookmarkParent.accept(visitor);
@@ -113,8 +115,17 @@ public class AddElementToModelCommand
 				return visitor.getFoundElement().get();
 			}
 			else {
-				JavaElementBookmark newBookmark = new JavaElementBookmark(
-						javaElement.getHandleIdentifier(), true);
+				JavaElementBookmark newBookmark = null;
+
+				if (javaElement.getHandleIdentifier().equals(
+						javaElementHandleId)) {
+					newBookmark = new JavaElementBookmark(
+							javaElement.getHandleIdentifier(), false);
+				}
+				else {
+					newBookmark = new JavaElementBookmark(
+							javaElement.getHandleIdentifier(), true);
+				}
 				bookmarkParent.addChildElement(newBookmark);
 
 				return newBookmark;
