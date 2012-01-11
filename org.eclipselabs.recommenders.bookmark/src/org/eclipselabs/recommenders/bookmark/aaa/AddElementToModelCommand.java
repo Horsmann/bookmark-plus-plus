@@ -233,7 +233,12 @@ public class AddElementToModelCommand
 		{
 			if (javaElementBookmark.getHandleId().equals(javaElementHandleId)) {
 				foundJavaElement = Optional.of(javaElementBookmark);
+			}else{
+				for (JavaElementBookmark child: javaElementBookmark.getChildElements()){
+					child.accept(this);
+				}
 			}
+			
 		}
 
 		public Optional<JavaElementBookmark> getFoundElement()
