@@ -10,13 +10,15 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
-public class BookmarkModel {
+public class BookmarkModel implements Serializable {
 
-    private final List<Category> categories = Lists.newLinkedList();
+	private static final long serialVersionUID = 723478350155587860L;
+	private final List<Category> categories = Lists.newLinkedList();
 
     public void add(final Category category) {
         categories.add(category);
