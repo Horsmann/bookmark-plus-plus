@@ -10,6 +10,8 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
@@ -24,6 +26,8 @@ public class BookmarkView
 
 	private BookmarkModel model;
 	private RepresentationSwitchableTreeViewer treeViewer;
+	private Action switchFlatHierarchical;
+	private boolean isHierarchicalModeActive;
 
 	@Override
 	public void createPartControl(final Composite parent)
@@ -33,19 +37,42 @@ public class BookmarkView
 				new HierarchicalRepresentationMode());
 		addDragDropListeners(treeViewer);
 
+		setUpActions();
+		setUpToolbar();
+
 		loadDefaultModel();
 		// activateFlatMode();
 		activateHierarchicalMode();
 	}
 
-	private void activateHierarchicalMode()
+	private void setUpActions()
 	{
-		treeViewer.setRepresentation(new HierarchicalRepresentationMode());
+		switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
 	}
 
-	private void activateFlatMode()
+	private void setUpToolbar()
+	{
+		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
+		mgr.removeAll();
+		mgr.add(switchFlatHierarchical);
+
+	}
+
+	public boolean isHierarchicalModeActive()
+	{
+		return isHierarchicalModeActive;
+	}
+
+	public void activateHierarchicalMode()
+	{
+		treeViewer.setRepresentation(new HierarchicalRepresentationMode());
+		isHierarchicalModeActive = true;
+	}
+
+	public void activateFlatMode()
 	{
 		treeViewer.setRepresentation(new FlatRepresentationMode());
+		isHierarchicalModeActive = false;
 	}
 
 	public void addDragDropListeners(

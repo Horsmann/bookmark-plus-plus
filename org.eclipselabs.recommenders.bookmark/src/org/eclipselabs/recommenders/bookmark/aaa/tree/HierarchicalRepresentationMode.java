@@ -13,6 +13,7 @@ package org.eclipselabs.recommenders.bookmark.aaa.tree;
 import java.util.List;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -25,7 +26,6 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.ITreeExpansionVisitor.Action;
-import org.eclipselabs.recommenders.bookmark.tree.util.TreeValueConverter;
 
 import com.google.common.collect.Lists;
 
@@ -110,9 +110,8 @@ public class HierarchicalRepresentationMode
 			@Override
 			public void visit(final JavaElementBookmark javaElementBookmark)
 			{
-				final IJavaElement javaElement = TreeValueConverter
-						.attemptTransformationToIJavaElement(javaElementBookmark
-								.getHandleId());
+				final IJavaElement javaElement = JavaCore.create(javaElementBookmark
+						.getHandleId());
 
 				label = jelp.getText(javaElement);
 
@@ -199,8 +198,7 @@ public class HierarchicalRepresentationMode
 			@Override
 			public void visit(JavaElementBookmark javaElementBookmark)
 			{
-				final IJavaElement javaElement = TreeValueConverter
-						.attemptTransformationToIJavaElement(javaElementBookmark
+				final IJavaElement javaElement = JavaCore.create(javaElementBookmark
 								.getHandleId());
 				
 				image = jelp.getImage(javaElement);
