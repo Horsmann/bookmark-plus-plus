@@ -72,7 +72,7 @@ public class AddElementToModelCommand
 				else {
 					final FindComponentModelVisitor visitor = new FindComponentModelVisitor(
 							dropTargetComponent);
-					dropTargetComponent.accept(visitor);
+					category.accept(visitor);
 					if (visitor.foundComponent()) {
 						return category;
 					}
@@ -111,7 +111,8 @@ public class AddElementToModelCommand
 					javaElement.getHandleIdentifier());
 			bookmarkParent.accept(visitor);
 			if (visitor.getFoundElement().isPresent()) {
-				JavaElementBookmark foundBookmark = visitor.getFoundElement().get();
+				JavaElementBookmark foundBookmark = visitor.getFoundElement()
+						.get();
 				foundBookmark.setExpanded(true);
 				return foundBookmark;
 			}
@@ -130,7 +131,8 @@ public class AddElementToModelCommand
 					javaElement.getHandleIdentifier());
 			category.accept(visitor);
 			if (visitor.getFoundElement().isPresent()) {
-				JavaElementBookmark foundBookmark = visitor.getFoundElement().get();
+				JavaElementBookmark foundBookmark = visitor.getFoundElement()
+						.get();
 				foundBookmark.setExpanded(true);
 				return foundBookmark;
 			}
@@ -191,6 +193,9 @@ public class AddElementToModelCommand
 		@Override
 		public void visit(final Category category)
 		{
+			for (IBookmark bookmark : category.getBookmarks()) {
+				bookmark.accept(this);
+			}
 		}
 
 		@Override

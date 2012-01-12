@@ -49,6 +49,7 @@ public class RepresentationSwitchableTreeViewer
 	{
 		currentMode = mode;
 		treeViewer.refresh();
+		updateExpansions(model);
 	}
 
 	public void setInput(final BookmarkModel model)
