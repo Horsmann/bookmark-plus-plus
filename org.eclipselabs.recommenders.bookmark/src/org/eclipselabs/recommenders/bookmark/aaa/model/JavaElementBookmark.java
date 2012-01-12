@@ -14,6 +14,8 @@ public class JavaElementBookmark
 	private boolean isInferred;
 	private final List<JavaElementBookmark> childElements = Lists
 			.newLinkedList();
+	
+	private boolean expanded = false;
 
 	public JavaElementBookmark(final String handleId, final boolean isInferred)
 	{
@@ -30,6 +32,17 @@ public class JavaElementBookmark
 	public String getHandleId()
 	{
 		return handleId;
+	}
+	
+
+	public void setExpanded(final boolean expanded)
+	{
+		this.expanded = expanded;
+	}
+
+	public boolean isExpanded()
+	{
+		return expanded;
 	}
 
 	public void addChildElement(final JavaElementBookmark childElement)

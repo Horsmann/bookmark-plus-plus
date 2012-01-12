@@ -73,7 +73,6 @@ public class HierarchicalRepresentationMode
 		};
 	}
 
-	// TODO: Split ILabelProviderVisitor to Label- and Image-ProviderVisitor
 	@Override
 	public ILabelProviderVisitor createLabelProviderVisitor()
 	{
@@ -110,8 +109,8 @@ public class HierarchicalRepresentationMode
 			@Override
 			public void visit(final JavaElementBookmark javaElementBookmark)
 			{
-				final IJavaElement javaElement = JavaCore.create(javaElementBookmark
-						.getHandleId());
+				final IJavaElement javaElement = JavaCore
+						.create(javaElementBookmark.getHandleId());
 
 				label = jelp.getText(javaElement);
 
@@ -142,7 +141,7 @@ public class HierarchicalRepresentationMode
 			@Override
 			public void visit(final JavaElementBookmark javaElementBookmark)
 			{
-
+				javaElementBookmark.setExpanded(expansion == Action.EXPAND);
 			}
 
 		};
@@ -175,7 +174,13 @@ public class HierarchicalRepresentationMode
 			@Override
 			public void visit(final JavaElementBookmark javaElementBookmark)
 			{
-
+				if (javaElementBookmark.isExpanded()) {
+					expandedItems.add(javaElementBookmark);
+				}
+				for (final IBookmark bookmark : javaElementBookmark
+						.getChildElements()) {
+					bookmark.accept(this);
+				}
 			}
 		};
 		for (final Category category : model.getCategories()) {
@@ -198,9 +203,9 @@ public class HierarchicalRepresentationMode
 			@Override
 			public void visit(JavaElementBookmark javaElementBookmark)
 			{
-				final IJavaElement javaElement = JavaCore.create(javaElementBookmark
-								.getHandleId());
-				
+				final IJavaElement javaElement = JavaCore
+						.create(javaElementBookmark.getHandleId());
+
 				image = jelp.getImage(javaElement);
 			}
 

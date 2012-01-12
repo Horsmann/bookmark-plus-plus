@@ -34,7 +34,7 @@ public class BookmarkView
 	{
 
 		treeViewer = new RepresentationSwitchableTreeViewer(parent,
-				new HierarchicalRepresentationMode());
+				new HierarchicalRepresentationMode(), model);
 		addDragDropListeners(treeViewer);
 
 		setUpActions();

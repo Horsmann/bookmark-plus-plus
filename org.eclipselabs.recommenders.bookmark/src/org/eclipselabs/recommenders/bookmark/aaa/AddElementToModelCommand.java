@@ -111,11 +111,14 @@ public class AddElementToModelCommand
 					javaElement.getHandleIdentifier());
 			bookmarkParent.accept(visitor);
 			if (visitor.getFoundElement().isPresent()) {
-				return visitor.getFoundElement().get();
+				JavaElementBookmark foundBookmark = visitor.getFoundElement().get();
+				foundBookmark.setExpanded(true);
+				return foundBookmark;
 			}
 			else {
 				JavaElementBookmark newBookmark = new JavaElementBookmark(
 						javaElement.getHandleIdentifier(), true);
+				newBookmark.setExpanded(true);
 				bookmarkParent.addChildElement(newBookmark);
 
 				return newBookmark;
@@ -127,12 +130,15 @@ public class AddElementToModelCommand
 					javaElement.getHandleIdentifier());
 			category.accept(visitor);
 			if (visitor.getFoundElement().isPresent()) {
-				return visitor.getFoundElement().get();
+				JavaElementBookmark foundBookmark = visitor.getFoundElement().get();
+				foundBookmark.setExpanded(true);
+				return foundBookmark;
 			}
 			else {
 
 				JavaElementBookmark newBookmark = new JavaElementBookmark(
 						javaElement.getHandleIdentifier(), true);
+				newBookmark.setExpanded(true);
 				category.add(newBookmark);
 
 				return newBookmark;
