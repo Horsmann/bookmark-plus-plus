@@ -23,7 +23,6 @@ public class FileBookmark
 
 	private static final long serialVersionUID = -224963828339478664L;
 	private final String relativeFilePath;
-	private boolean expanded = true;
 
 	public FileBookmark(final IFile file)
 	{
