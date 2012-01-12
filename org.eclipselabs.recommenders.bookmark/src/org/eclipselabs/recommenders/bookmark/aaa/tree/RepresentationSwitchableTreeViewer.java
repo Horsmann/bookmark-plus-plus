@@ -31,6 +31,7 @@ public class RepresentationSwitchableTreeViewer {
 
     private IRepresentationMode currentMode;
     private final TreeViewer treeViewer;
+    private BookmarkModel model;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode) {
         this.treeViewer = new TreeViewer(parent);
@@ -46,7 +47,12 @@ public class RepresentationSwitchableTreeViewer {
     }
 
     public void setInput(final BookmarkModel model) {
+        this.model = model;
         treeViewer.setInput(model);
+        updateExpansions(model);
+    }
+
+    private void updateExpansions(final BookmarkModel model) {
         treeViewer.setExpandedElements(currentMode.getExpandedItems(model));
     }
 
@@ -57,6 +63,7 @@ public class RepresentationSwitchableTreeViewer {
 
     public void refresh() {
         treeViewer.refresh();
+        updateExpansions(model);
     }
 
     private class TreeViewListener implements ITreeViewerListener {
