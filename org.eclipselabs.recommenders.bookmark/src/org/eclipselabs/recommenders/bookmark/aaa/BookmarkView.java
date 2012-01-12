@@ -19,93 +19,76 @@ import org.eclipselabs.recommenders.bookmark.aaa.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
 
-public class BookmarkView
-	extends ViewPart
-	implements BookmarkCommandInvoker
-{
+public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
-	private BookmarkModel model;
-	private RepresentationSwitchableTreeViewer treeViewer;
-	private Action switchFlatHierarchical;
-	private boolean isHierarchicalModeActive;
+    private BookmarkModel model;
+    private RepresentationSwitchableTreeViewer treeViewer;
+    private Action switchFlatHierarchical;
+    private boolean isHierarchicalModeActive;
 
-	@Override
-	public void createPartControl(final Composite parent)
-	{
+    @Override
+    public void createPartControl(final Composite parent) {
 
-		treeViewer = new RepresentationSwitchableTreeViewer(parent,
-				new HierarchicalRepresentationMode(), model);
-		addDragDropListeners(treeViewer);
+        treeViewer = new RepresentationSwitchableTreeViewer(parent, new HierarchicalRepresentationMode(), model);
+        addDragDropListeners(treeViewer);
 
-		setUpActions();
-		setUpToolbar();
+        setUpActions();
+        setUpToolbar();
 
-		loadDefaultModel();
-		// activateFlatMode();
-		activateHierarchicalMode();
-	}
+        loadDefaultModel();
+        // activateFlatMode();
+        activateHierarchicalMode();
+    }
 
-	private void setUpActions()
-	{
-		switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
-	}
+    private void setUpActions() {
+        switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
+    }
 
-	private void setUpToolbar()
-	{
-		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
-		mgr.removeAll();
-		mgr.add(switchFlatHierarchical);
+    private void setUpToolbar() {
+        IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
+        mgr.removeAll();
+        mgr.add(switchFlatHierarchical);
 
-	}
+    }
 
-	public boolean isHierarchicalModeActive()
-	{
-		return isHierarchicalModeActive;
-	}
+    public boolean isHierarchicalModeActive() {
+        return isHierarchicalModeActive;
+    }
 
-	public void activateHierarchicalMode()
-	{
-		treeViewer.setRepresentation(new HierarchicalRepresentationMode());
-		isHierarchicalModeActive = true;
-	}
+    public void activateHierarchicalMode() {
+        treeViewer.setRepresentation(new HierarchicalRepresentationMode());
+        isHierarchicalModeActive = true;
+    }
 
-	public void activateFlatMode()
-	{
-		treeViewer.setRepresentation(new FlatRepresentationMode());
-		isHierarchicalModeActive = false;
-	}
+    public void activateFlatMode() {
+        treeViewer.setRepresentation(new FlatRepresentationMode());
+        isHierarchicalModeActive = false;
+    }
 
-	public void addDragDropListeners(
-			final RepresentationSwitchableTreeViewer treeViewer)
-	{
-		final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(
-				this);
-		treeViewer.addDropSupport(dropListener.getSupportedOperations(),
-				dropListener.getSupportedTransfers(), dropListener);
-		// treeViewer.addDragSupport(operations, transferTypes, dragListener);
-	}
+    public void addDragDropListeners(final RepresentationSwitchableTreeViewer treeViewer) {
+        final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(this);
+        treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
+                dropListener);
+        // treeViewer.addDragSupport(operations, transferTypes, dragListener);
+    }
 
-	private void loadDefaultModel()
-	{
-		setModel(BookmarkIO.load());
-	}
+    private void loadDefaultModel() {
+        setModel(BookmarkIO.load());
+    }
 
-	private void setModel(final BookmarkModel model)
-	{
-		this.model = model;
-		treeViewer.setInput(model);
-	}
+    private void setModel(final BookmarkModel model) {
+        this.model = model;
+        treeViewer.setInput(model);
+    }
 
-	@Override
-	public void setFocus()
-	{
-	}
+    @Override
+    public void setFocus() {
+    }
 
-	@Override
-	public void invoke(final IBookmarkModelCommand command)
-	{
-		command.execute(model);
-		treeViewer.refresh();
-	}
+    @Override
+    public void invoke(final IBookmarkModelCommand command) {
+        command.execute(model);
+        treeViewer.refresh();
+    }
 
 }

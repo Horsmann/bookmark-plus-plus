@@ -10,7 +10,6 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa.model;
 
-
 public interface IBookmarkModelComponent {
 
     void accept(IModelVisitor visitor);

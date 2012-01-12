@@ -17,7 +17,7 @@ public interface IRepresentationMode {
     IChildrenResolverVisitor createChildrenResolverVisitor();
 
     ILabelProviderVisitor createLabelProviderVisitor();
-    
+
     IImageProviderVisitor createImageProviderVisitor();
 
     ITreeExpansionVisitor createTreeExpansionVisitor(ITreeExpansionVisitor.Action expansion);

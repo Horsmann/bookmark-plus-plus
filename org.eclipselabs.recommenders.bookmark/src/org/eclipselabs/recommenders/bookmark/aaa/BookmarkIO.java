@@ -25,80 +25,66 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 
-public class BookmarkIO
-{
+public class BookmarkIO {
 
-	public static BookmarkModel load()
-	{
-		final BookmarkModel model = new BookmarkModel();
-		final JavaElementBookmark myTestBookmark = new JavaElementBookmark(
-				"=LKJLD/src<test.project{MyTest.java", true);
-		final JavaElementBookmark myTestAddBookmark = new JavaElementBookmark(
-				"=LKJLD/src<test.project{MyTest.java[My~add~I", false);
-		myTestBookmark.addChildElement(myTestAddBookmark);
+    public static BookmarkModel load() {
+        final BookmarkModel model = new BookmarkModel();
+        final JavaElementBookmark myTestBookmark = new JavaElementBookmark("=LKJLD/src<test.project{MyTest.java", true);
+        final JavaElementBookmark myTestAddBookmark = new JavaElementBookmark(
+                "=LKJLD/src<test.project{MyTest.java[My~add~I", false);
+        myTestBookmark.addChildElement(myTestAddBookmark);
 
-		model.add(new Category("Test", new FileBookmark(ResourcesPlugin
-				.getWorkspace().getRoot()
-				.getFile(Path.fromOSString("project/test.bm"))),
-				myTestBookmark, new JavaElementBookmark(
-						"=LKJLD/src<test.project{IMy.java[IMy~add~I", false)));
+        model.add(new Category("Test", new FileBookmark(ResourcesPlugin.getWorkspace().getRoot()
+                .getFile(Path.fromOSString("project/test.bm"))), myTestBookmark, new JavaElementBookmark(
+                "=LKJLD/src<test.project{IMy.java[IMy~add~I", false)));
 
-		JavaElementBookmark jeb1 = new JavaElementBookmark(
-				"=LKJLD/src<test.project{IMy.java", true);
-		
-		JavaElementBookmark jeb2 = new JavaElementBookmark(
-				"=LKJLD/src<test.project{IMy.java[IMy", true);
-		
-		JavaElementBookmark jeb3 = new JavaElementBookmark(
-				"=LKJLD/src<test.project{IMy.java[IMy~add~I", false);
-		
-		jeb2.addChildElement(jeb3);
-		jeb1.addChildElement(jeb2);
-		
-		model.add(new Category("Test 2", jeb1));
+        JavaElementBookmark jeb1 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java", true);
 
-		return model;
-	}
+        JavaElementBookmark jeb2 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy", true);
 
-	public static BookmarkModel loadFromDefaultFile()
-	{
-		File file = Activator.getDefaultLocationForStoringBookmark();
+        JavaElementBookmark jeb3 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy~add~I", false);
 
-		return load(file);
+        jeb2.addChildElement(jeb3);
+        jeb1.addChildElement(jeb2);
 
-	}
+        model.add(new Category("Test 2", jeb1));
 
-	public static BookmarkModel load(File file)
-	{
-		BookmarkModel model = null;
+        return model;
+    }
 
-		try {
-			FileInputStream fis = new FileInputStream(file);
-			ObjectInputStream in = new ObjectInputStream(fis);
-			model = (BookmarkModel) in.readObject();
-			in.close();
-		}
-		catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+    public static BookmarkModel loadFromDefaultFile() {
+        File file = Activator.getDefaultLocationForStoringBookmark();
 
-		return model;
-	}
+        return load(file);
 
-	public static void writeToDefaultFile(BookmarkModel model)
-	{
-		File file = Activator.getDefaultLocationForStoringBookmark();
-		try {
-			FileOutputStream fos = new FileOutputStream(file);
-			ObjectOutputStream out = new ObjectOutputStream(fos);
-			out.writeObject(model);
-			out.close();
-		}
-		catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
+    }
+
+    public static BookmarkModel load(File file) {
+        BookmarkModel model = null;
+
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream in = new ObjectInputStream(fis);
+            model = (BookmarkModel) in.readObject();
+            in.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return model;
+    }
+
+    public static void writeToDefaultFile(BookmarkModel model) {
+        File file = Activator.getDefaultLocationForStoringBookmark();
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream out = new ObjectOutputStream(fos);
+            out.writeObject(model);
+            out.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }

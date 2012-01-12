@@ -29,206 +29,169 @@ import org.eclipselabs.recommenders.bookmark.aaa.tree.ITreeExpansionVisitor.Acti
 
 import com.google.common.collect.Lists;
 
-public class HierarchicalRepresentationMode
-	implements IRepresentationMode
-{
+public class HierarchicalRepresentationMode implements IRepresentationMode {
 
-	@Override
-	public IChildrenResolverVisitor createChildrenResolverVisitor()
-	{
-		return new IChildrenResolverVisitor()
-		{
+    @Override
+    public IChildrenResolverVisitor createChildrenResolverVisitor() {
+        return new IChildrenResolverVisitor() {
 
-			private List<? extends IBookmark> childBookmarks;
+            private List<? extends IBookmark> childBookmarks;
 
-			@Override
-			public boolean hasChildren()
-			{
-				return !childBookmarks.isEmpty();
-			}
+            @Override
+            public boolean hasChildren() {
+                return !childBookmarks.isEmpty();
+            }
 
-			@Override
-			public List<? extends IBookmark> getChildren()
-			{
-				return childBookmarks;
-			}
+            @Override
+            public List<? extends IBookmark> getChildren() {
+                return childBookmarks;
+            }
 
-			@Override
-			public void visit(final FileBookmark fileBookmark)
-			{
-				childBookmarks = Lists.newLinkedList();
-			}
+            @Override
+            public void visit(final FileBookmark fileBookmark) {
+                childBookmarks = Lists.newLinkedList();
+            }
 
-			@Override
-			public void visit(final Category category)
-			{
-				childBookmarks = category.getBookmarks();
-			}
+            @Override
+            public void visit(final Category category) {
+                childBookmarks = category.getBookmarks();
+            }
 
-			@Override
-			public void visit(final JavaElementBookmark javaElementBookmark)
-			{
-				childBookmarks = javaElementBookmark.getChildElements();
-			}
-		};
-	}
+            @Override
+            public void visit(final JavaElementBookmark javaElementBookmark) {
+                childBookmarks = javaElementBookmark.getChildElements();
+            }
+        };
+    }
 
-	@Override
-	public ILabelProviderVisitor createLabelProviderVisitor()
-	{
-		return new ILabelProviderVisitor()
-		{
+    @Override
+    public ILabelProviderVisitor createLabelProviderVisitor() {
+        return new ILabelProviderVisitor() {
 
-			private String label;
+            private String label;
 
-			private final JavaElementLabelProvider jelp = new JavaElementLabelProvider(
-					JavaElementLabelProvider.SHOW_RETURN_TYPE
-							| JavaElementLabelProvider.SHOW_SMALL_ICONS
-							| JavaElementLabelProvider.SHOW_DEFAULT);
+            private final JavaElementLabelProvider jelp = new JavaElementLabelProvider(
+                    JavaElementLabelProvider.SHOW_RETURN_TYPE | JavaElementLabelProvider.SHOW_SMALL_ICONS
+                            | JavaElementLabelProvider.SHOW_DEFAULT);
 
-			@Override
-			public String getLabel()
-			{
-				return label;
-			}
+            @Override
+            public String getLabel() {
+                return label;
+            }
 
-			@Override
-			public void visit(final FileBookmark fileBookmark)
-			{
-				label = fileBookmark.getFile().toString();
+            @Override
+            public void visit(final FileBookmark fileBookmark) {
+                label = fileBookmark.getFile().toString();
 
-			}
+            }
 
-			@Override
-			public void visit(final Category category)
-			{
-				label = category.getLabel();
+            @Override
+            public void visit(final Category category) {
+                label = category.getLabel();
 
-			}
+            }
 
-			@Override
-			public void visit(final JavaElementBookmark javaElementBookmark)
-			{
-				final IJavaElement javaElement = JavaCore
-						.create(javaElementBookmark.getHandleId());
+            @Override
+            public void visit(final JavaElementBookmark javaElementBookmark) {
+                final IJavaElement javaElement = JavaCore.create(javaElementBookmark.getHandleId());
 
-				label = jelp.getText(javaElement);
+                label = jelp.getText(javaElement);
 
-			}
+            }
 
-		};
-	}
+        };
+    }
 
-	@Override
-	public ITreeExpansionVisitor createTreeExpansionVisitor(
-			final Action expansion)
-	{
-		return new ITreeExpansionVisitor()
-		{
+    @Override
+    public ITreeExpansionVisitor createTreeExpansionVisitor(final Action expansion) {
+        return new ITreeExpansionVisitor() {
 
-			@Override
-			public void visit(final FileBookmark fileBookmark)
-			{
+            @Override
+            public void visit(final FileBookmark fileBookmark) {
 
-			}
+            }
 
-			@Override
-			public void visit(final Category category)
-			{
-				category.setExpanded(expansion == Action.EXPAND);
-			}
+            @Override
+            public void visit(final Category category) {
+                category.setExpanded(expansion == Action.EXPAND);
+            }
 
-			@Override
-			public void visit(final JavaElementBookmark javaElementBookmark)
-			{
-				javaElementBookmark.setExpanded(expansion == Action.EXPAND);
-			}
+            @Override
+            public void visit(final JavaElementBookmark javaElementBookmark) {
+                javaElementBookmark.setExpanded(expansion == Action.EXPAND);
+            }
 
-		};
-	}
+        };
+    }
 
-	@Override
-	public Object[] getExpandedItems(final BookmarkModel model)
-	{
-		final List<Object> expandedItems = Lists.newLinkedList();
-		final IModelVisitor visitor = new IModelVisitor()
-		{
+    @Override
+    public Object[] getExpandedItems(final BookmarkModel model) {
+        final List<Object> expandedItems = Lists.newLinkedList();
+        final IModelVisitor visitor = new IModelVisitor() {
 
-			@Override
-			public void visit(final Category category)
-			{
-				if (category.isExpanded()) {
-					expandedItems.add(category);
-				}
-				for (final IBookmark bookmark : category.getBookmarks()) {
-					bookmark.accept(this);
-				}
-			}
+            @Override
+            public void visit(final Category category) {
+                if (category.isExpanded()) {
+                    expandedItems.add(category);
+                }
+                for (final IBookmark bookmark : category.getBookmarks()) {
+                    bookmark.accept(this);
+                }
+            }
 
-			@Override
-			public void visit(final FileBookmark fileBookmark)
-			{
+            @Override
+            public void visit(final FileBookmark fileBookmark) {
 
-			}
+            }
 
-			@Override
-			public void visit(final JavaElementBookmark javaElementBookmark)
-			{
-				if (javaElementBookmark.isExpanded()) {
-					expandedItems.add(javaElementBookmark);
-				}
-				for (final IBookmark bookmark : javaElementBookmark
-						.getChildElements()) {
-					bookmark.accept(this);
-				}
-			}
-		};
-		for (final Category category : model.getCategories()) {
-			visitor.visit(category);
-		}
-		return expandedItems.toArray();
-	}
+            @Override
+            public void visit(final JavaElementBookmark javaElementBookmark) {
+                if (javaElementBookmark.isExpanded()) {
+                    expandedItems.add(javaElementBookmark);
+                }
+                for (final IBookmark bookmark : javaElementBookmark.getChildElements()) {
+                    bookmark.accept(this);
+                }
+            }
+        };
+        for (final Category category : model.getCategories()) {
+            visitor.visit(category);
+        }
+        return expandedItems.toArray();
+    }
 
-	@Override
-	public IImageProviderVisitor createImageProviderVisitor()
-	{
-		return new IImageProviderVisitor()
-		{
-			private Image image;
-			private final JavaElementLabelProvider jelp = new JavaElementLabelProvider(
-					JavaElementLabelProvider.SHOW_RETURN_TYPE
-							| JavaElementLabelProvider.SHOW_SMALL_ICONS
-							| JavaElementLabelProvider.SHOW_DEFAULT);
+    @Override
+    public IImageProviderVisitor createImageProviderVisitor() {
+        return new IImageProviderVisitor() {
+            private Image image;
+            private final JavaElementLabelProvider jelp = new JavaElementLabelProvider(
+                    JavaElementLabelProvider.SHOW_RETURN_TYPE | JavaElementLabelProvider.SHOW_SMALL_ICONS
+                            | JavaElementLabelProvider.SHOW_DEFAULT);
 
-			@Override
-			public void visit(JavaElementBookmark javaElementBookmark)
-			{
-				final IJavaElement javaElement = JavaCore
-						.create(javaElementBookmark.getHandleId());
+            @Override
+            public void visit(JavaElementBookmark javaElementBookmark) {
+                final IJavaElement javaElement = JavaCore.create(javaElementBookmark.getHandleId());
 
-				image = jelp.getImage(javaElement);
-			}
+                image = jelp.getImage(javaElement);
+            }
 
-			@Override
-			public void visit(Category category)
-			{
-				final AbstractUIPlugin plugin = Activator.getDefault();
-				final ImageRegistry registry = plugin.getImageRegistry();
-				image = registry.get(Activator.ICON_BOOKMARK);
-			}
+            @Override
+            public void visit(Category category) {
+                final AbstractUIPlugin plugin = Activator.getDefault();
+                final ImageRegistry registry = plugin.getImageRegistry();
+                image = registry.get(Activator.ICON_BOOKMARK);
+            }
 
-			@Override
-			public void visit(FileBookmark fileBookmark)
-			{
+            @Override
+            public void visit(FileBookmark fileBookmark) {
 
-				image = jelp.getImage(fileBookmark.getFile());
-			}
+                image = jelp.getImage(fileBookmark.getFile());
+            }
 
-			@Override
-			public Image getImage()
-			{
-				return image;
-			}
-		};
-	}
+            @Override
+            public Image getImage() {
+                return image;
+            }
+        };
+    }
 }

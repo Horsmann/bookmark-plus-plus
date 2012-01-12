@@ -17,50 +17,42 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-public class FileBookmark
-	implements IBookmark, Serializable
-{
+public class FileBookmark implements IBookmark, Serializable {
 
-	private static final long serialVersionUID = -224963828339478664L;
-	private final String relativeFilePath;
+    private static final long serialVersionUID = -224963828339478664L;
+    private final String relativeFilePath;
 
-	public FileBookmark(final IFile file)
-	{
-		this.relativeFilePath = getRelativeFilePath(file);
-	}
+    public FileBookmark(final IFile file) {
+        this.relativeFilePath = getRelativeFilePath(file);
+    }
 
-	private String getRelativeFilePath(IFile file)
-	{
-		IPath path = file.getFullPath();
+    private String getRelativeFilePath(IFile file) {
+        IPath path = file.getFullPath();
 
-		IPath projectRelativePath = file.getProjectRelativePath();
+        IPath projectRelativePath = file.getProjectRelativePath();
 
-		return path.makeRelativeTo(projectRelativePath).toOSString();
-	}
+        return path.makeRelativeTo(projectRelativePath).toOSString();
+    }
 
-	@Override
-	public boolean isInferredNode()
-	{
-		return false;
-	}
+    @Override
+    public boolean isInferredNode() {
+        return false;
+    }
 
-	public IFile getFile()
-	{
-		IFile file = createIFileFromRelativePath();
-		return file;
-	}
+    public IFile getFile() {
+        IFile file = createIFileFromRelativePath();
+        return file;
+    }
 
-	private IFile createIFileFromRelativePath()
-	{
-		IPath location = Path.fromOSString(relativeFilePath);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
-		return file;
-	}
+    private IFile createIFileFromRelativePath() {
+        IPath location = Path.fromOSString(relativeFilePath);
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
+        return file;
+    }
 
-	@Override
-	public void accept(final IModelVisitor visitor)
-	{
-		visitor.visit(this);
-	}
+    @Override
+    public void accept(final IModelVisitor visitor) {
+        visitor.visit(this);
+    }
 
 }
