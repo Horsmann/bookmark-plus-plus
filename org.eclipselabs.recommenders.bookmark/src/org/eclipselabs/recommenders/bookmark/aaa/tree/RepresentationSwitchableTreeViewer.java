@@ -12,12 +12,14 @@ package org.eclipselabs.recommenders.bookmark.aaa.tree;
 
 import java.util.List;
 
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
@@ -62,6 +64,16 @@ public class RepresentationSwitchableTreeViewer {
     public void addDropSupport(final int operations, final Transfer[] transferTypes,
             final DropTargetListener dropListener) {
         treeViewer.addDropSupport(operations, transferTypes, dropListener);
+    }
+
+    public void addDragSupport(final int operations, final Transfer[] transferTypes,
+            final DragSourceListener dragListener) {
+        treeViewer.addDragSupport(operations, transferTypes, dragListener);
+    }
+
+    public IStructuredSelection getSelections() {
+
+        return (IStructuredSelection) treeViewer.getSelection();
     }
 
     public void refresh() {

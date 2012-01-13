@@ -69,7 +69,10 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(this);
         treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
-        // treeViewer.addDragSupport(operations, transferTypes, dragListener);
+
+        final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener(treeViewer);
+        treeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
+                dragListener);
     }
 
     private void loadDefaultModel() {

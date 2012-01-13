@@ -18,7 +18,12 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
+import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
+import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
+import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
+import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 
 import com.google.common.base.Optional;
 
@@ -58,7 +63,16 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
         if (event.data instanceof TreeSelection) {
             processTreeSelection(dropTarget, (TreeSelection) event.data);
+        } else if (event.data instanceof IBookmark) {
+            processBookmark(dropTarget, (IBookmark) event.data);
         }
+    }
+
+    private void processBookmark(Optional<IBookmarkModelComponent> dropTarget, IBookmark dropData) {
+
+//        ValueVisitor visitor = new ValueVisitor();
+//        dropData.accept(visitor);
+//        processDroppedElement(dropTarget, visitor);
     }
 
     private Optional<IBookmarkModelComponent> getDropTarget(final DropTargetEvent event) {
@@ -92,5 +106,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     public Transfer[] getSupportedTransfers() {
         return new Transfer[] { ResourceTransfer.getInstance(), LocalSelectionTransfer.getTransfer() };
     }
+
+   
 
 }
