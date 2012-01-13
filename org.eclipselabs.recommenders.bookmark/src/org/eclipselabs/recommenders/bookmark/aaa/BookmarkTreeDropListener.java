@@ -30,9 +30,11 @@ import com.google.common.base.Optional;
 public class BookmarkTreeDropListener implements DropTargetListener {
 
     private final BookmarkCommandInvoker commandInvoker;
+    private final BookmarkTreeDragListener dragListener;
 
-    public BookmarkTreeDropListener(final BookmarkCommandInvoker commandInvoker) {
+    public BookmarkTreeDropListener(final BookmarkCommandInvoker commandInvoker, BookmarkTreeDragListener dragListener) {
         this.commandInvoker = commandInvoker;
+        this.dragListener = dragListener;
     }
 
     @Override
@@ -63,16 +65,17 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
         if (event.data instanceof TreeSelection) {
             processTreeSelection(dropTarget, (TreeSelection) event.data);
-        } else if (event.data instanceof IBookmark) {
-            processBookmark(dropTarget, (IBookmark) event.data);
+        } else if (dragListener.getDragData().isPresent()) {
+            processBookmark(dropTarget, dragListener.getDragData());
         }
     }
 
-    private void processBookmark(Optional<IBookmarkModelComponent> dropTarget, IBookmark dropData) {
+    private void processBookmark(Optional<IBookmarkModelComponent> dropTarget, Optional<IBookmark[]> optional) {
 
-//        ValueVisitor visitor = new ValueVisitor();
-//        dropData.accept(visitor);
-//        processDroppedElement(dropTarget, visitor);
+        System.out.println("la");
+        // ValueVisitor visitor = new ValueVisitor();
+        // dropData.accept(visitor);
+        // processDroppedElement(dropTarget, visitor);
     }
 
     private Optional<IBookmarkModelComponent> getDropTarget(final DropTargetEvent event) {
@@ -106,7 +109,5 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     public Transfer[] getSupportedTransfers() {
         return new Transfer[] { ResourceTransfer.getInstance(), LocalSelectionTransfer.getTransfer() };
     }
-
-   
 
 }
