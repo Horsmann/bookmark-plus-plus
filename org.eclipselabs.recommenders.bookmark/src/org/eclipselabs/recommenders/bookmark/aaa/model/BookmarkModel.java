@@ -23,6 +23,10 @@ public class BookmarkModel implements Serializable {
     public void add(final Category category) {
         categories.add(category);
     }
+    
+    public void remove(IBookmarkModelComponent component) {
+        categories.remove(component);
+    }
 
     public List<Category> getCategories() {
         return categories;

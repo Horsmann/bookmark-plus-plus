@@ -19,11 +19,17 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
+import org.eclipselabs.recommenders.bookmark.aaa.RemoveBookmarkModelComponentVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
@@ -43,6 +49,12 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.setContentProvider(new SwitchableContentProvider());
         treeViewer.setLabelProvider(new SwitchableLabelProvider());
         treeViewer.addTreeListener(new TreeViewListener());
+
+        addKeyListener();
+    }
+
+    private void addKeyListener() {
+        treeViewer.getTree().addKeyListener(new TreeKeyListener());
     }
 
     public void setRepresentation(final IRepresentationMode mode) {
@@ -168,4 +180,65 @@ public class RepresentationSwitchableTreeViewer {
             throw new RuntimeException("Should not be reachable. Visitor can only be used on IBookmarkModelComponents.");
         }
     }
+
+    private class TreeKeyListener implements KeyListener {
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+
+            if (isDeletion(e)) {
+                processDeletion(e);
+            }
+            
+            treeViewer.refresh();
+        }
+
+        private void processDeletion(KeyEvent e) {
+
+            TreeItem[] selections = getSelections(e);
+
+            for (TreeItem item : selections) {
+                searchBookmarkDeleteSelection(item);
+            }
+        }
+
+        private TreeItem[] getSelections(KeyEvent e) {
+            Tree tree = (Tree) e.getSource();
+            TreeItem[] selections = tree.getSelection();
+            return selections;
+        }
+
+        private void searchBookmarkDeleteSelection(TreeItem item) {
+
+            IBookmarkModelComponent selection = (IBookmarkModelComponent) item.getData();
+
+            deletionForCategories(selection);
+
+            deletionForIBookmarks(selection);
+        }
+
+        private void deletionForIBookmarks(IBookmarkModelComponent selection) {
+            RemoveBookmarkModelComponentVisitor visitor = new RemoveBookmarkModelComponentVisitor(selection);
+
+            for (Category category : model.getCategories()) {
+                category.accept(visitor);
+            }
+        }
+
+        private void deletionForCategories(IBookmarkModelComponent selection) {
+            model.remove(selection);
+        }
+
+        private boolean isDeletion(KeyEvent e) {
+            int BACKSPACE = 8;
+            return (e.keyCode == SWT.DEL || e.keyCode == BACKSPACE);
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+        }
+
+    }
+
 }

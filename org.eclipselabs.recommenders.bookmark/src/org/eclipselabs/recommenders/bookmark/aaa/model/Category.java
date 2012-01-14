@@ -35,6 +35,10 @@ public class Category implements IBookmarkModelComponent, Serializable {
     public List<IBookmark> getBookmarks() {
         return bookmarks;
     }
+    
+    public void remove(IBookmarkModelComponent bookmark) {
+        bookmarks.remove(bookmark);
+    }
 
     @Override
     public void accept(final IModelVisitor visitor) {

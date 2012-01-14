@@ -3,6 +3,9 @@ package org.eclipselabs.recommenders.bookmark.aaa.model;
 import java.io.Serializable;
 import java.util.List;
 
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.JavaCore;
+
 import com.google.common.collect.Lists;
 
 public class JavaElementBookmark implements IBookmark, Serializable {
@@ -26,6 +29,14 @@ public class JavaElementBookmark implements IBookmark, Serializable {
 
     public String getHandleId() {
         return handleId;
+    }
+    
+    public IJavaElement getJavaElement() {
+        return JavaCore.create(handleId);
+    }
+    
+    public void remove(IBookmarkModelComponent bookmark) {
+        childElements.remove(bookmark);
     }
 
     public void setExpanded(final boolean expanded) {
