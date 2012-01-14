@@ -18,8 +18,12 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
+import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
+import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
+import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 
 import com.google.common.base.Optional;
 
@@ -63,6 +67,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
             processTreeSelection(dropTarget, (TreeSelection) event.data);
         } else if (dragListener.getDragData().isPresent()) {
             processBookmark(dropTarget, dragListener.getDragData(), (event.operations == DND.DROP_COPY));
+            dragListener.reset();
         }
     }
 
@@ -97,12 +102,30 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
     private void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,
             IBookmark[] bookmarks, boolean isCopyOperation) {
-        commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmarks, isCopyOperation));
+
+        if (!causeRecursion(bookmarks, dropTarget)) {
+
+            commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmarks, isCopyOperation));
+        }
+    }
+
+    private boolean causeRecursion(IBookmark[] bookmarks, Optional<IBookmarkModelComponent> dropTarget) {
+
+        for (IBookmark bookmark : bookmarks) {
+            RecursionPreventerVisitor visitor = new RecursionPreventerVisitor(dropTarget.get());
+            bookmark.accept(visitor);
+            if (visitor.recursionFound) {
+                System.out.println("recursion found");
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
     public void dropAccept(final DropTargetEvent event) {
-        //TODO: prevent recursive move-operations
+
     }
 
     public int getSupportedOperations() {
@@ -113,4 +136,34 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         return new Transfer[] { ResourceTransfer.getInstance(), LocalSelectionTransfer.getTransfer() };
     }
 
+    private class RecursionPreventerVisitor implements IModelVisitor {
+
+        boolean recursionFound = false;
+        private final IBookmarkModelComponent target;
+
+        public RecursionPreventerVisitor(IBookmarkModelComponent target) {
+            this.target = target;
+        }
+
+        @Override
+        public void visit(FileBookmark fileBookmark) {
+        }
+
+        @Override
+        public void visit(Category category) {
+
+        }
+
+        @Override
+        public void visit(JavaElementBookmark javaElementBookmark) {
+            if (javaElementBookmark == target) {
+                recursionFound = true;
+            }
+            for (IBookmark child : javaElementBookmark.getChildElements()) {
+                child.accept(this);
+            }
+
+        }
+
+    }
 }

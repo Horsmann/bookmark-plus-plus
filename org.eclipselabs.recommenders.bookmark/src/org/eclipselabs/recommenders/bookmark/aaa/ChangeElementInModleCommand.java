@@ -1,5 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.aaa;
 
+import java.util.List;
+
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
@@ -9,6 +11,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
 public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 
@@ -29,8 +32,10 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         for (IBookmark bookmark : bookmarks) {
             ValueVisitor visitor = new ValueVisitor();
             bookmark.accept(visitor);
-            if (visitor.value.isPresent()) {
-                new AddElementToModelCommand(dropTarget, visitor.value.get()).execute(model);
+            if (!visitor.values.isEmpty()) {
+                for (Object value : visitor.values) {
+                    new AddElementToModelCommand(dropTarget, value).execute(model);
+                }
             }
         }
 
@@ -51,13 +56,13 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     }
 
     private class ValueVisitor implements IModelVisitor {
-        Optional<Object> value = Optional.absent();
+        List<Object> values = Lists.newArrayList();
 
         @Override
         public void visit(FileBookmark fileBookmark) {
 
             Object object = fileBookmark.getFile();
-            value = Optional.of(object);
+            values.add(object);
         }
 
         @Override
@@ -67,7 +72,10 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         @Override
         public void visit(JavaElementBookmark javaElementBookmark) {
             Object object = javaElementBookmark.getJavaElement();
-            value = Optional.of(object);
+            values.add(object);
+            for (IBookmark bookmark : javaElementBookmark.getChildElements()) {
+                bookmark.accept(this);
+            }
         }
 
     }

@@ -62,6 +62,10 @@ public class BookmarkTreeDragListener implements DragSourceListener {
     public void dragFinished(DragSourceEvent event) {
 
     }
+    
+    public void reset() {
+        draggedBookmarks = Optional.absent();
+    }
 
     public int getSupportedOperations() {
         return DND.DROP_MOVE | DND.DROP_COPY;
