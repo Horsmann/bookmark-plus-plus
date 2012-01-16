@@ -29,7 +29,7 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     @Override
     public void execute(BookmarkModel model) {
 
-        if (isOperationWithinSameCategory(model)) {
+        if (dropTarget.isPresent() && isOperationWithinSameCategory(model)) {
             return;
             // performReorderOperation(model);
         }
@@ -48,20 +48,6 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 
     }
 
-    // private void performReorderOperation(BookmarkModel model) {
-    //
-    // // IsSilblingsDropVisitor visitor = new
-    // IsSilblingsDropVisitor(dropTarget.get(), bookmark);
-    // if (bookmarksAreOnSameHierarchy(model, visitor)) {
-    // if (didDropOccurInUpperHalfOfWidgetElement()) {
-    // // insertBookmarkBeforeDropTarget();
-    // } else {
-    // // insertBookmarkAfterDropTarget();
-    // }
-    // }
-    //
-    // }
-
     private boolean isOperationWithinSameCategory(BookmarkModel model) {
 
         Category category1 = getCategoryOf(dropTarget.get());
@@ -79,41 +65,6 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 
         return getCategoryOf(component.getParent());
     }
-
-    private boolean didDropOccurInUpperHalfOfWidgetElement() {
-
-        return false;
-    }
-
-    // private boolean bookmarksAreOnSameHierarchy(BookmarkModel model,
-    // IsSilblingsDropVisitor visitor) {
-    //
-    // for (Category category : model.getCategories()) {
-    // category.accept(visitor);
-    // if (visitor.areSilblings()) {
-    // return true;
-    // }
-    // }
-    //
-    // return false;
-    // }
-    //
-    // private boolean isOperationWithinSameCategory(BookmarkModel model) {
-    // for (IBookmarkModelComponent category : model.getCategories()) {
-    // FindComponentModelVisitor targetFinderVisitor = new
-    // FindComponentModelVisitor(dropTarget.get());
-    // category.accept(targetFinderVisitor);
-    // if (targetFinderVisitor.foundComponent()) {
-    // FindComponentModelVisitor bookmarkFinderVisitor = new
-    // FindComponentModelVisitor(bookmark);
-    // category.accept(bookmarkFinderVisitor);
-    // if (bookmarkFinderVisitor.foundComponent()) {
-    // return true;
-    // }
-    // }
-    // }
-    // return false;
-    // }
 
     private void deleteDroppedBookmarks(BookmarkModel model) {
 
@@ -148,63 +99,4 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 
     }
 
-    // private class IsSilblingsDropVisitor implements IModelVisitor {
-    //
-    // private boolean droppedOnSilbling = false;
-    // private Optional<IBookmarkModelComponent> parent = Optional.absent();
-    //
-    // private boolean foundDrop = false, foundTarget = false;
-    // private final IBookmarkModelComponent target;
-    // private final IBookmarkModelComponent dropNode;
-    //
-    // public IsSilblingsDropVisitor(IBookmarkModelComponent target,
-    // IBookmarkModelComponent dropNode) {
-    // this.target = target;
-    // this.dropNode = dropNode;
-    //
-    // }
-    //
-    // public boolean areSilblings() {
-    // return droppedOnSilbling;
-    // }
-    //
-    // @Override
-    // public void visit(FileBookmark fileBookmark) {
-    // }
-    //
-    // @Override
-    // public void visit(Category category) {
-    //
-    // for (IBookmark bookmark : category.getBookmarks()) {
-    // bookmark.accept(this);
-    // }
-    //
-    // if (foundDrop && foundTarget) {
-    // droppedOnSilbling = true;
-    // }
-    //
-    // }
-    //
-    // @Override
-    // public void visit(JavaElementBookmark javaElementBookmark) {
-    //
-    // if (javaElementBookmark == target) {
-    // foundTarget = true;
-    // }
-    // if (javaElementBookmark == dropNode) {
-    // foundDrop = true;
-    // }
-    //
-    // for (JavaElementBookmark javaElement :
-    // javaElementBookmark.getChildElements()) {
-    // javaElement.accept(this);
-    // }
-    //
-    // if (foundDrop && foundTarget) {
-    // droppedOnSilbling = true;
-    // }
-    //
-    // }
-    //
-    // }
 }

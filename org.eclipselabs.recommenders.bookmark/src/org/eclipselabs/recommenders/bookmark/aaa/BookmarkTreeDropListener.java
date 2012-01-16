@@ -136,6 +136,10 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
     private boolean causeRecursion(IBookmark bookmark, Optional<IBookmarkModelComponent> dropTarget) {
 
+        if (!dropTarget.isPresent()) {
+            return false;
+        }
+
         RecursionPreventerVisitor visitor = new RecursionPreventerVisitor(dropTarget.get());
         bookmark.accept(visitor);
         if (visitor.recursionFound) {
