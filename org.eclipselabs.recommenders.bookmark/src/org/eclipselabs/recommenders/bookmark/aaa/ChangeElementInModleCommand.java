@@ -16,26 +16,24 @@ import com.google.common.collect.Lists;
 public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 
     private final Optional<IBookmarkModelComponent> dropTarget;
-    private final IBookmark[] bookmarks;
+    private final IBookmark bookmark;
     private final boolean keepSource;
 
-    public ChangeElementInModleCommand(final Optional<IBookmarkModelComponent> dropTarget, final IBookmark[] bookmarks,
+    public ChangeElementInModleCommand(final Optional<IBookmarkModelComponent> dropTarget, final IBookmark bookmark,
             final boolean keepSource) {
         this.dropTarget = dropTarget;
-        this.bookmarks = bookmarks;
+        this.bookmark = bookmark;
         this.keepSource = keepSource;
     }
 
     @Override
     public void execute(BookmarkModel model) {
 
-        for (IBookmark bookmark : bookmarks) {
-            ValueVisitor visitor = new ValueVisitor();
-            bookmark.accept(visitor);
-            if (!visitor.values.isEmpty()) {
-                for (Object value : visitor.values) {
-                    new AddElementToModelCommand(dropTarget, value).execute(model);
-                }
+        ValueVisitor visitor = new ValueVisitor();
+        bookmark.accept(visitor);
+        if (!visitor.values.isEmpty()) {
+            for (Object value : visitor.values) {
+                new AddElementToModelCommand(dropTarget, value).execute(model);
             }
         }
 
@@ -47,11 +45,9 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 
     private void deleteDroppedBookmarks(BookmarkModel model) {
 
-        for (IBookmark bookmark : bookmarks) {
-            RemoveBookmarkModelComponentVisitor visitor = new RemoveBookmarkModelComponentVisitor(bookmark);
-            for (Category category : model.getCategories()) {
-                category.accept(visitor);
-            }
+        RemoveBookmarkModelComponentVisitor visitor = new RemoveBookmarkModelComponentVisitor(bookmark);
+        for (Category category : model.getCategories()) {
+            category.accept(visitor);
         }
     }
 

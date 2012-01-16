@@ -10,13 +10,18 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa;
 
+import java.util.Iterator;
+
 import org.eclipse.jface.util.LocalSelectionTransfer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
@@ -30,11 +35,9 @@ import com.google.common.base.Optional;
 public class BookmarkTreeDropListener implements DropTargetListener {
 
     private final BookmarkCommandInvoker commandInvoker;
-    private final BookmarkTreeDragListener dragListener;
 
-    public BookmarkTreeDropListener(final BookmarkCommandInvoker commandInvoker, BookmarkTreeDragListener dragListener) {
+    public BookmarkTreeDropListener(final BookmarkCommandInvoker commandInvoker) {
         this.commandInvoker = commandInvoker;
-        this.dragListener = dragListener;
     }
 
     @Override
@@ -65,18 +68,41 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
         if (event.data instanceof TreeSelection) {
             processTreeSelection(dropTarget, (TreeSelection) event.data);
-        } else if (dragListener.getDragData().isPresent()) {
-            processBookmark(dropTarget, dragListener.getDragData(), (event.operations == DND.DROP_COPY));
-            dragListener.reset();
         }
+
+        ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
+        if (selections instanceof IStructuredSelection) {
+            processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event));
+        }
+
     }
 
-    private void processBookmark(Optional<IBookmarkModelComponent> dropTarget, Optional<IBookmark[]> dropped,
-            boolean isCopyOperation) {
+    private boolean isCopyOperation(DropTargetEvent event) {
+        return !((event.operations & DND.DROP_MOVE) != 0);
+    }
 
-        IBookmark[] bookmarks = dropped.get();
+    private void processStructuredSelection(Optional<IBookmarkModelComponent> dropTarget,
+            IStructuredSelection selections, boolean keepSource) {
 
-        processDroppedElementOriginatedFromInsideTheView(dropTarget, bookmarks, isCopyOperation);
+        @SuppressWarnings("rawtypes")
+        Iterator iterator = selections.iterator();
+
+        while (iterator.hasNext()) {
+            Object object = iterator.next();
+            if (object instanceof TreeItem) {
+                processTreeItem(dropTarget, (TreeItem) object, keepSource);
+            }
+        }
+
+    }
+
+    private void processTreeItem(Optional<IBookmarkModelComponent> dropTarget, TreeItem item, boolean keepSource) {
+
+        if (item.getData() instanceof IBookmark) {
+            IBookmark bookmark = (IBookmark) item.getData();
+            processDroppedElementOriginatedFromInsideTheView(dropTarget, bookmark, keepSource);
+        }
+
     }
 
     private Optional<IBookmarkModelComponent> getDropTarget(final DropTargetEvent event) {
@@ -101,23 +127,20 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     }
 
     private void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,
-            IBookmark[] bookmarks, boolean isCopyOperation) {
+            IBookmark bookmark, boolean isCopyOperation) {
 
-        if (!causeRecursion(bookmarks, dropTarget)) {
+        if (!causeRecursion(bookmark, dropTarget)) {
 
-            commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmarks, isCopyOperation));
+            commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmark, isCopyOperation));
         }
     }
 
-    private boolean causeRecursion(IBookmark[] bookmarks, Optional<IBookmarkModelComponent> dropTarget) {
+    private boolean causeRecursion(IBookmark bookmark, Optional<IBookmarkModelComponent> dropTarget) {
 
-        for (IBookmark bookmark : bookmarks) {
-            RecursionPreventerVisitor visitor = new RecursionPreventerVisitor(dropTarget.get());
-            bookmark.accept(visitor);
-            if (visitor.recursionFound) {
-                System.out.println("recursion found");
-                return true;
-            }
+        RecursionPreventerVisitor visitor = new RecursionPreventerVisitor(dropTarget.get());
+        bookmark.accept(visitor);
+        if (visitor.recursionFound) {
+            return true;
         }
 
         return false;

@@ -1,70 +1,35 @@
 package org.eclipselabs.recommenders.bookmark.aaa;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.eclipse.jface.util.LocalSelectionTransfer;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.part.ResourceTransfer;
-import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
-import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
-
-import com.google.common.base.Optional;
 
 public class BookmarkTreeDragListener implements DragSourceListener {
-
-    private final RepresentationSwitchableTreeViewer treeViewer;
-
-    private Optional<IBookmark[]> draggedBookmarks = Optional.absent();
-
-    public BookmarkTreeDragListener(RepresentationSwitchableTreeViewer treeViewer) {
-        this.treeViewer = treeViewer;
-    }
 
     @Override
     public void dragStart(DragSourceEvent event) {
     }
 
-    public Optional<IBookmark[]> getDragData() {
-        return draggedBookmarks;
-    }
-
     @Override
     public void dragSetData(DragSourceEvent event) {
 
-        IStructuredSelection selections = treeViewer.getSelections();
-
-        @SuppressWarnings("rawtypes")
-        Iterator iterator = selections.iterator();
-
-        List<IBookmark> draggedNodes = new LinkedList<IBookmark>();
-
-        while (iterator.hasNext()) {
-
-            Object object = iterator.next();
-
-            if (object instanceof IBookmark) {
-                draggedNodes.add((IBookmark) object);
-            }
-
-        }
-
-        draggedBookmarks = Optional.of(draggedNodes.toArray(new IBookmark[0]));
-
+        DragSource source = (DragSource) event.getSource();
+        Tree tree = (Tree) source.getControl();
+        
+        ISelection selection = new StructuredSelection(tree.getSelection());
+        LocalSelectionTransfer.getTransfer().setSelection(selection);
     }
 
     @Override
     public void dragFinished(DragSourceEvent event) {
 
-    }
-    
-    public void reset() {
-        draggedBookmarks = Optional.absent();
     }
 
     public int getSupportedOperations() {
