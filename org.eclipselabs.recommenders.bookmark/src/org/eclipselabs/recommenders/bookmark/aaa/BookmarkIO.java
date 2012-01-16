@@ -12,6 +12,7 @@ package org.eclipselabs.recommenders.bookmark.aaa;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -67,10 +68,16 @@ public class BookmarkIO {
             ObjectInputStream in = new ObjectInputStream(fis);
             model = (BookmarkModel) in.readObject();
             in.close();
+        } catch (FileNotFoundException fileNotFound){
+            model = new BookmarkModel();
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        }
+        
+        if (model==null){
+            model = new BookmarkModel();
         }
 
         return model;

@@ -13,11 +13,13 @@ package org.eclipselabs.recommenders.bookmark.aaa;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IPartService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.aaa.ViewPartListener;
 
 public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
@@ -35,9 +37,16 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         setUpActions();
         setUpToolbar();
 
-        loadDefaultModel();
+        loadModel();
         // activateFlatMode();
         activateHierarchicalMode();
+        
+        addViewPartListener();
+    }
+
+    private void addViewPartListener() {
+        IPartService service = (IPartService) getSite().getService(IPartService.class);
+        service.addPartListener(new ViewPartListener(model));
     }
 
     private void setUpActions() {
@@ -77,8 +86,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     }
 
-    private void loadDefaultModel() {
-        setModel(BookmarkIO.load());
+    private void loadModel() {
+        setModel(BookmarkIO.loadFromDefaultFile());
     }
 
     private void setModel(final BookmarkModel model) {
