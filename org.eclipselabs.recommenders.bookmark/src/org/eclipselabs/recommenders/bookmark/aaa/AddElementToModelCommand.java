@@ -32,13 +32,13 @@ import com.google.common.base.Optional;
 public class AddElementToModelCommand implements IBookmarkModelCommand {
 
     private final Optional<IBookmarkModelComponent> dropTarget;
-    private final Object element;
+    private final Object[] elements;
     private BookmarkModel model;
     private Category category;
 
-    public AddElementToModelCommand(final Optional<IBookmarkModelComponent> dropTarget, final Object element) {
+    public AddElementToModelCommand(final Optional<IBookmarkModelComponent> dropTarget, final Object[] elements) {
         this.dropTarget = dropTarget;
-        this.element = element;
+        this.elements = elements;
     }
 
     @Override
@@ -46,10 +46,13 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
         this.model = model;
         this.category = findCategory();
 
-        if (element instanceof IJavaElement) {
-            processJavaElement((IJavaElement) element);
-        } else if (element instanceof IFile) {
-            processFile((IFile) element);
+        for (Object element : elements) {
+
+            if (element instanceof IJavaElement) {
+                processJavaElement((IJavaElement) element);
+            } else if (element instanceof IFile) {
+                processFile((IFile) element);
+            }
         }
     }
 

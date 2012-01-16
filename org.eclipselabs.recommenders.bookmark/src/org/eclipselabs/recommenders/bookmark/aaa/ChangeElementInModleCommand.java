@@ -16,30 +16,34 @@ import com.google.common.collect.Lists;
 public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 
     private final Optional<IBookmarkModelComponent> dropTarget;
-    private final IBookmark bookmark;
+    private final IBookmark[] bookmarks;
     private final boolean keepSource;
 
-    public ChangeElementInModleCommand(final Optional<IBookmarkModelComponent> dropTarget, final IBookmark bookmark,
+    public ChangeElementInModleCommand(final Optional<IBookmarkModelComponent> dropTarget, final IBookmark[] bookmarks,
             final boolean keepSource) {
         this.dropTarget = dropTarget;
-        this.bookmark = bookmark;
+        this.bookmarks = bookmarks;
         this.keepSource = keepSource;
     }
 
     @Override
     public void execute(BookmarkModel model) {
 
-        if (dropTarget.isPresent() && isOperationWithinSameCategory(model)) {
-            return;
-            // performReorderOperation(model);
+        for (IBookmark bookmark : bookmarks) {
+
+            if (dropTarget.isPresent() && isOperationWithinSameCategory(model, bookmark)) {
+                return;
+                // performReorderOperation(model);
+            }
         }
 
         ValueVisitor visitor = new ValueVisitor();
-        bookmark.accept(visitor);
+        for (IBookmark bookmark : bookmarks) {
+            bookmark.accept(visitor);
+        }
+
         if (!visitor.values.isEmpty()) {
-            for (Object value : visitor.values) {
-                new AddElementToModelCommand(dropTarget, value).execute(model);
-            }
+            new AddElementToModelCommand(dropTarget, visitor.values.toArray()).execute(model);
         }
 
         if (!keepSource) {
@@ -48,7 +52,7 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 
     }
 
-    private boolean isOperationWithinSameCategory(BookmarkModel model) {
+    private boolean isOperationWithinSameCategory(BookmarkModel model, IBookmark bookmark) {
 
         Category category1 = getCategoryOf(dropTarget.get());
 
@@ -68,9 +72,11 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 
     private void deleteDroppedBookmarks(BookmarkModel model) {
 
-        RemoveBookmarkModelComponentVisitor visitor = new RemoveBookmarkModelComponentVisitor(bookmark);
-        for (Category category : model.getCategories()) {
-            category.accept(visitor);
+        for (IBookmark bookmark : bookmarks) {
+            RemoveBookmarkModelComponentVisitor visitor = new RemoveBookmarkModelComponentVisitor(bookmark);
+            for (Category category : model.getCategories()) {
+                category.accept(visitor);
+            }
         }
     }
 

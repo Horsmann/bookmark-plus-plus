@@ -11,6 +11,7 @@
 package org.eclipselabs.recommenders.bookmark.aaa;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ISelection;
@@ -31,6 +32,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
 public class BookmarkTreeDropListener implements DropTargetListener {
 
@@ -87,22 +89,29 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         @SuppressWarnings("rawtypes")
         Iterator iterator = selections.iterator();
 
+        List<IBookmark> items = Lists.newArrayList();
         while (iterator.hasNext()) {
             Object object = iterator.next();
-            if (object instanceof TreeItem) {
-                processTreeItem(dropTarget, (TreeItem) object, keepSource);
+            if (isTreeItemWithValidData(object)) {
+                TreeItem item = (TreeItem) object;
+                items.add((IBookmark) item.getData());
             }
         }
 
+        processDroppedElementOriginatedFromInsideTheView(dropTarget, items.toArray(new IBookmark[0]), keepSource);
     }
 
-    private void processTreeItem(Optional<IBookmarkModelComponent> dropTarget, TreeItem item, boolean keepSource) {
+    private boolean isTreeItemWithValidData(Object object) {
 
-        if (item.getData() instanceof IBookmark) {
-            IBookmark bookmark = (IBookmark) item.getData();
-            processDroppedElementOriginatedFromInsideTheView(dropTarget, bookmark, keepSource);
+        if (object instanceof TreeItem) {
+            if (((TreeItem) object).getData() instanceof IBookmark) {
+                return true;
+            }
+        } else {
+            return false;
         }
 
+        return false;
     }
 
     private Optional<IBookmarkModelComponent> getDropTarget(final DropTargetEvent event) {
@@ -116,34 +125,42 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     private void processTreeSelection(final Optional<IBookmarkModelComponent> dropTarget,
             final TreeSelection treeSelection) {
         final TreePath[] treePath = treeSelection.getPaths();
+
+        Object[] elements = new Object[treePath.length];
+
         for (int i = 0; i < treePath.length; i++) {
-            processDroppedElementOriginatedFromOutsideTheView(dropTarget, treePath[i].getLastSegment());
+            elements[i] = treePath[i].getLastSegment();
         }
+
+        processDroppedElementOriginatedFromOutsideTheView(dropTarget, elements);
     }
 
     private void processDroppedElementOriginatedFromOutsideTheView(final Optional<IBookmarkModelComponent> dropTarget,
-            final Object element) {
-        commandInvoker.invoke(new AddElementToModelCommand(dropTarget, element));
+            final Object[] elements) {
+        commandInvoker.invoke(new AddElementToModelCommand(dropTarget, elements));
     }
 
     private void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,
-            IBookmark bookmark, boolean isCopyOperation) {
+            IBookmark[] bookmarks, boolean isCopyOperation) {
 
-        if (!causeRecursion(bookmark, dropTarget)) {
-            commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmark, isCopyOperation));
+        if (!causeRecursion(bookmarks, dropTarget)) {
+            commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmarks, isCopyOperation));
         }
     }
 
-    private boolean causeRecursion(IBookmark bookmark, Optional<IBookmarkModelComponent> dropTarget) {
+    private boolean causeRecursion(IBookmark[] bookmarks, Optional<IBookmarkModelComponent> dropTarget) {
 
         if (!dropTarget.isPresent()) {
             return false;
         }
 
-        RecursionPreventerVisitor visitor = new RecursionPreventerVisitor(dropTarget.get());
-        bookmark.accept(visitor);
-        if (visitor.recursionFound) {
-            return true;
+        for (IBookmark bookmark : bookmarks) {
+
+            RecursionPreventerVisitor visitor = new RecursionPreventerVisitor(dropTarget.get());
+            bookmark.accept(visitor);
+            if (visitor.recursionFound) {
+                return true;
+            }
         }
 
         return false;
