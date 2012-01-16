@@ -29,6 +29,20 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     @Override
     public void execute(BookmarkModel model) {
 
+        
+
+        for (IBookmarkModelComponent category : model.getCategories()) {
+            FindComponentModelVisitor targetFinderVisitor = new FindComponentModelVisitor(dropTarget.get());
+            category.accept(targetFinderVisitor);
+            if (targetFinderVisitor.foundComponent()) {
+                FindComponentModelVisitor bookmarkFinderVisitor = new FindComponentModelVisitor(bookmark);
+                category.accept(bookmarkFinderVisitor);
+                if (bookmarkFinderVisitor.foundComponent()) {
+                    return;
+                }
+            }
+        }
+
         ValueVisitor visitor = new ValueVisitor();
         bookmark.accept(visitor);
         if (!visitor.values.isEmpty()) {
@@ -75,4 +89,64 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         }
 
     }
+    //
+    // private class IsSilblingsDropVisitor implements IModelVisitor {
+    //
+    // boolean droppedOnSilbling = false;
+    // private boolean foundDrop = false, foundTarget = false;
+    // private final IBookmarkModelComponent target;
+    // private final IBookmarkModelComponent dropNode;
+    //
+    // public IsSilblingsDropVisitor(IBookmarkModelComponent target) {
+    // this.target = target;
+    // this.dropNode = dropNode;
+    //
+    // }
+    //
+    // @Override
+    // public void visit(FileBookmark fileBookmark) {
+    // }
+    //
+    // @Override
+    // public void visit(Category category) {
+    // if (category == target) {
+    // foundDrop = true;
+    // }
+    //
+    // if (category == dropNode) {
+    // foundTarget = true;
+    // }
+    //
+    // for (IBookmark bookmark : category.getBookmarks()) {
+    // bookmark.accept(this);
+    // }
+    //
+    // if (foundDrop && foundTarget) {
+    // droppedOnSilbling = true;
+    // }
+    //
+    // }
+    //
+    // @Override
+    // public void visit(JavaElementBookmark javaElementBookmark) {
+    //
+    // if (javaElementBookmark == target) {
+    // foundTarget = true;
+    // }
+    // if (javaElementBookmark == dropNode) {
+    // foundDrop = true;
+    // }
+    //
+    // for (JavaElementBookmark javaElement :
+    // javaElementBookmark.getChildElements()) {
+    // javaElement.accept(this);
+    // }
+    //
+    // if (foundDrop && foundTarget) {
+    // droppedOnSilbling = true;
+    // }
+    //
+    // }
+    //
+    // }
 }

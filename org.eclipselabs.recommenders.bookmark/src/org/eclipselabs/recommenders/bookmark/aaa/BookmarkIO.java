@@ -35,15 +35,20 @@ public class BookmarkIO {
         myTestBookmark.addChildElement(myTestAddBookmark);
 
         model.add(new Category("Test", new FileBookmark(ResourcesPlugin.getWorkspace().getRoot()
-                .getFile(Path.fromOSString("project/test.bm"))), myTestBookmark, new JavaElementBookmark(
-                "=LKJLD/src<test.project{IMy.java[IMy~add~I", false)));
+                .getFile(Path.fromOSString("project/test.bm"))), myTestBookmark));
 
         JavaElementBookmark jeb1 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java", true);
 
         JavaElementBookmark jeb2 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy", true);
 
         JavaElementBookmark jeb3 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy~add~I", false);
+        
+        JavaElementBookmark jeb4 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy~sub~I", false);
+        
+        JavaElementBookmark jeb5 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy~div~I", false);
 
+        jeb2.addChildElement(jeb5);
+        jeb2.addChildElement(jeb4);
         jeb2.addChildElement(jeb3);
         jeb1.addChildElement(jeb2);
 

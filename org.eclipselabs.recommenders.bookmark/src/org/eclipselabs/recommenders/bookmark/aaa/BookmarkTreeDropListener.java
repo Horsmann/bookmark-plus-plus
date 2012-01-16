@@ -130,7 +130,6 @@ public class BookmarkTreeDropListener implements DropTargetListener {
             IBookmark bookmark, boolean isCopyOperation) {
 
         if (!causeRecursion(bookmark, dropTarget)) {
-
             commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmark, isCopyOperation));
         }
     }
