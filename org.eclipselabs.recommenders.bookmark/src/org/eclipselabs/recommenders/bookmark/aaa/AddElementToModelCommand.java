@@ -55,22 +55,23 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
 
     private Category findCategory() {
         if (dropTarget.isPresent()) {
-            final IBookmarkModelComponent dropTargetComponent = dropTarget.get();
-            for (final Category category : model.getCategories()) {
-                if (category == dropTargetComponent) {
-                    return category;
-                } else {
-                    final FindComponentModelVisitor visitor = new FindComponentModelVisitor(dropTargetComponent);
-                    category.accept(visitor);
-                    if (visitor.foundComponent()) {
-                        return category;
-                    }
-                }
-            }
-            throw new IllegalStateException("Should not be reachable. Dropped on an element not existing in model.");
+            final IBookmarkModelComponent target = dropTarget.get();
+
+            return getCategoryOf(target);
         } else {
-            return new Category("New Category");
+            Category category = new Category("New Category");
+            model.add(category);
+            return category;
         }
+    }
+
+    private Category getCategoryOf(IBookmarkModelComponent component) {
+
+        if (component instanceof Category) {
+            return (Category) component;
+        }
+
+        return getCategoryOf(component.getParent());
     }
 
     private void processFile(final IFile file) {
@@ -100,7 +101,7 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
                 JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
                         bookmarkParent);
                 newBookmark.setExpanded(true);
-//                bookmarkParent.addChildElement(newBookmark);
+                // bookmarkParent.addChildElement(newBookmark);
 
                 return newBookmark;
             }
@@ -117,7 +118,7 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
                 JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
                         category);
                 newBookmark.setExpanded(true);
-//                category.add(newBookmark);
+                // category.add(newBookmark);
 
                 return newBookmark;
             }
