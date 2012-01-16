@@ -29,30 +29,25 @@ public class BookmarkIO {
 
     public static BookmarkModel load() {
         final BookmarkModel model = new BookmarkModel();
-        final JavaElementBookmark myTestBookmark = new JavaElementBookmark("=LKJLD/src<test.project{MyTest.java", true);
-        final JavaElementBookmark myTestAddBookmark = new JavaElementBookmark(
-                "=LKJLD/src<test.project{MyTest.java[My~add~I", false);
-        myTestBookmark.addChildElement(myTestAddBookmark);
-
-        model.add(new Category("Test", new FileBookmark(ResourcesPlugin.getWorkspace().getRoot()
-                .getFile(Path.fromOSString("project/test.bm"))), myTestBookmark));
-
-        JavaElementBookmark jeb1 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java", true);
-
-        JavaElementBookmark jeb2 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy", true);
-
-        JavaElementBookmark jeb3 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy~add~I", false);
         
-        JavaElementBookmark jeb4 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy~sub~I", false);
-        
-        JavaElementBookmark jeb5 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy~div~I", false);
+        Category category = new Category("Test 1");
+        FileBookmark file = new FileBookmark(ResourcesPlugin.getWorkspace().getRoot().getFile(Path.fromOSString("project/test.bm")), category);
 
-        jeb2.addChildElement(jeb5);
-        jeb2.addChildElement(jeb4);
-        jeb2.addChildElement(jeb3);
-        jeb1.addChildElement(jeb2);
+        model.add(category);
 
-        model.add(new Category("Test 2", jeb1));
+        Category category2 = new Category("Test 2");
+
+        JavaElementBookmark jeb1 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java", true, category2);
+
+        JavaElementBookmark jeb2 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy", true, jeb1);
+
+        JavaElementBookmark jeb3 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy~add~I", false, jeb2);
+
+        JavaElementBookmark jeb4 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy~sub~I", false, jeb2);
+
+        JavaElementBookmark jeb5 = new JavaElementBookmark("=LKJLD/src<test.project{IMy.java[IMy~div~I", false, jeb2);
+
+        model.add(category2);
 
         return model;
     }

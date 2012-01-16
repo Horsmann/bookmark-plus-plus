@@ -74,7 +74,7 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     }
 
     private void processFile(final IFile file) {
-        category.add(new FileBookmark(file));
+        category.add(new FileBookmark(file, category));
     }
 
     private void processJavaElement(final IJavaElement javaElement) {
@@ -97,9 +97,10 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
                 foundBookmark.setExpanded(true);
                 return foundBookmark;
             } else {
-                JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true);
+                JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
+                        bookmarkParent);
                 newBookmark.setExpanded(true);
-                bookmarkParent.addChildElement(newBookmark);
+//                bookmarkParent.addChildElement(newBookmark);
 
                 return newBookmark;
             }
@@ -113,9 +114,10 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
                 return foundBookmark;
             } else {
 
-                JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true);
+                JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
+                        category);
                 newBookmark.setExpanded(true);
-                category.add(newBookmark);
+//                category.add(newBookmark);
 
                 return newBookmark;
             }
@@ -132,46 +134,6 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
                 || value instanceof IImportDeclaration || value instanceof IImportContainer
                 || value instanceof IPackageDeclaration;
     }
-
-//    private class FindComponentModelVisitor implements IModelVisitor {
-//
-//        private boolean foundComponent;
-//        private final IBookmarkModelComponent dropTargetComponent;
-//
-//        public FindComponentModelVisitor(final IBookmarkModelComponent dropTargetComponent) {
-//            this.dropTargetComponent = dropTargetComponent;
-//        }
-//
-//        public boolean foundComponent() {
-//            return foundComponent;
-//        }
-//
-//        @Override
-//        public void visit(final FileBookmark fileBookmark) {
-//            if (fileBookmark == dropTargetComponent) {
-//                foundComponent = true;
-//            }
-//        }
-//
-//        @Override
-//        public void visit(final Category category) {
-//            for (IBookmark bookmark : category.getBookmarks()) {
-//                bookmark.accept(this);
-//            }
-//        }
-//
-//        @Override
-//        public void visit(final JavaElementBookmark javaElementBookmark) {
-//            if (javaElementBookmark == dropTargetComponent) {
-//                foundComponent = true;
-//            } else {
-//                for (final JavaElementBookmark childElement : javaElementBookmark.getChildElements()) {
-//                    childElement.accept(this);
-//                }
-//            }
-//        }
-//
-//    }
 
     private class FindJavaElementHandleVisitor implements IModelVisitor {
 

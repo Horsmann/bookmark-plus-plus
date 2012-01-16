@@ -22,8 +22,12 @@ public class FileBookmark implements IBookmark, Serializable {
     private static final long serialVersionUID = -224963828339478664L;
     private final String relativeFilePath;
 
-    public FileBookmark(final IFile file) {
+    private IBookmarkModelComponent parent;
+
+    public FileBookmark(final IFile file, Category parent) {
         this.relativeFilePath = getRelativeFilePath(file);
+        this.setParent(parent);
+        parent.add(this);
     }
 
     private String getRelativeFilePath(IFile file) {
@@ -53,6 +57,21 @@ public class FileBookmark implements IBookmark, Serializable {
     @Override
     public void accept(final IModelVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public IBookmarkModelComponent getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(IBookmarkModelComponent parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public boolean hasParent() {
+        return parent.getParent() != null;
     }
 
 }

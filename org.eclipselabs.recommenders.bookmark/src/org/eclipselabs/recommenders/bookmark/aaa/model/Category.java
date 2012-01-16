@@ -56,4 +56,18 @@ public class Category implements IBookmarkModelComponent, Serializable {
     public void add(final IBookmark bookmark) {
         bookmarks.add(bookmark);
     }
+
+    @Override
+    public IBookmarkModelComponent getParent() {
+        return null;
+    }
+
+    @Override
+    public void setParent(IBookmarkModelComponent parent) {
+    }
+
+    @Override
+    public boolean hasParent() {
+        return false;
+    }
 }

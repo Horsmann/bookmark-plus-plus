@@ -29,18 +29,9 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     @Override
     public void execute(BookmarkModel model) {
 
-        
-
-        for (IBookmarkModelComponent category : model.getCategories()) {
-            FindComponentModelVisitor targetFinderVisitor = new FindComponentModelVisitor(dropTarget.get());
-            category.accept(targetFinderVisitor);
-            if (targetFinderVisitor.foundComponent()) {
-                FindComponentModelVisitor bookmarkFinderVisitor = new FindComponentModelVisitor(bookmark);
-                category.accept(bookmarkFinderVisitor);
-                if (bookmarkFinderVisitor.foundComponent()) {
-                    return;
-                }
-            }
+        if (isOperationWithinSameCategory(model)) {
+            return;
+            // performReorderOperation(model);
         }
 
         ValueVisitor visitor = new ValueVisitor();
@@ -56,6 +47,73 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         }
 
     }
+
+    // private void performReorderOperation(BookmarkModel model) {
+    //
+    // // IsSilblingsDropVisitor visitor = new
+    // IsSilblingsDropVisitor(dropTarget.get(), bookmark);
+    // if (bookmarksAreOnSameHierarchy(model, visitor)) {
+    // if (didDropOccurInUpperHalfOfWidgetElement()) {
+    // // insertBookmarkBeforeDropTarget();
+    // } else {
+    // // insertBookmarkAfterDropTarget();
+    // }
+    // }
+    //
+    // }
+
+    private boolean isOperationWithinSameCategory(BookmarkModel model) {
+
+        Category category1 = getCategoryOf(dropTarget.get());
+
+        Category category2 = getCategoryOf(bookmark);
+
+        return category1 == category2;
+    }
+
+    private Category getCategoryOf(IBookmarkModelComponent component) {
+
+        if (component instanceof Category) {
+            return (Category) component;
+        }
+
+        return getCategoryOf(component.getParent());
+    }
+
+    private boolean didDropOccurInUpperHalfOfWidgetElement() {
+
+        return false;
+    }
+
+    // private boolean bookmarksAreOnSameHierarchy(BookmarkModel model,
+    // IsSilblingsDropVisitor visitor) {
+    //
+    // for (Category category : model.getCategories()) {
+    // category.accept(visitor);
+    // if (visitor.areSilblings()) {
+    // return true;
+    // }
+    // }
+    //
+    // return false;
+    // }
+    //
+    // private boolean isOperationWithinSameCategory(BookmarkModel model) {
+    // for (IBookmarkModelComponent category : model.getCategories()) {
+    // FindComponentModelVisitor targetFinderVisitor = new
+    // FindComponentModelVisitor(dropTarget.get());
+    // category.accept(targetFinderVisitor);
+    // if (targetFinderVisitor.foundComponent()) {
+    // FindComponentModelVisitor bookmarkFinderVisitor = new
+    // FindComponentModelVisitor(bookmark);
+    // category.accept(bookmarkFinderVisitor);
+    // if (bookmarkFinderVisitor.foundComponent()) {
+    // return true;
+    // }
+    // }
+    // }
+    // return false;
+    // }
 
     private void deleteDroppedBookmarks(BookmarkModel model) {
 
@@ -89,18 +147,25 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         }
 
     }
-    //
+
     // private class IsSilblingsDropVisitor implements IModelVisitor {
     //
-    // boolean droppedOnSilbling = false;
+    // private boolean droppedOnSilbling = false;
+    // private Optional<IBookmarkModelComponent> parent = Optional.absent();
+    //
     // private boolean foundDrop = false, foundTarget = false;
     // private final IBookmarkModelComponent target;
     // private final IBookmarkModelComponent dropNode;
     //
-    // public IsSilblingsDropVisitor(IBookmarkModelComponent target) {
+    // public IsSilblingsDropVisitor(IBookmarkModelComponent target,
+    // IBookmarkModelComponent dropNode) {
     // this.target = target;
     // this.dropNode = dropNode;
     //
+    // }
+    //
+    // public boolean areSilblings() {
+    // return droppedOnSilbling;
     // }
     //
     // @Override
@@ -109,13 +174,6 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     //
     // @Override
     // public void visit(Category category) {
-    // if (category == target) {
-    // foundDrop = true;
-    // }
-    //
-    // if (category == dropNode) {
-    // foundTarget = true;
-    // }
     //
     // for (IBookmark bookmark : category.getBookmarks()) {
     // bookmark.accept(this);

@@ -17,9 +17,26 @@ public class JavaElementBookmark implements IBookmark, Serializable {
 
     private boolean expanded = false;
 
-    public JavaElementBookmark(final String handleId, final boolean isInferred) {
+    private IBookmarkModelComponent parent;
+
+    // public JavaElementBookmark(final String handleId, final boolean
+    // isInferred) {
+    // this.handleId = handleId;
+    // this.isInferred = isInferred;
+    // }
+
+    public JavaElementBookmark(final String handleId, final boolean isInferred, JavaElementBookmark parent) {
         this.handleId = handleId;
         this.isInferred = isInferred;
+        this.parent = parent;
+        parent.addChildElement(this);
+    }
+
+    public JavaElementBookmark(final String handleId, final boolean isInferred, Category parent) {
+        this.handleId = handleId;
+        this.isInferred = isInferred;
+        this.parent = parent;
+        parent.add(this);
     }
 
     @Override
@@ -30,11 +47,11 @@ public class JavaElementBookmark implements IBookmark, Serializable {
     public String getHandleId() {
         return handleId;
     }
-    
+
     public IJavaElement getJavaElement() {
         return JavaCore.create(handleId);
     }
-    
+
     public void remove(IBookmarkModelComponent bookmark) {
         childElements.remove(bookmark);
     }
@@ -62,6 +79,21 @@ public class JavaElementBookmark implements IBookmark, Serializable {
 
     public void setInferred(boolean inferred) {
         isInferred = inferred;
+    }
+
+    @Override
+    public boolean hasParent() {
+        return parent.getParent() != null;
+    }
+
+    @Override
+    public void setParent(IBookmarkModelComponent parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public IBookmarkModelComponent getParent() {
+        return parent;
     }
 
 }

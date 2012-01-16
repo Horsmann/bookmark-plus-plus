@@ -13,5 +13,11 @@ package org.eclipselabs.recommenders.bookmark.aaa.model;
 public interface IBookmarkModelComponent {
 
     void accept(IModelVisitor visitor);
-    
+
+    public IBookmarkModelComponent getParent();
+
+    public void setParent(IBookmarkModelComponent parent);
+
+    public boolean hasParent();
+
 }
