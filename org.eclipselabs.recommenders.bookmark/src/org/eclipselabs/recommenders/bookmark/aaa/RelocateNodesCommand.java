@@ -39,7 +39,8 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
 
         // divide target rectangle in upper an lower half
         Rectangle upperHalf = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height / 2);
-//        Rectangle lowerHalf = new Rectangle(bounds.x, bounds.y + (bounds.height / 2), bounds.width, bounds.height / 2);
+        // Rectangle lowerHalf = new Rectangle(bounds.x, bounds.y +
+        // (bounds.height / 2), bounds.width, bounds.height / 2);
 
         // boolean contains = upperHalf.contains(controlRelativePoint);
         // boolean contains2 = lowerHalf.contains(controlRelativePoint);
@@ -60,21 +61,29 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
         if (insertBeforeTarget) {
             insertBeforeTarget(unselectedSilblings, newOrder, index);
         } else {
-            System.out.println("Else");
+            insertAfterTarget(unselectedSilblings, newOrder, index);
         }
 
     }
 
-    private void insertBeforeTarget(LinkedList<IBookmarkModelComponent> unselectedSilblings,
+    private void insertAfterTarget(LinkedList<IBookmarkModelComponent> unselectedSilblings,
             List<IBookmarkModelComponent> newOrder, int index) {
-        for (IBookmarkModelComponent selected : components) {
-            newOrder.add(selected);
+
+        newOrder.add(unselectedSilblings.get(index));
+
+        for (IBookmarkModelComponent component : components) {
+            newOrder.add(component);
         }
-        
-        for (int i = index; i < unselectedSilblings.size(); i++) {
+
+        for (int i = (index + 1); i < unselectedSilblings.size(); i++) {
             newOrder.add(unselectedSilblings.get(i));
         }
 
+        setNewOrderForParent(newOrder);
+
+    }
+
+    private void setNewOrderForParent(List<IBookmarkModelComponent> newOrder) {
         IBookmarkModelComponent parent = target.getParent();
         for (IBookmarkModelComponent component : parent.getChildren()) {
             parent.remove(component);
@@ -82,6 +91,19 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
         for (IBookmarkModelComponent component : newOrder) {
             parent.add(component);
         }
+    }
+
+    private void insertBeforeTarget(LinkedList<IBookmarkModelComponent> unselectedSilblings,
+            List<IBookmarkModelComponent> newOrder, int index) {
+        for (IBookmarkModelComponent selected : components) {
+            newOrder.add(selected);
+        }
+
+        for (int i = index; i < unselectedSilblings.size(); i++) {
+            newOrder.add(unselectedSilblings.get(i));
+        }
+
+        setNewOrderForParent(newOrder);
 
     }
 

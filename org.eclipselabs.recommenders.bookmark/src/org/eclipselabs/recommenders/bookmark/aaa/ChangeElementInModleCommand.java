@@ -55,11 +55,6 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 
     }
 
-    private boolean getDropLocation(IBookmarkModelComponent target) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
     private boolean isOperationWithinSameCategory(BookmarkModel model, IBookmark bookmark) {
 
         Category category1 = getCategoryOf(dropTarget.get());

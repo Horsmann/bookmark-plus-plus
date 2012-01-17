@@ -78,7 +78,8 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     }
 
     private void processFile(final IFile file) {
-        category.add(new FileBookmark(file, category));
+        new FileBookmark(file, category);
+//        category.add(fileBookmark);
     }
 
     private void processJavaElement(final IJavaElement javaElement) {

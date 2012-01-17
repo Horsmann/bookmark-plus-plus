@@ -19,7 +19,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
@@ -28,7 +27,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ResourceTransfer;
-import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
@@ -73,13 +71,15 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     public void drop(final DropTargetEvent event) {
         final Optional<IBookmarkModelComponent> dropTarget = getDropTarget(event);
 
+         //drops from external
         if (event.data instanceof TreeSelection) {
             processTreeSelection(dropTarget, (TreeSelection) event.data);
-        }
-
-        ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
-        if (selections instanceof IStructuredSelection) {
-            processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event), event);
+        } else {
+            //internal drops
+            ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
+            if (selections instanceof IStructuredSelection) {
+                processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event), event);
+            }
         }
 
     }
@@ -96,7 +96,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         if (dropTarget.isPresent() && areBookmarksSortedByHand(dropTarget.get(), components)) {
             DropTarget dropTargetSource = (DropTarget) event.getSource();
             Tree tree = (Tree) dropTargetSource.getControl();
-            
+
             processReorderingofNodes(dropTarget.get(), components, new Point(event.x, event.y), tree);
         } else {
             IBookmark[] bookmarks = getBookmarksFromSelection(selections);
@@ -148,7 +148,8 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         return false;
     }
 
-    private void processReorderingofNodes(IBookmarkModelComponent target, IBookmarkModelComponent[] components, Point dropPoint, Tree tree) {
+    private void processReorderingofNodes(IBookmarkModelComponent target, IBookmarkModelComponent[] components,
+            Point dropPoint, Tree tree) {
         commandInvoker.invoke(new RelocateNodesCommand(target, components, dropPoint, tree));
 
     }
