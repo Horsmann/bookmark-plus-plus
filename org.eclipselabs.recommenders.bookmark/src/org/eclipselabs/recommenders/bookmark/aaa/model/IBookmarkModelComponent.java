@@ -19,5 +19,11 @@ public interface IBookmarkModelComponent {
     public void setParent(IBookmarkModelComponent parent);
 
     public boolean hasParent();
+    
+    public IBookmarkModelComponent [] getChildren();
+    
+    public void remove(IBookmarkModelComponent component);
+    
+    public void add(IBookmarkModelComponent component);
 
 }

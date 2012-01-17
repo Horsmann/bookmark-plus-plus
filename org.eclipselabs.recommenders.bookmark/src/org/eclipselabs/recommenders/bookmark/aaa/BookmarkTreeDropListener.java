@@ -19,9 +19,13 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
@@ -75,7 +79,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
         ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
         if (selections instanceof IStructuredSelection) {
-            processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event));
+            processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event), event);
         }
 
     }
@@ -85,8 +89,26 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     }
 
     private void processStructuredSelection(Optional<IBookmarkModelComponent> dropTarget,
-            IStructuredSelection selections, boolean keepSource) {
+            IStructuredSelection selections, boolean keepSource, DropTargetEvent event) {
 
+        IBookmarkModelComponent[] components = getModelComponentsFromSelection(selections);
+
+        if (dropTarget.isPresent() && areBookmarksSortedByHand(dropTarget.get(), components)) {
+            
+            DropTarget dropTargetSource = (DropTarget) event.getSource();
+            Tree tree = (Tree) dropTargetSource.getControl();
+            
+            processReorderingofNodes(dropTarget.get(), components, new Point(event.x, event.y), tree);
+
+            System.out.println("Sort");
+        } else {
+
+            IBookmark[] bookmarks = getBookmarksFromSelection(selections);
+            processDroppedElementOriginatedFromInsideTheView(dropTarget, bookmarks, keepSource);
+        }
+    }
+
+    private IBookmark[] getBookmarksFromSelection(IStructuredSelection selections) {
         @SuppressWarnings("rawtypes")
         Iterator iterator = selections.iterator();
 
@@ -98,19 +120,45 @@ public class BookmarkTreeDropListener implements DropTargetListener {
                 items.add((IBookmark) item.getData());
             }
         }
-
-        IBookmark[] bookmarks = items.toArray(new IBookmark[0]);
-
-        if (dropTarget.isPresent() && areBookmarksSortedByHand(dropTarget.get(), bookmarks)) {
-            System.out.println("Sort");
-        } else {
-
-            processDroppedElementOriginatedFromInsideTheView(dropTarget, bookmarks, keepSource);
-        }
+        return items.toArray(new IBookmark[0]);
     }
 
-    private boolean areBookmarksSortedByHand(IBookmarkModelComponent target, IBookmark[] bookmarks) {
-        for (IBookmark bookmark : bookmarks) {
+    private IBookmarkModelComponent[] getModelComponentsFromSelection(IStructuredSelection selections) {
+        @SuppressWarnings("rawtypes")
+        Iterator iterator = selections.iterator();
+
+        List<IBookmarkModelComponent> items = Lists.newArrayList();
+        while (iterator.hasNext()) {
+            Object object = iterator.next();
+            if (hasEncapsulatedModelComponent(object)) {
+                TreeItem item = (TreeItem) object;
+                items.add((IBookmarkModelComponent) item.getData());
+            }
+        }
+        return items.toArray(new IBookmarkModelComponent[0]);
+
+    }
+
+    private boolean hasEncapsulatedModelComponent(Object object) {
+
+        if (object instanceof TreeItem) {
+            if (((TreeItem) object).getData() instanceof IBookmarkModelComponent) {
+                return true;
+            }
+        } else {
+            return false;
+        }
+
+        return false;
+    }
+
+    private void processReorderingofNodes(IBookmarkModelComponent target, IBookmarkModelComponent[] components, Point dropPoint, Tree tree) {
+        commandInvoker.invoke(new RelocateNodesCommand(target, components, dropPoint, tree));
+
+    }
+
+    private boolean areBookmarksSortedByHand(IBookmarkModelComponent target, IBookmarkModelComponent[] components) {
+        for (IBookmarkModelComponent bookmark : components) {
             if (!haveSameParent(target, bookmark)) {
                 return false;
             }
