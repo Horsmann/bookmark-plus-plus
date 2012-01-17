@@ -94,15 +94,11 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         IBookmarkModelComponent[] components = getModelComponentsFromSelection(selections);
 
         if (dropTarget.isPresent() && areBookmarksSortedByHand(dropTarget.get(), components)) {
-            
             DropTarget dropTargetSource = (DropTarget) event.getSource();
             Tree tree = (Tree) dropTargetSource.getControl();
             
             processReorderingofNodes(dropTarget.get(), components, new Point(event.x, event.y), tree);
-
-            System.out.println("Sort");
         } else {
-
             IBookmark[] bookmarks = getBookmarksFromSelection(selections);
             processDroppedElementOriginatedFromInsideTheView(dropTarget, bookmarks, keepSource);
         }

@@ -68,6 +68,7 @@ public class JavaElementBookmark implements IBookmark, Serializable {
 
     public void addChildElement(final JavaElementBookmark childElement) {
         childElements.add(childElement);
+        childElement.setParent(this);
     }
 
     public List<JavaElementBookmark> getChildElements() {
