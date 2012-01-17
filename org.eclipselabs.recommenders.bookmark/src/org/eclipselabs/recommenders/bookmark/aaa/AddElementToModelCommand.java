@@ -42,13 +42,15 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     private Category category;
     private Tree tree;
     private Point point;
+    private final BookmarkCommandInvoker commandInvoker;
 
     public AddElementToModelCommand(final Optional<IBookmarkModelComponent> dropTarget, final Object[] elements,
-            Tree tree, Point point) {
+            Tree tree, Point point, BookmarkCommandInvoker commandInvoker) {
         this.dropTarget = dropTarget;
         this.elements = elements;
         this.tree = tree;
         this.point = point;
+        this.commandInvoker = commandInvoker;
     }
 
     @Override
@@ -56,23 +58,31 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
         this.model = model;
         this.category = findCategory();
 
-        List<JavaElementBookmark> createdJavaElements = Lists.newLinkedList();
+        List<IBookmarkModelComponent> createdElements = Lists.newLinkedList();
 
         for (Object element : elements) {
 
             if (element instanceof IJavaElement) {
                 Optional<JavaElementBookmark> created = processJavaElement((IJavaElement) element);
                 if (created.isPresent()) {
-                    createdJavaElements.add(created.get());
+                    createdElements.add(created.get());
                 }
             } else if (element instanceof IFile) {
-                processFile((IFile) element);
+                createdElements.add(processFile((IFile) element));
             }
         }
 
-        for (IBookmarkModelComponent component : createdJavaElements) {
-            if (hasSameParentAsTarget(component)) {
-                System.out.println("Same parent");
+        sortInIfDropAndTargetShareSameParent(createdElements);
+
+    }
+
+    private void sortInIfDropAndTargetShareSameParent(List<IBookmarkModelComponent> createdElements) {
+        if (dropTarget.isPresent()) {
+            for (IBookmarkModelComponent component : createdElements) {
+                if (hasSameParentAsTarget(component)) {
+                    commandInvoker.invoke(new RelocateNodesCommand(dropTarget.get(),
+                            new IBookmarkModelComponent[] { component }, point, tree));
+                }
             }
         }
     }
@@ -103,9 +113,8 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
         return getCategoryOf(component.getParent());
     }
 
-    private void processFile(final IFile file) {
-        new FileBookmark(file, category);
-        // category.add(fileBookmark);
+    private FileBookmark processFile(final IFile file) {
+        return new FileBookmark(file, category);
     }
 
     private Optional<JavaElementBookmark> processJavaElement(final IJavaElement javaElement) {

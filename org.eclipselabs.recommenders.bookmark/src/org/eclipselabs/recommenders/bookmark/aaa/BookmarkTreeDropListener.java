@@ -211,7 +211,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     private void processDroppedElementOriginatedFromOutsideTheView(final Optional<IBookmarkModelComponent> dropTarget,
             final Object[] elements, DropTargetEvent event) {
         commandInvoker.invoke(new AddElementToModelCommand(dropTarget, elements, getTreeControl(event), new Point(
-                event.x, event.y)));
+                event.x, event.y), commandInvoker));
     }
 
     private void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,

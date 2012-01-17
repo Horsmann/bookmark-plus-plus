@@ -82,6 +82,7 @@ public class Category implements IBookmarkModelComponent, Serializable {
     @Override
     public void add(IBookmarkModelComponent component) {
         if (component instanceof IBookmark) {
+            component.setParent(this);
             bookmarks.add((IBookmark) component);
         }
     }

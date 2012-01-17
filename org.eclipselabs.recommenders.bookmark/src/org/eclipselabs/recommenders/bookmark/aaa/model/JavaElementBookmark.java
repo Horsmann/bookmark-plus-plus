@@ -37,6 +37,7 @@ public class JavaElementBookmark implements IBookmark, Serializable {
         this.isInferred = isInferred;
         this.parent = parent;
         parent.add(this);
+        
     }
 
     @Override
