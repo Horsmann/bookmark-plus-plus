@@ -10,6 +10,8 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
@@ -19,6 +21,8 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
@@ -28,6 +32,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
 public class AddElementToModelCommand implements IBookmarkModelCommand {
 
@@ -35,10 +40,15 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     private final Object[] elements;
     private BookmarkModel model;
     private Category category;
+    private Tree tree;
+    private Point point;
 
-    public AddElementToModelCommand(final Optional<IBookmarkModelComponent> dropTarget, final Object[] elements) {
+    public AddElementToModelCommand(final Optional<IBookmarkModelComponent> dropTarget, final Object[] elements,
+            Tree tree, Point point) {
         this.dropTarget = dropTarget;
         this.elements = elements;
+        this.tree = tree;
+        this.point = point;
     }
 
     @Override
@@ -46,14 +56,30 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
         this.model = model;
         this.category = findCategory();
 
+        List<JavaElementBookmark> createdJavaElements = Lists.newLinkedList();
+
         for (Object element : elements) {
 
             if (element instanceof IJavaElement) {
-                processJavaElement((IJavaElement) element);
+                Optional<JavaElementBookmark> created = processJavaElement((IJavaElement) element);
+                if (created.isPresent()) {
+                    createdJavaElements.add(created.get());
+                }
             } else if (element instanceof IFile) {
                 processFile((IFile) element);
             }
         }
+
+        for (IBookmarkModelComponent component : createdJavaElements) {
+            if (hasSameParentAsTarget(component)) {
+                System.out.println("Same parent");
+            }
+        }
+    }
+
+    private boolean hasSameParentAsTarget(IBookmarkModelComponent component) {
+
+        return component.getParent() == dropTarget.get().getParent();
     }
 
     private Category findCategory() {
@@ -79,16 +105,20 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
 
     private void processFile(final IFile file) {
         new FileBookmark(file, category);
-//        category.add(fileBookmark);
+        // category.add(fileBookmark);
     }
 
-    private void processJavaElement(final IJavaElement javaElement) {
+    private Optional<JavaElementBookmark> processJavaElement(final IJavaElement javaElement) {
+
+        Optional<JavaElementBookmark> created = Optional.absent();
 
         if (isBookmarkable(javaElement)) {
             JavaElementBookmark createJavaElementBookmark = createJavaElementBookmark(javaElement);
             createJavaElementBookmark.setInferred(false);
+            created = Optional.of(createJavaElementBookmark);
         }
 
+        return created;
     }
 
     private JavaElementBookmark createJavaElementBookmark(IJavaElement javaElement) {

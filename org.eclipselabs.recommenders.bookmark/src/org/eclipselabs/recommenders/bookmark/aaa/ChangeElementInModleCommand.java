@@ -2,6 +2,8 @@ package org.eclipselabs.recommenders.bookmark.aaa;
 
 import java.util.List;
 
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
@@ -19,19 +21,23 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     private final IBookmark[] bookmarks;
     private final boolean keepSource;
     private final BookmarkCommandInvoker commandInvoker;
+    private final Tree tree;
+    private final Point dropLocation;
 
     public ChangeElementInModleCommand(final Optional<IBookmarkModelComponent> dropTarget, final IBookmark[] bookmarks,
-            final boolean keepSource, BookmarkCommandInvoker commandInvoker) {
+            final boolean keepSource, BookmarkCommandInvoker commandInvoker, Tree tree, Point dropLocation) {
         this.dropTarget = dropTarget;
         this.bookmarks = bookmarks;
         this.keepSource = keepSource;
         this.commandInvoker = commandInvoker;
+        this.tree = tree;
+        this.dropLocation = dropLocation;
     }
 
     @Override
     public void execute(BookmarkModel model) {
 
-        //An unfinished drag which was aborted
+        // An unfinished drag which was aborted
         for (IBookmark bookmark : bookmarks) {
             if (dropTarget.isPresent() && isOperationWithinSameCategory(model, bookmark)) {
                 return;
@@ -44,7 +50,8 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         }
 
         if (!visitor.values.isEmpty()) {
-            commandInvoker.invoke(new AddElementToModelCommand(dropTarget, visitor.values.toArray()));
+            commandInvoker
+                    .invoke(new AddElementToModelCommand(dropTarget, visitor.values.toArray(), tree, dropLocation));
         }
 
         if (!keepSource) {
