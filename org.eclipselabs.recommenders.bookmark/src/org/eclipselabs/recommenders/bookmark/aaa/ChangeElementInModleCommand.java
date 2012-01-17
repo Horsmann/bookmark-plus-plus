@@ -31,12 +31,10 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     @Override
     public void execute(BookmarkModel model) {
 
+        //An unfinished drag which was aborted
         for (IBookmark bookmark : bookmarks) {
-
             if (dropTarget.isPresent() && isOperationWithinSameCategory(model, bookmark)) {
-                
                 return;
-                // performReorderOperation(model);
             }
         }
 
