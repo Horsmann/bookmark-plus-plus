@@ -24,6 +24,7 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
@@ -98,7 +99,29 @@ public class BookmarkTreeDropListener implements DropTargetListener {
             }
         }
 
-        processDroppedElementOriginatedFromInsideTheView(dropTarget, items.toArray(new IBookmark[0]), keepSource);
+        IBookmark[] bookmarks = items.toArray(new IBookmark[0]);
+
+        if (dropTarget.isPresent() && areBookmarksSortedByHand(dropTarget.get(), bookmarks)) {
+            System.out.println("Sort");
+        } else {
+
+            processDroppedElementOriginatedFromInsideTheView(dropTarget, bookmarks, keepSource);
+        }
+    }
+
+    private boolean areBookmarksSortedByHand(IBookmarkModelComponent target, IBookmark[] bookmarks) {
+        for (IBookmark bookmark : bookmarks) {
+            if (!haveSameParent(target, bookmark)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean haveSameParent(IBookmarkModelComponent target, IBookmarkModelComponent bookmark) {
+
+        return target.getParent() == bookmark.getParent();
     }
 
     private boolean isTreeItemWithValidData(Object object) {
@@ -144,7 +167,8 @@ public class BookmarkTreeDropListener implements DropTargetListener {
             IBookmark[] bookmarks, boolean isCopyOperation) {
 
         if (!causeRecursion(bookmarks, dropTarget)) {
-            commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmarks, isCopyOperation));
+            commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmarks, isCopyOperation,
+                    commandInvoker));
         }
     }
 

@@ -54,6 +54,7 @@ public class JavaElementBookmark implements IBookmark, Serializable {
 
     public void remove(IBookmarkModelComponent bookmark) {
         childElements.remove(bookmark);
+        bookmark.setParent(null);
     }
 
     public void setExpanded(final boolean expanded) {

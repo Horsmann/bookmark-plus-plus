@@ -38,6 +38,7 @@ public class Category implements IBookmarkModelComponent, Serializable {
     
     public void remove(IBookmarkModelComponent bookmark) {
         bookmarks.remove(bookmark);
+        bookmark.setParent(null);
     }
 
     @Override

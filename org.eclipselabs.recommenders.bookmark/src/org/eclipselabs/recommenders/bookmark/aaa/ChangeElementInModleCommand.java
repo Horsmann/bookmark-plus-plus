@@ -18,12 +18,14 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     private final Optional<IBookmarkModelComponent> dropTarget;
     private final IBookmark[] bookmarks;
     private final boolean keepSource;
+    private final BookmarkCommandInvoker commandInvoker;
 
     public ChangeElementInModleCommand(final Optional<IBookmarkModelComponent> dropTarget, final IBookmark[] bookmarks,
-            final boolean keepSource) {
+            final boolean keepSource, BookmarkCommandInvoker commandInvoker) {
         this.dropTarget = dropTarget;
         this.bookmarks = bookmarks;
         this.keepSource = keepSource;
+        this.commandInvoker = commandInvoker;
     }
 
     @Override
@@ -32,6 +34,7 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         for (IBookmark bookmark : bookmarks) {
 
             if (dropTarget.isPresent() && isOperationWithinSameCategory(model, bookmark)) {
+                
                 return;
                 // performReorderOperation(model);
             }
@@ -43,13 +46,18 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         }
 
         if (!visitor.values.isEmpty()) {
-            new AddElementToModelCommand(dropTarget, visitor.values.toArray()).execute(model);
+            commandInvoker.invoke(new AddElementToModelCommand(dropTarget, visitor.values.toArray()));
         }
 
         if (!keepSource) {
             deleteDroppedBookmarks(model);
         }
 
+    }
+
+    private boolean getDropLocation(IBookmarkModelComponent target) {
+        // TODO Auto-generated method stub
+        return false;
     }
 
     private boolean isOperationWithinSameCategory(BookmarkModel model, IBookmark bookmark) {
