@@ -62,6 +62,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
             }
         });
 
+        //TODO: move into treeViewer?
         menuMgr.update(true);
 
         Menu menu = menuMgr.createContextMenu(treeViewer.getTree());

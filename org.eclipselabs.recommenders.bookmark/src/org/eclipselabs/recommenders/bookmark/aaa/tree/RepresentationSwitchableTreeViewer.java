@@ -19,26 +19,24 @@ import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
@@ -124,8 +122,9 @@ public class RepresentationSwitchableTreeViewer {
             }
         });
 
-        TreeViewerFocusCellManager focusCellManager = new TreeViewerFocusCellManager(treeViewer,
-                new FocusCellOwnerDrawHighlighter(treeViewer));
+//        OwnFocusHighlighter focusHighlighter = new OwnFocusHighlighter(treeViewer);
+
+        TreeViewerFocusCellManager focusCellManager = new TreeViewerFocusCellManager(treeViewer, new FocusCellOwnerDrawHighlighter(treeViewer));
         ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(treeViewer) {
             protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
                 return (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED)
@@ -385,4 +384,21 @@ public class RepresentationSwitchableTreeViewer {
         }
     }
 
+//    private class OwnFocusHighlighter extends FocusCellOwnerDrawHighlighter {
+//
+//        public OwnFocusHighlighter(ColumnViewer viewer) {
+//            super(viewer);
+//        }
+//
+//        @Override
+//        protected Color getSelectedCellBackgroundColor(ViewerCell cell) {
+//            return cell.getItem().getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
+//        }
+//
+//        @Override
+//        protected Color getSelectedCellForegroundColor(ViewerCell cell) {
+//            return null;
+//        }
+//
+//    }
 }
