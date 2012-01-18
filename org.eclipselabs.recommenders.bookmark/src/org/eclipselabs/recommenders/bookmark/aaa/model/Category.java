@@ -36,8 +36,7 @@ public class Category implements IBookmarkModelComponent, Serializable {
         return bookmarks;
     }
 
-    @Override
-    public void remove(IBookmarkModelComponent bookmark) {
+    public void remove(IBookmark bookmark) {
         bookmarks.remove(bookmark);
         bookmark.setParent(null);
     }
@@ -72,18 +71,5 @@ public class Category implements IBookmarkModelComponent, Serializable {
     @Override
     public boolean hasParent() {
         return false;
-    }
-
-    @Override
-    public IBookmarkModelComponent[] getChildren() {
-        return getBookmarks().toArray(new IBookmarkModelComponent[0]);
-    }
-
-    @Override
-    public void add(IBookmarkModelComponent component) {
-        if (component instanceof IBookmark) {
-            component.setParent(this);
-            bookmarks.add((IBookmark) component);
-        }
     }
 }

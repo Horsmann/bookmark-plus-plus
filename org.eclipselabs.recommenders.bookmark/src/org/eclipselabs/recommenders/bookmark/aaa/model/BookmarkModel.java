@@ -27,6 +27,10 @@ public class BookmarkModel implements Serializable {
     public void remove(IBookmarkModelComponent component) {
         categories.remove(component);
     }
+    
+    public void removeAll() {
+        categories.removeAll(getCategories());
+    }
 
     public List<Category> getCategories() {
         return categories;

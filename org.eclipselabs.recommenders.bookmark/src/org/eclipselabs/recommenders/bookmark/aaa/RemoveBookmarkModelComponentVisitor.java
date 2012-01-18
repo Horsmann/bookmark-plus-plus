@@ -21,17 +21,21 @@ public class RemoveBookmarkModelComponentVisitor implements IModelVisitor {
 
     @Override
     public void visit(Category category) {
-        category.remove(removeTarget);
-        for (IBookmark bookmark : category.getBookmarks()) {
-            bookmark.accept(this);
+        if (removeTarget instanceof IBookmark) {
+            category.remove((IBookmark) removeTarget);
+            for (IBookmark bookmark : category.getBookmarks()) {
+                bookmark.accept(this);
+            }
         }
     }
 
     @Override
     public void visit(JavaElementBookmark javaElementBookmark) {
-        javaElementBookmark.remove(removeTarget);
-        for (IBookmark bookmark : javaElementBookmark.getChildElements()) {
-            bookmark.accept(this);
+        if (removeTarget instanceof JavaElementBookmark) {
+            javaElementBookmark.remove((JavaElementBookmark) removeTarget);
+            for (IBookmark bookmark : javaElementBookmark.getChildElements()) {
+                bookmark.accept(this);
+            }
         }
     }
 }

@@ -8,7 +8,12 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
+import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
+import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
+import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
+import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 
 import com.google.common.collect.Lists;
 
@@ -19,6 +24,7 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
     private final Point dropPoint;
     private boolean insertBeforeTarget = false;
     private final Tree tree;
+    private BookmarkModel model;
 
     public RelocateNodesCommand(IBookmarkModelComponent target, IBookmarkModelComponent[] bookmarks,
             Point screenAbsolute, Tree tree) {
@@ -52,6 +58,8 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
     @Override
     public void execute(BookmarkModel model) {
 
+        this.model = model;
+
         List<IBookmarkModelComponent> newOrder = Lists.newArrayList();
         List<IBookmarkModelComponent> allSilblings = getAllSilblings();
         LinkedList<IBookmarkModelComponent> unselectedSilblings = getUnselectedSilblings(allSilblings);
@@ -79,17 +87,31 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
             newOrder.add(unselectedSilblings.get(i));
         }
 
-        setNewOrderForParent(newOrder);
+        setNewOrder(newOrder);
 
     }
 
-    private void setNewOrderForParent(List<IBookmarkModelComponent> newOrder) {
-        IBookmarkModelComponent parent = target.getParent();
-        for (IBookmarkModelComponent component : parent.getChildren()) {
-            parent.remove(component);
+    private void setNewOrder(List<IBookmarkModelComponent> newOrder) {
+
+        if (target instanceof Category) {
+            setNewOrderForCategories(newOrder);
+            return;
         }
+
+        IBookmarkModelComponent parent = target.getParent();
+        RemoveChildrenVisitor removeVisitor = new RemoveChildrenVisitor();
+        parent.accept(removeVisitor);
+
+        AddListAsChildrenVisitor addVisitor = new AddListAsChildrenVisitor(newOrder);
+        parent.accept(addVisitor);
+    }
+
+    private void setNewOrderForCategories(List<IBookmarkModelComponent> newOrder) {
+
+        model.removeAll();
+
         for (IBookmarkModelComponent component : newOrder) {
-            parent.add(component);
+            model.add((Category) component);
         }
     }
 
@@ -103,7 +125,7 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
             newOrder.add(unselectedSilblings.get(i));
         }
 
-        setNewOrderForParent(newOrder);
+        setNewOrder(newOrder);
 
     }
 
@@ -133,12 +155,94 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
 
     private List<IBookmarkModelComponent> getAllSilblings() {
 
-        List<IBookmarkModelComponent> silblings = Lists.newArrayList();
-        for (IBookmarkModelComponent component : target.getParent().getChildren()) {
-            silblings.add(component);
+        if (target instanceof Category) {
+            return new LinkedList<IBookmarkModelComponent>(model.getCategories());
         }
 
-        return silblings;
+        GetSilblingsVisitor visitor = new GetSilblingsVisitor();
+        IBookmarkModelComponent parent = target.getParent();
+        parent.accept(visitor);
+        return visitor.getSilblings();
     }
 
+    private class RemoveChildrenVisitor implements IModelVisitor {
+
+        @Override
+        public void visit(FileBookmark fileBookmark) {
+        }
+
+        @Override
+        public void visit(Category category) {
+            IBookmark[] bookmarks = category.getBookmarks().toArray(new IBookmark[0]);
+            for (IBookmark bookmark : bookmarks) {
+                category.remove(bookmark);
+            }
+        }
+
+        @Override
+        public void visit(JavaElementBookmark javaElementBookmark) {
+            JavaElementBookmark[] childElements = javaElementBookmark.getChildElements().toArray(
+                    new JavaElementBookmark[0]);
+            for (JavaElementBookmark child : childElements) {
+                javaElementBookmark.remove(child);
+            }
+        }
+
+    }
+
+    private class AddListAsChildrenVisitor implements IModelVisitor {
+
+        private final List<IBookmarkModelComponent> newOrder;
+
+        public AddListAsChildrenVisitor(List<IBookmarkModelComponent> newOrder) {
+            this.newOrder = newOrder;
+        }
+
+        @Override
+        public void visit(FileBookmark fileBookmark) {
+        }
+
+        @Override
+        public void visit(Category category) {
+            for (IBookmarkModelComponent component : newOrder) {
+                if (component instanceof IBookmark) {
+                    category.add((IBookmark) component);
+                }
+            }
+        }
+
+        @Override
+        public void visit(JavaElementBookmark javaElementBookmark) {
+            for (IBookmarkModelComponent component : newOrder) {
+                if (component instanceof JavaElementBookmark) {
+                    javaElementBookmark.addChildElement((JavaElementBookmark) component);
+                }
+            }
+        }
+
+    }
+
+    private class GetSilblingsVisitor implements IModelVisitor {
+
+        private List<IBookmarkModelComponent> silblings = Lists.newArrayList();
+
+        public List<IBookmarkModelComponent> getSilblings() {
+            return silblings;
+        }
+
+        @Override
+        public void visit(FileBookmark fileBookmark) {
+        }
+
+        @Override
+        public void visit(Category category) {
+            silblings.addAll(category.getBookmarks());
+        }
+
+        @Override
+        public void visit(JavaElementBookmark javaElementBookmark) {
+            silblings.addAll(javaElementBookmark.getChildElements());
+        }
+
+    }
 }

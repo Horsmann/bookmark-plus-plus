@@ -11,7 +11,6 @@
 package org.eclipselabs.recommenders.bookmark.aaa.model;
 
 import java.io.Serializable;
-import java.util.Collections;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -72,20 +71,7 @@ public class FileBookmark implements IBookmark, Serializable {
 
     @Override
     public boolean hasParent() {
-        return parent.getParent() != null;
-    }
-
-    @Override
-    public IBookmarkModelComponent[] getChildren() {
-        return Collections.emptyList().toArray(new IBookmarkModelComponent[0]);
-    }
-
-    @Override
-    public void remove(IBookmarkModelComponent component) {
-    }
-
-    @Override
-    public void add(IBookmarkModelComponent component) {
+        return parent != null;
     }
 
 }
