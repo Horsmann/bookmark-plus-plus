@@ -11,15 +11,10 @@
 package org.eclipselabs.recommenders.bookmark.aaa;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipselabs.recommenders.bookmark.aaa.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.SwitchFlatHierarchicalAction;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
@@ -45,16 +40,13 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         setUpContextMenu();
 
         loadModel();
-        // activateFlatMode();
         activateHierarchicalMode();
 
         addViewPartListener();
     }
 
     private void setUpContextMenu() {
-        
         treeViewer.setUpContextMenuFor(getSite());
-       
     }
 
     private void addViewPartListener() {

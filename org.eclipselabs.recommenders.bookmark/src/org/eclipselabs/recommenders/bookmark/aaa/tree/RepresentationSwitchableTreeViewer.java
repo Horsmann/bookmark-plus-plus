@@ -242,18 +242,14 @@ public class RepresentationSwitchableTreeViewer {
 
         @Override
         public void keyPressed(KeyEvent e) {
-
             if (isDeletion(e)) {
                 processDeletion(e);
             }
-
             treeViewer.refresh();
         }
 
         private void processDeletion(KeyEvent e) {
-
             TreeItem[] selections = getSelections(e);
-
             for (TreeItem item : selections) {
                 searchBookmarkDeleteSelection(item);
             }
@@ -266,11 +262,8 @@ public class RepresentationSwitchableTreeViewer {
         }
 
         private void searchBookmarkDeleteSelection(TreeItem item) {
-
             IBookmarkModelComponent selection = (IBookmarkModelComponent) item.getData();
-
             deletionForCategories(selection);
-
             deletionForIBookmarks(selection);
         }
 
