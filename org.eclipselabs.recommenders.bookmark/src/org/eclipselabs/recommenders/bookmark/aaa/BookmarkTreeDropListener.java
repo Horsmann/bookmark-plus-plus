@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ResourceTransfer;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.AddElementToModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.ChangeElementInModleCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.RelocateNodesCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;

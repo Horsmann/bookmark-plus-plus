@@ -11,8 +11,12 @@
 package org.eclipselabs.recommenders.bookmark.aaa;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.aaa.action.RenameCategoryAction;
@@ -22,7 +26,6 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
-import org.eclipselabs.recommenders.bookmark.aaa.ViewPartListener;
 
 public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
@@ -30,6 +33,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private RepresentationSwitchableTreeViewer treeViewer;
     private Action switchFlatHierarchical;
     private boolean isHierarchicalModeActive;
+    private RenameCategoryAction renameCategory;
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -39,12 +43,31 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
         setUpActions();
         setUpToolbar();
+        setUpContextMenu();
 
         loadModel();
         // activateFlatMode();
         activateHierarchicalMode();
-        
+
         addViewPartListener();
+    }
+
+    private void setUpContextMenu() {
+        final MenuManager menuMgr = new MenuManager();
+        menuMgr.setRemoveAllWhenShown(true);
+
+        menuMgr.addMenuListener(new IMenuListener() {
+            public void menuAboutToShow(IMenuManager mgr) {
+                menuMgr.add(renameCategory);
+            }
+        });
+
+        menuMgr.update(true);
+
+        Menu menu = menuMgr.createContextMenu(treeViewer.getTree());
+        treeViewer.getTree().setMenu(menu);
+
+        getSite().registerContextMenu(menuMgr, treeViewer.getViewer());
     }
 
     private void addViewPartListener() {
@@ -54,7 +77,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private void setUpActions() {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
-        renameCategory = new RenameCategoryAction(treeViewer);
+        renameCategory = new RenameCategoryAction(this, treeViewer);
     }
 
     private void setUpToolbar() {

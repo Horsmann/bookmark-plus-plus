@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.aaa;
+package org.eclipselabs.recommenders.bookmark.aaa.visitor;
 
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
