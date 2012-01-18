@@ -33,7 +33,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private RepresentationSwitchableTreeViewer treeViewer;
     private Action switchFlatHierarchical;
     private boolean isHierarchicalModeActive;
-    private RenameCategoryAction renameCategory;
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -53,22 +52,9 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     private void setUpContextMenu() {
-        final MenuManager menuMgr = new MenuManager();
-        menuMgr.setRemoveAllWhenShown(true);
-
-        menuMgr.addMenuListener(new IMenuListener() {
-            public void menuAboutToShow(IMenuManager mgr) {
-                menuMgr.add(renameCategory);
-            }
-        });
-
-        //TODO: move into treeViewer?
-        menuMgr.update(true);
-
-        Menu menu = menuMgr.createContextMenu(treeViewer.getTree());
-        treeViewer.getTree().setMenu(menu);
-
-        getSite().registerContextMenu(menuMgr, treeViewer.getViewer());
+        
+        treeViewer.setUpContextMenuFor(getSite());
+       
     }
 
     private void addViewPartListener() {
@@ -78,7 +64,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private void setUpActions() {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
-        renameCategory = new RenameCategoryAction(this, treeViewer);
     }
 
     private void setUpToolbar() {

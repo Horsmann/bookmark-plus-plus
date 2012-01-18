@@ -12,6 +12,9 @@ package org.eclipselabs.recommenders.bookmark.aaa.tree;
 
 import java.util.List;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
@@ -34,8 +37,11 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipselabs.recommenders.bookmark.aaa.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
@@ -49,15 +55,19 @@ public class RepresentationSwitchableTreeViewer {
     private IRepresentationMode currentMode;
     private TreeViewer treeViewer;
     private BookmarkModel model;
+    private RenameCategoryAction renameCategory;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model) {
         this.model = model;
-
         createTreeViewer(parent);
-
         currentMode = initialMode;
         addKeyListener();
+        createActions();
+    }
+
+    private void createActions() {
+        renameCategory = new RenameCategoryAction(this);
     }
 
     private void createTreeViewer(Composite parent) {
@@ -382,6 +392,25 @@ public class RepresentationSwitchableTreeViewer {
             return false;
         }
 
+    }
+
+    public void setUpContextMenuFor(IWorkbenchPartSite site) {
+        
+        final MenuManager menuMgr = new MenuManager();
+        menuMgr.setRemoveAllWhenShown(true);
+
+        menuMgr.addMenuListener(new IMenuListener() {
+            public void menuAboutToShow(IMenuManager mgr) {
+                menuMgr.add(renameCategory);
+            }
+        });
+
+        menuMgr.update(true);
+
+        Menu menu = menuMgr.createContextMenu(treeViewer.getTree());
+        treeViewer.getTree().setMenu(menu);
+
+        site.registerContextMenu(menuMgr, treeViewer);
     }
 
 }
