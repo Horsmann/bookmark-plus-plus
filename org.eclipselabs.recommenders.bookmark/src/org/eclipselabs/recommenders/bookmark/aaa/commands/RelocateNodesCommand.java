@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.aaa;
+package org.eclipselabs.recommenders.bookmark.aaa.commands;
 
 import java.util.LinkedList;
 import java.util.List;

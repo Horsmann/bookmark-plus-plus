@@ -10,6 +10,8 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa;
 
+import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
+
 public interface BookmarkCommandInvoker {
 
     void invoke(IBookmarkModelCommand command);

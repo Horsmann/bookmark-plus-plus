@@ -8,7 +8,7 @@
  * Contributors:
  *    Johannes Lerch - initial API and implementation.
  */
-package org.eclipselabs.recommenders.bookmark.aaa;
+package org.eclipselabs.recommenders.bookmark.aaa.commands;
 
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 

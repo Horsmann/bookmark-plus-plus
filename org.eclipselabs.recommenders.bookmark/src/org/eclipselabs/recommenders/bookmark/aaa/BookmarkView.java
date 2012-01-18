@@ -15,6 +15,9 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.aaa.action.RenameCategoryAction;
+import org.eclipselabs.recommenders.bookmark.aaa.action.SwitchFlatHierarchicalAction;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
@@ -51,6 +54,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private void setUpActions() {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
+        renameCategory = new RenameCategoryAction(treeViewer);
     }
 
     private void setUpToolbar() {

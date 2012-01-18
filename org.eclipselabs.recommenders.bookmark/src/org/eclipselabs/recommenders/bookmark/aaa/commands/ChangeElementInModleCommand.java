@@ -1,9 +1,12 @@
-package org.eclipselabs.recommenders.bookmark.aaa;
+package org.eclipselabs.recommenders.bookmark.aaa.commands;
 
 import java.util.List;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipselabs.recommenders.bookmark.aaa.AddElementToModelCommand;
+import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
+import org.eclipselabs.recommenders.bookmark.aaa.RemoveBookmarkModelComponentVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;

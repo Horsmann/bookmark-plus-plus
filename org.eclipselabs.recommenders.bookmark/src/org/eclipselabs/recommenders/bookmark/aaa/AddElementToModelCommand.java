@@ -23,6 +23,8 @@ import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.RelocateNodesCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;

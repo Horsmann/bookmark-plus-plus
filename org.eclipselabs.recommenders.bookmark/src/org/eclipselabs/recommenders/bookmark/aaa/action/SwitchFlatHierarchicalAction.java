@@ -1,7 +1,8 @@
-package org.eclipselabs.recommenders.bookmark.aaa;
+package org.eclipselabs.recommenders.bookmark.aaa.action;
 
 import org.eclipse.jface.action.Action;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.aaa.BookmarkView;
 
 public class SwitchFlatHierarchicalAction extends Action {
     private final BookmarkView bookmarkView;

@@ -24,7 +24,7 @@ public class RenameBookmarkAction
 	{
 		this.manager = manager;
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
-				.getDescriptor(Activator.ICON_BOOKMARK_RENAME));
+				.getDescriptor(Activator.ICON_RENAME_CATEGORY));
 		this.setToolTipText("Renames a bookmark");
 		this.setText("Rename Bookmark");
 		this.setEnabled(false);

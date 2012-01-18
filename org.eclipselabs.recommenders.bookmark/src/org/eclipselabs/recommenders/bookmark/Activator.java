@@ -37,7 +37,7 @@ public class Activator extends AbstractUIPlugin {
     public static final String ICON_OPEN_IN_SYSTEM_EXPLORER = "openInSystemExplorer";
     public static final String ICON_TOGGLE_VIEW = "toggleLevel";
     public static final String ICON_DELETE = "delete";
-    public static final String ICON_BOOKMARK_RENAME = "rename";
+    public static final String ICON_RENAME_CATEGORY = "rename";
     public static final String ICON_TOGGLE_FLAT_HIERARCHY = "toggleBetweenFlatAndTreeModus";
     public static final String ICON_SAVE = "saveChanges";
 
@@ -114,7 +114,7 @@ public class Activator extends AbstractUIPlugin {
         registry.put(ICON_DELETE, imgDesc);
 
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/write_obj.gif"), null));
-        registry.put(ICON_BOOKMARK_RENAME, imgDesc);
+        registry.put(ICON_RENAME_CATEGORY, imgDesc);
 
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/tree_explorer.gif"), null));
         registry.put(ICON_TOGGLE_FLAT_HIERARCHY, imgDesc);
