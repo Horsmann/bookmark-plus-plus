@@ -15,6 +15,7 @@ import java.util.List;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
@@ -31,6 +32,7 @@ import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTargetListener;
@@ -39,7 +41,9 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -115,10 +119,18 @@ public class RepresentationSwitchableTreeViewer {
     }
 
     public void editCurrentlySelectedRow() {
-        IStructuredSelection selections = getSelections();
-        if (selections.size() == 1) {
-            treeViewer.editElement(selections.getFirstElement(), 0);
+//        IStructuredSelection selections = getSelections();
+//        if (selections.size() == 1) {
+//            treeViewer.editElement(selections.getFirstElement(), 0);
+//        }
+        
+        InputDialog dialog = new InputDialog(treeViewer.getTree().getShell(), "Rename", "diloag", "XYZ", null);
+        dialog.setBlockOnOpen(true);
+        int result = dialog.open();
+        if (result == Window.OK){
+            System.out.println("Window ok");
         }
+        
     }
 
     private void addKeyListener() {
