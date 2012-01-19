@@ -2,7 +2,6 @@ package org.eclipselabs.recommenders.bookmark.aaa.action;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
