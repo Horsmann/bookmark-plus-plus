@@ -17,21 +17,14 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
-import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -88,34 +81,9 @@ public class RepresentationSwitchableTreeViewer {
 
     private void createTreeViewer(Composite parent) {
         this.treeViewer = new TreeViewer(parent);
-        configureTreeViewer();
-    }
-
-    private void configureTreeViewer() {
         treeViewer.setContentProvider(new SwitchableContentProvider());
         treeViewer.setLabelProvider(new SwitchableLabelProvider());
         treeViewer.addTreeListener(new TreeViewListener());
-
-        addEdittingFeature();
-    }
-
-    private void addEdittingFeature() {
-        treeViewer.setCellEditors(new CellEditor[] { new TextCellEditor(treeViewer.getTree()) });
-        treeViewer.setColumnProperties(new String[] { "UNUSED-VALUE" });
-        treeViewer.setCellModifier(new OwnCellModifier());
-
-        ColumnViewerEditorActivationStrategy supportedActivations = getActivationStrategy();
-
-        TreeViewerEditor.create(treeViewer, null, supportedActivations, ColumnViewerEditor.TABBING_VERTICAL);
-    }
-
-    private ColumnViewerEditorActivationStrategy getActivationStrategy() {
-        return new ColumnViewerEditorActivationStrategy(treeViewer) {
-            protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event) {
-                return (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED)
-                        || event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
-            }
-        };
     }
 
     public void editCurrentlySelectedRow() {
@@ -124,11 +92,16 @@ public class RepresentationSwitchableTreeViewer {
             return;
         }
 
-        GetValueVisitor visitor = new GetValueVisitor();
         IBookmarkModelComponent component = (IBookmarkModelComponent) getSelections().getFirstElement();
-        component.accept(visitor);
+        IsCategoryVisitor isCategoryVisitor = new IsCategoryVisitor();
+        component.accept(isCategoryVisitor);
+        if (!isCategoryVisitor.isCategory()) {
+            return;
+        }
 
-        InputDialog dialog = makeDialog((String) visitor.getValue());
+        GetValueVisitor valueVisitor = new GetValueVisitor();
+        component.accept(valueVisitor);
+        InputDialog dialog = makeDialog((String) valueVisitor.getValue());
         dialog.setBlockOnOpen(true);
         int result = dialog.open();
         if (result == Window.OK) {
@@ -279,8 +252,19 @@ public class RepresentationSwitchableTreeViewer {
         public void keyPressed(KeyEvent e) {
             if (isDeletion(e)) {
                 processDeletion(e);
+            } else if (isRename(e)) {
+                processRename(e);
             }
+
             treeViewer.refresh();
+        }
+
+        private void processRename(KeyEvent e) {
+            editCurrentlySelectedRow();
+        }
+
+        private boolean isRename(KeyEvent e) {
+            return e.keyCode == SWT.F2;
         }
 
         private void processDeletion(KeyEvent e) {
@@ -332,94 +316,6 @@ public class RepresentationSwitchableTreeViewer {
 
     public TreeViewer getViewer() {
         return treeViewer;
-    }
-
-    private class GetStringRepresentationVisitor implements IModelVisitor {
-
-        private String stringValue;
-
-        public String getLable() {
-            return stringValue;
-        }
-
-        @Override
-        public void visit(FileBookmark fileBookmark) {
-            stringValue = fileBookmark.getFile().toString();
-        }
-
-        @Override
-        public void visit(Category category) {
-            stringValue = category.getLabel();
-        }
-
-        @Override
-        public void visit(JavaElementBookmark javaElementBookmark) {
-            stringValue = javaElementBookmark.getHandleId();
-        }
-
-    }
-
-    private class SetStringValueVisitor implements IModelVisitor {
-        private final String value;
-
-        public SetStringValueVisitor(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public void visit(FileBookmark fileBookmark) {
-        }
-
-        @Override
-        public void visit(Category category) {
-            category.setLabel(value);
-        }
-
-        @Override
-        public void visit(JavaElementBookmark javaElementBookmark) {
-        }
-    }
-
-    private class OwnCellModifier implements ICellModifier {
-
-        @Override
-        public void modify(Object element, String property, Object value) {
-            if (isSupportedType(element)) {
-                IBookmarkModelComponent component = (IBookmarkModelComponent) ((TreeItem) element).getData();
-                if (value instanceof String) {
-                    SetStringValueVisitor visitor = new SetStringValueVisitor((String) value);
-                    component.accept(visitor);
-                }
-                return;
-            }
-            throw new IllegalArgumentException("Type of element is not supported - should not have been reached");
-        }
-
-        private boolean isSupportedType(Object element) {
-            return (element instanceof TreeItem && ((TreeItem) element).getData() instanceof IBookmarkModelComponent);
-        }
-
-        @Override
-        public Object getValue(Object element, String property) {
-
-            if (element instanceof IBookmarkModelComponent) {
-                GetStringRepresentationVisitor getLabelVisitor = new GetStringRepresentationVisitor();
-                ((IBookmarkModelComponent) element).accept(getLabelVisitor);
-                return getLabelVisitor.getLable();
-            }
-
-            throw new IllegalArgumentException("Type of element is not supported - should not have been reached");
-        }
-
-        @Override
-        public boolean canModify(Object element, String property) {
-
-            if (element instanceof Category) {
-                return true;
-            }
-            return false;
-        }
-
     }
 
     public void setUpContextMenuFor(IWorkbenchPartSite site) {
@@ -494,6 +390,29 @@ public class RepresentationSwitchableTreeViewer {
         public void visit(JavaElementBookmark javaElementBookmark) {
         }
 
+    }
+
+    private class IsCategoryVisitor implements IModelVisitor {
+        private boolean isCategory = false;
+
+        public boolean isCategory() {
+            return isCategory;
+        }
+
+        @Override
+        public void visit(FileBookmark fileBookmark) {
+
+        }
+
+        @Override
+        public void visit(Category category) {
+            isCategory = true;
+        }
+
+        @Override
+        public void visit(JavaElementBookmark javaElementBookmark) {
+
+        }
     }
 
 }
