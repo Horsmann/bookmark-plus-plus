@@ -25,7 +25,7 @@ public class RenameCategoryAction extends Action implements SelfEnabling {
 
     @Override
     public void run() {
-        treeViewer.editCurrentlySelectedRow();
+        treeViewer.renameCategory();
     }
 
     @Override

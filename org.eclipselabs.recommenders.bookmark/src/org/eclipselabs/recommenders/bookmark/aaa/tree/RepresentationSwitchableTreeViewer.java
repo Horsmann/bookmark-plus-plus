@@ -86,31 +86,42 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.addTreeListener(new TreeViewListener());
     }
 
-    public void editCurrentlySelectedRow() {
-
-        if (getSelections().size() != 1) {
-            return;
-        }
+    public void renameCategory() {
 
         IBookmarkModelComponent component = (IBookmarkModelComponent) getSelections().getFirstElement();
-        IsCategoryVisitor isCategoryVisitor = new IsCategoryVisitor();
-        component.accept(isCategoryVisitor);
-        if (!isCategoryVisitor.isCategory()) {
+        if (!isRenameValid(component)) {
             return;
         }
+        String oldLabel = getOldCategoryLabel(component);
 
-        GetValueVisitor valueVisitor = new GetValueVisitor();
-        component.accept(valueVisitor);
-        InputDialog dialog = makeDialog((String) valueVisitor.getValue());
+        InputDialog dialog = makeDialog(oldLabel);
         dialog.setBlockOnOpen(true);
-        int result = dialog.open();
-        if (result == Window.OK) {
-            String value = dialog.getValue();
-            SetNewCategoryNameVisitor categoryVisitor = new SetNewCategoryNameVisitor(value);
-            component.accept(categoryVisitor);
+        if (dialog.open() == Window.OK) {
+            updateCategoryName(component, dialog);
             treeViewer.refresh();
         }
+    }
 
+    private void updateCategoryName(IBookmarkModelComponent component, InputDialog dialog) {
+        String value = dialog.getValue();
+        SetNewCategoryNameVisitor categoryVisitor = new SetNewCategoryNameVisitor(value);
+        component.accept(categoryVisitor);
+    }
+
+    private String getOldCategoryLabel(IBookmarkModelComponent component) {
+        GetValueVisitor valueVisitor = new GetValueVisitor();
+        component.accept(valueVisitor);
+        return (String) valueVisitor.getValue();
+    }
+
+    private boolean isRenameValid(IBookmarkModelComponent component) {
+        if (getSelections().size() != 1) {
+            return false;
+        }
+
+        IsCategoryVisitor isCategoryVisitor = new IsCategoryVisitor();
+        component.accept(isCategoryVisitor);
+        return isCategoryVisitor.isCategory();
     }
 
     private InputDialog makeDialog(String oldLabel) {
@@ -260,7 +271,7 @@ public class RepresentationSwitchableTreeViewer {
         }
 
         private void processRename(KeyEvent e) {
-            editCurrentlySelectedRow();
+            renameCategory();
         }
 
         private boolean isRename(KeyEvent e) {
