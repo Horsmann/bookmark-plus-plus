@@ -125,6 +125,7 @@ public class RepresentationSwitchableTreeViewer {
 //        }
         
         InputDialog dialog = new InputDialog(treeViewer.getTree().getShell(), "Rename", "diloag", "XYZ", null);
+        
         dialog.setBlockOnOpen(true);
         int result = dialog.open();
         if (result == Window.OK){
