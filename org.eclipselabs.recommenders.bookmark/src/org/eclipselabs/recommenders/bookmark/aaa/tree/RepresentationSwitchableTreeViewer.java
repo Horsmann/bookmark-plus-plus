@@ -15,6 +15,7 @@ import java.util.List;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
@@ -41,9 +42,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -55,6 +54,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
+import org.eclipselabs.recommenders.bookmark.aaa.visitor.GetValueVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.RemoveBookmarkModelComponentVisitor;
 
 import com.google.common.collect.Lists;
@@ -119,19 +119,30 @@ public class RepresentationSwitchableTreeViewer {
     }
 
     public void editCurrentlySelectedRow() {
-//        IStructuredSelection selections = getSelections();
-//        if (selections.size() == 1) {
-//            treeViewer.editElement(selections.getFirstElement(), 0);
-//        }
-        
-        InputDialog dialog = new InputDialog(treeViewer.getTree().getShell(), "Rename", "diloag", "XYZ", null);
-        
+
+        if (getSelections().size() != 1) {
+            return;
+        }
+
+        GetValueVisitor visitor = new GetValueVisitor();
+        IBookmarkModelComponent component = (IBookmarkModelComponent) getSelections().getFirstElement();
+        component.accept(visitor);
+
+        InputDialog dialog = makeDialog((String) visitor.getValue());
         dialog.setBlockOnOpen(true);
         int result = dialog.open();
-        if (result == Window.OK){
-            System.out.println("Window ok");
+        if (result == Window.OK) {
+            String value = dialog.getValue();
+            SetNewCategoryNameVisitor categoryVisitor = new SetNewCategoryNameVisitor(value);
+            component.accept(categoryVisitor);
+            treeViewer.refresh();
         }
-        
+
+    }
+
+    private InputDialog makeDialog(String oldLabel) {
+        return new InputDialog(treeViewer.getTree().getShell(), "Rename Category", "Enter a new category name:",
+                oldLabel, new InputValidator());
     }
 
     private void addKeyListener() {
@@ -443,6 +454,44 @@ public class RepresentationSwitchableTreeViewer {
             for (SelfEnabling client : clients) {
                 client.updateEnableStatus();
             }
+        }
+
+    }
+
+    private class InputValidator implements IInputValidator {
+
+        @Override
+        public String isValid(String newText) {
+
+            if (newText.equals("")) {
+                return "Blank is an invalid category name";
+            }
+
+            return null;
+        }
+
+    }
+
+    private class SetNewCategoryNameVisitor implements IModelVisitor {
+
+        private final String categoryName;
+
+        public SetNewCategoryNameVisitor(String categoryName) {
+            this.categoryName = categoryName;
+
+        }
+
+        @Override
+        public void visit(FileBookmark fileBookmark) {
+        }
+
+        @Override
+        public void visit(Category category) {
+            category.setLabel(categoryName);
+        }
+
+        @Override
+        public void visit(JavaElementBookmark javaElementBookmark) {
         }
 
     }
