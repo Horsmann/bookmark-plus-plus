@@ -20,10 +20,12 @@ import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -42,6 +44,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipselabs.recommenders.bookmark.aaa.action.RenameCategoryAction;
+import org.eclipselabs.recommenders.bookmark.aaa.action.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
@@ -49,6 +52,8 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.RemoveBookmarkModelComponentVisitor;
+
+import com.google.common.collect.Lists;
 
 public class RepresentationSwitchableTreeViewer {
 
@@ -64,6 +69,13 @@ public class RepresentationSwitchableTreeViewer {
         currentMode = initialMode;
         addKeyListener();
         createActions();
+        addSelectionChangedListener();
+    }
+
+    private void addSelectionChangedListener() {
+        SelectionChangedListener selectionListener = new SelectionChangedListener();
+        selectionListener.register(renameCategory);
+        treeViewer.addSelectionChangedListener(selectionListener);
     }
 
     private void createActions() {
@@ -108,7 +120,6 @@ public class RepresentationSwitchableTreeViewer {
             treeViewer.editElement(selections.getFirstElement(), 0);
         }
     }
-    
 
     private void addKeyListener() {
         treeViewer.getTree().addKeyListener(new TreeKeyListener());
@@ -388,7 +399,7 @@ public class RepresentationSwitchableTreeViewer {
     }
 
     public void setUpContextMenuFor(IWorkbenchPartSite site) {
-        
+
         final MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown(true);
 
@@ -404,6 +415,23 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.getTree().setMenu(menu);
 
         site.registerContextMenu(menuMgr, treeViewer);
+    }
+
+    private class SelectionChangedListener implements ISelectionChangedListener {
+
+        List<SelfEnabling> clients = Lists.newArrayList();
+
+        public void register(SelfEnabling selfEnabling) {
+            clients.add(selfEnabling);
+        }
+
+        @Override
+        public void selectionChanged(SelectionChangedEvent event) {
+            for (SelfEnabling client : clients) {
+                client.updateEnableStatus();
+            }
+        }
+
     }
 
 }
