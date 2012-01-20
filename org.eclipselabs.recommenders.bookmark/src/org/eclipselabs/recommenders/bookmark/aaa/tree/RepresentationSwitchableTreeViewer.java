@@ -17,6 +17,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -73,10 +75,16 @@ public class RepresentationSwitchableTreeViewer {
         this.commandInvoker = commandInvoker;
         createTreeViewer(parent);
         currentMode = initialMode;
-        addKeyListener();
         createActions();
+
+        addKeyListener();
         addSelectionChangedListener();
+        addDoubleclickListener();
         setUpContextMenu();
+    }
+
+    private void addDoubleclickListener() {
+        treeViewer.addDoubleClickListener(new DoubleclickListener());
     }
 
     private void addSelectionChangedListener() {
@@ -425,6 +433,16 @@ public class RepresentationSwitchableTreeViewer {
         public void visit(JavaElementBookmark javaElementBookmark) {
         }
 
+    }
+    
+    private class DoubleclickListener implements IDoubleClickListener {
+
+        @Override
+        public void doubleClick(DoubleClickEvent event) {
+            commandInvoker.invoke(new OpenBookmarkCommand(getSelections(), part.getSite().getWorkbenchWindow()
+                    .getActivePage()));
+        }
+        
     }
 
 }
