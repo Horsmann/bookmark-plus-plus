@@ -39,9 +39,11 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.action.OpenBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.SelfEnabling;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.OpenBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
@@ -62,11 +64,13 @@ public class RepresentationSwitchableTreeViewer {
     private RenameCategoryAction renameCategory;
     private final ViewPart part;
     private OpenBookmarkAction openInEditor;
+    private final BookmarkCommandInvoker commandInvoker;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
-            final BookmarkModel model, ViewPart part) {
+            final BookmarkModel model, ViewPart part, BookmarkCommandInvoker commandInvoker) {
         this.model = model;
         this.part = part;
+        this.commandInvoker = commandInvoker;
         createTreeViewer(parent);
         currentMode = initialMode;
         addKeyListener();
@@ -84,7 +88,7 @@ public class RepresentationSwitchableTreeViewer {
 
     private void createActions() {
         renameCategory = new RenameCategoryAction(this);
-        openInEditor = new OpenBookmarkAction(this, part);
+        openInEditor = new OpenBookmarkAction(this, part, commandInvoker);
     }
 
     private void createTreeViewer(Composite parent) {
@@ -273,9 +277,20 @@ public class RepresentationSwitchableTreeViewer {
                 processDeletion(e);
             } else if (isRename(e)) {
                 processRename(e);
+            } else if (isEnter(e)) {
+                processEnter(e);
             }
 
             treeViewer.refresh();
+        }
+
+        private void processEnter(KeyEvent e) {
+            commandInvoker.invoke(new OpenBookmarkCommand(getSelections(), part.getSite().getWorkbenchWindow()
+                    .getActivePage()));
+        }
+
+        private boolean isEnter(KeyEvent e) {
+            return e.keyCode == SWT.CR;
         }
 
         private void processRename(KeyEvent e) {
@@ -287,13 +302,13 @@ public class RepresentationSwitchableTreeViewer {
         }
 
         private void processDeletion(KeyEvent e) {
-            TreeItem[] selections = getSelections(e);
+            TreeItem[] selections = getTreeSelections(e);
             for (TreeItem item : selections) {
                 searchBookmarkDeleteSelection(item);
             }
         }
 
-        private TreeItem[] getSelections(KeyEvent e) {
+        private TreeItem[] getTreeSelections(KeyEvent e) {
             Tree tree = (Tree) e.getSource();
             TreeItem[] selections = tree.getSelection();
             return selections;
