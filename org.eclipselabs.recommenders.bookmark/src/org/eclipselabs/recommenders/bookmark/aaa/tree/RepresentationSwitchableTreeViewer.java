@@ -38,7 +38,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.aaa.action.OpenBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
@@ -48,6 +49,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.GetValueVisitor;
+import org.eclipselabs.recommenders.bookmark.aaa.visitor.IsCategoryVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.RemoveBookmarkModelComponentVisitor;
 
 import com.google.common.collect.Lists;
@@ -58,25 +60,31 @@ public class RepresentationSwitchableTreeViewer {
     private TreeViewer treeViewer;
     private BookmarkModel model;
     private RenameCategoryAction renameCategory;
+    private final ViewPart part;
+    private OpenBookmarkAction openInEditor;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
-            final BookmarkModel model) {
+            final BookmarkModel model, ViewPart part) {
         this.model = model;
+        this.part = part;
         createTreeViewer(parent);
         currentMode = initialMode;
         addKeyListener();
         createActions();
         addSelectionChangedListener();
+        setUpContextMenu();
     }
 
     private void addSelectionChangedListener() {
         SelectionChangedListener selectionListener = new SelectionChangedListener();
         selectionListener.register(renameCategory);
+        selectionListener.register(openInEditor);
         treeViewer.addSelectionChangedListener(selectionListener);
     }
 
     private void createActions() {
         renameCategory = new RenameCategoryAction(this);
+        openInEditor = new OpenBookmarkAction(this, part);
     }
 
     private void createTreeViewer(Composite parent) {
@@ -329,13 +337,14 @@ public class RepresentationSwitchableTreeViewer {
         return treeViewer;
     }
 
-    public void setUpContextMenuFor(IWorkbenchPartSite site) {
+    private void setUpContextMenu() {
 
         final MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown(true);
 
         menuMgr.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager mgr) {
+                menuMgr.add(openInEditor);
                 menuMgr.add(renameCategory);
             }
         });
@@ -345,7 +354,7 @@ public class RepresentationSwitchableTreeViewer {
         Menu menu = menuMgr.createContextMenu(treeViewer.getTree());
         treeViewer.getTree().setMenu(menu);
 
-        site.registerContextMenu(menuMgr, treeViewer);
+        part.getSite().registerContextMenu(menuMgr, treeViewer);
     }
 
     private class SelectionChangedListener implements ISelectionChangedListener {
@@ -401,29 +410,6 @@ public class RepresentationSwitchableTreeViewer {
         public void visit(JavaElementBookmark javaElementBookmark) {
         }
 
-    }
-
-    private class IsCategoryVisitor implements IModelVisitor {
-        private boolean isCategory = false;
-
-        public boolean isCategory() {
-            return isCategory;
-        }
-
-        @Override
-        public void visit(FileBookmark fileBookmark) {
-
-        }
-
-        @Override
-        public void visit(Category category) {
-            isCategory = true;
-        }
-
-        @Override
-        public void visit(JavaElementBookmark javaElementBookmark) {
-
-        }
     }
 
 }
