@@ -75,62 +75,6 @@ public class OpenInEditorVisitor implements IModelVisitor {
         }
     }
 
-    private class IsResourceAvailableVisitor implements IModelVisitor {
-
-        private boolean isAvailable = false;
-
-        public boolean isAvailable() {
-            return isAvailable;
-        }
-
-        @Override
-        public void visit(FileBookmark fileBookmark) {
-            IFile file = fileBookmark.getFile();
-            IProject project = file.getProject();
-            boolean isOpen = project.isOpen();
-            boolean exists = file.exists();
-
-            isAvailable = isOpen && exists;
-        }
-
-        @Override
-        public void visit(Category category) {
-            isAvailable = true;
-        }
-
-        @Override
-        public void visit(JavaElementBookmark javaElementBookmark) {
-            IJavaElement element = javaElementBookmark.getJavaElement();
-            IProject project = element.getJavaProject().getProject();
-            boolean isOpen = project.isOpen();
-            boolean exists = doesReferencedIJavaElementExist(element);
-
-            isAvailable = isOpen && exists;
-        }
-
-        private boolean doesReferencedIJavaElementExist(IJavaElement element) {
-            if (element instanceof IField) {
-                IField field = (IField) element;
-                return field.exists();
-            }
-
-            if (element instanceof IMethod) {
-                IMethod method = (IMethod) element;
-                return method.exists();
-            }
-
-            if (element instanceof IType) {
-                IType type = (IType) element;
-                return type.exists();
-            }
-
-            if (element instanceof ICompilationUnit) {
-                IJavaElement unit = (ICompilationUnit) element;
-                return unit.exists();
-            }
-            return false;
-        }
-
-    }
+  
 
 }

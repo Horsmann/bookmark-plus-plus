@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.action.OpenBookmarkAction;
+import org.eclipselabs.recommenders.bookmark.aaa.action.OpenInFileSystemAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.OpenBookmarkCommand;
@@ -67,6 +68,7 @@ public class RepresentationSwitchableTreeViewer {
     private final ViewPart part;
     private OpenBookmarkAction openInEditor;
     private final BookmarkCommandInvoker commandInvoker;
+    private OpenInFileSystemAction openInFileSystem;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model, ViewPart part, BookmarkCommandInvoker commandInvoker) {
@@ -91,12 +93,14 @@ public class RepresentationSwitchableTreeViewer {
         SelectionChangedListener selectionListener = new SelectionChangedListener();
         selectionListener.register(renameCategory);
         selectionListener.register(openInEditor);
+        selectionListener.register(openInFileSystem);
         treeViewer.addSelectionChangedListener(selectionListener);
     }
 
     private void createActions() {
         renameCategory = new RenameCategoryAction(this);
         openInEditor = new OpenBookmarkAction(this, part, commandInvoker);
+        openInFileSystem = new OpenInFileSystemAction(this);
     }
 
     private void createTreeViewer(Composite parent) {
@@ -369,6 +373,7 @@ public class RepresentationSwitchableTreeViewer {
             public void menuAboutToShow(IMenuManager mgr) {
                 menuMgr.add(openInEditor);
                 menuMgr.add(renameCategory);
+                menuMgr.add(openInFileSystem);
             }
         });
 
