@@ -203,11 +203,9 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         final TreePath[] treePath = treeSelection.getPaths();
 
         Object[] elements = new Object[treePath.length];
-
         for (int i = 0; i < treePath.length; i++) {
             elements[i] = treePath[i].getLastSegment();
         }
-
         processDroppedElementOriginatedFromOutsideTheView(dropTarget, elements, event);
     }
 

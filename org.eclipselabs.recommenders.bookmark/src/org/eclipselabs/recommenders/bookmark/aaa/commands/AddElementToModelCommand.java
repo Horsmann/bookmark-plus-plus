@@ -158,7 +158,6 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
                 foundBookmark.setExpanded(true);
                 return foundBookmark;
             } else {
-
                 JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
                         category);
                 newBookmark.setExpanded(true);

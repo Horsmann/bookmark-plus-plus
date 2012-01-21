@@ -81,7 +81,7 @@ public class HierarchicalRepresentationMode implements IRepresentationMode {
 
             @Override
             public void visit(final FileBookmark fileBookmark) {
-                label = fileBookmark.getFile().toString();
+                label = fileBookmark.getFile().getName();
 
             }
 

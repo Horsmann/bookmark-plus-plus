@@ -12,6 +12,7 @@ package org.eclipselabs.recommenders.bookmark.aaa.tree;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
@@ -49,6 +50,11 @@ public class FlatRepresentationMode implements IRepresentationMode {
 
             @Override
             public void visit(final FileBookmark fileBookmark) {
+                if (childBookmarks == null) {
+                    childBookmarks = Lists.newLinkedList();
+                } else if (!fileBookmark.isInferredNode()) {
+                    childBookmarks.add(fileBookmark);
+                }
             }
 
             @Override
@@ -95,7 +101,7 @@ public class FlatRepresentationMode implements IRepresentationMode {
 
             @Override
             public void visit(final FileBookmark fileBookmark) {
-                label = fileBookmark.getFile().toString();
+                label = fileBookmark.getFile().getName();
 
             }
 
@@ -107,9 +113,46 @@ public class FlatRepresentationMode implements IRepresentationMode {
 
             @Override
             public void visit(final JavaElementBookmark javaElementBookmark) {
-                final IJavaElement javaElement = JavaCore.create(javaElementBookmark.getHandleId());
+                final IJavaElement javaElement = javaElementBookmark.getJavaElement();
+                label = determineCompilationUnit(javaElement) + "." + jelp.getText(javaElement);
+            }
 
-                label = jelp.getText(javaElement);
+            private String determineCompilationUnit(IJavaElement element) {
+                String compilationUnit = getCompilationUnitName(element);
+                compilationUnit = chopOffFileEnding(compilationUnit);
+                return compilationUnit;
+            }
+
+            public String getCompilationUnitName(IJavaElement element) {
+                ICompilationUnit compilationUnit = seekCompilationUnit(element);
+                if (compilationUnit == null) {
+                    return "";
+                }
+                String compilationUnitName = compilationUnit.getElementName();
+                return compilationUnitName;
+            }
+
+            private ICompilationUnit seekCompilationUnit(IJavaElement element) {
+                if (element instanceof ICompilationUnit) {
+                    return (ICompilationUnit) element;
+                }
+
+                while ((element = element.getParent()) != null) {
+                    if (element instanceof ICompilationUnit) {
+                        return (ICompilationUnit) element;
+                    }
+                }
+
+                return null;
+            }
+
+            private String chopOffFileEnding(String compilationUnit) {
+                int pos = compilationUnit.lastIndexOf(".");
+                if (pos == -1) {
+                    return compilationUnit;
+                }
+                String name = compilationUnit.substring(0, pos);
+                return name;
             }
 
         };
@@ -154,12 +197,10 @@ public class FlatRepresentationMode implements IRepresentationMode {
 
             @Override
             public void visit(final FileBookmark fileBookmark) {
-
             }
 
             @Override
             public void visit(final JavaElementBookmark javaElementBookmark) {
-
             }
         };
         for (final Category category : model.getCategories()) {
@@ -180,7 +221,6 @@ public class FlatRepresentationMode implements IRepresentationMode {
             @Override
             public void visit(JavaElementBookmark javaElementBookmark) {
                 final IJavaElement javaElement = JavaCore.create(javaElementBookmark.getHandleId());
-
                 image = jelp.getImage(javaElement);
             }
 
@@ -193,9 +233,7 @@ public class FlatRepresentationMode implements IRepresentationMode {
 
             @Override
             public void visit(FileBookmark fileBookmark) {
-
                 image = jelp.getImage(fileBookmark.getFile());
-
             }
 
             @Override
