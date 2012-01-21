@@ -187,7 +187,7 @@ public class CategoryView
 		Label label = new Label(composite, SWT.NONE);
 
 		Image image = Activator.getDefault().getImageRegistry()
-				.get(Activator.ICON_BOOKMARK);
+				.get(Activator.ICON_CATEGORY);
 		label.setImage(image);
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		label.setLayoutData(gridData);

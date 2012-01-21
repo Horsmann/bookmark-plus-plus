@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.BookmarkDeletionCommand;
-import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
 

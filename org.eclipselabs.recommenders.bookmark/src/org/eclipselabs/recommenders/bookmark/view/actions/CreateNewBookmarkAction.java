@@ -26,7 +26,7 @@ public class CreateNewBookmarkAction
 	private void setProperties()
 	{
 		this.setImageDescriptor(Activator.getDefault().getImageRegistry()
-				.getDescriptor(Activator.ICON_BOOKMARK));
+				.getDescriptor(Activator.ICON_CATEGORY));
 		this.setToolTipText("Creates a new bookmark");
 		this.setText("New Bookmark");
 	}

@@ -26,7 +26,7 @@ public class Activator extends AbstractUIPlugin {
     private static ViewManager manager;
 
     public static final String ICON_DEFAULT = "default";
-    public static final String ICON_BOOKMARK = "bookmark";
+    public static final String ICON_CATEGORY = "bookmark";
     public static final String ICON_SHOW_IN_EDITOR = "openBookmarksInEditor";
     public static final String ICON_CLOSE_ALL_OPEN_EDITORS = "closeAllOpenEditors";
     public static final String ICON_SAVE_BOOKMARKS = "exportBookmarks";
@@ -81,7 +81,7 @@ public class Activator extends AbstractUIPlugin {
         registry.put(ICON_DEFAULT, imgDesc);
 
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/bkmrk_nav.gif"), null));
-        registry.put(ICON_BOOKMARK, imgDesc);
+        registry.put(ICON_CATEGORY, imgDesc);
 
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/read_obj.gif"), null));
         registry.put(ICON_SHOW_IN_EDITOR, imgDesc);

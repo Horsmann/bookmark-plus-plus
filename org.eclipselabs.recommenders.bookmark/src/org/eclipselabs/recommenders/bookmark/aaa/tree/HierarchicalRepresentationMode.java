@@ -179,7 +179,7 @@ public class HierarchicalRepresentationMode implements IRepresentationMode {
             public void visit(Category category) {
                 final AbstractUIPlugin plugin = Activator.getDefault();
                 final ImageRegistry registry = plugin.getImageRegistry();
-                image = registry.get(Activator.ICON_BOOKMARK);
+                image = registry.get(Activator.ICON_CATEGORY);
             }
 
             @Override

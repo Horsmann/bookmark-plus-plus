@@ -185,7 +185,7 @@ public class TreeLabelProvider
 
 		BMNode node = (BMNode) element;
 		if (node.isBookmarkNode()) {
-			return Activator.ICON_BOOKMARK;
+			return Activator.ICON_CATEGORY;
 		}
 
 		return Activator.ICON_DEFAULT;
