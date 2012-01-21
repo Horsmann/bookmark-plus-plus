@@ -10,6 +10,12 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
@@ -47,6 +53,11 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         activateHierarchicalMode();
         
         addViewPartListener();
+        addResourceListener();
+    }
+
+    private void addResourceListener() {
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(new ResourceListener()); 
     }
 
     private void setUpPluginPreferences() {
@@ -119,4 +130,45 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         treeViewer.refresh();
     }
 
+    private class ResourceListener implements IResourceChangeListener{
+
+        @Override
+        public void resourceChanged(IResourceChangeEvent event) {
+            
+            getSite().getShell().getDisplay().asyncExec(new GuiRunnable(event));
+            
+            
+//                IResourceDelta delta = event.getDelta();
+//                try {
+//                    delta.accept(new IResourceDeltaVisitor() {
+//                        
+//                        @Override
+//                        public boolean visit(IResourceDelta delta) throws CoreException {
+//                            treeViewer.refresh();
+//                            return true;
+//                        }
+//                    });
+//                } catch (CoreException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+        }
+        
+        private class GuiRunnable implements Runnable{
+
+            private final IResourceChangeEvent event;
+
+            public GuiRunnable(IResourceChangeEvent event) {
+                this.event = event;
+            }
+
+            @Override
+            public void run() {
+                if (event.getType() == IResourceChangeEvent.POST_CHANGE){
+                    treeViewer.refresh();
+                }                
+            }
+            
+        }
+    }
 }
