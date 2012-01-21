@@ -42,10 +42,12 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
+import org.eclipselabs.recommenders.bookmark.aaa.action.BookmarkDeletionAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.OpenBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.OpenInFileSystemAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.SelfEnabling;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.BookmarkDeletionCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.OpenBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
@@ -55,7 +57,6 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.GetValueVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.IsCategoryVisitor;
-import org.eclipselabs.recommenders.bookmark.aaa.visitor.RemoveBookmarkModelComponentVisitor;
 
 import com.google.common.collect.Lists;
 
@@ -69,6 +70,7 @@ public class RepresentationSwitchableTreeViewer {
     private OpenBookmarkAction openInEditor;
     private final BookmarkCommandInvoker commandInvoker;
     private OpenInFileSystemAction openInFileSystem;
+    private BookmarkDeletionAction deleteBookmarks;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model, ViewPart part, BookmarkCommandInvoker commandInvoker) {
@@ -89,6 +91,7 @@ public class RepresentationSwitchableTreeViewer {
         renameCategory = new RenameCategoryAction(this);
         openInEditor = new OpenBookmarkAction(this, part, commandInvoker);
         openInFileSystem = new OpenInFileSystemAction(this);
+        deleteBookmarks = new BookmarkDeletionAction(this, commandInvoker);
     }
 
     private void createTreeViewer(Composite parent) {
@@ -107,6 +110,7 @@ public class RepresentationSwitchableTreeViewer {
         selectionListener.register(renameCategory);
         selectionListener.register(openInEditor);
         selectionListener.register(openInFileSystem);
+        selectionListener.register(deleteBookmarks);
         treeViewer.addSelectionChangedListener(selectionListener);
     }
 
@@ -327,21 +331,8 @@ public class RepresentationSwitchableTreeViewer {
         }
 
         private void searchBookmarkDeleteSelection(TreeItem item) {
-            IBookmarkModelComponent selection = (IBookmarkModelComponent) item.getData();
-            deletionForCategories(selection);
-            deletionForIBookmarks(selection);
-        }
-
-        private void deletionForIBookmarks(IBookmarkModelComponent selection) {
-            RemoveBookmarkModelComponentVisitor visitor = new RemoveBookmarkModelComponentVisitor(selection);
-
-            for (Category category : model.getCategories()) {
-                category.accept(visitor);
-            }
-        }
-
-        private void deletionForCategories(IBookmarkModelComponent selection) {
-            model.remove(selection);
+            IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
+            commandInvoker.invoke(new BookmarkDeletionCommand(component));
         }
 
         private boolean isDeletion(KeyEvent e) {
@@ -374,6 +365,7 @@ public class RepresentationSwitchableTreeViewer {
                 menuMgr.add(openInEditor);
                 menuMgr.add(renameCategory);
                 menuMgr.add(openInFileSystem);
+                menuMgr.add(deleteBookmarks);
             }
         });
 
