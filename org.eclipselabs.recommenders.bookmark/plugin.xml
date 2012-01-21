@@ -36,8 +36,8 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.eclipselabs.recommenders.bookmark.preferences.BookmarkPreferencePage"
-            id="org.eclipselabs.recommenders.bookmark.preferences.BookmarkPreferencePage"
+            class="org.eclipselabs.recommenders.bookmark.aaa.preferences.BookmarkPreferencePage"
+            id="org.eclipselabs.recommenders.bookmark.aaa.preferences.BookmarkPreferencePage"
             name="Bookmark++">
       </page>
    </extension>

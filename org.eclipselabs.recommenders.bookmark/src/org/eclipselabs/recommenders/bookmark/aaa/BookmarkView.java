@@ -39,10 +39,15 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
         setUpActions();
         setUpToolbar();
+        setUpPluginPreferences();
         loadModel();
         activateHierarchicalMode();
-
+        
         addViewPartListener();
+    }
+
+    private void setUpPluginPreferences() {
+        
     }
 
     private void addViewPartListener() {

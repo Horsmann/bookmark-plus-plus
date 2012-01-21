@@ -298,7 +298,7 @@ public class RepresentationSwitchableTreeViewer {
 
         private void processEnter(KeyEvent e) {
             commandInvoker.invoke(new OpenBookmarkCommand(getSelections(), part.getSite().getWorkbenchWindow()
-                    .getActivePage()));
+                    .getActivePage(), commandInvoker));
         }
 
         private boolean isEnter(KeyEvent e) {
@@ -445,7 +445,7 @@ public class RepresentationSwitchableTreeViewer {
         @Override
         public void doubleClick(DoubleClickEvent event) {
             commandInvoker.invoke(new OpenBookmarkCommand(getSelections(), part.getSite().getWorkbenchWindow()
-                    .getActivePage()));
+                    .getActivePage(), commandInvoker));
         }
 
     }

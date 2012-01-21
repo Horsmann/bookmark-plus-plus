@@ -33,7 +33,7 @@ public class OpenBookmarkAction extends Action implements SelfEnabling {
     public void run() {
 
         IWorkbenchPage activePage = part.getSite().getWorkbenchWindow().getActivePage();
-        commandInvoker.invoke(new OpenBookmarkCommand(treeViewer.getSelections(), activePage));
+        commandInvoker.invoke(new OpenBookmarkCommand(treeViewer.getSelections(), activePage, commandInvoker));
     }
 
     @Override
