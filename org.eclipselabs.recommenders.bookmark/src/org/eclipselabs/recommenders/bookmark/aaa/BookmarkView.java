@@ -15,6 +15,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.aaa.action.CloseAllEditorWindowsAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.SwitchFlatHierarchicalAction;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
@@ -28,6 +29,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private RepresentationSwitchableTreeViewer treeViewer;
     private Action switchFlatHierarchical;
     private boolean isHierarchicalModeActive;
+    private CloseAllEditorWindowsAction closeAllEditors;
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -50,11 +52,13 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private void setUpActions() {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
+        closeAllEditors = new CloseAllEditorWindowsAction(this);
     }
 
     private void setUpToolbar() {
         IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
         mgr.removeAll();
+        mgr.add(closeAllEditors);
         mgr.add(switchFlatHierarchical);
 
     }

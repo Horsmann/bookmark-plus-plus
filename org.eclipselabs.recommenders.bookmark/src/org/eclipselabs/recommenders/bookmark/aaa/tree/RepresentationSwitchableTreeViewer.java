@@ -85,18 +85,6 @@ public class RepresentationSwitchableTreeViewer {
         setUpContextMenu();
     }
 
-    private void addDoubleclickListener() {
-        treeViewer.addDoubleClickListener(new DoubleclickListener());
-    }
-
-    private void addSelectionChangedListener() {
-        SelectionChangedListener selectionListener = new SelectionChangedListener();
-        selectionListener.register(renameCategory);
-        selectionListener.register(openInEditor);
-        selectionListener.register(openInFileSystem);
-        treeViewer.addSelectionChangedListener(selectionListener);
-    }
-
     private void createActions() {
         renameCategory = new RenameCategoryAction(this);
         openInEditor = new OpenBookmarkAction(this, part, commandInvoker);
@@ -108,6 +96,18 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.setContentProvider(new SwitchableContentProvider());
         treeViewer.setLabelProvider(new SwitchableLabelProvider());
         treeViewer.addTreeListener(new TreeViewListener());
+    }
+
+    private void addDoubleclickListener() {
+        treeViewer.addDoubleClickListener(new DoubleclickListener());
+    }
+
+    private void addSelectionChangedListener() {
+        SelectionChangedListener selectionListener = new SelectionChangedListener();
+        selectionListener.register(renameCategory);
+        selectionListener.register(openInEditor);
+        selectionListener.register(openInFileSystem);
+        treeViewer.addSelectionChangedListener(selectionListener);
     }
 
     public void renameCategory() {
@@ -439,7 +439,7 @@ public class RepresentationSwitchableTreeViewer {
         }
 
     }
-    
+
     private class DoubleclickListener implements IDoubleClickListener {
 
         @Override
@@ -447,7 +447,7 @@ public class RepresentationSwitchableTreeViewer {
             commandInvoker.invoke(new OpenBookmarkCommand(getSelections(), part.getSite().getWorkbenchWindow()
                     .getActivePage()));
         }
-        
+
     }
 
 }
