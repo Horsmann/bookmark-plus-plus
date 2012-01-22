@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -24,6 +25,7 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     private static ViewManager manager;
+    private static BookmarkModel model;
 
     public static final String ICON_DEFAULT = "default";
     public static final String ICON_CATEGORY = "bookmark";
@@ -63,12 +65,21 @@ public class Activator extends AbstractUIPlugin {
         return stateFile;
     }
 
+    //TODO: delete Manager-methods
     public static void setManager(ViewManager manager) {
         Activator.manager = manager;
     }
 
     public static ViewManager getManager() {
         return Activator.manager;
+    }
+    
+    public static void setModel(BookmarkModel model) {
+        Activator.model = model;
+    }
+
+    public static BookmarkModel getModel() {
+        return Activator.model;
     }
 
     @Override

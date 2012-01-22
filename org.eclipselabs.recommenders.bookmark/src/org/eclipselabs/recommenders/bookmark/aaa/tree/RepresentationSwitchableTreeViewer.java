@@ -66,28 +66,26 @@ public class RepresentationSwitchableTreeViewer {
     private TreeViewer treeViewer;
     private BookmarkModel model;
     private RenameCategoryAction renameCategory;
-    private final ViewPart part;
     private OpenBookmarkAction openInEditor;
-    private final BookmarkCommandInvoker commandInvoker;
     private OpenInFileSystemAction openInFileSystem;
     private BookmarkDeletionAction deleteBookmarks;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
-            final BookmarkModel model, ViewPart part, BookmarkCommandInvoker commandInvoker) {
+            final BookmarkModel model) {
         this.model = model;
-        this.part = part;
-        this.commandInvoker = commandInvoker;
         createTreeViewer(parent);
         currentMode = initialMode;
-        createActions();
-
-        addKeyListener();
+    }
+    
+    public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker){
+        createActions(part,commandInvoker);
+        addKeyListener(part, commandInvoker);
+        addDoubleclickListener(part,commandInvoker);
+        setUpContextMenu(part);
         addSelectionChangedListener();
-        addDoubleclickListener();
-        setUpContextMenu();
     }
 
-    private void createActions() {
+    private void createActions(ViewPart part, BookmarkCommandInvoker commandInvoker) {
         renameCategory = new RenameCategoryAction(this);
         openInEditor = new OpenBookmarkAction(this, part, commandInvoker);
         openInFileSystem = new OpenInFileSystemAction(this);
@@ -101,8 +99,8 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.addTreeListener(new TreeViewListener());
     }
 
-    private void addDoubleclickListener() {
-        treeViewer.addDoubleClickListener(new DoubleclickListener());
+    private void addDoubleclickListener(ViewPart part, BookmarkCommandInvoker commandInvoker) {
+        treeViewer.addDoubleClickListener(new DoubleclickListener(part, commandInvoker));
     }
 
     private void addSelectionChangedListener() {
@@ -157,8 +155,8 @@ public class RepresentationSwitchableTreeViewer {
                 oldLabel, new InputValidator());
     }
 
-    private void addKeyListener() {
-        treeViewer.getTree().addKeyListener(new TreeKeyListener());
+    private void addKeyListener(ViewPart part, BookmarkCommandInvoker commandInvoker) {
+        treeViewer.getTree().addKeyListener(new TreeKeyListener(part, commandInvoker));
     }
 
     public void setRepresentation(final IRepresentationMode mode) {
@@ -287,6 +285,14 @@ public class RepresentationSwitchableTreeViewer {
 
     private class TreeKeyListener implements KeyListener {
 
+        private final ViewPart part;
+        private final BookmarkCommandInvoker commandInvoker;
+
+        public TreeKeyListener(ViewPart part, BookmarkCommandInvoker commandInvoker) {
+            this.part = part;
+            this.commandInvoker = commandInvoker;
+        }
+
         @Override
         public void keyPressed(KeyEvent e) {
             if (isDeletion(e)) {
@@ -355,7 +361,7 @@ public class RepresentationSwitchableTreeViewer {
         return treeViewer;
     }
 
-    private void setUpContextMenu() {
+    private void setUpContextMenu(ViewPart part) {
 
         final MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown(true);
@@ -433,6 +439,14 @@ public class RepresentationSwitchableTreeViewer {
     }
 
     private class DoubleclickListener implements IDoubleClickListener {
+
+        private final ViewPart part;
+        private final BookmarkCommandInvoker commandInvoker;
+
+        public DoubleclickListener(ViewPart part, BookmarkCommandInvoker commandInvoker) {
+            this.part = part;
+            this.commandInvoker = commandInvoker;
+        }
 
         @Override
         public void doubleClick(DoubleClickEvent event) {

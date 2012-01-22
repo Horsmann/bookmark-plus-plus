@@ -19,6 +19,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.aaa.action.AddCategoryAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.CloseAllEditorWindowsAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.SwitchFlatHierarchicalAction;
@@ -40,7 +41,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     @Override
     public void createPartControl(final Composite parent) {
 
-        treeViewer = new RepresentationSwitchableTreeViewer(parent, new HierarchicalRepresentationMode(), model, this, this);
+        treeViewer = new RepresentationSwitchableTreeViewer(parent, new HierarchicalRepresentationMode(), model);
+        treeViewer.enabledActionsForViewPart(this, this);
         addDragDropListeners(treeViewer);
 
         setUpActions();
@@ -115,6 +117,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private void setModel(final BookmarkModel model) {
         this.model = model;
         treeViewer.setInput(model);
+        Activator.setModel(model);
     }
 
     @Override

@@ -50,14 +50,14 @@
    <extension
          point="org.eclipse.ui.importWizards">
       <category
-            id="org.eclipselabs.recommenders.bookmark.importWizards.bookmark"
+            id="org.eclipselabs.recommenders.bookmark.aaa.wizard.importing.category"
             name="Bookmark++">
       </category>
       <wizard
-            category="org.eclipselabs.recommenders.bookmark.importWizards.bookmark"
-            class="org.eclipselabs.recommenders.bookmark.wizard.importing.BookmarkImportWizard"
+            category="org.eclipselabs.recommenders.bookmark.aaa.wizard.importing.category"
+            class="org.eclipselabs.recommenders.bookmark.aaa.wizard.importing.BookmarkImportWizard"
             icon="icons/bkmrk_nav.gif"
-            id="org.eclipselabs.recommenders.bookmark.importWizards.BookmarkImportWizard"
+            id="org.eclipselabs.recommenders.bookmark.aaa.wizard.importing.wizard"
             name="Import Bookmarks">
          <description>
             Import a file from the local file system into the workspace.
@@ -67,14 +67,14 @@
    <extension
          point="org.eclipse.ui.exportWizards">
       <category
-            id="org.eclipselabs.recommenders.bookmark.exportWizards.bookmark"
+            id="org.eclipselabs.recommenders.bookmark.aaa.wizard.exporting.category"
             name="Bookmark++">
       </category>
       <wizard
-            category="org.eclipselabs.recommenders.bookmark.exportWizards.bookmark"
-            class="org.eclipselabs.recommenders.bookmark.wizard.exporting.BookmarkExportWizard"
+            category="org.eclipselabs.recommenders.bookmark.aaa.wizard.exporting.category"
+            class="org.eclipselabs.recommenders.bookmark.aaa.wizard.exporting.BookmarkExportWizard"
             icon="icons/bkmrk_nav.gif"
-            id="org.eclipselabs.recommenders.bookmark.wizard1"
+            id="org.eclipselabs.recommenders.bookmark.aaa.wizard"
             name="Export Bookmarks">
          <description>
             Export bookmarks to an external file
