@@ -11,7 +11,9 @@
 package org.eclipselabs.recommenders.bookmark.aaa.wizard.importing;
 
 import java.io.File;
+import java.util.List;
 
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -21,7 +23,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkIO;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
@@ -61,11 +62,11 @@ public class BookmarkImportWizardPage extends WizardPage {
 
     }
 
-    public boolean consolidateBookmarksAsSingleBookmark() {
+    public boolean consolidateBookmarksAsSingleCategory() {
         return checkBoxListener.isEnabled();
     }
 
-    public String getNameOfNewBookmarkName() {
+    public String getCategoryName() {
         return nameOfNewCategory.getText();
     }
 
@@ -168,6 +169,14 @@ public class BookmarkImportWizardPage extends WizardPage {
             }
 
         }
+    }
+
+    public IStructuredSelection getSelections() {
+        return treeViewer.getSelections();
+    }
+
+    public File getFile() {
+        return file;
     }
 
 }

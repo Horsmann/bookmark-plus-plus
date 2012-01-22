@@ -21,6 +21,15 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.aaa.BookmarkIO;
+import org.eclipselabs.recommenders.bookmark.aaa.action.OpenBookmarkAction;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.AddElementToModelCommand;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
+import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
+
+import com.google.common.base.Optional;
 
 public class BookmarkImportWizard
 	extends Wizard
@@ -36,14 +45,15 @@ public class BookmarkImportWizard
 
 	public boolean performFinish()
 	{
-//		File file = mainPage.getImportFile();
-//		TreeViewer viewer = mainPage.getView();
-//		List<IStructuredSelection> treeSelections = TreeUtil
-//				.getTreeSelections(viewer);
-//		if (file == null) {
-//			return false;
-//		}
-//
+		IStructuredSelection selections = mainPage.getSelections();
+		File file = mainPage.getFile();
+		
+		try {
+            performImport(file, selections);
+        } catch (JavaModelException e) {
+            e.printStackTrace();
+        }
+
 //		try {
 //			performImport(file, treeSelections);
 //			Activator.getManager().saveModelState();
@@ -61,19 +71,48 @@ public class BookmarkImportWizard
 		return true;
 	}
 
-//	private void performImport(File file,
-//			List<IStructuredSelection> treeSelections)
-//		throws JavaModelException
-//	{
-//
-//		if (treeSelections.isEmpty()) {
-//			importAll(file);
-//		}
-//		else {
-//			importSelected(file, treeSelections);
-//		}
-//
-//	}
+	private void performImport(File file,
+	        IStructuredSelection treeSelections)
+		throws JavaModelException
+	{
+
+		if (treeSelections.isEmpty()) {
+			importAll(file);
+		}
+		else {
+			importSelected(file, treeSelections);
+		}
+	}
+	
+
+    private void importSelected(File file, IStructuredSelection treeSelections) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    private void importAll(File file) {
+        BookmarkModel model = BookmarkIO.load(file);
+        
+        if(mainPage.consolidateBookmarksAsSingleCategory()){
+            String newCategoryName = mainPage.getCategoryName();
+            Category category = new Category(newCategoryName);
+            
+            for (Category cat : model.getCategories()){
+                Optional<IBookmarkModelCommand> target = Optional.absent();
+                
+//                Activator.getInvoker().invoke(new AddElementToModelCommand(target, cat.getBookmarks().toArray(), null, null, Activator.g)
+            }
+            
+            
+            
+//            Activator.getModel().add(category);
+        }
+        
+        for (Category category : model.getCategories()){
+            Activator.getModel().add(category);
+        }
+    }
+	
 //
 //	private void importSelected(File file,
 //			List<IStructuredSelection> treeSelections)
@@ -194,7 +233,8 @@ public class BookmarkImportWizard
 //		}
 //	}
 
-	public void init(IWorkbench workbench, IStructuredSelection selection)
+
+    public void init(IWorkbench workbench, IStructuredSelection selection)
 	{
 		setWindowTitle("File Import Wizard");
 		setNeedsProgressMonitor(true);

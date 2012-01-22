@@ -52,8 +52,8 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         }
 
         if (!visitor.values.isEmpty()) {
-            commandInvoker.invoke(new AddElementToModelCommand(dropTarget, visitor.values.toArray(), tree,
-                    dropLocation, commandInvoker));
+            Optional<DropTargetData> dropData = Optional.of(new DropTargetData(dropTarget.get(), tree, dropLocation));
+            commandInvoker.invoke(new AddElementToModelCommand(dropData, visitor.values.toArray(), commandInvoker));
         }
 
         if (!keepSource) {

@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.AddElementToModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.ChangeElementInModleCommand;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.DropTargetData;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.RelocateNodesCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
@@ -211,8 +212,14 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
     private void processDroppedElementOriginatedFromOutsideTheView(final Optional<IBookmarkModelComponent> dropTarget,
             final Object[] elements, DropTargetEvent event) {
-        commandInvoker.invoke(new AddElementToModelCommand(dropTarget, elements, getTreeControl(event), new Point(
-                event.x, event.y), commandInvoker));
+        Optional<DropTargetData> dropData = Optional.absent();
+        if (dropTarget.isPresent()) {
+            dropData = Optional.of(new DropTargetData(dropTarget.get(), getTreeControl(event), new Point(event.x,
+                    event.y)));
+        } else {
+            dropData = Optional.absent();
+        }
+        commandInvoker.invoke(new AddElementToModelCommand(dropData, elements, commandInvoker));
     }
 
     private void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,

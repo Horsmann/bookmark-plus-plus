@@ -53,6 +53,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         
         addViewPartListener();
         addResourceListener();
+        Activator.setCommandInvoker(this);
     }
 
     private void addResourceListener() {

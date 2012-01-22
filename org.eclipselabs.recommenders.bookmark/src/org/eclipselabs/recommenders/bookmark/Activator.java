@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.osgi.framework.Bundle;
@@ -26,6 +27,8 @@ public class Activator extends AbstractUIPlugin {
 
     private static ViewManager manager;
     private static BookmarkModel model;
+
+    private static BookmarkCommandInvoker commandInvoker;
 
     public static final String ICON_DEFAULT = "default";
     public static final String ICON_CATEGORY = "bookmark";
@@ -133,5 +136,13 @@ public class Activator extends AbstractUIPlugin {
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/save_edit.gif"), null));
         registry.put(ICON_SAVE, imgDesc);
 
+    }
+
+    public static void setCommandInvoker(BookmarkCommandInvoker commandInvoker) {
+        Activator.commandInvoker = commandInvoker;
+    }
+    
+    public static BookmarkCommandInvoker getInvoker() {
+        return Activator.commandInvoker;
     }
 }
