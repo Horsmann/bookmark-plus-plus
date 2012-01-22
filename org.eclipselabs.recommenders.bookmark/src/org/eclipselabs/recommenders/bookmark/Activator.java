@@ -142,7 +142,7 @@ public class Activator extends AbstractUIPlugin {
         Activator.commandInvoker = commandInvoker;
     }
     
-    public static BookmarkCommandInvoker getInvoker() {
+    public static BookmarkCommandInvoker getCommandInvoker() {
         return Activator.commandInvoker;
     }
 }

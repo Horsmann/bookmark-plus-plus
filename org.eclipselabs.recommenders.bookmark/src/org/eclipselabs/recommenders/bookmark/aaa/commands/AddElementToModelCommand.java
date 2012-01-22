@@ -21,8 +21,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
@@ -42,11 +40,13 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     private Category category;
     private final BookmarkCommandInvoker commandInvoker;
     private final Optional<DropTargetData> dropData;
+    private final Optional<String> nameForNewCategory;
 
     public AddElementToModelCommand(final Optional<DropTargetData> dropData, final Object[] elements,
-            BookmarkCommandInvoker commandInvoker) {
+            Optional<String> nameForNewCategory, BookmarkCommandInvoker commandInvoker) {
         this.dropData = dropData;
         this.elements = elements;
+        this.nameForNewCategory = nameForNewCategory;
         this.commandInvoker = commandInvoker;
     }
 
@@ -93,10 +93,15 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     private Category findCategory() {
         if (dropData.isPresent()) {
             final IBookmarkModelComponent target = dropData.get().getComponent();
-
             return getCategoryOf(target);
         } else {
-            Category category = new Category("New Category");
+
+            Category category;
+            if (nameForNewCategory.isPresent()) {
+                category = new Category(nameForNewCategory.get());
+            } else {
+                category = new Category("New Category");
+            }
             model.add(category);
             return category;
         }

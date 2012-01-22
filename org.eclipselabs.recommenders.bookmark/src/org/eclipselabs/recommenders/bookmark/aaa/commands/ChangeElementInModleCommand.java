@@ -12,6 +12,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
+import org.eclipselabs.recommenders.bookmark.aaa.visitor.HierarchyValueVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.RemoveBookmarkModelComponentVisitor;
 
 import com.google.common.base.Optional;
@@ -51,9 +52,10 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
             bookmark.accept(visitor);
         }
 
-        if (!visitor.values.isEmpty()) {
+        if (!visitor.getValues().isEmpty()) {
             Optional<DropTargetData> dropData = Optional.of(new DropTargetData(dropTarget.get(), tree, dropLocation));
-            commandInvoker.invoke(new AddElementToModelCommand(dropData, visitor.values.toArray(), commandInvoker));
+            Optional<String> nameForNewCategory = Optional.absent();
+            commandInvoker.invoke(new AddElementToModelCommand(dropData, visitor.getValues().toArray(), nameForNewCategory, commandInvoker));
         }
 
         if (!keepSource) {
@@ -90,29 +92,6 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         }
     }
 
-    private class HierarchyValueVisitor implements IModelVisitor {
-        List<Object> values = Lists.newArrayList();
-
-        @Override
-        public void visit(FileBookmark fileBookmark) {
-
-            Object object = fileBookmark.getFile();
-            values.add(object);
-        }
-
-        @Override
-        public void visit(Category category) {
-        }
-
-        @Override
-        public void visit(JavaElementBookmark javaElementBookmark) {
-            Object object = javaElementBookmark.getJavaElement();
-            values.add(object);
-            for (IBookmark bookmark : javaElementBookmark.getChildElements()) {
-                bookmark.accept(this);
-            }
-        }
-
-    }
+    
 
 }

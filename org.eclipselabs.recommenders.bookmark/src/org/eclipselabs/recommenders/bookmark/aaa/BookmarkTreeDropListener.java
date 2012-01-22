@@ -219,7 +219,8 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         } else {
             dropData = Optional.absent();
         }
-        commandInvoker.invoke(new AddElementToModelCommand(dropData, elements, commandInvoker));
+        Optional<String> categoryName = Optional.absent();
+        commandInvoker.invoke(new AddElementToModelCommand(dropData, elements, categoryName, commandInvoker));
     }
 
     private void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,
