@@ -157,21 +157,21 @@ public class BookmarkImportWizardPage extends WizardPage {
         });
         localTreeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
-        localTreeViewer.getTree().addMouseListener(new MouseListener() {
-            
-            @Override
-            public void mouseUp(MouseEvent e) {
-                localTreeViewer.refresh();
-            }
-            
-            @Override
-            public void mouseDown(MouseEvent e) {
-            }
-            
-            @Override
-            public void mouseDoubleClick(MouseEvent e) {
-            }
-        });
+//        localTreeViewer.getTree().addMouseListener(new MouseListener() {
+//            
+//            @Override
+//            public void mouseUp(MouseEvent e) {
+//                localTreeViewer.refresh();
+//            }
+//            
+//            @Override
+//            public void mouseDown(MouseEvent e) {
+//            }
+//            
+//            @Override
+//            public void mouseDoubleClick(MouseEvent e) {
+//            }
+//        });
     }
 
     //

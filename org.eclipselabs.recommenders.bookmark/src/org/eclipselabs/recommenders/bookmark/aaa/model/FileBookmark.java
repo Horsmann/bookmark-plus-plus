@@ -29,6 +29,10 @@ public class FileBookmark implements IBookmark, Serializable {
         this.setParent(parent);
         parent.add(this);
     }
+    
+    public FileBookmark(final IFile file) {
+        this.relativeFilePath = getRelativeFilePath(file);
+    }
 
     private String getRelativeFilePath(IFile file) {
         IPath path = file.getFullPath();

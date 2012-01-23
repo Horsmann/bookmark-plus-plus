@@ -39,6 +39,11 @@ public class JavaElementBookmark implements IBookmark, Serializable {
         parent.add(this);
 
     }
+    
+    public JavaElementBookmark(final String handleId, final boolean isInferred) {
+        this.handleId = handleId;
+        this.isInferred = isInferred;
+    }
 
     @Override
     public boolean isInferredNode() {
