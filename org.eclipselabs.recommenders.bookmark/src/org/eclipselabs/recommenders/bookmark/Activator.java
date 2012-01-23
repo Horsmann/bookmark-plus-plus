@@ -10,7 +10,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
+import org.eclipselabs.recommenders.bookmark.aaa.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.aaa.wizard.importing.BookmarkModelCloner;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -26,9 +28,8 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     private static ViewManager manager;
-    
-    private static BookmarkModel model;
-    private static BookmarkCommandInvoker commandInvoker;
+
+    private static BookmarkView bookmarkView;
 
     public static final String ICON_DEFAULT = "default";
     public static final String ICON_CATEGORY = "bookmark";
@@ -68,7 +69,7 @@ public class Activator extends AbstractUIPlugin {
         return stateFile;
     }
 
-    //TODO: delete Manager-methods
+    // TODO: delete Manager-methods
     public static void setManager(ViewManager manager) {
         Activator.manager = manager;
     }
@@ -76,13 +77,9 @@ public class Activator extends AbstractUIPlugin {
     public static ViewManager getManager() {
         return Activator.manager;
     }
-    
-    public static void setModel(BookmarkModel model) {
-        Activator.model = model;
-    }
 
-    public static BookmarkModel getModel() {
-        return Activator.model;
+    public static BookmarkModel getClonedModel() {
+        return new BookmarkModelCloner(Activator.bookmarkView.getModel()).clone();
     }
 
     @Override
@@ -138,11 +135,11 @@ public class Activator extends AbstractUIPlugin {
 
     }
 
-    public static void setCommandInvoker(BookmarkCommandInvoker commandInvoker) {
-        Activator.commandInvoker = commandInvoker;
+    public static void setBookmarkView(BookmarkView bookmarkView) {
+        Activator.bookmarkView = bookmarkView;
     }
-    
+
     public static BookmarkCommandInvoker getCommandInvoker() {
-        return Activator.commandInvoker;
+        return Activator.bookmarkView;
     }
 }

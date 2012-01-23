@@ -68,7 +68,7 @@ public class BookmarkExportWizardPage
 
 		data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		data.horizontalSpan = 2;
-		treeViewer = new RepresentationSwitchableTreeViewer(container, new HierarchicalRepresentationMode(), Activator.getModel());
+		treeViewer = new RepresentationSwitchableTreeViewer(container, new HierarchicalRepresentationMode(), Activator.getClonedModel());
 //		treeViewer = new TreeViewer(container, SWT.MULTI | SWT.H_SCROLL
 //				| SWT.V_SCROLL);
 //		treeViewer.setLabelProvider(new SwitchableLabelProvider());

@@ -18,12 +18,13 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkIO;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
@@ -43,6 +44,7 @@ public class BookmarkImportWizardPage extends WizardPage {
 
     private CompletionChecker checker;
     private RepresentationSwitchableTreeViewer localTreeViewer;
+    private Composite container;
 
     protected BookmarkImportWizardPage(String pageName) {
         super(pageName, pageName, null);
@@ -52,13 +54,14 @@ public class BookmarkImportWizardPage extends WizardPage {
     @Override
     public void createControl(Composite parent) {
 
-        Composite container = initializeContainerComposite(parent);
+        container = initializeContainerComposite(parent);
         addRowWithTextFieldForLoadedFileAndBrowseButton(container);
         addTreeViewerWithAddRemoveButton(container);
         // addRowWithCheckboxAndNewNameTextfield();
         // checker = new CompletionChecker(this, filePathListener,
         // checkBoxListener, nameOfCategoryListener);
         // Required to avoid an error in the system
+        localTreeViewer.setInput(Activator.getClonedModel());
         setControl(parent);
         setPageComplete(false);
 
@@ -86,11 +89,17 @@ public class BookmarkImportWizardPage extends WizardPage {
 
     private void addRowWithTextFieldForLoadedFileAndBrowseButton(Composite container) {
         Composite fileSelectionComposite = new Composite(container, SWT.NONE);
-        fileSelectionComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(2).create());
+        fileSelectionComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(3).create());
         fileSelectionComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        
+        GridData data = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        Label label = new Label(fileSelectionComposite, SWT.CENTER);
+        label.setText("File: ");
+        label.setLayoutData(data);
+       
 
         selectedFileTextField = new Text(fileSelectionComposite, SWT.BORDER);
-        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         selectedFileTextField.setLayoutData(data);
 
         data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
@@ -118,7 +127,7 @@ public class BookmarkImportWizardPage extends WizardPage {
         Composite buttonPanel = new Composite(bookmarkSelComposite, SWT.NONE);
         buttonPanel.setLayout(GridLayoutFactory.fillDefaults().create());
         Button add = new Button(buttonPanel, SWT.NONE);
-        add.setText("Add");
+        add.setText("Add all");
         add.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         Button remove = new Button(buttonPanel, SWT.NONE);
         remove.setText("Remove");
@@ -162,6 +171,7 @@ public class BookmarkImportWizardPage extends WizardPage {
 
     public void setModel(BookmarkModel model) {
         importTreeViewer.setInput(model);
+        importTreeViewer.refresh();
     }
 
     public void setImportFile(File file) {
@@ -190,7 +200,8 @@ public class BookmarkImportWizardPage extends WizardPage {
                 bookmarkImportWizardPage.setImportFile(file);
                 BookmarkModel model = BookmarkIO.load(file);
                 bookmarkImportWizardPage.setModel(model);
-                bookmarkImportWizardPage.getChecker().checkCompletion();
+                container.layout(true, true);
+//                bookmarkImportWizardPage.getChecker().checkCompletion();
             }
 
         }

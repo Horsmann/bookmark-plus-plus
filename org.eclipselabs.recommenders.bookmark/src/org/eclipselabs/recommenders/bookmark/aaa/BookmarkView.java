@@ -53,7 +53,11 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         
         addViewPartListener();
         addResourceListener();
-        Activator.setCommandInvoker(this);
+        Activator.setBookmarkView(this);
+    }
+    
+    public BookmarkModel getModel() {
+        return model;
     }
 
     private void addResourceListener() {
@@ -118,7 +122,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private void setModel(final BookmarkModel model) {
         this.model = model;
         treeViewer.setInput(model);
-        Activator.setModel(model);
     }
 
     @Override
