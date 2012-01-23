@@ -1,22 +1,14 @@
 package org.eclipselabs.recommenders.bookmark.aaa.commands;
 
-import java.util.List;
-
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
-import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
-import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
-import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.HierarchyValueVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.RemoveBookmarkModelComponentVisitor;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 public class ChangeElementInModleCommand implements IBookmarkModelCommand {
 

@@ -110,6 +110,13 @@ public class OpenInFileSystemAction extends Action implements SelfEnabling {
 
         @Override
         public void visit(JavaElementBookmark javaElementBookmark) {
+
+            IsResourceAvailableVisitor availVisitor = new IsResourceAvailableVisitor();
+            javaElementBookmark.accept(availVisitor);
+            if (!availVisitor.isAvailable()) {
+                return;
+            }
+
             IResource resource = getResource(javaElementBookmark.getJavaElement());
             file = Optional.of(resource.getParent().getRawLocation().toFile());
         }
