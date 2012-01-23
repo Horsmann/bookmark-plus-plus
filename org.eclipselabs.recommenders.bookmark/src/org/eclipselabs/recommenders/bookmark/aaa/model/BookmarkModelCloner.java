@@ -1,11 +1,8 @@
-package org.eclipselabs.recommenders.bookmark.aaa.wizard.importing;
+package org.eclipselabs.recommenders.bookmark.aaa.model;
 
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.AddElementToModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
-import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
-import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
-import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.HierarchyValueVisitor;
 
 import com.google.common.base.Optional;

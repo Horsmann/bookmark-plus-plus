@@ -12,7 +12,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
-import org.eclipselabs.recommenders.bookmark.aaa.wizard.importing.BookmarkModelCloner;
+import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModelCloner;
 import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
