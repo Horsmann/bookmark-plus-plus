@@ -74,7 +74,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     @Override
     public void drop(final DropTargetEvent event) {
         final Optional<IBookmarkModelComponent> dropTarget = getDropTarget(event);
-
+        
         // drops from external
         if (event.data instanceof TreeSelection) {
             processTreeSelection(dropTarget, (TreeSelection) event.data, event);

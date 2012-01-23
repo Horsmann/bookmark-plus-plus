@@ -69,10 +69,12 @@ public class FlatRepresentationMode implements IRepresentationMode {
             public void visit(final JavaElementBookmark javaElementBookmark) {
                 if (childBookmarks == null) {
                     childBookmarks = Lists.newLinkedList();
-                } else if (!javaElementBookmark.isInferredNode()) {
-                    childBookmarks.add(javaElementBookmark);
+                } else {
+                    if (!javaElementBookmark.isInferredNode()) {
+                        childBookmarks.add(javaElementBookmark);
+                    }
+                    visitChilds(javaElementBookmark);
                 }
-                visitChilds(javaElementBookmark);
             }
 
             private void visitChilds(final JavaElementBookmark javaElementBookmark) {
