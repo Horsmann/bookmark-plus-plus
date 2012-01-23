@@ -39,15 +39,17 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     private BookmarkModel model;
     private Category category;
     private final BookmarkCommandInvoker commandInvoker;
-    private final Optional<DropTargetData> dropData;
+    private final Optional<IBookmarkModelComponent> dropTarget;
     private final Optional<String> nameForNewCategory;
+    private final boolean isDropBeforeTarget;
 
-    public AddElementToModelCommand(final Optional<DropTargetData> dropData, final Object[] elements,
-            Optional<String> nameForNewCategory, BookmarkCommandInvoker commandInvoker) {
-        this.dropData = dropData;
+    public AddElementToModelCommand(final Optional<IBookmarkModelComponent> dropTarget, final Object[] elements,
+            Optional<String> nameForNewCategory, BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget) {
+        this.dropTarget = dropTarget;
         this.elements = elements;
         this.nameForNewCategory = nameForNewCategory;
         this.commandInvoker = commandInvoker;
+        this.isDropBeforeTarget = isDropBeforeTarget;
     }
 
     @Override
@@ -74,12 +76,11 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     }
 
     private void sortInIfDropAndTargetShareSameParent(List<IBookmarkModelComponent> createdElements) {
-        if (dropData.isPresent()) {
+        if (dropTarget.isPresent()) {
             for (IBookmarkModelComponent component : createdElements) {
                 if (hasSameParentAsTarget(component)) {
-                    commandInvoker.invoke(new RelocateNodesCommand(dropData.get().getComponent(),
-                            new IBookmarkModelComponent[] { component }, dropData.get().getPoint(), dropData.get()
-                                    .getTree()));
+                    commandInvoker.invoke(new RelocateNodesCommand(dropTarget.get(),
+                            new IBookmarkModelComponent[] { component }, isDropBeforeTarget));
                 }
             }
         }
@@ -87,12 +88,12 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
 
     private boolean hasSameParentAsTarget(IBookmarkModelComponent component) {
 
-        return component.getParent() == dropData.get().getComponent().getParent();
+        return component.getParent() == dropTarget.get().getParent();
     }
 
     private Category findCategory() {
-        if (dropData.isPresent()) {
-            final IBookmarkModelComponent target = dropData.get().getComponent();
+        if (dropTarget.isPresent()) {
+            final IBookmarkModelComponent target = dropTarget.get();
             return getCategoryOf(target);
         } else {
 

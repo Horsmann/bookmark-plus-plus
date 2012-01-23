@@ -26,8 +26,8 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     private static ViewManager manager;
+    
     private static BookmarkModel model;
-
     private static BookmarkCommandInvoker commandInvoker;
 
     public static final String ICON_DEFAULT = "default";

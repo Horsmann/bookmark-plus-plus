@@ -24,12 +24,12 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.AddElementToModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.ChangeElementInModleCommand;
-import org.eclipselabs.recommenders.bookmark.aaa.commands.DropTargetData;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.RelocateNodesCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.FileBookmark;
@@ -74,15 +74,17 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     @Override
     public void drop(final DropTargetEvent event) {
         final Optional<IBookmarkModelComponent> dropTarget = getDropTarget(event);
+
+        boolean insertDropBeforeTarget = determineInsertLocation(event);
         
         // drops from external
         if (event.data instanceof TreeSelection) {
-            processTreeSelection(dropTarget, (TreeSelection) event.data, event);
+            processTreeSelection(dropTarget, (TreeSelection) event.data, insertDropBeforeTarget);
         } else {
             // internal drops
             ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
             if (selections instanceof IStructuredSelection) {
-                processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event), event);
+                processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event), insertDropBeforeTarget);
             }
         }
 
@@ -93,18 +95,30 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     }
 
     private void processStructuredSelection(Optional<IBookmarkModelComponent> dropTarget,
-            IStructuredSelection selections, boolean keepSource, DropTargetEvent event) {
+            IStructuredSelection selections, boolean keepSource, boolean insertDropBeforeTarget) {
 
         IBookmarkModelComponent[] components = getModelComponentsFromSelection(selections);
 
-        Tree tree = getTreeControl(event);
-        Point dropPoint = new Point(event.x, event.y);
         if (dropTarget.isPresent() && areBookmarksSortedByHand(dropTarget.get(), components)) {
-            processReorderingofNodes(dropTarget.get(), components, dropPoint, tree);
+            processReorderingofNodes(dropTarget.get(), components, insertDropBeforeTarget);
         } else {
             IBookmark[] bookmarks = getBookmarksFromSelection(selections);
-            processDroppedElementOriginatedFromInsideTheView(dropTarget, bookmarks, keepSource, tree, dropPoint);
+            processDroppedElementOriginatedFromInsideTheView(dropTarget, bookmarks, keepSource, insertDropBeforeTarget);
         }
+    }
+
+    private boolean determineInsertLocation(DropTargetEvent event) {
+        Tree tree = getTreeControl(event);
+        Point dropPoint = new Point(event.x, event.y);
+
+        Point controlRelativePoint = tree.toControl(dropPoint);
+        TreeItem item = tree.getItem(controlRelativePoint);
+        Rectangle bounds = item.getBounds();
+
+        Rectangle upperHalf = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height / 2);
+
+        return upperHalf.contains(controlRelativePoint);
+
     }
 
     private Tree getTreeControl(DropTargetEvent event) {
@@ -158,8 +172,8 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     }
 
     private void processReorderingofNodes(IBookmarkModelComponent target, IBookmarkModelComponent[] components,
-            Point dropPoint, Tree tree) {
-        commandInvoker.invoke(new RelocateNodesCommand(target, components, dropPoint, tree));
+            boolean insertDropBeforeTarget) {
+        commandInvoker.invoke(new RelocateNodesCommand(target, components, insertDropBeforeTarget));
 
     }
 
@@ -200,35 +214,28 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     }
 
     private void processTreeSelection(final Optional<IBookmarkModelComponent> dropTarget,
-            final TreeSelection treeSelection, DropTargetEvent event) {
+            final TreeSelection treeSelection, boolean insertDropBeforeTarget) {
         final TreePath[] treePath = treeSelection.getPaths();
 
         Object[] elements = new Object[treePath.length];
         for (int i = 0; i < treePath.length; i++) {
             elements[i] = treePath[i].getLastSegment();
         }
-        processDroppedElementOriginatedFromOutsideTheView(dropTarget, elements, event);
+        processDroppedElementOriginatedFromOutsideTheView(dropTarget, elements, insertDropBeforeTarget);
     }
 
     private void processDroppedElementOriginatedFromOutsideTheView(final Optional<IBookmarkModelComponent> dropTarget,
-            final Object[] elements, DropTargetEvent event) {
-        Optional<DropTargetData> dropData = Optional.absent();
-        if (dropTarget.isPresent()) {
-            dropData = Optional.of(new DropTargetData(dropTarget.get(), getTreeControl(event), new Point(event.x,
-                    event.y)));
-        } else {
-            dropData = Optional.absent();
-        }
+            final Object[] elements, boolean isDropBeforeTarget) {
         Optional<String> categoryName = Optional.absent();
-        commandInvoker.invoke(new AddElementToModelCommand(dropData, elements, categoryName, commandInvoker));
+        commandInvoker.invoke(new AddElementToModelCommand(dropTarget, elements, categoryName, commandInvoker, isDropBeforeTarget));
     }
 
     private void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,
-            IBookmark[] bookmarks, boolean isCopyOperation, Tree tree, Point dropPoint) {
+            IBookmark[] bookmarks, boolean isCopyOperation, boolean insertDropBeforeTarget) {
 
         if (!causeRecursion(bookmarks, dropTarget)) {
             commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmarks, isCopyOperation,
-                    commandInvoker, tree, dropPoint));
+                    commandInvoker, insertDropBeforeTarget));
         }
     }
 

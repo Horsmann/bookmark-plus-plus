@@ -24,17 +24,15 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     private final IBookmark[] bookmarks;
     private final boolean keepSource;
     private final BookmarkCommandInvoker commandInvoker;
-    private final Tree tree;
-    private final Point dropLocation;
+    private final boolean isDropBeforeTarget;
 
     public ChangeElementInModleCommand(final Optional<IBookmarkModelComponent> dropTarget, final IBookmark[] bookmarks,
-            final boolean keepSource, BookmarkCommandInvoker commandInvoker, Tree tree, Point dropLocation) {
+            final boolean keepSource, BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget) {
         this.dropTarget = dropTarget;
         this.bookmarks = bookmarks;
         this.keepSource = keepSource;
         this.commandInvoker = commandInvoker;
-        this.tree = tree;
-        this.dropLocation = dropLocation;
+        this.isDropBeforeTarget = isDropBeforeTarget;
     }
 
     @Override
@@ -53,9 +51,8 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         }
 
         if (!visitor.getValues().isEmpty()) {
-            Optional<DropTargetData> dropData = Optional.of(new DropTargetData(dropTarget.get(), tree, dropLocation));
             Optional<String> nameForNewCategory = Optional.absent();
-            commandInvoker.invoke(new AddElementToModelCommand(dropData, visitor.getValues().toArray(), nameForNewCategory, commandInvoker));
+            commandInvoker.invoke(new AddElementToModelCommand(dropTarget, visitor.getValues().toArray(), nameForNewCategory, commandInvoker, isDropBeforeTarget));
         }
 
         if (!keepSource) {
@@ -65,11 +62,8 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     }
 
     private boolean isOperationWithinSameCategory(BookmarkModel model, IBookmark bookmark) {
-
         Category category1 = getCategoryOf(dropTarget.get());
-
         Category category2 = getCategoryOf(bookmark);
-
         return category1 == category2;
     }
 

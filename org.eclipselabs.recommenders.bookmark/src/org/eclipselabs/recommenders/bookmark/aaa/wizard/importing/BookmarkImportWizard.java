@@ -11,23 +11,12 @@
 package org.eclipselabs.recommenders.bookmark.aaa.wizard.importing;
 
 import java.io.File;
-import java.util.List;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.aaa.BookmarkIO;
-import org.eclipselabs.recommenders.bookmark.aaa.commands.AddElementToModelCommand;
-import org.eclipselabs.recommenders.bookmark.aaa.commands.DropTargetData;
-import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
-import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
-import org.eclipselabs.recommenders.bookmark.aaa.visitor.HierarchyValueVisitor;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 public class BookmarkImportWizard extends Wizard implements IImportWizard {
 
@@ -79,34 +68,6 @@ public class BookmarkImportWizard extends Wizard implements IImportWizard {
     }
 
     private void importAll(File file) {
-        BookmarkModel model = BookmarkIO.load(file);
-
-        if (mainPage.consolidateBookmarksAsSingleCategory()) {
-            String newCategoryName = mainPage.getCategoryName();
-
-            List<Object> values = Lists.newArrayList();
-
-            for (Category cat : model.getCategories()) {
-                HierarchyValueVisitor valueVisitor = new HierarchyValueVisitor();
-                cat.accept(valueVisitor);
-                values.addAll(valueVisitor.getValues());
-            }
-            
-            
-
-            Optional<DropTargetData> target = Optional.absent();
-            Optional<String> categoryName = Optional.of(newCategoryName);
-            Activator.getCommandInvoker().invoke(
-                    new AddElementToModelCommand(target, values.toArray(), categoryName, Activator
-                            .getCommandInvoker()));
-
-            return;
-            // Activator.getModel().add(category);
-        }
-
-        for (Category category : model.getCategories()) {
-            Activator.getModel().add(category);
-        }
     }
 
     //

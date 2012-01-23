@@ -21,38 +21,15 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
 
     private final IBookmarkModelComponent target;
     private final IBookmarkModelComponent[] components;
-    private final Point dropPoint;
-    private boolean insertBeforeTarget = false;
-    private final Tree tree;
     private BookmarkModel model;
+    private final boolean isDropBeforeTarget;
 
     public RelocateNodesCommand(IBookmarkModelComponent target, IBookmarkModelComponent[] bookmarks,
-            Point screenAbsolute, Tree tree) {
+            boolean isDropBeforeTarget) {
         this.target = target;
         this.components = bookmarks;
-        this.dropPoint = screenAbsolute;
-        this.tree = tree;
+        this.isDropBeforeTarget = isDropBeforeTarget;
 
-        insertBeforeTarget = insertBeforeDropTarget();
-
-    }
-
-    private boolean insertBeforeDropTarget() {
-
-        Point controlRelativePoint = tree.toControl(dropPoint);
-        TreeItem item = tree.getItem(controlRelativePoint);
-        Rectangle bounds = item.getBounds();
-
-        // divide target rectangle in upper an lower half
-        Rectangle upperHalf = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height / 2);
-        // Rectangle lowerHalf = new Rectangle(bounds.x, bounds.y +
-        // (bounds.height / 2), bounds.width, bounds.height / 2);
-
-        // boolean contains = upperHalf.contains(controlRelativePoint);
-        // boolean contains2 = lowerHalf.contains(controlRelativePoint);
-
-        // decide in which part drop occurred
-        return upperHalf.contains(controlRelativePoint);
     }
 
     @Override
@@ -66,7 +43,7 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
 
         int index = moveUnselectedNodesToNewOrderUntilTargetNode(unselectedSilblings, newOrder);
 
-        if (insertBeforeTarget) {
+        if (isDropBeforeTarget) {
             insertBeforeTarget(unselectedSilblings, newOrder, index);
         } else {
             insertAfterTarget(unselectedSilblings, newOrder, index);
