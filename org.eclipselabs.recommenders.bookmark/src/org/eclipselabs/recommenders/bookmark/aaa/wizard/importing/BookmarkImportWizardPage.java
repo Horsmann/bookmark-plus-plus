@@ -56,12 +56,12 @@ public class BookmarkImportWizardPage extends WizardPage {
 
         container = initializeContainerComposite(parent);
         addRowWithTextFieldForLoadedFileAndBrowseButton(container);
+        addHeadline(container);
         addTreeViewerWithAddRemoveButton(container);
         // addRowWithCheckboxAndNewNameTextfield();
         // checker = new CompletionChecker(this, filePathListener,
         // checkBoxListener, nameOfCategoryListener);
         // Required to avoid an error in the system
-        localTreeViewer.setInput(Activator.getClonedModel());
         setControl(parent);
         setPageComplete(false);
 
@@ -91,12 +91,11 @@ public class BookmarkImportWizardPage extends WizardPage {
         Composite fileSelectionComposite = new Composite(container, SWT.NONE);
         fileSelectionComposite.setLayout(GridLayoutFactory.fillDefaults().numColumns(3).create());
         fileSelectionComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
-        
+
         GridData data = new GridData(SWT.LEFT, SWT.CENTER, false, false);
         Label label = new Label(fileSelectionComposite, SWT.CENTER);
         label.setText("File: ");
         label.setLayoutData(data);
-       
 
         selectedFileTextField = new Text(fileSelectionComposite, SWT.BORDER);
         data = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -124,7 +123,8 @@ public class BookmarkImportWizardPage extends WizardPage {
                 new HierarchicalRepresentationMode(), null);
         importTreeViewer.getTree().setLayoutData(data);
 
-        Composite buttonPanel = new Composite(bookmarkSelComposite, SWT.NONE);
+        Composite buttonPanel = new Composite(bookmarkSelComposite, SWT.CENTER);
+        data = new GridData(SWT.FILL, SWT.FILL, true, true);
         buttonPanel.setLayout(GridLayoutFactory.fillDefaults().create());
         Button add = new Button(buttonPanel, SWT.NONE);
         add.setText("Add all");
@@ -169,6 +169,28 @@ public class BookmarkImportWizardPage extends WizardPage {
     // checkbox.addListener(SWT.Selection, checkBoxListener);
     // }
 
+    private void addHeadline(Composite container) {
+        Composite headline = new Composite(container, SWT.NONE);
+        headline.setLayout(GridLayoutFactory.fillDefaults().numColumns(3).create());
+        headline.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+
+        GridData data = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        Label left = new Label(headline, SWT.CENTER);
+        left.setText("Bookmarks from file");
+        left.setLayoutData(data);
+        
+        data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+        Label middle = new Label(headline, SWT.CENTER);
+        middle.setText("");
+        middle.setLayoutData(data);
+        
+        data = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        Label right = new Label(headline, SWT.CENTER);
+        right.setText("Local bookmarks");
+        right.setLayoutData(data);
+
+    }
+
     public void setModel(BookmarkModel model) {
         importTreeViewer.setInput(model);
         importTreeViewer.refresh();
@@ -199,9 +221,12 @@ public class BookmarkImportWizardPage extends WizardPage {
                 textField.setText(file.getAbsolutePath());
                 bookmarkImportWizardPage.setImportFile(file);
                 BookmarkModel model = BookmarkIO.load(file);
-                bookmarkImportWizardPage.setModel(model);
+
+                importTreeViewer.setInput(model);
+                localTreeViewer.setInput(Activator.getClonedModel());
                 container.layout(true, true);
-//                bookmarkImportWizardPage.getChecker().checkCompletion();
+
+                // bookmarkImportWizardPage.getChecker().checkCompletion();
             }
 
         }
