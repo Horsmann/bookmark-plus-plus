@@ -17,6 +17,8 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -25,7 +27,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkIO;
+import org.eclipselabs.recommenders.bookmark.aaa.BookmarkTreeDragListener;
+import org.eclipselabs.recommenders.bookmark.aaa.BookmarkTreeDropListener;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
@@ -45,10 +51,12 @@ public class BookmarkImportWizardPage extends WizardPage {
     private CompletionChecker checker;
     private RepresentationSwitchableTreeViewer localTreeViewer;
     private Composite container;
+    private BookmarkModel clonedModel;
 
     protected BookmarkImportWizardPage(String pageName) {
         super(pageName, pageName, null);
         setDescription("Imports the bookmark provided in an external file\nNo selection = import all");
+        clonedModel = Activator.getClonedModel();
     }
 
     @Override
@@ -122,6 +130,9 @@ public class BookmarkImportWizardPage extends WizardPage {
         importTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
                 new HierarchicalRepresentationMode(), null);
         importTreeViewer.getTree().setLayoutData(data);
+        final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
+        importTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
+                dragListener);
 
         Composite buttonPanel = new Composite(bookmarkSelComposite, SWT.CENTER);
         data = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -137,6 +148,30 @@ public class BookmarkImportWizardPage extends WizardPage {
         localTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
                 new HierarchicalRepresentationMode(), null);
         localTreeViewer.getTree().setLayoutData(data);
+        final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(new BookmarkCommandInvoker() {
+            
+            @Override
+            public void invoke(IBookmarkModelCommand command) {
+                command.execute(clonedModel);
+            }
+        });
+        localTreeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
+                dropListener);
+        localTreeViewer.getTree().addMouseListener(new MouseListener() {
+            
+            @Override
+            public void mouseUp(MouseEvent e) {
+                localTreeViewer.refresh();
+            }
+            
+            @Override
+            public void mouseDown(MouseEvent e) {
+            }
+            
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+            }
+        });
     }
 
     //
@@ -223,7 +258,7 @@ public class BookmarkImportWizardPage extends WizardPage {
                 BookmarkModel model = BookmarkIO.load(file);
 
                 importTreeViewer.setInput(model);
-                localTreeViewer.setInput(Activator.getClonedModel());
+                localTreeViewer.setInput(clonedModel);
                 container.layout(true, true);
 
                 // bookmarkImportWizardPage.getChecker().checkCompletion();

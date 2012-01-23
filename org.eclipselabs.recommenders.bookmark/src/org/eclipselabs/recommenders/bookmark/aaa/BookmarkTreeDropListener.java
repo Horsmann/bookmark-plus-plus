@@ -76,7 +76,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         final Optional<IBookmarkModelComponent> dropTarget = getDropTarget(event);
 
         boolean insertDropBeforeTarget = determineInsertLocation(event);
-        
+
         // drops from external
         if (event.data instanceof TreeSelection) {
             processTreeSelection(dropTarget, (TreeSelection) event.data, insertDropBeforeTarget);
@@ -84,7 +84,8 @@ public class BookmarkTreeDropListener implements DropTargetListener {
             // internal drops
             ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
             if (selections instanceof IStructuredSelection) {
-                processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event), insertDropBeforeTarget);
+                processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event),
+                        insertDropBeforeTarget);
             }
         }
 
@@ -103,7 +104,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
             processReorderingofNodes(dropTarget.get(), components, insertDropBeforeTarget);
         } else {
             IBookmark[] bookmarks = getBookmarksFromSelection(selections);
-            processDroppedElementOriginatedFromInsideTheView(dropTarget, bookmarks, keepSource, insertDropBeforeTarget);
+            processDroppedElementOriginatedFromInsideTheView(dropTarget, components, keepSource, insertDropBeforeTarget);
         }
     }
 
@@ -113,6 +114,9 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
         Point controlRelativePoint = tree.toControl(dropPoint);
         TreeItem item = tree.getItem(controlRelativePoint);
+        if (item == null) {
+            return false;
+        }
         Rectangle bounds = item.getBounds();
 
         Rectangle upperHalf = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height / 2);
@@ -227,25 +231,26 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     private void processDroppedElementOriginatedFromOutsideTheView(final Optional<IBookmarkModelComponent> dropTarget,
             final Object[] elements, boolean isDropBeforeTarget) {
         Optional<String> categoryName = Optional.absent();
-        commandInvoker.invoke(new AddElementToModelCommand(dropTarget, elements, categoryName, commandInvoker, isDropBeforeTarget));
+        commandInvoker.invoke(new AddElementToModelCommand(dropTarget, elements, categoryName, commandInvoker,
+                isDropBeforeTarget));
     }
 
     private void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,
-            IBookmark[] bookmarks, boolean isCopyOperation, boolean insertDropBeforeTarget) {
+            IBookmarkModelComponent[] components, boolean isCopyOperation, boolean insertDropBeforeTarget) {
 
-        if (!causeRecursion(bookmarks, dropTarget)) {
-            commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, bookmarks, isCopyOperation,
+        if (!causeRecursion(components, dropTarget)) {
+            commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, components, isCopyOperation,
                     commandInvoker, insertDropBeforeTarget));
         }
     }
 
-    private boolean causeRecursion(IBookmark[] bookmarks, Optional<IBookmarkModelComponent> dropTarget) {
+    private boolean causeRecursion(IBookmarkModelComponent[] components, Optional<IBookmarkModelComponent> dropTarget) {
 
         if (!dropTarget.isPresent()) {
             return false;
         }
 
-        for (IBookmark bookmark : bookmarks) {
+        for (IBookmarkModelComponent bookmark : components) {
 
             RecursionPreventerVisitor visitor = new RecursionPreventerVisitor(dropTarget.get());
             bookmark.accept(visitor);
