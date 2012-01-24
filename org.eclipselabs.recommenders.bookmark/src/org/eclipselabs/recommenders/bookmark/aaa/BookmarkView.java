@@ -25,6 +25,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.action.CloseAllEditorWindowsAct
 import org.eclipselabs.recommenders.bookmark.aaa.action.SwitchFlatHierarchicalAction;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
@@ -70,7 +71,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private void addViewPartListener() {
         IPartService service = (IPartService) getSite().getService(IPartService.class);
-        service.addPartListener(new ViewPartListener(model));
+        service.addPartListener(new ViewPartListener(this));
     }
 
     private void setUpActions() {

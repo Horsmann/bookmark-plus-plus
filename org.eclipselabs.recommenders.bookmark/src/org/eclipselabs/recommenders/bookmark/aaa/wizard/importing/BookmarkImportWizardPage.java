@@ -170,6 +170,18 @@ public class BookmarkImportWizardPage extends WizardPage {
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, true);
         buttonPanel.setLayout(GridLayoutFactory.fillDefaults().create());
         buttonPanel.setLayoutData(data);
+        
+//        data = new GridData(SWT.FILL, SWT.FILL, true, true);
+//        Composite manual = new Composite(buttonPanel, SWT.NONE);
+//        manual.setLayout(GridLayoutFactory.fillDefaults().create());
+//        manual.setLayoutData(data);
+        
+        Label manual1 = new Label(buttonPanel, SWT.CENTER);
+        manual1.setText("drag to import");
+        manual1.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        Label manual2 = new Label(buttonPanel, SWT.CENTER);
+        manual2.setText("==DRAG==>");
+        manual2.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
 
         Button add = new Button(buttonPanel, SWT.CENTER);
         add.setText("Add All");

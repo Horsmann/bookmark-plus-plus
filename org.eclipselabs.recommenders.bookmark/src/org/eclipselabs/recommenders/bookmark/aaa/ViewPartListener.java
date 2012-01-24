@@ -6,10 +6,10 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 
 public class ViewPartListener implements IPartListener2 {
 
-    private final BookmarkModel model;
+    private final BookmarkView bookmarkView;
 
-    public ViewPartListener(BookmarkModel model) {
-        this.model = model;
+    public ViewPartListener(BookmarkView bookmarkView) {
+        this.bookmarkView = bookmarkView;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class ViewPartListener implements IPartListener2 {
 
     @Override
     public void partClosed(IWorkbenchPartReference partRef) {
-        BookmarkIO.writeToDefaultFile(model);
+        BookmarkIO.writeToDefaultFile(bookmarkView.getModel());
     }
 
     @Override
