@@ -11,12 +11,15 @@
 package org.eclipselabs.recommenders.bookmark.aaa.wizard.importing;
 
 import java.io.File;
+import java.util.Iterator;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -28,8 +31,10 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkIO;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkTreeDragListener;
+import org.eclipselabs.recommenders.bookmark.aaa.commands.BookmarkDeletionCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
 
@@ -59,10 +64,6 @@ public class BookmarkImportWizardPage extends WizardPage {
         addTreeViewerWithAddRemoveButton(container);
         setControl(parent);
         setPageComplete(false);
-    }
-
-    public boolean consolidateBookmarksAsSingleCategory() {
-        return checkBoxListener.isEnabled();
     }
 
     public String getCategoryName() {
@@ -159,7 +160,39 @@ public class BookmarkImportWizardPage extends WizardPage {
         Button remove = new Button(buttonPanel, SWT.CENTER);
         remove.setText("Remove");
         remove.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        addMouseListener(remove);
+    }
 
+    private void addMouseListener(Button remove) {
+        remove.addMouseListener(new MouseListener() {
+
+            BookmarkCommandInvoker invoker = new BookmarkCommandInvoker() {
+
+                @Override
+                public void invoke(IBookmarkModelCommand command) {
+                    command.execute(clonedModel);
+                }
+            };
+
+            @Override
+            public void mouseUp(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseDown(MouseEvent e) {
+                IStructuredSelection selections = localTreeViewer.getSelections();
+                @SuppressWarnings("rawtypes")
+                Iterator iterator = selections.iterator();
+                while (iterator.hasNext()) {
+                    invoker.invoke(new BookmarkDeletionCommand((IBookmarkModelComponent) iterator.next()));
+                    localTreeViewer.refresh();
+                }
+            }
+
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+            }
+        });
     }
 
     private void createLoadedFileTreeViewer(Composite bookmarkSelComposite) {
@@ -173,11 +206,6 @@ public class BookmarkImportWizardPage extends WizardPage {
     }
 
     private void addHeadline(Composite composite) {
-        // Composite headline = new Composite(container, SWT.NONE);
-        // headline.setLayout(GridLayoutFactory.fillDefaults().numColumns(3).create());
-        // headline.setLayoutData(GridDataFactory.fillDefaults().grab(true,
-        // false).create());
-
         GridData data = new GridData(SWT.LEFT, SWT.CENTER, false, false);
         Label left = new Label(composite, SWT.CENTER);
         left.setText("Bookmarks from file");
@@ -229,19 +257,14 @@ public class BookmarkImportWizardPage extends WizardPage {
                 importTreeViewer.setInput(model);
                 localTreeViewer.setInput(clonedModel);
                 container.layout(true, true);
-
-                // bookmarkImportWizardPage.getChecker().checkCompletion();
+                setPageComplete(true);
             }
 
         }
     }
 
-    public IStructuredSelection getSelections() {
-        return importTreeViewer.getSelections();
-    }
-
-    public File getFile() {
-        return selectedFile;
+    public BookmarkModel getClonedModel() {
+        return clonedModel;
     }
 
     private class FilePathModifyListener implements Listener {
@@ -297,9 +320,7 @@ public class BookmarkImportWizardPage extends WizardPage {
             }
 
             String currentFileEnding = filePath.substring(pathLen - suffixLen);
-
             boolean isEqual = currentFileEnding.compareTo(fileEnding) == 0;
-
             return isEqual;
         }
 
