@@ -50,22 +50,22 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         setUpPluginPreferences();
         loadModel();
         activateHierarchicalMode();
-        
+
         addViewPartListener();
         addResourceListener();
         Activator.setBookmarkView(this);
     }
-    
+
     public BookmarkModel getModel() {
         return model;
     }
 
     private void addResourceListener() {
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(new ResourceListener()); 
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(new ResourceListener());
     }
 
     private void setUpPluginPreferences() {
-        
+
     }
 
     private void addViewPartListener() {
@@ -134,15 +134,15 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         treeViewer.refresh();
     }
 
-    private class ResourceListener implements IResourceChangeListener{
+    private class ResourceListener implements IResourceChangeListener {
 
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
-            
+
             getSite().getShell().getDisplay().asyncExec(new GuiRunnable(event));
         }
-        
-        private class GuiRunnable implements Runnable{
+
+        private class GuiRunnable implements Runnable {
 
             private final IResourceChangeEvent event;
 
@@ -152,11 +152,15 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
             @Override
             public void run() {
-                if (event.getType() == IResourceChangeEvent.POST_CHANGE){
+                if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
                     treeViewer.refresh();
-                }                
+                }
             }
-            
+
         }
+    }
+
+    public void setNewModelForTreeViewer(BookmarkModel newModel) {
+        setModel(newModel);
     }
 }

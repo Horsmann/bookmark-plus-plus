@@ -3,11 +3,8 @@ package org.eclipselabs.recommenders.bookmark.aaa.model;
 import java.util.List;
 
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
-import org.eclipselabs.recommenders.bookmark.aaa.commands.AddElementToModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
-import org.eclipselabs.recommenders.bookmark.aaa.visitor.HierarchyValueVisitor;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 public class BookmarkModelCloner implements BookmarkCommandInvoker {

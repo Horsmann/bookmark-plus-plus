@@ -142,4 +142,8 @@ public class Activator extends AbstractUIPlugin {
     public static BookmarkCommandInvoker getCommandInvoker() {
         return Activator.bookmarkView;
     }
+
+    public static void setNewModel(BookmarkModel newModel) {
+        bookmarkView.setNewModelForTreeViewer(newModel);
+    }
 }

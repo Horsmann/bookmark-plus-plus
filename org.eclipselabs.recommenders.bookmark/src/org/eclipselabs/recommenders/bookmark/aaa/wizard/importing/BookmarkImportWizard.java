@@ -14,6 +14,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 
 public class BookmarkImportWizard extends Wizard implements IImportWizard {
 
@@ -24,6 +26,8 @@ public class BookmarkImportWizard extends Wizard implements IImportWizard {
     }
 
     public boolean performFinish() {
+        BookmarkModel newModel = mainPage.getClonedModel();
+        Activator.setNewModel(newModel);
         System.out.println("import finised");
         return true;
     }

@@ -3,7 +3,6 @@ package org.eclipselabs.recommenders.bookmark.aaa.commands;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
-import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.HierarchyValueVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.RemoveBookmarkModelComponentVisitor;
