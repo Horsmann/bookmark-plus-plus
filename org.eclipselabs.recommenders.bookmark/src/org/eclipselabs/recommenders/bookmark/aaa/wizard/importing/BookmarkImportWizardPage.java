@@ -36,6 +36,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.BookmarkDeletionCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
@@ -43,7 +44,6 @@ import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTr
 public class BookmarkImportWizardPage extends WizardPage {
 
     private Text selectedFileTextField;
-    private Text nameOfNewCategory;
     private Button button;
     private File selectedFile;
     private RepresentationSwitchableTreeViewer importTreeViewer;
@@ -86,10 +86,6 @@ public class BookmarkImportWizardPage extends WizardPage {
                 }
             }
         });
-    }
-
-    public String getCategoryName() {
-        return nameOfNewCategory.getText();
     }
 
     private Composite initializeContainerComposite(Composite parent) {
@@ -178,15 +174,62 @@ public class BookmarkImportWizardPage extends WizardPage {
         Button add = new Button(buttonPanel, SWT.CENTER);
         add.setText("Add All");
         add.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        addMouseListenerToAddAllButton(add);
 
         remove = new Button(buttonPanel, SWT.CENTER);
         remove.setText("Remove");
         remove.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         remove.setEnabled(false);
-        addMouseListener(remove);
+        addMouseListenerToRemoveButton(remove);
     }
 
-    private void addMouseListener(Button remove) {
+    private void addMouseListenerToAddAllButton(Button add) {
+        add.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseUp(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseDown(MouseEvent e) {
+
+                File file = new File(selectedFileTextField.getText());
+                if (isValid(file)) {
+                    BookmarkModel model = BookmarkIO.load(file);
+                    for (Category cat : model.getCategories()) {
+                        clonedModel.add(cat);
+                    }
+                    localTreeViewer.refresh();
+                }
+            }
+
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+            }
+        });
+    }
+
+    private boolean isValid(File file) {
+        return file.exists() && !file.isDirectory() && hasCorrectFileEnding(file);
+    }
+
+    private boolean hasCorrectFileEnding(File file) {
+        String fileEnding = Activator.fileEnding;
+        int suffixLen = fileEnding.length();
+
+        String filePath = file.getAbsolutePath();
+        int pathLen = filePath.length();
+
+        if (pathLen - suffixLen < 0) {
+            return false;
+        }
+
+        String currentFileEnding = filePath.substring(pathLen - suffixLen);
+        boolean isEqual = currentFileEnding.compareTo(fileEnding) == 0;
+        return isEqual;
+    }
+
+    private void addMouseListenerToRemoveButton(Button remove) {
         remove.addMouseListener(new MouseListener() {
 
             BookmarkCommandInvoker invoker = new BookmarkCommandInvoker() {
@@ -314,36 +357,11 @@ public class BookmarkImportWizardPage extends WizardPage {
         }
 
         private void setFileContentForViewer(File file) {
-            if (isValid()) {
+            if (isValid(file)) {
                 importTreeViewer.setInput(BookmarkIO.load(file));
                 localTreeViewer.setInput(clonedModel);
                 container.layout(true, true);
             }
-        }
-
-        public boolean isValid() {
-            File file = new File(textField.getText());
-            return isValid(file);
-        }
-
-        private boolean isValid(File file) {
-            return file.exists() && !file.isDirectory() && hasCorrectFileEnding(file);
-        }
-
-        private boolean hasCorrectFileEnding(File file) {
-            String fileEnding = Activator.fileEnding;
-            int suffixLen = fileEnding.length();
-
-            String filePath = file.getAbsolutePath();
-            int pathLen = filePath.length();
-
-            if (pathLen - suffixLen < 0) {
-                return false;
-            }
-
-            String currentFileEnding = filePath.substring(pathLen - suffixLen);
-            boolean isEqual = currentFileEnding.compareTo(fileEnding) == 0;
-            return isEqual;
         }
 
     }
