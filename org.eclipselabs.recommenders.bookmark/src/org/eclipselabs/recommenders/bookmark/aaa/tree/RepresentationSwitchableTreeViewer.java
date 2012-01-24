@@ -70,6 +70,7 @@ public class RepresentationSwitchableTreeViewer {
     private OpenBookmarkAction openInEditor;
     private OpenInFileSystemAction openInFileSystem;
     private BookmarkDeletionAction deleteBookmarks;
+    private SelectionChangedListener setSelectionChangedListener;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model) {
@@ -110,7 +111,15 @@ public class RepresentationSwitchableTreeViewer {
         selectionListener.register(openInEditor);
         selectionListener.register(openInFileSystem);
         selectionListener.register(deleteBookmarks);
+        setSelectionChangedListener = selectionListener;
         treeViewer.addSelectionChangedListener(selectionListener);
+    }
+
+    public void overrideSelectionChangedListener(ISelectionChangedListener selection) {
+        if (setSelectionChangedListener != null) {
+            treeViewer.removeSelectionChangedListener(setSelectionChangedListener);
+        }
+        treeViewer.addSelectionChangedListener(selection);
     }
 
     public void renameCategory() {

@@ -15,7 +15,9 @@ import java.util.Iterator;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -50,6 +52,7 @@ public class BookmarkImportWizardPage extends WizardPage {
     private RepresentationSwitchableTreeViewer localTreeViewer;
     private Composite container;
     private BookmarkModel clonedModel;
+    private Button remove;
 
     protected BookmarkImportWizardPage(String pageName) {
         super(pageName, pageName, null);
@@ -62,8 +65,27 @@ public class BookmarkImportWizardPage extends WizardPage {
         container = initializeContainerComposite(parent);
         addRowWithTextFieldForLoadedFileAndBrowseButton(container);
         addTreeViewerWithAddRemoveButton(container);
+
+        makeRemoveButtonEnDisableOnSelections();
+
+        localTreeViewer.setInput(clonedModel);
+
         setControl(parent);
         setPageComplete(false);
+    }
+
+    private void makeRemoveButtonEnDisableOnSelections() {
+        localTreeViewer.overrideSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                if (localTreeViewer.getSelections().size() == 0) {
+                    remove.setEnabled(false);
+                } else {
+                    remove.setEnabled(true);
+                }
+            }
+        });
     }
 
     public String getCategoryName() {
@@ -157,9 +179,10 @@ public class BookmarkImportWizardPage extends WizardPage {
         add.setText("Add All");
         add.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
 
-        Button remove = new Button(buttonPanel, SWT.CENTER);
+        remove = new Button(buttonPanel, SWT.CENTER);
         remove.setText("Remove");
         remove.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        remove.setEnabled(false);
         addMouseListener(remove);
     }
 
@@ -255,7 +278,7 @@ public class BookmarkImportWizardPage extends WizardPage {
                 BookmarkModel model = BookmarkIO.load(file);
 
                 importTreeViewer.setInput(model);
-                localTreeViewer.setInput(clonedModel);
+                // localTreeViewer.setInput(clonedModel);
                 container.layout(true, true);
                 setPageComplete(true);
             }
@@ -285,7 +308,6 @@ public class BookmarkImportWizardPage extends WizardPage {
             } else {
                 selectedFile = null;
                 importTreeViewer.setInput(null);
-                localTreeViewer.setInput(null);
                 container.layout(true, true);
             }
 
