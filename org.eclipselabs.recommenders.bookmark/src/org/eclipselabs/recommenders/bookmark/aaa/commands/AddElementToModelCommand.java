@@ -43,8 +43,8 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     private final Optional<String> nameForNewCategory;
     private final boolean isDropBeforeTarget;
 
-    public AddElementToModelCommand(final Optional<IBookmarkModelComponent> dropTarget, final Object[] elements,
-            Optional<String> nameForNewCategory, BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget) {
+    public AddElementToModelCommand(final Object[] elements,
+             BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget, final Optional<IBookmarkModelComponent> dropTarget, Optional<String> nameForNewCategory) {
         this.dropTarget = dropTarget;
         this.elements = elements;
         this.nameForNewCategory = nameForNewCategory;

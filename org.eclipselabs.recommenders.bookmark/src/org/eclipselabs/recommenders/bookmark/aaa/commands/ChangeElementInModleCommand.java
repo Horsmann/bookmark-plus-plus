@@ -17,14 +17,16 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     private final boolean keepSource;
     private final BookmarkCommandInvoker commandInvoker;
     private final boolean isDropBeforeTarget;
+    private final Optional<String> newCategoryName;
 
-    public ChangeElementInModleCommand(final Optional<IBookmarkModelComponent> dropTarget, final IBookmarkModelComponent[] components,
-            final boolean keepSource, BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget) {
+    public ChangeElementInModleCommand(final IBookmarkModelComponent[] components,
+            final boolean keepSource, BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget, final Optional<IBookmarkModelComponent> dropTarget, final Optional<String> newCategoryName) {
         this.dropTarget = dropTarget;
         this.bookmarks = components;
         this.keepSource = keepSource;
         this.commandInvoker = commandInvoker;
         this.isDropBeforeTarget = isDropBeforeTarget;
+        this.newCategoryName = newCategoryName;
     }
 
     @Override
@@ -43,8 +45,7 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         }
 
         if (!visitor.getValues().isEmpty()) {
-            Optional<String> nameForNewCategory = Optional.absent();
-            commandInvoker.invoke(new AddElementToModelCommand(dropTarget, visitor.getValues().toArray(), nameForNewCategory, commandInvoker, isDropBeforeTarget));
+            commandInvoker.invoke(new AddElementToModelCommand(visitor.getValues().toArray(), commandInvoker, isDropBeforeTarget,dropTarget,newCategoryName));
         }
 
         if (!keepSource) {

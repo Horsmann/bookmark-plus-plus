@@ -43,7 +43,7 @@ import com.google.common.collect.Lists;
 
 public class BookmarkTreeDropListener implements DropTargetListener {
 
-    private final BookmarkCommandInvoker commandInvoker;
+    protected final BookmarkCommandInvoker commandInvoker;
 
     public BookmarkTreeDropListener(final BookmarkCommandInvoker commandInvoker) {
         this.commandInvoker = commandInvoker;
@@ -95,7 +95,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         return !((event.operations & DND.DROP_MOVE) != 0);
     }
 
-    private void processStructuredSelection(Optional<IBookmarkModelComponent> dropTarget,
+    protected void processStructuredSelection(Optional<IBookmarkModelComponent> dropTarget,
             IStructuredSelection selections, boolean keepSource, boolean insertDropBeforeTarget) {
 
         IBookmarkModelComponent[] components = getModelComponentsFromSelection(selections);
@@ -103,12 +103,11 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         if (dropTarget.isPresent() && areBookmarksSortedByHand(dropTarget.get(), components)) {
             processReorderingofNodes(dropTarget.get(), components, insertDropBeforeTarget);
         } else {
-            IBookmark[] bookmarks = getBookmarksFromSelection(selections);
             processDroppedElementOriginatedFromInsideTheView(dropTarget, components, keepSource, insertDropBeforeTarget);
         }
     }
 
-    private boolean determineInsertLocation(DropTargetEvent event) {
+    protected boolean determineInsertLocation(DropTargetEvent event) {
         Tree tree = getTreeControl(event);
         Point dropPoint = new Point(event.x, event.y);
 
@@ -129,21 +128,6 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         DropTarget dropTargetSource = (DropTarget) event.getSource();
         Tree tree = (Tree) dropTargetSource.getControl();
         return tree;
-    }
-
-    private IBookmark[] getBookmarksFromSelection(IStructuredSelection selections) {
-        @SuppressWarnings("rawtypes")
-        Iterator iterator = selections.iterator();
-
-        List<IBookmark> items = Lists.newArrayList();
-        while (iterator.hasNext()) {
-            Object object = iterator.next();
-            if (isTreeItemWithValidData(object)) {
-                TreeItem item = (TreeItem) object;
-                items.add((IBookmark) item.getData());
-            }
-        }
-        return items.toArray(new IBookmark[0]);
     }
 
     private IBookmarkModelComponent[] getModelComponentsFromSelection(IStructuredSelection selections) {
@@ -196,20 +180,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         return target.getParent() == bookmark.getParent();
     }
 
-    private boolean isTreeItemWithValidData(Object object) {
-
-        if (object instanceof TreeItem) {
-            if (((TreeItem) object).getData() instanceof IBookmark) {
-                return true;
-            }
-        } else {
-            return false;
-        }
-
-        return false;
-    }
-
-    private Optional<IBookmarkModelComponent> getDropTarget(final DropTargetEvent event) {
+    protected Optional<IBookmarkModelComponent> getDropTarget(final DropTargetEvent event) {
         if (event.item == null) {
             return Optional.absent();
         } else {
@@ -217,7 +188,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         }
     }
 
-    private void processTreeSelection(final Optional<IBookmarkModelComponent> dropTarget,
+    protected void processTreeSelection(final Optional<IBookmarkModelComponent> dropTarget,
             final TreeSelection treeSelection, boolean insertDropBeforeTarget) {
         final TreePath[] treePath = treeSelection.getPaths();
 
@@ -231,20 +202,21 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     private void processDroppedElementOriginatedFromOutsideTheView(final Optional<IBookmarkModelComponent> dropTarget,
             final Object[] elements, boolean isDropBeforeTarget) {
         Optional<String> categoryName = Optional.absent();
-        commandInvoker.invoke(new AddElementToModelCommand(dropTarget, elements, categoryName, commandInvoker,
-                isDropBeforeTarget));
+        commandInvoker.invoke(new AddElementToModelCommand(elements, commandInvoker, isDropBeforeTarget, dropTarget,
+                categoryName));
     }
 
-    private void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,
+    protected void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,
             IBookmarkModelComponent[] components, boolean isCopyOperation, boolean insertDropBeforeTarget) {
 
         if (!causeRecursion(components, dropTarget)) {
-            commandInvoker.invoke(new ChangeElementInModleCommand(dropTarget, components, isCopyOperation,
-                    commandInvoker, insertDropBeforeTarget));
+            Optional<String> categoryName = Optional.absent();
+            commandInvoker.invoke(new ChangeElementInModleCommand(components, isCopyOperation, commandInvoker,
+                    insertDropBeforeTarget, dropTarget, categoryName));
         }
     }
 
-    private boolean causeRecursion(IBookmarkModelComponent[] components, Optional<IBookmarkModelComponent> dropTarget) {
+    protected boolean causeRecursion(IBookmarkModelComponent[] components, Optional<IBookmarkModelComponent> dropTarget) {
 
         if (!dropTarget.isPresent()) {
             return false;

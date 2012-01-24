@@ -148,30 +148,18 @@ public class BookmarkImportWizardPage extends WizardPage {
         localTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
                 new HierarchicalRepresentationMode(), null);
         localTreeViewer.getTree().setLayoutData(data);
-        final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(new BookmarkCommandInvoker() {
+        final ImportDropListener dropListener = new ImportDropListener(new BookmarkCommandInvoker() {
             
             @Override
             public void invoke(IBookmarkModelCommand command) {
                 command.execute(clonedModel);
+                localTreeViewer.refresh();
+                importTreeViewer.refresh();
             }
         });
         localTreeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
-//        localTreeViewer.getTree().addMouseListener(new MouseListener() {
-//            
-//            @Override
-//            public void mouseUp(MouseEvent e) {
-//                localTreeViewer.refresh();
-//            }
-//            
-//            @Override
-//            public void mouseDown(MouseEvent e) {
-//            }
-//            
-//            @Override
-//            public void mouseDoubleClick(MouseEvent e) {
-//            }
-//        });
+       
     }
 
     //
