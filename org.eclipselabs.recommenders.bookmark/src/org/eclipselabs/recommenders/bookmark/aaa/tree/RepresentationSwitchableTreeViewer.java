@@ -173,6 +173,9 @@ public class RepresentationSwitchableTreeViewer {
     }
 
     private void updateExpansions(final BookmarkModel model) {
+        if (model == null) {
+            return;
+        }
         treeViewer.setExpandedElements(currentMode.getExpandedItems(model));
     }
 
