@@ -74,7 +74,7 @@ public class BookmarkExportWizardPage
 //		treeViewer.setLabelProvider(new SwitchableLabelProvider());
 //		treeViewer.setContentProvider(new );
 //		treeViewer.setInput(model.getModelRoot());
-		treeViewer.getTree().setLayoutData(data);
+//		treeViewer.getTree().setLayoutData(data);
 
 //		Object[] expanded = manager.getExpandedStorage().getExpandedNodes();
 //		treeViewer.setExpandedElements(expanded);

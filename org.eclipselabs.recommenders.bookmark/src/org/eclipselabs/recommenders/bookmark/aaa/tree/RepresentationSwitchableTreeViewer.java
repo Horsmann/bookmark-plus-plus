@@ -36,6 +36,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
@@ -76,11 +77,11 @@ public class RepresentationSwitchableTreeViewer {
         createTreeViewer(parent);
         currentMode = initialMode;
     }
-    
-    public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker){
-        createActions(part,commandInvoker);
+
+    public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker) {
+        createActions(part, commandInvoker);
         addKeyListener(part, commandInvoker);
-        addDoubleclickListener(part,commandInvoker);
+        addDoubleclickListener(part, commandInvoker);
         setUpContextMenu(part);
         addSelectionChangedListener();
     }
@@ -353,14 +354,6 @@ public class RepresentationSwitchableTreeViewer {
 
     }
 
-    public Tree getTree() {
-        return treeViewer.getTree();
-    }
-
-    public TreeViewer getViewer() {
-        return treeViewer;
-    }
-
     private void setUpContextMenu(ViewPart part) {
 
         final MenuManager menuMgr = new MenuManager();
@@ -454,6 +447,10 @@ public class RepresentationSwitchableTreeViewer {
                     .getActivePage(), commandInvoker));
         }
 
+    }
+
+    public void setTreeLayoutData(GridData data) {
+        treeViewer.getTree().setLayoutData(data);
     }
 
 }
