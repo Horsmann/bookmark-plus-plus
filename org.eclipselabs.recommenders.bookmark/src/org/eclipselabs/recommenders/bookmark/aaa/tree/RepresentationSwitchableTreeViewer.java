@@ -352,6 +352,12 @@ public class RepresentationSwitchableTreeViewer {
         }
 
         private void searchBookmarkDeleteSelection(TreeItem item) {
+            if (item.isDisposed()) {
+                // happens if a parent node of the current one was delete before
+                // than the current child is already
+                // disposed
+                return;
+            }
             IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
             commandInvoker.invoke(new BookmarkDeletionCommand(component));
         }
