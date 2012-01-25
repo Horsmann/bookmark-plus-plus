@@ -25,7 +25,6 @@ import org.eclipselabs.recommenders.bookmark.aaa.action.CloseAllEditorWindowsAct
 import org.eclipselabs.recommenders.bookmark.aaa.action.SwitchFlatHierarchicalAction;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
-import org.eclipselabs.recommenders.bookmark.aaa.model.Category;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
