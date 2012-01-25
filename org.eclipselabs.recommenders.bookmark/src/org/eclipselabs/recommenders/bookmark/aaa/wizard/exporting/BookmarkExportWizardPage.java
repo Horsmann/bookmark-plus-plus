@@ -77,7 +77,7 @@ public class BookmarkExportWizardPage extends WizardPage {
         makeRemoveButtonEnDisableOnSelections();
 
         localTreeViewer.setInput(localClonedModel);
-
+        exportTreeViewer.setInput(exportModel);
         setControl(parent);
         setPageComplete(false);
     }
@@ -368,7 +368,6 @@ public class BookmarkExportWizardPage extends WizardPage {
             @Override
             public void invoke(IBookmarkModelCommand command) {
                 command.execute(exportModel);
-                localTreeViewer.refresh();
                 exportTreeViewer.refresh();
             }
         });

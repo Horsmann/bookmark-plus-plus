@@ -11,6 +11,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.visitor.GetValueVisitor;
+import org.eclipselabs.recommenders.bookmark.aaa.visitor.IsCategoryVisitor;
 
 import com.google.common.collect.Lists;
 
@@ -88,7 +89,11 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
         model.removeAll();
 
         for (IBookmarkModelComponent component : newOrder) {
-            model.add((Category) component);
+            IsCategoryVisitor visitor = new IsCategoryVisitor();
+            component.accept(visitor);
+            if (visitor.isCategory()) {
+                model.add((Category) component);
+            }
         }
     }
 
