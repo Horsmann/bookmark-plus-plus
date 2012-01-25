@@ -23,6 +23,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -170,30 +171,38 @@ public class BookmarkImportWizardPage extends WizardPage {
 
     private void createPanelWithAddRemoveButtons(Composite bookmarkSelComposite) {
         Composite buttonPanel = new Composite(bookmarkSelComposite, SWT.NONE);
-        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, true);
-        buttonPanel.setLayout(GridLayoutFactory.fillDefaults().create());
+        GridData data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        // buttonPanel.setLayout(GridLayoutFactory.fillDefaults().create());
+        buttonPanel.setLayout(new GridLayout());
         buttonPanel.setLayoutData(data);
-        
-//        data = new GridData(SWT.FILL, SWT.FILL, true, true);
-//        Composite manual = new Composite(buttonPanel, SWT.NONE);
-//        manual.setLayout(GridLayoutFactory.fillDefaults().create());
-//        manual.setLayoutData(data);
-        
+
         Label manual1 = new Label(buttonPanel, SWT.CENTER);
         manual1.setText("drag to import");
-        manual1.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        // manual1.setLayoutData(GridDataFactory.fillDefaults().grab(false,
+        // false).create());
+        data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        manual1.setLayoutData(data);
         Label manual2 = new Label(buttonPanel, SWT.CENTER);
-        manual2.setText("==DRAG==>");
-        manual2.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        manual2.setText("===DRAG==>");
+        // manual2.setLayoutData(GridDataFactory.fillDefaults().grab(false,
+        // false).create());
+        data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        manual2.setLayoutData(data);
 
         Button add = new Button(buttonPanel, SWT.CENTER);
         add.setText("Add All");
-        add.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        // add.setLayoutData(GridDataFactory.fillDefaults().grab(false,
+        // false).create());
+        data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        add.setLayoutData(data);
         addMouseListenerToAddAllButton(add);
 
         remove = new Button(buttonPanel, SWT.CENTER);
         remove.setText("Remove");
-        remove.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        // remove.setLayoutData(GridDataFactory.fillDefaults().grab(false,
+        // false).create());
+        data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        remove.setLayoutData(data);
         remove.setEnabled(false);
         addMouseListenerToRemoveButton(remove);
     }
