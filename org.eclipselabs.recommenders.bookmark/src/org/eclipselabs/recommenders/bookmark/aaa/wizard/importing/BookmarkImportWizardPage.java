@@ -163,6 +163,9 @@ public class BookmarkImportWizardPage extends WizardPage {
         });
         localTreeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
+        final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
+        localTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
+                dragListener);
     }
 
     private void createPanelWithAddRemoveButtons(Composite bookmarkSelComposite) {

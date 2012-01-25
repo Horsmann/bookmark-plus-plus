@@ -10,6 +10,7 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.aaa.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.aaa.model.JavaElementBookmark;
+import org.eclipselabs.recommenders.bookmark.aaa.visitor.GetValueVisitor;
 
 import com.google.common.collect.Lists;
 
@@ -36,6 +37,9 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
         List<IBookmarkModelComponent> newOrder = Lists.newArrayList();
         List<IBookmarkModelComponent> allSilblings = getAllSilblings();
         LinkedList<IBookmarkModelComponent> unselectedSilblings = getUnselectedSilblings(allSilblings);
+        if (unselectedSilblings.isEmpty()) {
+            return;
+        }
 
         int index = moveUnselectedNodesToNewOrderUntilTargetNode(unselectedSilblings, newOrder);
 
@@ -120,10 +124,24 @@ public class RelocateNodesCommand implements IBookmarkModelCommand {
     private LinkedList<IBookmarkModelComponent> getUnselectedSilblings(List<IBookmarkModelComponent> allSilblings) {
         LinkedList<IBookmarkModelComponent> unselectedSilblings = new LinkedList<IBookmarkModelComponent>(allSilblings);
 
+        GetValueVisitor targetVisitor = new GetValueVisitor();
+        target.accept(targetVisitor);
+
         for (IBookmarkModelComponent component : components) {
+
+            GetValueVisitor visitor = new GetValueVisitor();
+            component.accept(visitor);
+            if (isValueOfDroppedAndTargetElementEqual(targetVisitor.getValue(), visitor.getValue())) {
+                return new LinkedList<IBookmarkModelComponent>();
+            }
+
             unselectedSilblings.remove(component);
         }
         return unselectedSilblings;
+    }
+
+    private boolean isValueOfDroppedAndTargetElementEqual(Object value, Object value2) {
+        return value.equals(value2);
     }
 
     private List<IBookmarkModelComponent> getAllSilblings() {
