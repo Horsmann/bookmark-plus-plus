@@ -31,8 +31,7 @@ public class ImportDropListener extends BookmarkTreeDropListener {
 
         ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
         if (selections instanceof IStructuredSelection) {
-            boolean isCopyOperation = true;
-            processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation,
+            processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event),
                     insertDropBeforeTarget);
         }
 

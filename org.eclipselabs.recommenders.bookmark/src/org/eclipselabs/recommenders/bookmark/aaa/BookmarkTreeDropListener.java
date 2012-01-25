@@ -91,7 +91,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
     }
 
-    private boolean isCopyOperation(DropTargetEvent event) {
+    protected boolean isCopyOperation(DropTargetEvent event) {
         return !((event.operations & DND.DROP_MOVE) != 0);
     }
 

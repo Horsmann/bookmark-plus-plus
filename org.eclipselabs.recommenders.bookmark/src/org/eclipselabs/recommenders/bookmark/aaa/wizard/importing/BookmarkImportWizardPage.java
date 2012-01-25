@@ -192,7 +192,9 @@ public class BookmarkImportWizardPage extends WizardPage {
             public void keyPressed(KeyEvent e) {
                 if (isDeletion(e)) {
                     processDeletion(e);
-                }
+                }else if (isRename(e)) {
+                    processRename(e);
+                } 
                 localTreeViewer.refresh();
             }
 
@@ -201,6 +203,14 @@ public class BookmarkImportWizardPage extends WizardPage {
                 for (TreeItem item : selections) {
                     searchBookmarkDeleteSelection(item);
                 }
+            }
+            
+            private boolean isRename(KeyEvent e) {
+                return e.keyCode == SWT.F2;
+            }
+            
+            private void processRename(KeyEvent e) {
+                localTreeViewer.renameCategory();
             }
 
             private TreeItem[] getTreeSelections(KeyEvent e) {
@@ -361,7 +371,7 @@ public class BookmarkImportWizardPage extends WizardPage {
     private void addHeadline(Composite composite) {
         GridData data = new GridData(SWT.LEFT, SWT.CENTER, true, false);
         Label left = new Label(composite, SWT.CENTER);
-        left.setText("Bookmarks from file");
+        left.setText("Import bookmarks");
         left.setLayoutData(data);
 
         data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
@@ -371,7 +381,7 @@ public class BookmarkImportWizardPage extends WizardPage {
 
         data = new GridData(SWT.LEFT, SWT.CENTER, true, false);
         Label right = new Label(composite, SWT.CENTER);
-        right.setText("Local bookmarks");
+        right.setText("Local bookm. (F2=Rename Cat.)");
         right.setLayoutData(data);
 
     }

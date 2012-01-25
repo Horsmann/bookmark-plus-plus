@@ -411,11 +411,9 @@ public class RepresentationSwitchableTreeViewer {
 
         @Override
         public String isValid(String newText) {
-
             if (newText.equals("")) {
                 return "Blank is an invalid category name";
             }
-
             return null;
         }
 
@@ -427,7 +425,6 @@ public class RepresentationSwitchableTreeViewer {
 
         public SetNewCategoryNameVisitor(String categoryName) {
             this.categoryName = categoryName;
-
         }
 
         @Override
