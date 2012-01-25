@@ -20,6 +20,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
@@ -30,6 +32,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkIO;
@@ -153,6 +157,12 @@ public class BookmarkImportWizardPage extends WizardPage {
         localTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
                 new HierarchicalRepresentationMode(), null);
         localTreeViewer.setTreeLayoutData(data);
+        
+        addDragDropSupportToLocalTreeViewer();
+        setLocalTreeViewerKeyListener();
+    }
+
+    private void addDragDropSupportToLocalTreeViewer() {
         final ImportDropListener dropListener = new ImportDropListener(new BookmarkCommandInvoker() {
 
             @Override
@@ -164,9 +174,58 @@ public class BookmarkImportWizardPage extends WizardPage {
         });
         localTreeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
+        
         final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
         localTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
-                dragListener);
+                dragListener);        
+    }
+
+    private void setLocalTreeViewerKeyListener() {
+        localTreeViewer.overrideKeyListener(new KeyListener() {
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (isDeletion(e)) {
+                    processDeletion(e);
+                }
+                localTreeViewer.refresh();
+            }
+
+            private void processDeletion(KeyEvent e) {
+                TreeItem[] selections = getTreeSelections(e);
+                for (TreeItem item : selections) {
+                    searchBookmarkDeleteSelection(item);
+                }
+            }
+
+            private TreeItem[] getTreeSelections(KeyEvent e) {
+                Tree tree = (Tree) e.getSource();
+                TreeItem[] selections = tree.getSelection();
+                return selections;
+            }
+
+            private void searchBookmarkDeleteSelection(TreeItem item) {
+                IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
+                BookmarkCommandInvoker invoker = new BookmarkCommandInvoker() {
+
+                    @Override
+                    public void invoke(IBookmarkModelCommand command) {
+                        command.execute(clonedModel);
+                    }
+                };
+                invoker.invoke(new BookmarkDeletionCommand(component));
+            }
+
+            private boolean isDeletion(KeyEvent e) {
+                int BACKSPACE = 8;
+                return (e.keyCode == SWT.DEL || e.keyCode == BACKSPACE);
+            }
+        });        
     }
 
     private void createPanelWithAddRemoveButtons(Composite bookmarkSelComposite) {
@@ -184,7 +243,7 @@ public class BookmarkImportWizardPage extends WizardPage {
     private void addRemoveButton(Composite buttonPanel) {
         remove = new Button(buttonPanel, SWT.CENTER);
         remove.setText("Remove");
-        GridData data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         remove.setLayoutData(data);
         remove.setEnabled(false);
         addMouseListenerToRemoveButton(remove);
@@ -193,7 +252,7 @@ public class BookmarkImportWizardPage extends WizardPage {
     private void addAddAllButton(Composite buttonPanel) {
         Button add = new Button(buttonPanel, SWT.CENTER);
         add.setText("Add All");
-        GridData data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         add.setLayoutData(data);
         addMouseListenerToAddAllButton(add);
     }
@@ -201,12 +260,12 @@ public class BookmarkImportWizardPage extends WizardPage {
     private void addDragExplainingLabel(Composite buttonPanel) {
         Label manual1 = new Label(buttonPanel, SWT.CENTER);
         manual1.setText("drag to import");
-        GridData data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         manual1.setLayoutData(data);
 
         Label manual2 = new Label(buttonPanel, SWT.CENTER);
         manual2.setText("===DRAG==>");
-        data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+        data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         manual2.setLayoutData(data);
 
     }

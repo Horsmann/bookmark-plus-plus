@@ -71,6 +71,7 @@ public class RepresentationSwitchableTreeViewer {
     private OpenInFileSystemAction openInFileSystem;
     private BookmarkDeletionAction deleteBookmarks;
     private SelectionChangedListener setSelectionChangedListener;
+    private KeyListener treeKeyListener;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model) {
@@ -166,7 +167,8 @@ public class RepresentationSwitchableTreeViewer {
     }
 
     private void addKeyListener(ViewPart part, BookmarkCommandInvoker commandInvoker) {
-        treeViewer.getTree().addKeyListener(new TreeKeyListener(part, commandInvoker));
+        treeKeyListener = new TreeKeyListener(part, commandInvoker);
+        treeViewer.getTree().addKeyListener(treeKeyListener);
     }
 
     public void setRepresentation(final IRepresentationMode mode) {
@@ -463,6 +465,14 @@ public class RepresentationSwitchableTreeViewer {
 
     public void setTreeLayoutData(GridData data) {
         treeViewer.getTree().setLayoutData(data);
+    }
+
+    public void overrideKeyListener(KeyListener keyListener) {
+        if (treeKeyListener != null) {
+            treeViewer.getTree().removeKeyListener((KeyListener) treeKeyListener);
+        }
+        treeViewer.getTree().addKeyListener(keyListener);
+
     }
 
 }
