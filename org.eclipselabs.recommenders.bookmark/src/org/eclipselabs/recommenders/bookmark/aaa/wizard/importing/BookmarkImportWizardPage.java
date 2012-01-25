@@ -172,39 +172,43 @@ public class BookmarkImportWizardPage extends WizardPage {
     private void createPanelWithAddRemoveButtons(Composite bookmarkSelComposite) {
         Composite buttonPanel = new Composite(bookmarkSelComposite, SWT.NONE);
         GridData data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-        // buttonPanel.setLayout(GridLayoutFactory.fillDefaults().create());
         buttonPanel.setLayout(new GridLayout());
         buttonPanel.setLayoutData(data);
 
-        Label manual1 = new Label(buttonPanel, SWT.CENTER);
-        manual1.setText("drag to import");
-        // manual1.setLayoutData(GridDataFactory.fillDefaults().grab(false,
-        // false).create());
-        data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-        manual1.setLayoutData(data);
-        Label manual2 = new Label(buttonPanel, SWT.CENTER);
-        manual2.setText("===DRAG==>");
-        // manual2.setLayoutData(GridDataFactory.fillDefaults().grab(false,
-        // false).create());
-        data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-        manual2.setLayoutData(data);
+        addDragExplainingLabel(buttonPanel);
+        addAddAllButton(buttonPanel);
+        addRemoveButton(buttonPanel);
 
-        Button add = new Button(buttonPanel, SWT.CENTER);
-        add.setText("Add All");
-        // add.setLayoutData(GridDataFactory.fillDefaults().grab(false,
-        // false).create());
-        data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-        add.setLayoutData(data);
-        addMouseListenerToAddAllButton(add);
+    }
 
+    private void addRemoveButton(Composite buttonPanel) {
         remove = new Button(buttonPanel, SWT.CENTER);
         remove.setText("Remove");
-        // remove.setLayoutData(GridDataFactory.fillDefaults().grab(false,
-        // false).create());
-        data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        GridData data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
         remove.setLayoutData(data);
         remove.setEnabled(false);
         addMouseListenerToRemoveButton(remove);
+    }
+
+    private void addAddAllButton(Composite buttonPanel) {
+        Button add = new Button(buttonPanel, SWT.CENTER);
+        add.setText("Add All");
+        GridData data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+        add.setLayoutData(data);
+        addMouseListenerToAddAllButton(add);
+    }
+
+    private void addDragExplainingLabel(Composite buttonPanel) {
+        Label manual1 = new Label(buttonPanel, SWT.CENTER);
+        manual1.setText("drag to import");
+        GridData data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+        manual1.setLayoutData(data);
+
+        Label manual2 = new Label(buttonPanel, SWT.CENTER);
+        manual2.setText("===DRAG==>");
+        data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+        manual2.setLayoutData(data);
+
     }
 
     private void addMouseListenerToAddAllButton(Button add) {
@@ -296,17 +300,17 @@ public class BookmarkImportWizardPage extends WizardPage {
     }
 
     private void addHeadline(Composite composite) {
-        GridData data = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        GridData data = new GridData(SWT.LEFT, SWT.CENTER, true, false);
         Label left = new Label(composite, SWT.CENTER);
         left.setText("Bookmarks from file");
         left.setLayoutData(data);
 
-        data = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+        data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
         Label middle = new Label(composite, SWT.CENTER);
         middle.setText("");
         middle.setLayoutData(data);
 
-        data = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        data = new GridData(SWT.LEFT, SWT.CENTER, true, false);
         Label right = new Label(composite, SWT.CENTER);
         right.setText("Local bookmarks");
         right.setLayoutData(data);

@@ -28,7 +28,6 @@ public class BookmarkImportWizard extends Wizard implements IImportWizard {
     public boolean performFinish() {
         BookmarkModel newModel = mainPage.getClonedModel();
         Activator.setNewModel(newModel);
-        System.out.println("import finised");
         return true;
     }
 
