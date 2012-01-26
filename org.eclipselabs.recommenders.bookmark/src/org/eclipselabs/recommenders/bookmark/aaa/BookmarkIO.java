@@ -36,15 +36,15 @@ public class BookmarkIO {
             ObjectInputStream in = new ObjectInputStream(fis);
             model = (BookmarkModel) in.readObject();
             in.close();
-        } catch (FileNotFoundException fileNotFound){
+        } catch (FileNotFoundException fileNotFound) {
             model = new BookmarkModel();
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        
-        if (model==null){
+
+        if (model == null) {
             model = new BookmarkModel();
         }
 
@@ -53,6 +53,10 @@ public class BookmarkIO {
 
     public static void writeToDefaultFile(BookmarkModel model) {
         File file = Activator.getDefaultLocationForStoringBookmark();
+        writeModel(file, model);
+    }
+
+    public static void writeModel(File file, BookmarkModel model) {
         try {
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream out = new ObjectOutputStream(fos);

@@ -96,6 +96,10 @@ public class BookmarkExportWizardPage extends WizardPage {
         });
     }
 
+    public BookmarkModel getExportModel() {
+        return exportModel;
+    }
+
     private Composite initializeContainerComposite(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(GridLayoutFactory.fillDefaults().create());
@@ -298,10 +302,7 @@ public class BookmarkExportWizardPage extends WizardPage {
     }
 
     private boolean isValid(File file) {
-        return file.exists() && !file.isDirectory() && hasCorrectFileEnding(file);
-    }
 
-    private boolean hasCorrectFileEnding(File file) {
         String fileEnding = Activator.fileEnding;
         int suffixLen = fileEnding.length();
 
@@ -419,6 +420,7 @@ public class BookmarkExportWizardPage extends WizardPage {
 
             if (file != null) {
                 exportPage.setExportFile(file);
+                exportPage.selectedFileTextField.setText(file.getAbsolutePath());
                 setPageComplete(true);
             }
 
