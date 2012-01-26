@@ -286,13 +286,10 @@ public class BookmarkExportWizardPage extends WizardPage {
             @Override
             public void mouseDown(MouseEvent e) {
 
-                File file = new File(selectedFileTextField.getText());
-                if (isValid(file)) {
-                    for (Category cat : localClonedModel.getCategories()) {
-                        exportModel.add(cat);
-                    }
-                    exportTreeViewer.refresh();
+                for (Category cat : localClonedModel.getCategories()) {
+                    exportModel.add(cat);
                 }
+                exportTreeViewer.refresh();
             }
 
             @Override
