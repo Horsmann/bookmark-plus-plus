@@ -19,8 +19,8 @@ public class BookmarkDeletionAction extends Action implements SelfEnabling {
         this.treeViewer = treeViewer;
         this.commandInvoker = commandInvoker;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(Activator.ICON_DELETE));
-        this.setToolTipText("Delete selected item");
-        this.setText("Delete Selection");
+        this.setToolTipText("Delete selected bookmarks");
+        this.setText("Delete bookmarks");
         this.setEnabled(false);
     }
 

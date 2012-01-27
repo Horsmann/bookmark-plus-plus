@@ -22,6 +22,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.aaa.action.AddCategoryAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.CloseAllEditorWindowsAction;
+import org.eclipselabs.recommenders.bookmark.aaa.action.DeActivateCategoryModeAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.SwitchFlatHierarchicalAction;
 import org.eclipselabs.recommenders.bookmark.aaa.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
@@ -37,6 +38,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private boolean isHierarchicalModeActive;
     private CloseAllEditorWindowsAction closeAllEditors;
     private AddCategoryAction addNewCategory;
+    private DeActivateCategoryModeAction categoryMode;
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -77,6 +79,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
         closeAllEditors = new CloseAllEditorWindowsAction(this);
         addNewCategory = new AddCategoryAction(this);
+        categoryMode = new DeActivateCategoryModeAction();
     }
 
     private void setUpToolbar() {
@@ -84,6 +87,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         mgr.removeAll();
         mgr.add(closeAllEditors);
         mgr.add(switchFlatHierarchical);
+        mgr.add(categoryMode);
         mgr.add(new Separator());
         mgr.add(addNewCategory);
 

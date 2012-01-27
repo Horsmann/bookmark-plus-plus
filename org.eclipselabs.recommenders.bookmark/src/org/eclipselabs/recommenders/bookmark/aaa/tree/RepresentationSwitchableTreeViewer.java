@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.action.BookmarkDeletionAction;
+import org.eclipselabs.recommenders.bookmark.aaa.action.DeActivateCategoryModeAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.OpenBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.OpenInFileSystemAction;
 import org.eclipselabs.recommenders.bookmark.aaa.action.RenameCategoryAction;
@@ -72,6 +73,7 @@ public class RepresentationSwitchableTreeViewer {
     private BookmarkDeletionAction deleteBookmarks;
     private SelectionChangedListener setSelectionChangedListener;
     private KeyListener treeKeyListener;
+    private DeActivateCategoryModeAction switchCategory;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model) {
@@ -93,6 +95,7 @@ public class RepresentationSwitchableTreeViewer {
         openInEditor = new OpenBookmarkAction(this, part, commandInvoker);
         openInFileSystem = new OpenInFileSystemAction(this);
         deleteBookmarks = new BookmarkDeletionAction(this, commandInvoker);
+        switchCategory = new DeActivateCategoryModeAction();
     }
 
     private void createTreeViewer(Composite parent) {
@@ -383,6 +386,7 @@ public class RepresentationSwitchableTreeViewer {
             public void menuAboutToShow(IMenuManager mgr) {
                 menuMgr.add(openInEditor);
                 menuMgr.add(renameCategory);
+                menuMgr.add(switchCategory);
                 menuMgr.add(openInFileSystem);
                 menuMgr.add(deleteBookmarks);
             }
