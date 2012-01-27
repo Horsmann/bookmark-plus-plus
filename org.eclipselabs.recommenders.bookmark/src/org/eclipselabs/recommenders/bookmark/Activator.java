@@ -13,7 +13,6 @@ import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.aaa.BookmarkView;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModelCloner;
-import org.eclipselabs.recommenders.bookmark.view.ViewManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -26,8 +25,6 @@ public class Activator extends AbstractUIPlugin {
 
     // The shared instance
     private static Activator plugin;
-
-    private static ViewManager manager;
 
     private static BookmarkView bookmarkView;
 
@@ -69,17 +66,20 @@ public class Activator extends AbstractUIPlugin {
         return stateFile;
     }
 
-    // TODO: delete Manager-methods
-    public static void setManager(ViewManager manager) {
-        Activator.manager = manager;
-    }
-
-    public static ViewManager getManager() {
-        return Activator.manager;
-    }
-
     public static BookmarkModel getClonedModel() {
         return new BookmarkModelCloner(Activator.bookmarkView.getModel()).clone();
+    }
+    
+    public static void setBookmarkView(BookmarkView bookmarkView) {
+        Activator.bookmarkView = bookmarkView;
+    }
+
+    public static BookmarkCommandInvoker getCommandInvoker() {
+        return Activator.bookmarkView;
+    }
+
+    public static void setNewModel(BookmarkModel newModel) {
+        bookmarkView.setNewModelForTreeViewer(newModel);
     }
 
     @Override
@@ -106,14 +106,14 @@ public class Activator extends AbstractUIPlugin {
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/clear_co.gif"), null));
         registry.put(ICON_CLOSE_ALL_OPEN_EDITORS, imgDesc);
 
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/deadlock_view.gif"), null));
-        registry.put(ICON_ASSOCIATED_PROJECT_CLOSED, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/errorwarning_tab.gif"), null));
-        registry.put(ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/refresh_tab.gif"), null));
-        registry.put(ICON_REFRESH_VIEW, imgDesc);
+//        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/deadlock_view.gif"), null));
+//        registry.put(ICON_ASSOCIATED_PROJECT_CLOSED, imgDesc);
+//
+//        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/errorwarning_tab.gif"), null));
+//        registry.put(ICON_ASSOCIATED_RESOURCE_NOT_AVAILABLE, imgDesc);
+//
+//        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/refresh_tab.gif"), null));
+//        registry.put(ICON_REFRESH_VIEW, imgDesc);
 
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/opentype.gif"), null));
         registry.put(ICON_OPEN_IN_SYSTEM_EXPLORER, imgDesc);
@@ -130,20 +130,10 @@ public class Activator extends AbstractUIPlugin {
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/tree_explorer.gif"), null));
         registry.put(ICON_TOGGLE_FLAT_HIERARCHY, imgDesc);
 
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/save_edit.gif"), null));
-        registry.put(ICON_SAVE, imgDesc);
+//        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/save_edit.gif"), null));
+//        registry.put(ICON_SAVE, imgDesc);
 
     }
 
-    public static void setBookmarkView(BookmarkView bookmarkView) {
-        Activator.bookmarkView = bookmarkView;
-    }
-
-    public static BookmarkCommandInvoker getCommandInvoker() {
-        return Activator.bookmarkView;
-    }
-
-    public static void setNewModel(BookmarkModel newModel) {
-        bookmarkView.setNewModelForTreeViewer(newModel);
-    }
+   
 }
