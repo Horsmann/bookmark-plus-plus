@@ -28,7 +28,6 @@ public class Activator extends AbstractUIPlugin {
 
     private static BookmarkView bookmarkView;
 
-    public static final String ICON_DEFAULT = "default";
     public static final String ICON_CATEGORY = "category";
     public static final String ICON_SHOW_IN_EDITOR = "openBookmarksInEditor";
     public static final String ICON_CLOSE_ALL_OPEN_EDITORS = "closeAllOpenEditors";
@@ -37,7 +36,6 @@ public class Activator extends AbstractUIPlugin {
     public static final String ICON_DELETE = "delete";
     public static final String ICON_RENAME_CATEGORY = "rename";
     public static final String ICON_TOGGLE_FLAT_HIERARCHY = "toggleBetweenFlatAndTreeModus";
-   
 
     public static final String AUTOSAVE_FILE = "bookmarkModel" + fileEnding;
 
@@ -64,7 +62,7 @@ public class Activator extends AbstractUIPlugin {
     public static BookmarkModel getClonedModel() {
         return new BookmarkModelCloner(Activator.bookmarkView.getModel()).clone();
     }
-    
+
     public static void setBookmarkView(BookmarkView bookmarkView) {
         Activator.bookmarkView = bookmarkView;
     }
@@ -82,11 +80,8 @@ public class Activator extends AbstractUIPlugin {
         super.initializeImageRegistry(registry);
         Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
-        ImageDescriptor imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/sample.gif"),
-                null));
-        registry.put(ICON_DEFAULT, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/bkmrk_nav.gif"), null));
+        ImageDescriptor imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
+                new Path("icons/bkmrk_nav.gif"), null));
         registry.put(ICON_CATEGORY, imgDesc);
 
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/read_obj.gif"), null));
@@ -112,5 +107,4 @@ public class Activator extends AbstractUIPlugin {
 
     }
 
-   
 }
