@@ -30,10 +30,23 @@ public class CopyHandler extends AbstractHandler {
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
 
-        IBookmark[] bookmarks = getSelectedBookmarks();
+        IBookmarkModelComponent[] components = getSelectedComponents();
+        IBookmark[] bookmarks = getSelectedBookmarks(components);
+
         addDataToClipboard(bookmarks);
 
         return null;
+    }
+
+    private IBookmark[] getSelectedBookmarks(IBookmarkModelComponent[] components) {
+        LinkedList<IBookmark> bookmarks = new LinkedList<IBookmark>();
+        for (IBookmarkModelComponent component : components) {
+            if (component instanceof IBookmark) {
+                bookmarks.add((IBookmark) component);
+            }
+        }
+
+        return bookmarks.toArray(new IBookmark[0]);
     }
 
     private void addDataToClipboard(IBookmark[] bookmarks) {
@@ -57,8 +70,8 @@ public class CopyHandler extends AbstractHandler {
         return data;
     }
 
-    protected IBookmark[] getSelectedBookmarks() {
-        LinkedList<IBookmark> bookmarks = new LinkedList<IBookmark>();
+    protected IBookmarkModelComponent[] getSelectedComponents() {
+        LinkedList<IBookmarkModelComponent> bookmarks = new LinkedList<IBookmarkModelComponent>();
 
         IStructuredSelection selections = treeViewer.getSelections();
         @SuppressWarnings("rawtypes")
@@ -70,14 +83,14 @@ public class CopyHandler extends AbstractHandler {
             bookmarks.addAll(visitor.getBookmarks());
         }
 
-        return bookmarks.toArray(new IBookmark[0]);
+        return bookmarks.toArray(new IBookmarkModelComponent[0]);
     }
 
     private class GetBookmarksVisitor implements IModelVisitor {
 
-        private LinkedList<IBookmark> bookmarks = new LinkedList<IBookmark>();
-        
-        public LinkedList<IBookmark> getBookmarks() {
+        private LinkedList<IBookmarkModelComponent> bookmarks = new LinkedList<IBookmarkModelComponent>();
+
+        public LinkedList<IBookmarkModelComponent> getBookmarks() {
             return bookmarks;
         }
 
@@ -88,8 +101,10 @@ public class CopyHandler extends AbstractHandler {
 
         @Override
         public void visit(Category category) {
+            bookmarks.add(category);
             for (IBookmark bookmark : category.getBookmarks()) {
                 bookmarks.add(bookmark);
+                bookmark.accept(this);
             }
         }
 

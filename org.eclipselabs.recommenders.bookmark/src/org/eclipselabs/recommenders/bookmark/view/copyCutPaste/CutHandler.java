@@ -3,7 +3,7 @@ package org.eclipselabs.recommenders.bookmark.view.copyCutPaste;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
-import org.eclipselabs.recommenders.bookmark.model.IBookmark;
+import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 
@@ -18,11 +18,11 @@ public class CutHandler extends CopyHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        IBookmark[] selectedBookmarks = getSelectedBookmarks();
+        IBookmarkModelComponent[] selectedComponents = getSelectedComponents();
         super.execute(event);
 
-        for (IBookmark bookmark : selectedBookmarks) {
-            invoker.invoke(new BookmarkDeletionCommand(bookmark));
+        for (IBookmarkModelComponent component : selectedComponents) {
+            invoker.invoke(new BookmarkDeletionCommand(component));
         }
 
         return null;
