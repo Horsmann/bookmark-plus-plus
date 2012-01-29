@@ -10,14 +10,12 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa.model;
 
-import java.io.Serializable;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-public class FileBookmark implements IBookmark, Serializable {
+public class FileBookmark implements IBookmark {
 
     private static final long serialVersionUID = -224963828339478664L;
     private final String relativeFilePath;
@@ -34,7 +32,7 @@ public class FileBookmark implements IBookmark, Serializable {
         this.relativeFilePath = getRelativeFilePath(file);
     }
 
-    private String getRelativeFilePath(IFile file) {
+    public String getRelativeFilePath(IFile file) {
         IPath path = file.getFullPath();
 
         IPath projectRelativePath = file.getProjectRelativePath();

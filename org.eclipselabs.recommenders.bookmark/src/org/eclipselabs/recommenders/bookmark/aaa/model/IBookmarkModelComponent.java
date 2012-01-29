@@ -10,7 +10,9 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa.model;
 
-public interface IBookmarkModelComponent {
+import java.io.Serializable;
+
+public interface IBookmarkModelComponent extends Serializable{
 
     void accept(IModelVisitor visitor);
 

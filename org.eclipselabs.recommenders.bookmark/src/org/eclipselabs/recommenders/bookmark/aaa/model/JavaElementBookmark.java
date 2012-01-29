@@ -1,6 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.aaa.model;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.eclipse.jdt.core.IJavaElement;
@@ -8,7 +7,7 @@ import org.eclipse.jdt.core.JavaCore;
 
 import com.google.common.collect.Lists;
 
-public class JavaElementBookmark implements IBookmark, Serializable {
+public class JavaElementBookmark implements IBookmark {
 
     private static final long serialVersionUID = 4072214438975678506L;
     private final String handleId;
@@ -19,11 +18,6 @@ public class JavaElementBookmark implements IBookmark, Serializable {
 
     private IBookmarkModelComponent parent;
 
-    // public JavaElementBookmark(final String handleId, final boolean
-    // isInferred) {
-    // this.handleId = handleId;
-    // this.isInferred = isInferred;
-    // }
 
     public JavaElementBookmark(final String handleId, final boolean isInferred, JavaElementBookmark parent) {
         this.handleId = handleId;
@@ -39,7 +33,7 @@ public class JavaElementBookmark implements IBookmark, Serializable {
         parent.add(this);
 
     }
-    
+
     public JavaElementBookmark(final String handleId, final boolean isInferred) {
         this.handleId = handleId;
         this.isInferred = isInferred;

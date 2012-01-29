@@ -18,6 +18,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPartService;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.aaa.action.AddCategoryAction;
@@ -29,6 +30,9 @@ import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.aaa.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.aaa.copyCutPaste.CopyHandler;
+import org.eclipselabs.recommenders.bookmark.aaa.copyCutPaste.CutHandler;
+import org.eclipselabs.recommenders.bookmark.aaa.copyCutPaste.PasteHandler;
 
 public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
@@ -55,7 +59,21 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
         addViewPartListener();
         addResourceListener();
+        addCopyCutPasteFeatures();
         Activator.setBookmarkView(this);
+    }
+
+    private void addCopyCutPasteFeatures() {
+        IHandlerService handlerServ = (IHandlerService) getSite().getService(IHandlerService.class);
+        PasteHandler paste = new PasteHandler(treeViewer, this);
+        handlerServ.activateHandler("org.eclipse.ui.edit.paste", paste);
+
+        CopyHandler copy = new CopyHandler(treeViewer);
+        handlerServ.activateHandler("org.eclipse.ui.edit.copy", copy);
+
+        CutHandler cut = new CutHandler(treeViewer, this);
+        handlerServ.activateHandler("org.eclipse.ui.edit.cut", cut);
+
     }
 
     public BookmarkModel getModel() {

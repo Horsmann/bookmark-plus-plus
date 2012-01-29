@@ -10,13 +10,12 @@
  */
 package org.eclipselabs.recommenders.bookmark.aaa.model;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
-public class Category implements IBookmarkModelComponent, Serializable {
+public class Category implements IBookmarkModelComponent {
 
     private static final long serialVersionUID = -1116061200117187534L;
     private String label;
