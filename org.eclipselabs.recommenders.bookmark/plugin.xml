@@ -9,7 +9,7 @@
       </category>
       <view
             category="org.eclipselabs.recommenders.bookmark"
-            class="org.eclipselabs.recommenders.bookmark.aaa.BookmarkView"
+            class="org.eclipselabs.recommenders.bookmark.view.BookmarkView"
             icon="icons/bfolder_obj.gif"
             id="org.eclipselabs.recommenders.bookmark.views.BookmarkView"
             name="Bookmarks++">
@@ -36,7 +36,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.eclipselabs.recommenders.bookmark.aaa.preferences.BookmarkPreferencePage"
+            class="org.eclipselabs.recommenders.bookmark.preferences.BookmarkPreferencePage"
             id="org.eclipselabs.recommenders.bookmark.aaa.preferences.BookmarkPreferencePage"
             name="Bookmark++">
       </page>
@@ -55,7 +55,7 @@
       </category>
       <wizard
             category="org.eclipselabs.recommenders.bookmark.aaa.wizard.importing.category"
-            class="org.eclipselabs.recommenders.bookmark.aaa.wizard.importing.BookmarkImportWizard"
+            class="org.eclipselabs.recommenders.bookmark.wizard.importing.BookmarkImportWizard"
             icon="icons/bkmrk_nav.gif"
             id="org.eclipselabs.recommenders.bookmark.aaa.wizard.importing.wizard"
             name="Import Bookmarks">
@@ -72,7 +72,7 @@
       </category>
       <wizard
             category="org.eclipselabs.recommenders.bookmark.aaa.wizard.exporting.category"
-            class="org.eclipselabs.recommenders.bookmark.aaa.wizard.exporting.BookmarkExportWizard"
+            class="org.eclipselabs.recommenders.bookmark.wizard.exporting.BookmarkExportWizard"
             icon="icons/bkmrk_nav.gif"
             id="org.eclipselabs.recommenders.bookmark.aaa.wizard"
             name="Export Bookmarks">

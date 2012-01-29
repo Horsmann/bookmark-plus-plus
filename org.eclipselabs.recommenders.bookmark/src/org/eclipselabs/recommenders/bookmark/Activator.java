@@ -9,10 +9,10 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipselabs.recommenders.bookmark.aaa.BookmarkCommandInvoker;
-import org.eclipselabs.recommenders.bookmark.aaa.BookmarkView;
-import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModel;
-import org.eclipselabs.recommenders.bookmark.aaa.model.BookmarkModelCloner;
+import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.model.BookmarkModelCloner;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
