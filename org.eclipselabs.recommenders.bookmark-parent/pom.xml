@@ -17,7 +17,12 @@
 		<repository>
 			<id>helios</id>
 			<layout>p2</layout>
-			<url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/helios/</url>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/mirrors/indigo/</url>
+		</repository>
+		<repository>
+			<id>3rd</id>
+			<layout>p2</layout>
+			<url>http://vandyk.st.informatik.tu-darmstadt.de/updates/3rd/</url>
 		</repository>
 
 	</repositories>
