@@ -27,7 +27,7 @@ public class DeActivateCategoryModeAction extends Action {
             comboboxComposite.setLayoutData(data);
             mainComposite.layout(true, true);
         } else {
-            comboboxComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+            comboboxComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
             comboboxComposite.setVisible(true);
             mainComposite.layout(true, true);
         }

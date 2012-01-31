@@ -40,6 +40,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -92,21 +93,23 @@ public class RepresentationSwitchableTreeViewer {
         createTreeViewer(parent);
         currentMode = initialMode;
 
-        setUpHideableComboViewer(parent);
+        setUpHideableComboComposite(parent);
     }
 
-    private void setUpHideableComboViewer(Composite parent) {
+    private void setUpHideableComboComposite(Composite parent) {
         combosite = new Composite(parent, SWT.NONE);
         combosite.setLayout(GridLayoutFactory.fillDefaults().numColumns(3).create());
-        combosite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+        combosite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         Label label = new Label(combosite, SWT.NONE);
-        label.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_SAVE));
+        label.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CATEGORY));
         label.setLayoutData(GridDataFactory.fillDefaults().grab(false, false).create());
         ComboViewer combo = new ComboViewer(combosite, SWT.READ_ONLY);
-        combo.getCombo().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
-        
+        combo.getCombo().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        Button saveButton = new Button(combosite, SWT.NONE);
+        saveButton.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_SAVE));
+
         combo.add("Entry #1");
-        combo.add("Entry #2");  
+        combo.add("Entry #2");
     }
 
     public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker) {
@@ -513,7 +516,7 @@ public class RepresentationSwitchableTreeViewer {
     public Composite getComboboxComposite() {
         return combosite;
     }
-    
+
     public Composite getTreeComposite() {
         return parent;
     }
