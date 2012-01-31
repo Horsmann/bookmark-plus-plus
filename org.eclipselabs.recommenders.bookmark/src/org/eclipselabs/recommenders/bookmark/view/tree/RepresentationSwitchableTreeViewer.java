@@ -79,26 +79,34 @@ public class RepresentationSwitchableTreeViewer {
     private SelectionChangedListener setSelectionChangedListener;
     private KeyListener treeKeyListener;
     private DeActivateCategoryModeAction switchCategory;
+    private Composite combosite;
+    private final Composite parent;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model) {
+        this.parent = parent;
         this.model = model;
-        
+
         parent.setLayout(GridLayoutFactory.fillDefaults().create());
-        
+
         createTreeViewer(parent);
         currentMode = initialMode;
-        
-       
-        Composite combosite = new Composite(parent, SWT.NONE);
-        combosite.setLayout(GridLayoutFactory.fillDefaults().create());
+
+        setUpHideableComboViewer(parent);
+    }
+
+    private void setUpHideableComboViewer(Composite parent) {
+        combosite = new Composite(parent, SWT.NONE);
+        combosite.setLayout(GridLayoutFactory.fillDefaults().numColumns(3).create());
         combosite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
         Label label = new Label(combosite, SWT.NONE);
-//        label.setImage()
+        label.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_SAVE));
+        label.setLayoutData(GridDataFactory.fillDefaults().grab(false, false).create());
         ComboViewer combo = new ComboViewer(combosite, SWT.READ_ONLY);
         combo.getCombo().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+        
         combo.add("Entry #1");
-        combo.add("Entry #2");
+        combo.add("Entry #2");  
     }
 
     public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker) {
@@ -114,7 +122,7 @@ public class RepresentationSwitchableTreeViewer {
         openInEditor = new OpenBookmarkAction(this, part, commandInvoker);
         openInFileSystem = new OpenInFileSystemAction(this);
         deleteBookmarks = new BookmarkDeletionAction(this, commandInvoker);
-        switchCategory = new DeActivateCategoryModeAction();
+        switchCategory = new DeActivateCategoryModeAction(combosite, parent);
     }
 
     private void createTreeViewer(Composite parent) {
@@ -500,6 +508,14 @@ public class RepresentationSwitchableTreeViewer {
         }
         treeViewer.getTree().addKeyListener(keyListener);
 
+    }
+
+    public Composite getComboboxComposite() {
+        return combosite;
+    }
+    
+    public Composite getTreeComposite() {
+        return parent;
     }
 
 }

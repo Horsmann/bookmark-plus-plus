@@ -10,7 +10,7 @@ public class SwitchFlatHierarchicalAction extends Action {
     public SwitchFlatHierarchicalAction(BookmarkView bookmarkView) {
         this.bookmarkView = bookmarkView;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry()
-                .getDescriptor(Activator.ICON_TOGGLE_FLAT_HIERARCHY));
+                .getDescriptor(Activator.ICON_SWITCH_FLAT_HIERARCHY));
         this.setToolTipText("Switches between flat and hierarchical mode");
         this.setText("Switches flat/tree");
     }

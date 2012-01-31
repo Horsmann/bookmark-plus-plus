@@ -46,7 +46,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     @Override
     public void createPartControl(final Composite parent) {
-
         treeViewer = new RepresentationSwitchableTreeViewer(parent, new HierarchicalRepresentationMode(), model);
         treeViewer.enabledActionsForViewPart(this, this);
         addDragDropListeners(treeViewer);
@@ -97,7 +96,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
         closeAllEditors = new CloseAllEditorWindowsAction(this);
         addNewCategory = new AddCategoryAction(this);
-        categoryMode = new DeActivateCategoryModeAction();
+        categoryMode = new DeActivateCategoryModeAction(treeViewer.getComboboxComposite(),
+                treeViewer.getTreeComposite());
     }
 
     private void setUpToolbar() {
