@@ -17,6 +17,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -80,6 +81,8 @@ public class RepresentationSwitchableTreeViewer {
         this.model = model;
         createTreeViewer(parent);
         currentMode = initialMode;
+        Composite combosite = new Composite(parent, SWT.NONE);
+        ComboViewer combo = new ComboViewer(combosite, SWT.READ_ONLY);
     }
 
     public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker) {
