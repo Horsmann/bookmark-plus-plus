@@ -17,6 +17,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -39,10 +41,12 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.BookmarkDeletionAction;
 import org.eclipselabs.recommenders.bookmark.action.DeActivateCategoryModeAction;
 import org.eclipselabs.recommenders.bookmark.action.OpenBookmarkAction;
@@ -79,10 +83,22 @@ public class RepresentationSwitchableTreeViewer {
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model) {
         this.model = model;
+        
+        parent.setLayout(GridLayoutFactory.fillDefaults().create());
+        
         createTreeViewer(parent);
         currentMode = initialMode;
+        
+       
         Composite combosite = new Composite(parent, SWT.NONE);
+        combosite.setLayout(GridLayoutFactory.fillDefaults().create());
+        combosite.setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+        Label label = new Label(combosite, SWT.NONE);
+//        label.setImage()
         ComboViewer combo = new ComboViewer(combosite, SWT.READ_ONLY);
+        combo.getCombo().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+        combo.add("Entry #1");
+        combo.add("Entry #2");
     }
 
     public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker) {
@@ -103,6 +119,7 @@ public class RepresentationSwitchableTreeViewer {
 
     private void createTreeViewer(Composite parent) {
         this.treeViewer = new TreeViewer(parent);
+        treeViewer.getTree().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
         treeViewer.setContentProvider(new SwitchableContentProvider());
         treeViewer.setLabelProvider(new SwitchableLabelProvider());
         treeViewer.addTreeListener(new TreeViewListener());
