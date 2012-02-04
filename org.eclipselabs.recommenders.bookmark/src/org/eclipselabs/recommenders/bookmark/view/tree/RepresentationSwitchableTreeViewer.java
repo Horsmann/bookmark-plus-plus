@@ -110,14 +110,17 @@ public class RepresentationSwitchableTreeViewer {
         combosite.setVisible(false);
         Label label = new Label(combosite, SWT.NONE);
         label.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CATEGORY));
-        label.setLayoutData(GridDataFactory.fillDefaults().grab(false, true).create());
+        GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        label.setLayoutData(gridData);
         combo = new ComboViewer(combosite, SWT.NONE);
-        combo.getCombo().setLayoutData(GridDataFactory.fillDefaults().grab(true, true).create());
+        gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        combo.getCombo().setLayoutData(gridData);
         combo.setContentProvider(new ComboContentProvider());
         Button saveButton = new Button(combosite, SWT.NONE);
         saveButton.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_SAVE));
         saveButton.addListener(SWT.MouseDown, new ComboSaveButtonListener());
-        saveButton.setLayoutData(GridDataFactory.fillDefaults().grab(false, true).create());
+        gridData = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+        saveButton.setLayoutData(gridData);
         combo.getCombo().addModifyListener(new ComboModifyListener(saveButton));
     }
 
