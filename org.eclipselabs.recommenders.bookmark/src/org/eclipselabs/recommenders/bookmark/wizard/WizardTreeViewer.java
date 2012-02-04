@@ -5,8 +5,6 @@ import java.util.List;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -49,20 +47,12 @@ public class WizardTreeViewer {
     private BookmarkModel model;
     private ISelectionChangedListener setSelectionChangedListener;
     private KeyListener treeKeyListener;
-    private Composite combosite;
-    private final Composite parent;
-    private ComboViewer combo;
 
-    public WizardTreeViewer(final Composite parent, final IRepresentationMode initialMode,
-            final BookmarkModel model) {
-        this.parent = parent;
+    public WizardTreeViewer(final Composite parent, final IRepresentationMode initialMode, final BookmarkModel model) {
         this.model = model;
-
-        parent.setLayout(GridLayoutFactory.fillDefaults().create());
 
         createTreeViewer(parent);
         currentMode = initialMode;
-
     }
 
     public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker) {
@@ -169,7 +159,6 @@ public class WizardTreeViewer {
         treeViewer.refresh();
         updateExpansions(model);
     }
-
 
     private class SwitchableContentProvider implements ITreeContentProvider {
 
@@ -317,7 +306,6 @@ public class WizardTreeViewer {
 
     }
 
-
     private class InputValidator implements IInputValidator {
 
         @Override
@@ -353,7 +341,6 @@ public class WizardTreeViewer {
 
     }
 
-
     public void setTreeLayoutData(GridData data) {
         treeViewer.getTree().setLayoutData(data);
     }
@@ -365,18 +352,5 @@ public class WizardTreeViewer {
         treeViewer.getTree().addKeyListener(keyListener);
 
     }
-
-    public Composite getComboboxComposite() {
-        return combosite;
-    }
-
-    public Composite getTreeComposite() {
-        return parent;
-    }
-
-    public ComboViewer getComboViewer() {
-        return combo;
-    }
-    
 
 }

@@ -43,9 +43,7 @@ import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
-import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardTreeViewer;
-import org.eclipselabs.recommenders.bookmark.wizard.importing.ExportDialog;
 import org.eclipselabs.recommenders.bookmark.wizard.importing.ImportDropListener;
 
 public class BookmarkExportWizardPage extends WizardPage {
@@ -56,7 +54,7 @@ public class BookmarkExportWizardPage extends WizardPage {
     private WizardTreeViewer exportTreeViewer;
     private FilePathModifyListener filePathListener;
 
-    private RepresentationSwitchableTreeViewer localTreeViewer;
+    private WizardTreeViewer localTreeViewer;
     private Composite container;
     private BookmarkModel localClonedModel;
     private BookmarkModel exportModel;
@@ -164,7 +162,7 @@ public class BookmarkExportWizardPage extends WizardPage {
 
     private void createLocalTreeViewer(Composite bookmarkSelComposite) {
         GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        localTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
+        localTreeViewer = new WizardTreeViewer(bookmarkSelComposite,
                 new HierarchicalRepresentationMode(), null);
         localTreeViewer.setTreeLayoutData(data);
 

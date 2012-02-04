@@ -44,17 +44,17 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkIO;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
-import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.wizard.WizardTreeViewer;
 
 public class BookmarkImportWizardPage extends WizardPage {
 
     private Text selectedFileTextField;
     private Button button;
     private File selectedFile;
-    private RepresentationSwitchableTreeViewer importTreeViewer;
+    private WizardTreeViewer importTreeViewer;
     private FilePathModifyListener filePathListener;
 
-    private RepresentationSwitchableTreeViewer localTreeViewer;
+    private WizardTreeViewer localTreeViewer;
     private Composite container;
     private BookmarkModel clonedModel;
     private Button remove;
@@ -154,7 +154,7 @@ public class BookmarkImportWizardPage extends WizardPage {
 
     private void createProspectiveLocalTreeViewer(Composite bookmarkSelComposite) {
         GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        localTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
+        localTreeViewer = new WizardTreeViewer(bookmarkSelComposite,
                 new HierarchicalRepresentationMode(), null);
         localTreeViewer.setTreeLayoutData(data);
         
@@ -360,7 +360,7 @@ public class BookmarkImportWizardPage extends WizardPage {
 
     private void createLoadedFileTreeViewer(Composite bookmarkSelComposite) {
         GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        importTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
+        importTreeViewer = new WizardTreeViewer(bookmarkSelComposite,
                 new HierarchicalRepresentationMode(), null);
         importTreeViewer.setTreeLayoutData(data);
         final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
