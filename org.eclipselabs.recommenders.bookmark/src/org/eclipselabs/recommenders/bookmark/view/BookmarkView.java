@@ -27,6 +27,7 @@ import org.eclipselabs.recommenders.bookmark.action.DeActivateCategoryModeAction
 import org.eclipselabs.recommenders.bookmark.action.SwitchFlatHierarchicalAction;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.CopyHandler;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.CutHandler;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.PasteHandler;
@@ -49,7 +50,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         treeViewer = new RepresentationSwitchableTreeViewer(parent, new HierarchicalRepresentationMode(), model);
         treeViewer.enabledActionsForViewPart(this, this);
         loadModel();
-        
+
         addDragDropListeners(treeViewer);
         setUpActions();
         setUpToolbar();
@@ -141,7 +142,14 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     private void setModel(final BookmarkModel model) {
-        this.model = model;
+        if (this.model == null) {
+            this.model = model;
+        } else {
+            this.model.removeAll();
+            for (Category category : model.getCategories()) {
+                this.model.add(category);
+            }
+        }
         treeViewer.setInput(model);
     }
 

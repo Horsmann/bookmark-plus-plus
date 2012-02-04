@@ -11,25 +11,9 @@ import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
 
 public class DeActivateCategoryModeAction extends Action implements SelfEnabling {
 
-    // private final Composite comboboxComposite;
-    // private final Composite mainComposite;
-    // private final ComboViewer combo;
     private final BookmarkModel model;
     private final RepresentationSwitchableTreeViewer treeViewer;
     private final HideableComboViewer hideableComboViewer;
-
-    // public DeActivateCategoryModeAction(ComboViewer combo, BookmarkModel
-    // model,
-    // RepresentationSwitchableTreeViewer treeViewer) {
-    // // this.combo = combo;
-    // this.model = model;
-    // this.treeViewer = treeViewer;
-    // // this.comboboxComposite = treeViewer.getComboboxComposite();
-    // // this.mainComposite = treeViewer.getTreeComposite();
-    // this.setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(Activator.ICON_TOGGLE_VIEW));
-    // this.setToolTipText("Switches between the hierarchical and the category mode");
-    // this.setText("Switch to category");
-    // }
 
     public DeActivateCategoryModeAction(HideableComboViewer hideableComboViewer, BookmarkModel model,
             RepresentationSwitchableTreeViewer representationSwitchableTreeViewer) {
