@@ -48,12 +48,12 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     public void createPartControl(final Composite parent) {
         treeViewer = new RepresentationSwitchableTreeViewer(parent, new HierarchicalRepresentationMode(), model);
         treeViewer.enabledActionsForViewPart(this, this);
+        loadModel();
+        
         addDragDropListeners(treeViewer);
-
         setUpActions();
         setUpToolbar();
         setUpPluginPreferences();
-        loadModel();
         activateHierarchicalMode();
 
         addViewPartListener();

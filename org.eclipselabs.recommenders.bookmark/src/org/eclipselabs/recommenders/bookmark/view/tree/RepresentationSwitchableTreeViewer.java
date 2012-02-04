@@ -23,6 +23,7 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ITreeViewerListener;
@@ -100,12 +101,14 @@ public class RepresentationSwitchableTreeViewer {
     private void setUpHideableComboComposite(Composite parent) {
         combosite = new Composite(parent, SWT.NONE);
         combosite.setLayout(GridLayoutFactory.fillDefaults().numColumns(3).create());
-        combosite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        combosite.setLayoutData(new GridData(0, 0));
+        combosite.setVisible(false);
         Label label = new Label(combosite, SWT.NONE);
         label.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CATEGORY));
         label.setLayoutData(GridDataFactory.fillDefaults().grab(false, false).create());
         combo = new ComboViewer(combosite, SWT.READ_ONLY);
         combo.getCombo().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        combo.setContentProvider(new ComboContentProvider());
         Button saveButton = new Button(combosite, SWT.NONE);
         saveButton.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_SAVE));
     }
@@ -521,6 +524,25 @@ public class RepresentationSwitchableTreeViewer {
 
     public ComboViewer getComboViewer() {
         return combo;
+    }
+    
+    private class ComboContentProvider implements IStructuredContentProvider{
+
+        @Override
+        public void dispose() {
+        }
+
+        @Override
+        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        }
+
+        @Override
+        public Object[] getElements(Object inputElement) {
+            
+            return new Object[] {((Category)inputElement).getLabel()};
+        }
+
+        
     }
 
 }

@@ -13,7 +13,7 @@ import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
 
-public class DeActivateCategoryModeAction extends Action {
+public class DeActivateCategoryModeAction extends Action implements SelfEnabling {
 
     private final Composite comboboxComposite;
     private final Composite mainComposite;
@@ -21,7 +21,8 @@ public class DeActivateCategoryModeAction extends Action {
     private final BookmarkModel model;
     private final RepresentationSwitchableTreeViewer treeViewer;
 
-    public DeActivateCategoryModeAction(ComboViewer combo, BookmarkModel model, RepresentationSwitchableTreeViewer treeViewer) {
+    public DeActivateCategoryModeAction(ComboViewer combo, BookmarkModel model,
+            RepresentationSwitchableTreeViewer treeViewer) {
         this.combo = combo;
         this.model = model;
         this.treeViewer = treeViewer;
@@ -35,25 +36,41 @@ public class DeActivateCategoryModeAction extends Action {
     @Override
     public void run() {
         if (comboboxComposite.isVisible()) {
-            setVisibleLayout();
+            setInvisibleLayout();
+        } else {
             rebuildComboMenu();
             setActiveCategoryAccordingToTreeSelection();
-        } else {
-            setInvisibleLayout();
+            setVisibleLayout();
         }
     }
 
     private void setActiveCategoryAccordingToTreeSelection() {
-        IStructuredSelection selections = treeViewer.getSelections();
-        IBookmarkModelComponent component =  (IBookmarkModelComponent) selections.getFirstElement();
-        while (component.hasParent()){
-            component = component.getParent();
-        }
+        IBookmarkModelComponent component = getActivatedCategory();
+
         IsCategoryVisitor visitor = new IsCategoryVisitor();
         component.accept(visitor);
-        if (visitor.isCategory()){
-//            combo.
+        if (visitor.isCategory()) {
+            int i = 0;
+            for (; i < model.getCategories().size(); i++) {
+                if (model.getCategories().get(i) == component) {
+                    combo.getCombo().select(i);
+                }
+            }
         }
+    }
+
+    private IBookmarkModelComponent getActivatedCategory() {
+        IStructuredSelection selections = treeViewer.getSelections();
+        IBookmarkModelComponent component = null;
+        if (selections.isEmpty()) {
+            component = model.getCategories().get(0);
+        } else {
+            component = (IBookmarkModelComponent) selections.getFirstElement();
+        }
+        while (component.hasParent()) {
+            component = component.getParent();
+        }
+        return component;
     }
 
     private void rebuildComboMenu() {
@@ -63,17 +80,26 @@ public class DeActivateCategoryModeAction extends Action {
         }
     }
 
-    private void setInvisibleLayout() {
+    private void setVisibleLayout() {
         comboboxComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         comboboxComposite.setVisible(true);
         mainComposite.layout(true, true);
     }
 
-    private void setVisibleLayout() {
+    private void setInvisibleLayout() {
         comboboxComposite.setVisible(false);
         GridData data = new GridData(0, 0);
         comboboxComposite.setLayoutData(data);
         mainComposite.layout(true, true);
+    }
+
+    @Override
+    public void updateEnableStatus() {
+        if (model.getCategories().isEmpty()) {
+            setEnabled(false);
+        } else {
+            setEnabled(true);
+        }
     }
 
 }
