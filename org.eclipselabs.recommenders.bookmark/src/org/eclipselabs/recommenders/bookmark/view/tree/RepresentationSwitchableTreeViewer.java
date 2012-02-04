@@ -41,6 +41,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -86,9 +88,8 @@ public class RepresentationSwitchableTreeViewer {
     private SelectionChangedListener setSelectionChangedListener;
     private KeyListener treeKeyListener;
     private DeActivateCategoryModeAction switchCategory;
-    private Composite combosite;
     private final Composite parent;
-    private ComboViewer combo;
+    private HideableComboViewer hideableComboViewer;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model) {
@@ -100,28 +101,11 @@ public class RepresentationSwitchableTreeViewer {
         createTreeViewer(parent);
         currentMode = initialMode;
 
-        setUpHideableComboComposite(parent);
+        addHideableComboComposite(parent);
     }
 
-    private void setUpHideableComboComposite(Composite parent) {
-        combosite = new Composite(parent, SWT.NONE);
-        combosite.setLayout(GridLayoutFactory.fillDefaults().numColumns(3).create());
-        combosite.setLayoutData(new GridData(0, 0));
-        combosite.setVisible(false);
-        Label label = new Label(combosite, SWT.NONE);
-        label.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CATEGORY));
-        GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-        label.setLayoutData(gridData);
-        combo = new ComboViewer(combosite, SWT.NONE);
-        gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-        combo.getCombo().setLayoutData(gridData);
-        combo.setContentProvider(new ComboContentProvider());
-        Button saveButton = new Button(combosite, SWT.NONE);
-        saveButton.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_SAVE));
-        saveButton.addListener(SWT.MouseDown, new ComboSaveButtonListener());
-        gridData = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-        saveButton.setLayoutData(gridData);
-        combo.getCombo().addModifyListener(new ComboModifyListener(saveButton));
+    private void addHideableComboComposite(Composite parent) {
+          hideableComboViewer = new HideableComboViewer(parent, SWT.NONE);
     }
 
     public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker) {
@@ -137,7 +121,7 @@ public class RepresentationSwitchableTreeViewer {
         openInEditor = new OpenBookmarkAction(this, part, commandInvoker);
         openInFileSystem = new OpenInFileSystemAction(this);
         deleteBookmarks = new BookmarkDeletionAction(this, commandInvoker);
-        switchCategory = new DeActivateCategoryModeAction(combo, model, this);
+        switchCategory = new DeActivateCategoryModeAction(hideableComboViewer, model, this);
     }
 
     private void createTreeViewer(Composite parent) {
@@ -525,76 +509,8 @@ public class RepresentationSwitchableTreeViewer {
 
     }
 
-    public Composite getComboboxComposite() {
-        return combosite;
-    }
-
-    public Composite getTreeComposite() {
-        return parent;
-    }
-
-    public ComboViewer getComboViewer() {
-        return combo;
-    }
-
-    private class ComboContentProvider implements IStructuredContentProvider {
-
-        @Override
-        public void dispose() {
-        }
-
-        @Override
-        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-        }
-
-        @Override
-        public Object[] getElements(Object inputElement) {
-
-            return new Object[] { ((Category) inputElement).getLabel() };
-        }
-
-    }
-
-    private class ComboSaveButtonListener implements Listener {
-
-        @Override
-        public void handleEvent(Event event) {
-            System.out.println("SaveButton Implementierung fehlt noch");
-        }
-
-    }
-
-    public class ComboModifyListener implements ModifyListener {
-
-        private final Button button;
-
-        public ComboModifyListener(Button saveBookmarkNameChanges) {
-            this.button = saveBookmarkNameChanges;
-        }
-
-        @Override
-        public void modifyText(ModifyEvent e) {
-            Combo combo = (Combo) e.getSource();
-            String text = combo.getText();
-
-            System.out.println("Modify-Listener noch nicht implementiert");
-
-            // if (areDifferent(text, headName) && textIsNotBlank(text)) {
-            // button.setEnabled(true);
-            // }
-            // else {
-            // button.setEnabled(false);
-            // }
-        }
-
-        private boolean textIsNotBlank(String text) {
-            return text.trim().compareTo("") != 0;
-        }
-
-        private boolean areDifferent(String text, String headName) {
-            return text.compareTo(headName) != 0;
-        }
-
+    public HideableComboViewer getHideableComboViewer() {
+        return hideableComboViewer;
     }
 
 }
