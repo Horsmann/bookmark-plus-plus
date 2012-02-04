@@ -96,8 +96,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
         closeAllEditors = new CloseAllEditorWindowsAction(this);
         addNewCategory = new AddCategoryAction(this);
-        categoryMode = new DeActivateCategoryModeAction(treeViewer.getComboboxComposite(),
-                treeViewer.getTreeComposite());
+        categoryMode = new DeActivateCategoryModeAction(treeViewer.getComboViewer(), model, treeViewer);
     }
 
     private void setUpToolbar() {

@@ -82,6 +82,7 @@ public class RepresentationSwitchableTreeViewer {
     private DeActivateCategoryModeAction switchCategory;
     private Composite combosite;
     private final Composite parent;
+    private ComboViewer combo;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model) {
@@ -103,13 +104,10 @@ public class RepresentationSwitchableTreeViewer {
         Label label = new Label(combosite, SWT.NONE);
         label.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CATEGORY));
         label.setLayoutData(GridDataFactory.fillDefaults().grab(false, false).create());
-        ComboViewer combo = new ComboViewer(combosite, SWT.READ_ONLY);
+        combo = new ComboViewer(combosite, SWT.READ_ONLY);
         combo.getCombo().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         Button saveButton = new Button(combosite, SWT.NONE);
         saveButton.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_SAVE));
-
-        combo.add("Entry #1");
-        combo.add("Entry #2");
     }
 
     public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker) {
@@ -117,7 +115,7 @@ public class RepresentationSwitchableTreeViewer {
         addKeyListener(part, commandInvoker);
         addDoubleclickListener(part, commandInvoker);
         setUpContextMenu(part);
-        addSelectionChangedListener();
+        addTreeViewerSelectionChangedListener();
     }
 
     private void createActions(ViewPart part, BookmarkCommandInvoker commandInvoker) {
@@ -125,7 +123,7 @@ public class RepresentationSwitchableTreeViewer {
         openInEditor = new OpenBookmarkAction(this, part, commandInvoker);
         openInFileSystem = new OpenInFileSystemAction(this);
         deleteBookmarks = new BookmarkDeletionAction(this, commandInvoker);
-        switchCategory = new DeActivateCategoryModeAction(combosite, parent);
+        switchCategory = new DeActivateCategoryModeAction(combo, model, this);
     }
 
     private void createTreeViewer(Composite parent) {
@@ -140,7 +138,7 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.addDoubleClickListener(new DoubleclickListener(part, commandInvoker));
     }
 
-    private void addSelectionChangedListener() {
+    private void addTreeViewerSelectionChangedListener() {
         SelectionChangedListener selectionListener = new SelectionChangedListener();
         selectionListener.register(renameCategory);
         selectionListener.register(openInEditor);
@@ -519,6 +517,10 @@ public class RepresentationSwitchableTreeViewer {
 
     public Composite getTreeComposite() {
         return parent;
+    }
+
+    public ComboViewer getComboViewer() {
+        return combo;
     }
 
 }
