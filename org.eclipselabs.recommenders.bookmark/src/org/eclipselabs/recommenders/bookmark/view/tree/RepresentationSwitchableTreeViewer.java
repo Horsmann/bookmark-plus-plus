@@ -43,7 +43,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -106,12 +108,15 @@ public class RepresentationSwitchableTreeViewer {
         Label label = new Label(combosite, SWT.NONE);
         label.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CATEGORY));
         label.setLayoutData(GridDataFactory.fillDefaults().grab(false, false).create());
-        combo = new ComboViewer(combosite, SWT.READ_ONLY);
+        combo = new ComboViewer(combosite, SWT.NONE);
         combo.getCombo().setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         combo.setContentProvider(new ComboContentProvider());
         Button saveButton = new Button(combosite, SWT.NONE);
         saveButton.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_SAVE));
+        saveButton.addListener(SWT.MouseDown, new ComboSaveButtonListener());
     }
+    
+    
 
     public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker) {
         createActions(part, commandInvoker);
@@ -544,5 +549,18 @@ public class RepresentationSwitchableTreeViewer {
 
         
     }
+    
+    private class ComboSaveButtonListener
+        implements Listener
+    {
+
+        @Override
+        public void handleEvent(Event event)
+        {
+           System.out.println("SaveButton Implementierung fehlt noch");
+        }
+
+    }
+
 
 }
