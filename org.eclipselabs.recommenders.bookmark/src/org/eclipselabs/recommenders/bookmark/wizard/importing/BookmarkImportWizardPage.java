@@ -11,6 +11,7 @@
 package org.eclipselabs.recommenders.bookmark.wizard.importing;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -398,7 +400,12 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
 
                 File file = new File(selectedFileTextField.getText());
                 if (isValid(file)) {
-                    BookmarkModel model = BookmarkIO.load(file);
+                    BookmarkModel model = null;
+                    try {
+                        model = BookmarkIO.load(file);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                     for (Category cat : model.getCategories()) {
                         clonedModel.add(cat);
                     }
@@ -513,7 +520,16 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
             if (file != null) {
                 textField.setText(file.getAbsolutePath());
                 bookmarkImportWizardPage.setImportFile(file);
-                BookmarkModel model = BookmarkIO.load(file);
+                BookmarkModel model;
+                try {
+                    model = BookmarkIO.load(file);
+                } catch (IOException e) {
+                    MessageBox messageBox = new MessageBox(importTreeViewer.getShell(), SWT.ICON_ERROR | SWT.OK);
+                    messageBox.setMessage("File content could not be read");
+                    messageBox.setText("Error opening file");
+                    messageBox.open();
+                    return;
+                }
 
                 importTreeViewer.setInput(model);
                 // localTreeViewer.setInput(clonedModel);
@@ -540,7 +556,11 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
             File file = new File(textField.getText());
 
             if (isValid(file)) {
-                setFileContentForViewer(file);
+                try {
+                    setFileContentForViewer(file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 selectedFile = file;
                 setPageComplete(true);
             } else {
@@ -551,7 +571,7 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
 
         }
 
-        private void setFileContentForViewer(File file) {
+        private void setFileContentForViewer(File file) throws IOException {
             if (isValid(file)) {
                 importTreeViewer.setInput(BookmarkIO.load(file));
                 localTreeViewer.setInput(clonedModel);

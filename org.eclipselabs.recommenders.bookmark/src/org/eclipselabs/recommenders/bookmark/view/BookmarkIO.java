@@ -23,12 +23,12 @@ import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 
 public class BookmarkIO {
 
-    public static BookmarkModel loadFromDefaultFile() {
+    public static BookmarkModel loadFromDefaultFile() throws IOException {
         File file = Activator.getDefaultLocationForStoringBookmark();
         return load(file);
     }
 
-    public static BookmarkModel load(File file) {
+    public static BookmarkModel load(File file) throws IOException {
         BookmarkModel model = null;
 
         try {
@@ -38,8 +38,6 @@ public class BookmarkIO {
             in.close();
         } catch (FileNotFoundException fileNotFound) {
             model = new BookmarkModel();
-        } catch (IOException ex) {
-            ex.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

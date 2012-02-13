@@ -10,6 +10,7 @@
  */
 package org.eclipselabs.recommenders.bookmark.view;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -84,7 +85,11 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         parent.setLayout(GridLayoutFactory.fillDefaults().create());
 
         createTreeViewer(parent);
-        loadModel();
+        try {
+            loadModel();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         addDragDropListeners(treeViewer);
         setUpActions();
@@ -234,7 +239,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     }
 
-    private void loadModel() {
+    private void loadModel() throws IOException {
         setModel(BookmarkIO.loadFromDefaultFile());
     }
 
