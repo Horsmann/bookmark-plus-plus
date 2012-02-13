@@ -326,7 +326,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void addMouseListenerToRemoveAllButton(Button removeAll) {
-        remove.addMouseListener(new MouseListener() {
+        removeAll.addMouseListener(new MouseListener() {
 
             BookmarkCommandInvoker invoker = new BookmarkCommandInvoker() {
 

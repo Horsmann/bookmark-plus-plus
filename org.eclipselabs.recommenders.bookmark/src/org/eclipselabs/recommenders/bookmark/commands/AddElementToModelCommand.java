@@ -87,7 +87,6 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     }
 
     private boolean hasSameParentAsTarget(IBookmarkModelComponent component) {
-
         return component.getParent() == dropTarget.get().getParent();
     }
 
