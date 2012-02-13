@@ -12,102 +12,45 @@ package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import java.util.List;
 
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.part.ViewPart;
-import org.eclipselabs.recommenders.bookmark.action.BookmarkDeletionAction;
-import org.eclipselabs.recommenders.bookmark.action.DeActivateCategoryModeAction;
-import org.eclipselabs.recommenders.bookmark.action.OpenBookmarkAction;
-import org.eclipselabs.recommenders.bookmark.action.OpenInFileSystemAction;
-import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
-import org.eclipselabs.recommenders.bookmark.action.SelfEnabling;
-import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
-import org.eclipselabs.recommenders.bookmark.commands.OpenBookmarkCommand;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
-import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
-import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
-import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
-import org.eclipselabs.recommenders.bookmark.visitor.GetValueVisitor;
-import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
-
-import com.google.common.collect.Lists;
 
 public class RepresentationSwitchableTreeViewer {
 
     private IRepresentationMode currentMode;
     private TreeViewer treeViewer;
     private BookmarkModel model;
-    private RenameCategoryAction renameCategory;
-    private OpenBookmarkAction openInEditor;
-    private OpenInFileSystemAction openInFileSystem;
-    private BookmarkDeletionAction deleteBookmarks;
-    private SelectionChangedListener setSelectionChangedListener;
     private KeyListener treeKeyListener;
-    private DeActivateCategoryModeAction switchCategory;
-    private HideableComboViewer hideableComboViewer;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model) {
         this.model = model;
 
-        parent.setLayout(GridLayoutFactory.fillDefaults().create());
-
         createTreeViewer(parent);
         currentMode = initialMode;
-
-        addHideableComboComposite(parent);
-    }
-
-    private void addHideableComboComposite(Composite parent) {
-          hideableComboViewer = new HideableComboViewer(parent, SWT.NONE);
-    }
-
-    public void enabledActionsForViewPart(ViewPart part, BookmarkCommandInvoker commandInvoker) {
-        createActions(part, commandInvoker);
-        addKeyListener(part, commandInvoker);
-        addDoubleclickListener(part, commandInvoker);
-        setUpContextMenu(part);
-        addTreeViewerSelectionChangedListener();
-    }
-
-    private void createActions(ViewPart part, BookmarkCommandInvoker commandInvoker) {
-        renameCategory = new RenameCategoryAction(this);
-        openInEditor = new OpenBookmarkAction(this, part, commandInvoker);
-        openInFileSystem = new OpenInFileSystemAction(this);
-        deleteBookmarks = new BookmarkDeletionAction(this, commandInvoker);
-        switchCategory = new DeActivateCategoryModeAction(hideableComboViewer, model, this);
     }
 
     private void createTreeViewer(Composite parent) {
@@ -118,75 +61,11 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.addTreeListener(new TreeViewListener());
     }
 
-    private void addDoubleclickListener(ViewPart part, BookmarkCommandInvoker commandInvoker) {
-        treeViewer.addDoubleClickListener(new DoubleclickListener(part, commandInvoker));
+    public void addDoubleclickListener(IDoubleClickListener doubleclick) {
+        treeViewer.addDoubleClickListener(doubleclick);
     }
 
-    private void addTreeViewerSelectionChangedListener() {
-        SelectionChangedListener selectionListener = new SelectionChangedListener();
-        selectionListener.register(renameCategory);
-        selectionListener.register(openInEditor);
-        selectionListener.register(openInFileSystem);
-        selectionListener.register(deleteBookmarks);
-        setSelectionChangedListener = selectionListener;
-        treeViewer.addSelectionChangedListener(selectionListener);
-    }
-
-    public void overrideSelectionChangedListener(ISelectionChangedListener selection) {
-        if (setSelectionChangedListener != null) {
-            treeViewer.removeSelectionChangedListener(setSelectionChangedListener);
-        }
-        treeViewer.addSelectionChangedListener(selection);
-    }
-
-    public void renameCategory() {
-
-        IBookmarkModelComponent component = (IBookmarkModelComponent) getSelections().getFirstElement();
-        if (!isRenameValid(component)) {
-            return;
-        }
-        String oldLabel = getOldCategoryLabel(component);
-
-        InputDialog dialog = makeDialog(oldLabel);
-        dialog.setBlockOnOpen(true);
-        if (dialog.open() == Window.OK) {
-            updateCategoryName(component, dialog);
-            treeViewer.refresh();
-        }
-    }
-
-    private void updateCategoryName(IBookmarkModelComponent component, InputDialog dialog) {
-        String value = dialog.getValue();
-        SetNewCategoryNameVisitor categoryVisitor = new SetNewCategoryNameVisitor(value);
-        component.accept(categoryVisitor);
-    }
-
-    private String getOldCategoryLabel(IBookmarkModelComponent component) {
-        GetValueVisitor valueVisitor = new GetValueVisitor();
-        component.accept(valueVisitor);
-        return (String) valueVisitor.getValue();
-    }
-
-    private boolean isRenameValid(IBookmarkModelComponent component) {
-        if (getSelections().size() != 1) {
-            return false;
-        }
-
-        IsCategoryVisitor isCategoryVisitor = new IsCategoryVisitor();
-        component.accept(isCategoryVisitor);
-        return isCategoryVisitor.isCategory();
-    }
-
-    private InputDialog makeDialog(String oldLabel) {
-        return new InputDialog(treeViewer.getTree().getShell(), "Rename Category", "Enter a new category name:",
-                oldLabel, new InputValidator());
-    }
-
-    private void addKeyListener(ViewPart part, BookmarkCommandInvoker commandInvoker) {
-        treeKeyListener = new TreeKeyListener(part, commandInvoker);
-        treeViewer.getTree().addKeyListener(treeKeyListener);
-    }
-
+    
     public void setRepresentation(final IRepresentationMode mode) {
         currentMode = mode;
         treeViewer.refresh();
@@ -255,6 +134,7 @@ public class RepresentationSwitchableTreeViewer {
         }
 
         @Override
+        // TODO: Input-> Category
         public Object[] getElements(final Object inputElement) {
             if (inputElement == null) {
                 return new Object[0];
@@ -314,174 +194,6 @@ public class RepresentationSwitchableTreeViewer {
         }
     }
 
-    private class TreeKeyListener implements KeyListener {
-
-        private final ViewPart part;
-        private final BookmarkCommandInvoker commandInvoker;
-
-        public TreeKeyListener(ViewPart part, BookmarkCommandInvoker commandInvoker) {
-            this.part = part;
-            this.commandInvoker = commandInvoker;
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (isDeletion(e)) {
-                processDeletion(e);
-            } else if (isRename(e)) {
-                processRename(e);
-            } else if (isEnter(e)) {
-                processEnter(e);
-            }
-
-            treeViewer.refresh();
-        }
-
-        private void processEnter(KeyEvent e) {
-            commandInvoker.invoke(new OpenBookmarkCommand(getSelections(), part.getSite().getWorkbenchWindow()
-                    .getActivePage(), commandInvoker));
-        }
-
-        private boolean isEnter(KeyEvent e) {
-            return e.keyCode == SWT.CR;
-        }
-
-        private void processRename(KeyEvent e) {
-            renameCategory();
-        }
-
-        private boolean isRename(KeyEvent e) {
-            return e.keyCode == SWT.F2;
-        }
-
-        private void processDeletion(KeyEvent e) {
-            TreeItem[] selections = getTreeSelections(e);
-            for (TreeItem item : selections) {
-                searchBookmarkDeleteSelection(item);
-            }
-        }
-
-        private TreeItem[] getTreeSelections(KeyEvent e) {
-            Tree tree = (Tree) e.getSource();
-            TreeItem[] selections = tree.getSelection();
-            return selections;
-        }
-
-        private void searchBookmarkDeleteSelection(TreeItem item) {
-            if (item.isDisposed()) {
-                // happens if a parent node of the current one was delete before
-                // than the current child is already
-                // disposed
-                return;
-            }
-            IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
-            commandInvoker.invoke(new BookmarkDeletionCommand(component));
-        }
-
-        private boolean isDeletion(KeyEvent e) {
-            int BACKSPACE = 8;
-            return (e.keyCode == SWT.DEL || e.keyCode == BACKSPACE);
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-
-        }
-
-    }
-
-    private void setUpContextMenu(ViewPart part) {
-
-        final MenuManager menuMgr = new MenuManager();
-        menuMgr.setRemoveAllWhenShown(true);
-
-        menuMgr.addMenuListener(new IMenuListener() {
-            public void menuAboutToShow(IMenuManager mgr) {
-                menuMgr.add(openInEditor);
-                menuMgr.add(renameCategory);
-                menuMgr.add(switchCategory);
-                menuMgr.add(openInFileSystem);
-                menuMgr.add(deleteBookmarks);
-            }
-        });
-
-        menuMgr.update(true);
-
-        Menu menu = menuMgr.createContextMenu(treeViewer.getTree());
-        treeViewer.getTree().setMenu(menu);
-
-        part.getSite().registerContextMenu(menuMgr, treeViewer);
-    }
-
-    private class SelectionChangedListener implements ISelectionChangedListener {
-
-        List<SelfEnabling> clients = Lists.newArrayList();
-
-        public void register(SelfEnabling selfEnabling) {
-            clients.add(selfEnabling);
-        }
-
-        @Override
-        public void selectionChanged(SelectionChangedEvent event) {
-            for (SelfEnabling client : clients) {
-                client.updateEnableStatus();
-            }
-        }
-
-    }
-
-    private class InputValidator implements IInputValidator {
-
-        @Override
-        public String isValid(String newText) {
-            if (newText.equals("")) {
-                return "Blank is an invalid category name";
-            }
-            return null;
-        }
-
-    }
-
-    private class SetNewCategoryNameVisitor implements IModelVisitor {
-
-        private final String categoryName;
-
-        public SetNewCategoryNameVisitor(String categoryName) {
-            this.categoryName = categoryName;
-        }
-
-        @Override
-        public void visit(FileBookmark fileBookmark) {
-        }
-
-        @Override
-        public void visit(Category category) {
-            category.setLabel(categoryName);
-        }
-
-        @Override
-        public void visit(JavaElementBookmark javaElementBookmark) {
-        }
-
-    }
-
-    private class DoubleclickListener implements IDoubleClickListener {
-
-        private final ViewPart part;
-        private final BookmarkCommandInvoker commandInvoker;
-
-        public DoubleclickListener(ViewPart part, BookmarkCommandInvoker commandInvoker) {
-            this.part = part;
-            this.commandInvoker = commandInvoker;
-        }
-
-        @Override
-        public void doubleClick(DoubleClickEvent event) {
-            commandInvoker.invoke(new OpenBookmarkCommand(getSelections(), part.getSite().getWorkbenchWindow()
-                    .getActivePage(), commandInvoker));
-        }
-
-    }
 
     public void setTreeLayoutData(GridData data) {
         treeViewer.getTree().setLayoutData(data);
@@ -495,8 +207,25 @@ public class RepresentationSwitchableTreeViewer {
 
     }
 
-    public HideableComboViewer getHideableComboViewer() {
-        return hideableComboViewer;
+    public void addSelectionChangedListener(ISelectionChangedListener selectionListener) {
+        treeViewer.addSelectionChangedListener(selectionListener);
+    }
+
+    public ISelectionProvider getSelectionProvider() {
+        return treeViewer;
+    }
+
+    public void setContextMenu(MenuManager menuMgr) {
+        Menu menu = menuMgr.createContextMenu(treeViewer.getTree());
+        treeViewer.getTree().setMenu(menu);
+    }
+
+    public void addKeyListener(KeyListener listener) {
+        treeViewer.getTree().addKeyListener(listener);
+    }
+
+    public Shell getShell() {
+        return treeViewer.getTree().getShell();
     }
 
 }

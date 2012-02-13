@@ -37,24 +37,25 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
+import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
-import org.eclipselabs.recommenders.bookmark.wizard.WizardTreeViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.wizard.importing.ImportDropListener;
 
-public class BookmarkExportWizardPage extends WizardPage {
+public class BookmarkExportWizardPage extends WizardPage implements BookmarkCommandInvoker{
 
     private Text selectedFileTextField;
     private Button button;
     private File selectedFile;
-    private WizardTreeViewer exportTreeViewer;
+    private RepresentationSwitchableTreeViewer exportTreeViewer;
     private FilePathModifyListener filePathListener;
 
-    private WizardTreeViewer localTreeViewer;
+    private RepresentationSwitchableTreeViewer localTreeViewer;
     private Composite container;
     private BookmarkModel localClonedModel;
     private BookmarkModel exportModel;
@@ -82,7 +83,7 @@ public class BookmarkExportWizardPage extends WizardPage {
     }
 
     private void makeRemoveButtonEnDisableOnSelections() {
-        exportTreeViewer.overrideSelectionChangedListener(new ISelectionChangedListener() {
+        exportTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
@@ -162,7 +163,7 @@ public class BookmarkExportWizardPage extends WizardPage {
 
     private void createLocalTreeViewer(Composite bookmarkSelComposite) {
         GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        localTreeViewer = new WizardTreeViewer(bookmarkSelComposite,
+        localTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
                 new HierarchicalRepresentationMode(), null);
         localTreeViewer.setTreeLayoutData(data);
 
@@ -205,7 +206,7 @@ public class BookmarkExportWizardPage extends WizardPage {
             }
 
             private void processRename(KeyEvent e) {
-                exportTreeViewer.renameCategory();
+                invoke(new RenameCategoryCommand(exportTreeViewer));
             }
 
             private TreeItem[] getTreeSelections(KeyEvent e) {
@@ -348,7 +349,7 @@ public class BookmarkExportWizardPage extends WizardPage {
 
     private void createProspectiveExportTreeViewer(Composite bookmarkSelComposite) {
         GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        exportTreeViewer = new WizardTreeViewer(bookmarkSelComposite,
+        exportTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
                 new HierarchicalRepresentationMode(), null);
         exportTreeViewer.setTreeLayoutData(data);
 
@@ -441,6 +442,11 @@ public class BookmarkExportWizardPage extends WizardPage {
             }
 
         }
+    }
+
+    @Override
+    public void invoke(IBookmarkModelCommand command) {
+        command.execute(exportModel);
     }
 
 }

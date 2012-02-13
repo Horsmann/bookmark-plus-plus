@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
+import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
@@ -44,17 +45,17 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkIO;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
-import org.eclipselabs.recommenders.bookmark.wizard.WizardTreeViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 
-public class BookmarkImportWizardPage extends WizardPage {
+public class BookmarkImportWizardPage extends WizardPage implements BookmarkCommandInvoker {
 
     private Text selectedFileTextField;
     private Button button;
     private File selectedFile;
-    private WizardTreeViewer importTreeViewer;
+    private RepresentationSwitchableTreeViewer importTreeViewer;
     private FilePathModifyListener filePathListener;
 
-    private WizardTreeViewer localTreeViewer;
+    private RepresentationSwitchableTreeViewer localTreeViewer;
     private Composite container;
     private BookmarkModel clonedModel;
     private Button remove;
@@ -80,7 +81,7 @@ public class BookmarkImportWizardPage extends WizardPage {
     }
 
     private void makeRemoveButtonEnDisableOnSelections() {
-        localTreeViewer.overrideSelectionChangedListener(new ISelectionChangedListener() {
+        localTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
@@ -154,10 +155,10 @@ public class BookmarkImportWizardPage extends WizardPage {
 
     private void createProspectiveLocalTreeViewer(Composite bookmarkSelComposite) {
         GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        localTreeViewer = new WizardTreeViewer(bookmarkSelComposite,
+        localTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
                 new HierarchicalRepresentationMode(), null);
         localTreeViewer.setTreeLayoutData(data);
-        
+
         addDragDropSupportToLocalTreeViewer();
         setLocalTreeViewerKeyListener();
     }
@@ -174,10 +175,10 @@ public class BookmarkImportWizardPage extends WizardPage {
         });
         localTreeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
-        
+
         final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
         localTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
-                dragListener);        
+                dragListener);
     }
 
     private void setLocalTreeViewerKeyListener() {
@@ -192,9 +193,9 @@ public class BookmarkImportWizardPage extends WizardPage {
             public void keyPressed(KeyEvent e) {
                 if (isDeletion(e)) {
                     processDeletion(e);
-                }else if (isRename(e)) {
+                } else if (isRename(e)) {
                     processRename(e);
-                } 
+                }
                 localTreeViewer.refresh();
             }
 
@@ -204,13 +205,13 @@ public class BookmarkImportWizardPage extends WizardPage {
                     searchBookmarkDeleteSelection(item);
                 }
             }
-            
+
             private boolean isRename(KeyEvent e) {
                 return e.keyCode == SWT.F2;
             }
-            
+
             private void processRename(KeyEvent e) {
-                localTreeViewer.renameCategory();
+                invoke(new RenameCategoryCommand(localTreeViewer));
             }
 
             private TreeItem[] getTreeSelections(KeyEvent e) {
@@ -235,7 +236,7 @@ public class BookmarkImportWizardPage extends WizardPage {
                 int BACKSPACE = 8;
                 return (e.keyCode == SWT.DEL || e.keyCode == BACKSPACE);
             }
-        });        
+        });
     }
 
     private void createPanelWithAddRemoveButtons(Composite bookmarkSelComposite) {
@@ -360,8 +361,7 @@ public class BookmarkImportWizardPage extends WizardPage {
 
     private void createLoadedFileTreeViewer(Composite bookmarkSelComposite) {
         GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-        importTreeViewer = new WizardTreeViewer(bookmarkSelComposite,
-                new HierarchicalRepresentationMode(), null);
+        importTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite, new HierarchicalRepresentationMode(), null);
         importTreeViewer.setTreeLayoutData(data);
         final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
         importTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
@@ -461,6 +461,11 @@ public class BookmarkImportWizardPage extends WizardPage {
             }
         }
 
+    }
+
+    @Override
+    public void invoke(IBookmarkModelCommand command) {
+        command.execute(clonedModel);
     }
 
 }

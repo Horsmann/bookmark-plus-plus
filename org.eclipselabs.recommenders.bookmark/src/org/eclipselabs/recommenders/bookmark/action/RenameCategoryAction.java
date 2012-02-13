@@ -3,19 +3,23 @@ package org.eclipselabs.recommenders.bookmark.action;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 
 public class RenameCategoryAction extends Action implements SelfEnabling {
 
     private final RepresentationSwitchableTreeViewer treeViewer;
+    private final BookmarkCommandInvoker invoker;
 
-    public RenameCategoryAction(RepresentationSwitchableTreeViewer treeViewer) {
+    public RenameCategoryAction(RepresentationSwitchableTreeViewer treeViewer, BookmarkCommandInvoker invoker) {
         this.treeViewer = treeViewer;
+        this.invoker = invoker;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(Activator.ICON_RENAME_CATEGORY));
         this.setToolTipText("Rename Category");
         this.setText("Rename Category");
@@ -24,7 +28,7 @@ public class RenameCategoryAction extends Action implements SelfEnabling {
 
     @Override
     public void run() {
-        treeViewer.renameCategory();
+        invoker.invoke(new RenameCategoryCommand(treeViewer));
     }
 
     @Override
