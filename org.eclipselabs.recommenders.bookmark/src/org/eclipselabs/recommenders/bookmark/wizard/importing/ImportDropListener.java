@@ -4,10 +4,10 @@ import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipselabs.recommenders.bookmark.commands.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
+import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 
 import com.google.common.base.Optional;
 

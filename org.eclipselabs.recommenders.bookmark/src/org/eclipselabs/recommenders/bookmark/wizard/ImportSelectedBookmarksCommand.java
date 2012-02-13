@@ -1,8 +1,10 @@
-package org.eclipselabs.recommenders.bookmark.commands;
+package org.eclipselabs.recommenders.bookmark.wizard;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipselabs.recommenders.bookmark.commands.ChangeElementInModelCommand;
+import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
