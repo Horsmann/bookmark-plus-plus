@@ -12,6 +12,7 @@ package org.eclipselabs.recommenders.bookmark.wizard.exporting;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -35,6 +36,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.commands.AddElementToModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
@@ -46,7 +48,11 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.visitor.HierarchyValueVisitor;
 import org.eclipselabs.recommenders.bookmark.wizard.importing.ImportDropListener;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
 public class BookmarkExportWizardPage extends WizardPage implements BookmarkCommandInvoker{
 
@@ -62,12 +68,15 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     private BookmarkModel exportModel;
     private Button remove;
     private Button removeAll;
+    private Button add;
+    private BookmarkCommandInvoker invoker;
 
     protected BookmarkExportWizardPage(String pageName) {
         super(pageName, pageName, null);
         setDescription("Export bookmarks to an external file");
         localClonedModel = Activator.getClonedModel();
         exportModel = new BookmarkModel();
+        invoker = this;
     }
 
     @Override
@@ -76,12 +85,27 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         addRowWithTextFieldForLoadedFileAndBrowseButton(container);
         addTreeViewerWithAddRemoveButton(container);
 
+        makeAddButtonEnDisableOnSelections();
         makeRemoveButtonEnDisableOnSelections();
 
         localTreeViewer.setInput(localClonedModel);
         exportTreeViewer.setInput(exportModel);
         setControl(parent);
         setPageComplete(false);
+    }
+
+    private void makeAddButtonEnDisableOnSelections() {
+        localTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                if (localTreeViewer.getSelections().size() == 0) {
+                    add.setEnabled(false);
+                } else {
+                    add.setEnabled(true);
+                }
+            }
+        });        
     }
 
     private void makeRemoveButtonEnDisableOnSelections() {
@@ -219,13 +243,6 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
 
             private void searchBookmarkDeleteSelection(TreeItem item) {
                 IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
-                BookmarkCommandInvoker invoker = new BookmarkCommandInvoker() {
-
-                    @Override
-                    public void invoke(IBookmarkModelCommand command) {
-                        command.execute(exportModel);
-                    }
-                };
                 invoker.invoke(new BookmarkDeletionCommand(component));
             }
 
@@ -243,12 +260,63 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         buttonPanel.setLayoutData(data);
 
         addDragExplainingLabel(buttonPanel);
+        addAddButton(buttonPanel);
         addAddAllButton(buttonPanel);
         addRemoveButton(buttonPanel);
         addRemoveAllButton(buttonPanel);
 
     }
     
+    private void addAddButton(Composite buttonPanel) {
+        add = new Button(buttonPanel, SWT.CENTER);
+        add.setText("Add");
+        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        add.setLayoutData(data);
+        add.setEnabled(false);      
+        addMouseListenerToAddButton(add);
+    }
+
+    private void addMouseListenerToAddButton(Button add) {
+        add.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseUp(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseDown(MouseEvent e) {
+                Object [] selected = getSelections();
+                
+                Optional<String> name = Optional.absent();
+                if (exportTreeViewer.getSelections().size() == 0){
+                    Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
+                    invoker.invoke(new AddElementToModelCommand(selected, invoker, false, dropTarget, name));
+                }
+                else {
+                    Optional<IBookmarkModelComponent> dropTarget = Optional.of((IBookmarkModelComponent)exportTreeViewer.getSelections().getFirstElement());
+                    invoker.invoke(new AddElementToModelCommand(selected, invoker, false, dropTarget, name));
+                }
+            }
+
+            private Object[] getSelections() {
+                IStructuredSelection selections = localTreeViewer.getSelections();
+                List<Object> values = Lists.newArrayList();
+                @SuppressWarnings("rawtypes")
+                Iterator iterator = selections.iterator();
+                while(iterator.hasNext()){
+                    HierarchyValueVisitor visitor = new HierarchyValueVisitor();
+                    ((IBookmarkModelComponent) iterator.next()).accept(visitor);
+                    values.addAll(visitor.getValues());
+                }
+                return values.toArray();
+            }
+
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+            }
+        });            
+    }
+
     private void addRemoveAllButton(Composite buttonPanel) {
         removeAll = new Button(buttonPanel, SWT.CENTER);
         removeAll.setText("Remove All");
@@ -480,6 +548,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     @Override
     public void invoke(IBookmarkModelCommand command) {
         command.execute(exportModel);
+        exportTreeViewer.refresh();
     }
 
 }
