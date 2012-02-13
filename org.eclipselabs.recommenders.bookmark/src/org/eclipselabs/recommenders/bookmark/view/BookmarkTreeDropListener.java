@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.commands.AddElementToModelCommand;
-import org.eclipselabs.recommenders.bookmark.commands.ChangeElementInModleCommand;
+import org.eclipselabs.recommenders.bookmark.commands.ChangeElementInModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RelocateNodesCommand;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
@@ -211,7 +211,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
         if (!causeRecursion(components, dropTarget)) {
             Optional<String> categoryName = Optional.absent();
-            commandInvoker.invoke(new ChangeElementInModleCommand(components, isCopyOperation, commandInvoker,
+            commandInvoker.invoke(new ChangeElementInModelCommand(components, isCopyOperation, commandInvoker,
                     insertDropBeforeTarget, dropTarget, categoryName));
         }
     }

@@ -42,6 +42,7 @@ import org.eclipselabs.recommenders.bookmark.commands.AddElementToModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
+import org.eclipselabs.recommenders.bookmark.commands.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
@@ -299,30 +300,31 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
 
             @Override
             public void mouseDown(MouseEvent e) {
-                Object[] selected = getSelections();
+                IBookmarkModelComponent[] components = getSelectedBookmarkComponents();
 
-                Optional<String> name = Optional.absent();
                 if (localTreeViewer.getSelections().size() == 0) {
                     Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
-                    invoker.invoke(new AddElementToModelCommand(selected, invoker, false, dropTarget, name));
+                    invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
+                    // invoker.invoke(new AddElementToModelCommand(selected,
+                    // invoker, false, dropTarget, name));
                 } else {
                     Optional<IBookmarkModelComponent> dropTarget = Optional
                             .of((IBookmarkModelComponent) localTreeViewer.getSelections().getFirstElement());
-                    invoker.invoke(new AddElementToModelCommand(selected, invoker, false, dropTarget, name));
+                    invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
+                    // invoker.invoke(new AddElementToModelCommand(components,
+                    // invoker, false, dropTarget, name));
                 }
             }
 
-            private Object[] getSelections() {
+            private IBookmarkModelComponent[] getSelectedBookmarkComponents() {
                 IStructuredSelection selections = importTreeViewer.getSelections();
-                List<Object> values = Lists.newArrayList();
+                List<IBookmarkModelComponent> components = Lists.newArrayList();
                 @SuppressWarnings("rawtypes")
                 Iterator iterator = selections.iterator();
                 while (iterator.hasNext()) {
-                    HierarchyValueVisitor visitor = new HierarchyValueVisitor();
-                    ((IBookmarkModelComponent) iterator.next()).accept(visitor);
-                    values.addAll(visitor.getValues());
+                    components.add((IBookmarkModelComponent) iterator.next());
                 }
-                return values.toArray();
+                return components.toArray(new IBookmarkModelComponent[0]);
             }
 
             @Override

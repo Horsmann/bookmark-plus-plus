@@ -9,7 +9,7 @@ import org.eclipselabs.recommenders.bookmark.visitor.RemoveBookmarkModelComponen
 
 import com.google.common.base.Optional;
 
-public class ChangeElementInModleCommand implements IBookmarkModelCommand {
+public class ChangeElementInModelCommand implements IBookmarkModelCommand {
 
     private final Optional<IBookmarkModelComponent> dropTarget;
     private final IBookmarkModelComponent[] bookmarks;
@@ -18,8 +18,9 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
     private final boolean isDropBeforeTarget;
     private final Optional<String> newCategoryName;
 
-    public ChangeElementInModleCommand(final IBookmarkModelComponent[] components,
-            final boolean keepSource, BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget, final Optional<IBookmarkModelComponent> dropTarget, final Optional<String> newCategoryName) {
+    public ChangeElementInModelCommand(final IBookmarkModelComponent[] components, final boolean keepSource,
+            BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget,
+            final Optional<IBookmarkModelComponent> dropTarget, final Optional<String> newCategoryName) {
         this.dropTarget = dropTarget;
         this.bookmarks = components;
         this.keepSource = keepSource;
@@ -44,7 +45,8 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
         }
 
         if (!visitor.getValues().isEmpty()) {
-            commandInvoker.invoke(new AddElementToModelCommand(visitor.getValues().toArray(), commandInvoker, isDropBeforeTarget,dropTarget,newCategoryName));
+            commandInvoker.invoke(new AddElementToModelCommand(visitor.getValues().toArray(), commandInvoker,
+                    isDropBeforeTarget, dropTarget, newCategoryName));
         }
 
         if (!keepSource) {
@@ -77,7 +79,5 @@ public class ChangeElementInModleCommand implements IBookmarkModelCommand {
             }
         }
     }
-
-    
 
 }

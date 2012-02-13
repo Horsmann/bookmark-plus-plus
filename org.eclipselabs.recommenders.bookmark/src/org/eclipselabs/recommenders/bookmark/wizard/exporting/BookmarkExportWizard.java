@@ -15,7 +15,6 @@ public class BookmarkExportWizard extends Wizard implements IExportWizard {
 
     public BookmarkExportWizard() {
         super();
-
     }
 
     @Override
