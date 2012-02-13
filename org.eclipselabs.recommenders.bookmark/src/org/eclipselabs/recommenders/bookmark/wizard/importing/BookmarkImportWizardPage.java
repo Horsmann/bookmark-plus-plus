@@ -305,14 +305,10 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
                 if (localTreeViewer.getSelections().size() == 0) {
                     Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
                     invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
-                    // invoker.invoke(new AddElementToModelCommand(selected,
-                    // invoker, false, dropTarget, name));
                 } else {
                     Optional<IBookmarkModelComponent> dropTarget = Optional
                             .of((IBookmarkModelComponent) localTreeViewer.getSelections().getFirstElement());
                     invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
-                    // invoker.invoke(new AddElementToModelCommand(components,
-                    // invoker, false, dropTarget, name));
                 }
             }
 
