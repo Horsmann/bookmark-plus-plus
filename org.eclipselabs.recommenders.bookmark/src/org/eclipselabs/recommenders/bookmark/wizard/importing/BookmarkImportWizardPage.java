@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.commands.AddElementToModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
@@ -51,7 +50,6 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkIO;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
-import org.eclipselabs.recommenders.bookmark.visitor.HierarchyValueVisitor;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 
 import com.google.common.base.Optional;

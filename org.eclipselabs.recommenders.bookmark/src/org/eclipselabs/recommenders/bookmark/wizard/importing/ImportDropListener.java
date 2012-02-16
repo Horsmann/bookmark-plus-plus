@@ -36,62 +36,8 @@ public class ImportDropListener extends BookmarkTreeDropListener {
 
         if (!causeRecursion(components, dropTarget)) {
 
-//            LinkedList<List<IBookmarkModelComponent>> splitByCategory = splitByCategory(components);
-//
-//            Optional<String> categoryName = Optional.absent();
-//
-//            for (List<IBookmarkModelComponent> list : splitByCategory) {
-//                if (!list.isEmpty()) {
-//                    IBookmarkModelComponent category = getCategory(list.get(0));
-//                    IsCategoryVisitor visitor = new IsCategoryVisitor();
-//                    category.accept(visitor);
-//                    if (visitor.isCategory()) {
-//                        categoryName = Optional.of(((Category) category).getLabel());
-//                    }
-//                }
-
                 commandInvoker.invoke(new ImportSelectedBookmarksCommand(components, commandInvoker,
                         isCopyOperation, insertDropBeforeTarget, dropTarget));
-//                categoryName = Optional.absent();
-//            }
-
         }
     }
-
-//    private LinkedList<List<IBookmarkModelComponent>> splitByCategory(IBookmarkModelComponent[] components) {
-//
-//        LinkedList<IBookmarkModelComponent> pool = new LinkedList<IBookmarkModelComponent>();
-//        for (IBookmarkModelComponent component : components) {
-//            pool.add(component);
-//        }
-//
-//        LinkedList<List<IBookmarkModelComponent>> split = new LinkedList<List<IBookmarkModelComponent>>();
-//        while (!pool.isEmpty()) {
-//            IBookmarkModelComponent poll = pool.poll();
-//            IBookmarkModelComponent cat = getCategory(poll);
-//            List<IBookmarkModelComponent> catSet = Lists.newArrayList();
-//            catSet.add(poll);
-//            List<IBookmarkModelComponent> belongToOtherCat = Lists.newArrayList();
-//            while (!pool.isEmpty()) {
-//                IBookmarkModelComponent remain = pool.poll();
-//                if (cat == getCategory(remain)) {
-//                    catSet.add(remain);
-//                } else {
-//                    belongToOtherCat.add(remain);
-//                }
-//            }
-//            split.add(catSet);
-//            pool.addAll(belongToOtherCat);
-//        }
-//
-//        return split;
-//    }
-//
-//    private IBookmarkModelComponent getCategory(IBookmarkModelComponent poll) {
-//        while (poll.hasParent()) {
-//            poll = poll.getParent();
-//        }
-//
-//        return poll;
-//    }
 }

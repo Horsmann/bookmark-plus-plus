@@ -41,7 +41,6 @@ import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
-import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
@@ -241,8 +240,10 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
             }
 
             private void searchBookmarkDeleteSelection(TreeItem item) {
-                IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
-                invoker.invoke(new BookmarkDeletionCommand(component));
+                if (!item.isDisposed()) {
+                    IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
+                    invoker.invoke(new BookmarkDeletionCommand(component));
+                }
             }
 
             private boolean isDeletion(KeyEvent e) {
@@ -324,15 +325,6 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     private void addMouseListenerToRemoveAllButton(Button removeAll) {
         removeAll.addMouseListener(new MouseListener() {
 
-            BookmarkCommandInvoker invoker = new BookmarkCommandInvoker() {
-
-                @Override
-                public void invoke(IBookmarkModelCommand command) {
-                    command.execute(exportModel);
-                    exportTreeViewer.refresh();
-                }
-            };
-
             @Override
             public void mouseUp(MouseEvent e) {
             }
@@ -358,11 +350,11 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void addAddAllButton(Composite buttonPanel) {
-        Button add = new Button(buttonPanel, SWT.CENTER);
-        add.setText("Add All");
+        Button addAll = new Button(buttonPanel, SWT.CENTER);
+        addAll.setText("Add All");
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-        add.setLayoutData(data);
-        addMouseListenerToAddAllButton(add);
+        addAll.setLayoutData(data);
+        addMouseListenerToAddAllButton(addAll);
     }
 
     private void addDragExplainingLabel(Composite buttonPanel) {
@@ -378,8 +370,8 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
 
     }
 
-    private void addMouseListenerToAddAllButton(Button add) {
-        add.addMouseListener(new MouseListener() {
+    private void addMouseListenerToAddAllButton(Button addAll) {
+        addAll.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseUp(MouseEvent e) {
@@ -388,10 +380,27 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
             @Override
             public void mouseDown(MouseEvent e) {
 
-                for (Category cat : localClonedModel.getCategories()) {
-                    exportModel.add(cat);
-                }
+                Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
+                IBookmarkModelComponent[] components = localClonedModel.getCategories().toArray(
+                        new IBookmarkModelComponent[0]);
+
+                invoker.invoke(new ImportSelectedBookmarksCommand(components, getInvoker(), true, false, dropTarget));
                 exportTreeViewer.refresh();
+            }
+
+            // the default invoker refreshes the view after each command is
+            // executed. The invoker is also provided as parameter for cascading
+            // command invocations what causes gui flickering on "add all" which
+            // is prevented
+            // with this one
+            private BookmarkCommandInvoker getInvoker() {
+                return new BookmarkCommandInvoker() {
+
+                    @Override
+                    public void invoke(IBookmarkModelCommand command) {
+                        command.execute(exportModel);
+                    }
+                };
             }
 
             @Override
@@ -419,14 +428,6 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
 
     private void addMouseListenerToRemoveButton(Button remove) {
         remove.addMouseListener(new MouseListener() {
-
-            BookmarkCommandInvoker invoker = new BookmarkCommandInvoker() {
-
-                @Override
-                public void invoke(IBookmarkModelCommand command) {
-                    command.execute(exportModel);
-                }
-            };
 
             @Override
             public void mouseUp(MouseEvent e) {
@@ -463,14 +464,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
         exportTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
                 dragListener);
-        final ImportDropListener dropListener = new ImportDropListener(new BookmarkCommandInvoker() {
-
-            @Override
-            public void invoke(IBookmarkModelCommand command) {
-                command.execute(exportModel);
-                exportTreeViewer.refresh();
-            }
-        });
+        final ImportDropListener dropListener = new ImportDropListener(invoker);
         exportTreeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
     }
