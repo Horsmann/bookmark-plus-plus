@@ -23,17 +23,18 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 
+import com.google.common.base.Optional;
+
 public class HideableComboViewer extends Composite {
 
     private ComboViewer combo;
     private Button saveButton;
     private final Composite parent;
-    private final BookmarkModel model;
+    private Optional<Category> selected = Optional.absent();
 
-    public HideableComboViewer(Composite parent, int style, BookmarkModel model) {
+    public HideableComboViewer(Composite parent, int style) {
         super(parent, style);
         this.parent = parent;
-        this.model = model;
         setLayout();
         addCategoryIcon();
         addComboViewer();
@@ -84,7 +85,8 @@ public class HideableComboViewer extends Composite {
         parent.layout(true, true);
     }
 
-    public void show() {
+    public void show(Optional<Category> category) {
+        this.selected = category;
         setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         setVisible(true);
         parent.layout(true, true);
@@ -128,14 +130,11 @@ public class HideableComboViewer extends Composite {
         @Override
         public void modifyText(ModifyEvent e) {
             Combo combo = (Combo) e.getSource();
-            int index = combo.getSelectionIndex();
-            if (index < 0) {
+            String text = combo.getText();
+            if (!selected.isPresent()) {
                 return;
             }
-            String text = combo.getText();
-            String label = model.getCategories().get(index).getLabel();
-
-            System.out.println("Modify-Listener noch nicht implementiert");
+            String label = selected.get().getLabel();
 
             if (areDifferent(text, label) && textIsNotBlank(text)) {
                 button.setEnabled(true);

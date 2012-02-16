@@ -11,6 +11,8 @@ import org.eclipselabs.recommenders.bookmark.view.tree.HideableComboViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
 
+import com.google.common.base.Optional;
+
 public class DeActivateCategoryModeAction extends Action implements SelfEnabling {
 
     private final BookmarkModel model;
@@ -35,8 +37,11 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
             setSelection();
         } else {
             rebuildComboMenu();
-            setActiveCategoryAccordingToTreeSelection();
-            hideableComboViewer.show();
+            Optional<Category> category = getActivatedCategory();
+            if (category.isPresent()){
+                setCategory(category.get());
+            }
+            hideableComboViewer.show(category);
         }
     }
 
@@ -49,23 +54,17 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
         treeViewer.selectComponent(selection);
     }
 
-    private void setActiveCategoryAccordingToTreeSelection() {
-        IBookmarkModelComponent component = getActivatedCategory();
+    private void setCategory(Category category) {
 
-        IsCategoryVisitor visitor = new IsCategoryVisitor();
-        component.accept(visitor);
-        if (visitor.isCategory()) {
-            int i = 0;
-            for (; i < model.getCategories().size(); i++) {
-                if (model.getCategories().get(i) == component) {
-                    hideableComboViewer.selectIndex(i);
-                }
+        for (int i=0; i < model.getCategories().size(); i++) {
+            if (model.getCategories().get(i) == category) {
+                hideableComboViewer.selectIndex(i);
             }
-            treeViewer.setInput((Category) component);
         }
+        treeViewer.setInput(category);
     }
 
-    private IBookmarkModelComponent getActivatedCategory() {
+    private Optional<Category> getActivatedCategory() {
         IStructuredSelection selections = treeViewer.getSelections();
         IBookmarkModelComponent component = null;
         if (selections.isEmpty()) {
@@ -76,7 +75,14 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
         while (component.hasParent()) {
             component = component.getParent();
         }
-        return component;
+
+        IsCategoryVisitor visitor = new IsCategoryVisitor();
+        component.accept(visitor);
+        if (visitor.isCategory()) {
+            return Optional.of((Category) component);
+        } else {
+            return Optional.absent();
+        }
     }
 
     private void rebuildComboMenu() {
