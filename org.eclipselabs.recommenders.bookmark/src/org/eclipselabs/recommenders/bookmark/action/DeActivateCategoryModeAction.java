@@ -38,7 +38,7 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
         } else {
             rebuildComboMenu();
             Optional<Category> category = getActivatedCategory();
-            if (category.isPresent()){
+            if (category.isPresent()) {
                 setCategory(category.get());
             }
             hideableComboViewer.show(category);
@@ -47,7 +47,7 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
 
     private void setSelection() {
         int index = hideableComboViewer.getIndex();
-        if (index <= 0) {
+        if (index < 0) {
             return;
         }
         StructuredSelection selection = new StructuredSelection(model.getCategories().get(index));
@@ -56,7 +56,7 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
 
     private void setCategory(Category category) {
 
-        for (int i=0; i < model.getCategories().size(); i++) {
+        for (int i = 0; i < model.getCategories().size(); i++) {
             if (model.getCategories().get(i) == category) {
                 hideableComboViewer.selectIndex(i);
             }
