@@ -88,7 +88,6 @@ public class BookmarkTreeDropListener implements DropTargetListener {
                         insertDropBeforeTarget);
             }
         }
-
     }
 
     protected boolean isCopyOperation(DropTargetEvent event) {
@@ -199,7 +198,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         processDroppedElementOriginatedFromOutsideTheView(dropTarget, elements, insertDropBeforeTarget);
     }
 
-    private void processDroppedElementOriginatedFromOutsideTheView(final Optional<IBookmarkModelComponent> dropTarget,
+    protected void processDroppedElementOriginatedFromOutsideTheView(final Optional<IBookmarkModelComponent> dropTarget,
             final Object[] elements, boolean isDropBeforeTarget) {
         Optional<String> categoryName = Optional.absent();
         commandInvoker.invoke(new AddElementToModelCommand(elements, commandInvoker, isDropBeforeTarget, dropTarget,

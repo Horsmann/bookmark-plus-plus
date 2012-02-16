@@ -20,8 +20,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 
 import com.google.common.base.Optional;
 
@@ -47,6 +49,16 @@ public class HideableComboViewer extends Composite {
         addSaveButton();
         addComboViewerListener();
         hide();
+    }
+
+    private BookmarkCommandInvoker getCommandInvoker() {
+        return new BookmarkCommandInvoker() {
+
+            @Override
+            public void invoke(IBookmarkModelCommand command) {
+                command.execute(model);
+            }
+        };
     }
 
     private void setLayout() {
@@ -86,12 +98,14 @@ public class HideableComboViewer extends Composite {
     }
 
     public void hide() {
+        treeViewer.setInput(model);
         setVisible(false);
         setLayoutData(new GridData(0, 0));
         parent.layout(true, true);
     }
 
     public void show(Category category) {
+        // setCategoryDropListener(category);
         setNewSelections(model.getCategories());
         setCategoryAsInput(category);
         this.selected = Optional.of(category);
@@ -99,6 +113,12 @@ public class HideableComboViewer extends Composite {
         setVisible(true);
         parent.layout(true, true);
     }
+
+//    private void setCategoryDropListener(Category category) {
+//        dropListener.setTargetCategory(category);
+//        treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
+//                dropListener);
+//    }
 
     private class ComboContentProvider implements IStructuredContentProvider {
 

@@ -11,8 +11,6 @@ import org.eclipselabs.recommenders.bookmark.view.tree.HideableComboViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
 
-import com.google.common.base.Optional;
-
 public class DeActivateCategoryModeAction extends Action implements SelfEnabling {
 
     private final BookmarkModel model;
@@ -33,7 +31,6 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
     public void run() {
         if (hideableComboViewer.isVisible()) {
             hideableComboViewer.hide();
-            treeViewer.setInput(model);
             setSelection();
         } else {
             Category category = getActivatedCategory();
@@ -48,16 +45,6 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
         }
         StructuredSelection selection = new StructuredSelection(model.getCategories().get(index));
         treeViewer.selectComponent(selection);
-    }
-
-    private void setCategory(Category category) {
-
-        for (int i = 0; i < model.getCategories().size(); i++) {
-            if (model.getCategories().get(i) == category) {
-                hideableComboViewer.selectIndex(i);
-            }
-        }
-        treeViewer.setInput(category);
     }
 
     private Category getActivatedCategory() {

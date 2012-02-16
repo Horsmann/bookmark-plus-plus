@@ -90,9 +90,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        createHideableComboViewer(parent, treeViewer, model);
-
         addDragDropListeners(treeViewer);
+        createHideableComboViewer(parent, treeViewer, model);
         setUpActions();
         setUpToolbar();
         setUpPluginPreferences();
@@ -133,7 +132,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         treeViewer.addSelectionChangedListener(selectionListener);
     }
 
-    private void createHideableComboViewer(Composite parent, RepresentationSwitchableTreeViewer treeViewer, BookmarkModel model) {
+    private void createHideableComboViewer(Composite parent, RepresentationSwitchableTreeViewer treeViewer,
+            BookmarkModel model) {
         hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer);
     }
 
@@ -233,7 +233,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         treeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
                 dragListener);
 
-        final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(this);
+        BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(this);
         treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
 
@@ -312,53 +312,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     }
 
-    // public void renameCategory() {
-    //
-    // IBookmarkModelComponent component = (IBookmarkModelComponent)
-    // treeViewer.getSelections().getFirstElement();
-    // if (!isRenameValid(component)) {
-    // return;
-    // }
-    // String oldLabel = getOldCategoryLabel(component);
-    //
-    // InputDialog dialog = makeDialog(oldLabel);
-    // dialog.setBlockOnOpen(true);
-    // if (dialog.open() == Window.OK) {
-    // updateCategoryName(component, dialog);
-    // treeViewer.refresh();
-    // }
-    // }
-
-    // private void updateCategoryName(IBookmarkModelComponent component,
-    // InputDialog dialog) {
-    // String value = dialog.getValue();
-    // SetNewCategoryNameVisitor categoryVisitor = new
-    // SetNewCategoryNameVisitor(value);
-    // component.accept(categoryVisitor);
-    // }
-    //
-    // private String getOldCategoryLabel(IBookmarkModelComponent component) {
-    // GetValueVisitor valueVisitor = new GetValueVisitor();
-    // component.accept(valueVisitor);
-    // return (String) valueVisitor.getValue();
-    // }
-    //
-    // private InputDialog makeDialog(String oldLabel) {
-    // return new InputDialog(treeViewer.getShell(), "Rename Category",
-    // "Enter a new category name:", oldLabel,
-    // new InputValidator());
-    // }
-    //
-    // private boolean isRenameValid(IBookmarkModelComponent component) {
-    // if (treeViewer.getSelections().size() != 1) {
-    // return false;
-    // }
-    //
-    // IsCategoryVisitor isCategoryVisitor = new IsCategoryVisitor();
-    // component.accept(isCategoryVisitor);
-    // return isCategoryVisitor.isCategory();
-    // }
-
     private class TreeKeyListener implements KeyListener {
 
         private final ViewPart part;
@@ -434,41 +387,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         }
 
     }
-
-    // private class InputValidator implements IInputValidator {
-    //
-    // @Override
-    // public String isValid(String newText) {
-    // if (newText.equals("")) {
-    // return "Blank is an invalid category name";
-    // }
-    // return null;
-    // }
-    //
-    // }
-
-    // private class SetNewCategoryNameVisitor implements IModelVisitor {
-    //
-    // private final String categoryName;
-    //
-    // public SetNewCategoryNameVisitor(String categoryName) {
-    // this.categoryName = categoryName;
-    // }
-    //
-    // @Override
-    // public void visit(FileBookmark fileBookmark) {
-    // }
-    //
-    // @Override
-    // public void visit(Category category) {
-    // category.setLabel(categoryName);
-    // }
-    //
-    // @Override
-    // public void visit(JavaElementBookmark javaElementBookmark) {
-    // }
-    //
-    // }
 
     public IStructuredSelection getSelections() {
         return treeViewer.getSelections();
