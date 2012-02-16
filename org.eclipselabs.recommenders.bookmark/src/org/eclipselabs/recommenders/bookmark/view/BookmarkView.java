@@ -198,7 +198,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private void setUpActions() {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
         closeAllEditors = new CloseAllEditorWindowsAction(this);
-        addNewCategory = new AddCategoryAction(this);
+        addNewCategory = new AddCategoryAction(this, hideableComboViewer);
         categoryMode = new DeActivateCategoryModeAction(hideableComboViewer, model, treeViewer);
     }
 

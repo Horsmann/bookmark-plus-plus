@@ -36,11 +36,7 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
             treeViewer.setInput(model);
             setSelection();
         } else {
-            rebuildComboMenu();
-            Optional<Category> category = getActivatedCategory();
-            if (category.isPresent()) {
-                setCategory(category.get());
-            }
+            Category category = getActivatedCategory();
             hideableComboViewer.show(category);
         }
     }
@@ -64,7 +60,7 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
         treeViewer.setInput(category);
     }
 
-    private Optional<Category> getActivatedCategory() {
+    private Category getActivatedCategory() {
         IStructuredSelection selections = treeViewer.getSelections();
         IBookmarkModelComponent component = null;
         if (selections.isEmpty()) {
@@ -79,14 +75,9 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
         IsCategoryVisitor visitor = new IsCategoryVisitor();
         component.accept(visitor);
         if (visitor.isCategory()) {
-            return Optional.of((Category) component);
-        } else {
-            return Optional.absent();
+            return (Category) component;
         }
-    }
-
-    private void rebuildComboMenu() {
-        hideableComboViewer.setNewSelections(model.getCategories());
+        return null;
     }
 
     @Override

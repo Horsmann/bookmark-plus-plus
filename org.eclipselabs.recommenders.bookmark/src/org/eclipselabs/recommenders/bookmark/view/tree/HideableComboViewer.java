@@ -54,14 +54,14 @@ public class HideableComboViewer extends Composite {
     }
 
     private void addComboViewerListener() {
-        combo.getCombo().addModifyListener(new ComboModifyListener(saveButton));
+        combo.getCombo().addModifyListener(new ComboModifyListener());
         combo.getCombo().addSelectionListener(new ComboSelectionListener());
     }
 
     private void addSaveButton() {
         saveButton = new Button(this, SWT.NONE);
         saveButton.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_SAVE));
-        saveButton.addListener(SWT.MouseDown, new ComboSaveButtonListener(saveButton));
+        saveButton.addListener(SWT.MouseDown, new ComboSaveButtonListener());
         GridData gridData = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
         saveButton.setLayoutData(gridData);
         saveButton.setEnabled(false);
@@ -91,8 +91,10 @@ public class HideableComboViewer extends Composite {
         parent.layout(true, true);
     }
 
-    public void show(Optional<Category> category) {
-        this.selected = category;
+    public void show(Category category) {
+        setNewSelections(model.getCategories());
+        setCategoryAsInput(category);
+        this.selected = Optional.of(category);
         setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
         setVisible(true);
         parent.layout(true, true);
@@ -110,19 +112,12 @@ public class HideableComboViewer extends Composite {
 
         @Override
         public Object[] getElements(Object inputElement) {
-
             return new Object[] { ((Category) inputElement).getLabel() };
         }
 
     }
 
     private class ComboSaveButtonListener implements Listener {
-
-        private final Button saveButton;
-
-        public ComboSaveButtonListener(Button saveButton) {
-            this.saveButton = saveButton;
-        }
 
         @Override
         public void handleEvent(Event event) {
@@ -147,12 +142,6 @@ public class HideableComboViewer extends Composite {
 
     public class ComboModifyListener implements ModifyListener {
 
-        private final Button button;
-
-        public ComboModifyListener(Button saveBookmarkNameChanges) {
-            this.button = saveBookmarkNameChanges;
-        }
-
         @Override
         public void modifyText(ModifyEvent e) {
             Combo combo = (Combo) e.getSource();
@@ -163,9 +152,9 @@ public class HideableComboViewer extends Composite {
             String label = selected.get().getLabel();
 
             if (areDifferent(newCategoryName, label) && textIsNotBlank(newCategoryName)) {
-                button.setEnabled(true);
+                saveButton.setEnabled(true);
             } else {
-                button.setEnabled(false);
+                saveButton.setEnabled(false);
             }
         }
 
@@ -190,6 +179,7 @@ public class HideableComboViewer extends Composite {
             }
             selected = Optional.of(model.getCategories().get(index));
             treeViewer.setInput(model.getCategories().get(index));
+            saveButton.setEnabled(false);
         }
 
         @Override
@@ -203,7 +193,16 @@ public class HideableComboViewer extends Composite {
         combo.getCombo().select(index);
     }
 
-    public void setNewSelections(List<Category> categories) {
+    private void setCategoryAsInput(Category category) {
+        for (int i = 0; i < model.getCategories().size(); i++) {
+            if (model.getCategories().get(i) == category) {
+                selectIndex(i);
+            }
+        }
+        treeViewer.setInput(category);
+    }
+
+    private void setNewSelections(List<Category> categories) {
         combo.getCombo().removeAll();
         for (Category category : categories) {
             combo.add(category.getLabel());
