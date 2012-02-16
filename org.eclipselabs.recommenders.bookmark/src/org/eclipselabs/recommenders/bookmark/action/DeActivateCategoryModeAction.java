@@ -2,8 +2,10 @@ package org.eclipselabs.recommenders.bookmark.action;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.tree.HideableComboViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
@@ -29,11 +31,22 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
     public void run() {
         if (hideableComboViewer.isVisible()) {
             hideableComboViewer.hide();
+            treeViewer.setInput(model);
+            setSelection();
         } else {
             rebuildComboMenu();
             setActiveCategoryAccordingToTreeSelection();
             hideableComboViewer.show();
         }
+    }
+
+    private void setSelection() {
+        int index = hideableComboViewer.getIndex();
+        if (index <= 0) {
+            return;
+        }
+        StructuredSelection selection = new StructuredSelection(model.getCategories().get(index));
+        treeViewer.selectComponent(selection);
     }
 
     private void setActiveCategoryAccordingToTreeSelection() {
@@ -48,6 +61,7 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
                     hideableComboViewer.selectIndex(i);
                 }
             }
+            treeViewer.setInput((Category) component);
         }
     }
 

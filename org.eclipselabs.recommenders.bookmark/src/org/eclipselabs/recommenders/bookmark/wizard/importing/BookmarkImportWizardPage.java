@@ -561,7 +561,7 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
                 setPageComplete(true);
             } else {
                 selectedFile = null;
-                importTreeViewer.setInput(null);
+                importTreeViewer.setInput((BookmarkModel)null);
                 container.layout(true, true);
             }
 

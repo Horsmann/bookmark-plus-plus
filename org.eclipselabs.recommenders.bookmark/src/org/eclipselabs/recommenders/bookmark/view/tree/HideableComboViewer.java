@@ -14,11 +14,13 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 
 public class HideableComboViewer extends Composite {
@@ -26,10 +28,12 @@ public class HideableComboViewer extends Composite {
     private ComboViewer combo;
     private Button saveButton;
     private final Composite parent;
+    private final BookmarkModel model;
 
-    public HideableComboViewer(Composite parent, int style) {
+    public HideableComboViewer(Composite parent, int style, BookmarkModel model) {
         super(parent, style);
         this.parent = parent;
+        this.model = model;
         setLayout();
         addCategoryIcon();
         addComboViewer();
@@ -53,6 +57,7 @@ public class HideableComboViewer extends Composite {
         saveButton.addListener(SWT.MouseDown, new ComboSaveButtonListener());
         GridData gridData = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
         saveButton.setLayoutData(gridData);
+        saveButton.setEnabled(false);
     }
 
     private void addComboViewer() {
@@ -67,6 +72,10 @@ public class HideableComboViewer extends Composite {
         label.setImage(Activator.getDefault().getImageRegistry().get(Activator.ICON_CATEGORY));
         GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
         label.setLayoutData(gridData);
+    }
+
+    public int getIndex() {
+        return combo.getCombo().getSelectionIndex();
     }
 
     public void hide() {
@@ -118,26 +127,30 @@ public class HideableComboViewer extends Composite {
 
         @Override
         public void modifyText(ModifyEvent e) {
-//            Combo combo = (Combo) e.getSource();
-//            String text = combo.getText();
+            Combo combo = (Combo) e.getSource();
+            int index = combo.getSelectionIndex();
+            if (index < 0) {
+                return;
+            }
+            String text = combo.getText();
+            String label = model.getCategories().get(index).getLabel();
 
             System.out.println("Modify-Listener noch nicht implementiert");
 
-            // if (areDifferent(text, headName) && textIsNotBlank(text)) {
-            // button.setEnabled(true);
-            // }
-            // else {
-            // button.setEnabled(false);
-            // }
+            if (areDifferent(text, label) && textIsNotBlank(text)) {
+                button.setEnabled(true);
+            } else {
+                button.setEnabled(false);
+            }
         }
 
-//        private boolean textIsNotBlank(String text) {
-//            return text.trim().compareTo("") != 0;
-//        }
-//
-//        private boolean areDifferent(String text, String headName) {
-//            return text.compareTo(headName) != 0;
-//        }
+        private boolean textIsNotBlank(String text) {
+            return text.trim().compareTo("") != 0;
+        }
+
+        private boolean areDifferent(String text, String headName) {
+            return text.compareTo(headName) != 0;
+        }
 
     }
 

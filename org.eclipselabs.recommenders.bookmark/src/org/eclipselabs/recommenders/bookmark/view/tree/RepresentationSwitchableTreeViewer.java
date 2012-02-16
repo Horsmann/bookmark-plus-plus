@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -65,7 +66,6 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.addDoubleClickListener(doubleclick);
     }
 
-    
     public void setRepresentation(final IRepresentationMode mode) {
         currentMode = mode;
         treeViewer.refresh();
@@ -75,6 +75,11 @@ public class RepresentationSwitchableTreeViewer {
     public void setInput(final BookmarkModel model) {
         this.model = model;
         treeViewer.setInput(model);
+        updateExpansions(model);
+    }
+
+    public void setInput(Category component) {
+        treeViewer.setInput(component);
         updateExpansions(model);
     }
 
@@ -144,6 +149,9 @@ public class RepresentationSwitchableTreeViewer {
                 final BookmarkModel model = (BookmarkModel) inputElement;
                 final List<Category> categories = model.getCategories();
                 return categories.toArray();
+            } else if (inputElement instanceof Category) {
+                Category category = (Category) inputElement;
+                return category.getBookmarks().toArray();
             } else {
                 throw new IllegalStateException(String.format("Input element of TreeViewer is not of type '%s'.",
                         BookmarkModel.class.toString()));
@@ -194,7 +202,6 @@ public class RepresentationSwitchableTreeViewer {
         }
     }
 
-
     public void setTreeLayoutData(GridData data) {
         treeViewer.getTree().setLayoutData(data);
     }
@@ -226,6 +233,10 @@ public class RepresentationSwitchableTreeViewer {
 
     public Shell getShell() {
         return treeViewer.getTree().getShell();
+    }
+
+    public void selectComponent(StructuredSelection selection) {
+        treeViewer.setSelection(selection, true);
     }
 
 }

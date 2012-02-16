@@ -90,6 +90,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        createHideableComboViewer(parent, model);
 
         addDragDropListeners(treeViewer);
         setUpActions();
@@ -106,7 +107,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private void createTreeViewer(Composite parent) {
         treeViewer = new RepresentationSwitchableTreeViewer(parent, new HierarchicalRepresentationMode(), model);
 
-        createHideableComboViewer(parent);
         createContextActions();
         addTreeViewerSelectionChangedListener();
         addContextMenu();
@@ -133,8 +133,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         treeViewer.addSelectionChangedListener(selectionListener);
     }
 
-    private void createHideableComboViewer(Composite parent) {
-        hideableComboViewer = new HideableComboViewer(parent, SWT.NONE);
+    private void createHideableComboViewer(Composite parent, BookmarkModel model) {
+        hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model);
     }
 
     private void createContextActions() {
