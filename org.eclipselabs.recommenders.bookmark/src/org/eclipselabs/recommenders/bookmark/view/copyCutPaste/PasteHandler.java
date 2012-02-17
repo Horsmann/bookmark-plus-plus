@@ -29,20 +29,26 @@ public class PasteHandler extends AbstractHandler {
     public Object execute(ExecutionEvent event) throws ExecutionException {
         Clipboard cb = new Clipboard(Display.getCurrent());
         Object contents = cb.getContents(BookmarkTransfer.getInstance());
-        if (contents != null && contents instanceof BookmarkTransferObject) {
+        if (isBookmarkTransfer(contents)) {
             IBookmarkModelComponent target = (IBookmarkModelComponent) treeViewer.getSelections().getFirstElement();
-            BookmarkTransferObject transferData = (BookmarkTransferObject) contents;
-
-            Object[] values = getValues(transferData.bookmarks);
             Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
             if (target != null) {
                 dropTarget = Optional.of(target);
             }
+
+            BookmarkTransferObject transferData = (BookmarkTransferObject) contents;
+
+            Object[] values = getValues(transferData.bookmarks);
+
             Optional<String> name = Optional.absent();
             invoker.invoke(new AddElementToModelCommand(values, invoker, false, dropTarget, name));
         }
 
         return null;
+    }
+
+    private boolean isBookmarkTransfer(Object contents) {
+        return (contents != null && contents instanceof BookmarkTransferObject);
     }
 
     private Object[] getValues(IBookmark[] bookmarks) {
