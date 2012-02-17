@@ -56,6 +56,7 @@ import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.CopyHandler;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.CutHandler;
+import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.DefaultPasteStrategy;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.view.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
@@ -81,6 +82,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private DeActivateCategoryModeAction switchCategory;
     private BookmarkTreeDropListener dropListener;
     private DefaultDropStrategy defaultDropStrategy;
+    private DefaultPasteStrategy defaultPasteStrategy;
+    private PasteHandler pasteHandler;
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -93,15 +96,14 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
             e.printStackTrace();
         }
         addDragDropListeners(treeViewer);
+        addCopyCutPasteFeatures();
         createHideableComboViewer(parent);
         setUpActions();
         setUpToolbar();
         setUpPluginPreferences();
         activateHierarchicalMode();
-
         addViewPartListener();
         addResourceListener();
-        addCopyCutPasteFeatures();
         Activator.setBookmarkView(this);
     }
 
@@ -135,7 +137,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private void createHideableComboViewer(Composite parent) {
         hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer, dropListener,
-                defaultDropStrategy);
+                defaultDropStrategy, pasteHandler, defaultPasteStrategy);
     }
 
     private void createContextActions() {
@@ -168,15 +170,25 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private void addCopyCutPasteFeatures() {
         IHandlerService handlerServ = (IHandlerService) getSite().getService(IHandlerService.class);
-        PasteHandler paste = new PasteHandler(treeViewer, this);
-        handlerServ.activateHandler("org.eclipse.ui.edit.paste", paste);
+        addCopyFeature(handlerServ);
+        addCutFeature(handlerServ);
+        addPasteFeature(handlerServ);
+    }
 
-        CopyHandler copy = new CopyHandler(treeViewer);
-        handlerServ.activateHandler("org.eclipse.ui.edit.copy", copy);
+    private void addPasteFeature(IHandlerService handlerServ) {
+        defaultPasteStrategy = new DefaultPasteStrategy(this, treeViewer);
+        pasteHandler = new PasteHandler(defaultPasteStrategy);
+        handlerServ.activateHandler("org.eclipse.ui.edit.paste", pasteHandler);
+    }
 
+    private void addCutFeature(IHandlerService handlerServ) {
         CutHandler cut = new CutHandler(treeViewer, this);
         handlerServ.activateHandler("org.eclipse.ui.edit.cut", cut);
+    }
 
+    private void addCopyFeature(IHandlerService handlerServ) {
+        CopyHandler copy = new CopyHandler(treeViewer);
+        handlerServ.activateHandler("org.eclipse.ui.edit.copy", copy);
     }
 
     public BookmarkModel getModel() {

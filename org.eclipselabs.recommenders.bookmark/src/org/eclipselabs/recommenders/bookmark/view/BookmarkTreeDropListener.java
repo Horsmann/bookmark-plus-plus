@@ -59,7 +59,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
         return new Transfer[] { ResourceTransfer.getInstance(), LocalSelectionTransfer.getTransfer() };
     }
     
-    public void setNewDropStrategy(IDropStrategy strategy){
+    public void setNewStrategy(IDropStrategy strategy){
         this.strategy = strategy;
     }
 }
