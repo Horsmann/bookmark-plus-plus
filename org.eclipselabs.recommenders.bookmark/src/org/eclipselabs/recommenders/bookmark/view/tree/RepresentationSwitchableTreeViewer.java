@@ -99,7 +99,6 @@ public class RepresentationSwitchableTreeViewer {
     }
 
     public IStructuredSelection getSelections() {
-
         return (IStructuredSelection) treeViewer.getSelection();
     }
 
@@ -137,7 +136,6 @@ public class RepresentationSwitchableTreeViewer {
         }
 
         @Override
-        // TODO: Input-> Category
         public Object[] getElements(final Object inputElement) {
             if (inputElement == null) {
                 return new Object[0];
