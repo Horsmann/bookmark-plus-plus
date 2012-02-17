@@ -7,8 +7,8 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
-import org.eclipselabs.recommenders.bookmark.view.tree.HideableComboViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer;
 import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
 
 public class DeActivateCategoryModeAction extends Action implements SelfEnabling {

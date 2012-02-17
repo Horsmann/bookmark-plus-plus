@@ -11,12 +11,10 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.commands.AddElementToModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.ChangeElementInModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RelocateNodesCommand;
@@ -32,7 +30,7 @@ import com.google.common.collect.Lists;
 
 public class DefaultDropStrategy implements IDropStrategy {
 
-    private final BookmarkCommandInvoker commandInvoker;
+    protected final BookmarkCommandInvoker commandInvoker;
 
     public DefaultDropStrategy(BookmarkCommandInvoker commandInvoker) {
         this.commandInvoker = commandInvoker;
@@ -207,14 +205,6 @@ public class DefaultDropStrategy implements IDropStrategy {
         }
 
         return false;
-    }
-
-    public int getSupportedOperations() {
-        return DND.DROP_MOVE | DND.DROP_COPY;
-    }
-
-    public Transfer[] getSupportedTransfers() {
-        return new Transfer[] { ResourceTransfer.getInstance(), LocalSelectionTransfer.getTransfer() };
     }
 
     private class RecursionPreventerVisitor implements IModelVisitor {

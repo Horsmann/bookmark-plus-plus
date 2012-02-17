@@ -58,9 +58,9 @@ import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.CopyHandler;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.CutHandler;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.view.tree.FlatRepresentationMode;
-import org.eclipselabs.recommenders.bookmark.view.tree.HideableComboViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer;
 
 import com.google.common.collect.Lists;
 
@@ -233,9 +233,10 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         treeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
                 dragListener);
 
-        BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(this);
-        treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
-                dropListener);
+        DefaultDropStrategy defaultDropStrategy = new DefaultDropStrategy(this);
+        BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(defaultDropStrategy);
+        treeViewer.addDropSupport(dropListener.getSupportedOperations(),
+                dropListener.getSupportedTransfers(), dropListener);
 
     }
 

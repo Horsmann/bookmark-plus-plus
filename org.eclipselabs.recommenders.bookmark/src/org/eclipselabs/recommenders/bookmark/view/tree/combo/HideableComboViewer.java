@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view.tree;
+package org.eclipselabs.recommenders.bookmark.view.tree.combo;
 
 import java.util.List;
 
@@ -24,6 +24,7 @@ import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
+import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 
 import com.google.common.base.Optional;
 

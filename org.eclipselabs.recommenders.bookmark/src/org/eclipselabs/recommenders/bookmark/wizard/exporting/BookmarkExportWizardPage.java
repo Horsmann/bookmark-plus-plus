@@ -44,10 +44,11 @@ import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
-import org.eclipselabs.recommenders.bookmark.wizard.importing.ImportDropListener;
+import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -464,7 +465,8 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
         exportTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
                 dragListener);
-        final ImportDropListener dropListener = new ImportDropListener(invoker);
+        final WizardDropStrategy strategy = new WizardDropStrategy(invoker);
+        final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(strategy);
         exportTreeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
     }

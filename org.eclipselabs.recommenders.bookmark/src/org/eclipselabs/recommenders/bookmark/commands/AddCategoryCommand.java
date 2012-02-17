@@ -2,7 +2,7 @@ package org.eclipselabs.recommenders.bookmark.commands;
 
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
-import org.eclipselabs.recommenders.bookmark.view.tree.HideableComboViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer;
 
 public class AddCategoryCommand implements IBookmarkModelCommand {
 

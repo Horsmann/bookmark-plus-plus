@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.wizard.importing;
+package org.eclipselabs.recommenders.bookmark.wizard;
 
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ISelection;
@@ -6,19 +6,18 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
-import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
-import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
+import org.eclipselabs.recommenders.bookmark.view.DefaultDropStrategy;
 
 import com.google.common.base.Optional;
 
-public class ImportDropListener extends BookmarkTreeDropListener {
+public class WizardDropStrategy extends DefaultDropStrategy {
 
-    public ImportDropListener(BookmarkCommandInvoker commandInvoker) {
+    public WizardDropStrategy(BookmarkCommandInvoker commandInvoker) {
         super(commandInvoker);
     }
 
     @Override
-    public void drop(final DropTargetEvent event) {
+    public void performDrop(DropTargetEvent event) {
         final Optional<IBookmarkModelComponent> dropTarget = getDropTarget(event);
 
         boolean insertDropBeforeTarget = determineInsertLocation(event);
@@ -28,7 +27,6 @@ public class ImportDropListener extends BookmarkTreeDropListener {
             processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event),
                     insertDropBeforeTarget);
         }
-
     }
 
     protected void processDroppedElementOriginatedFromInsideTheView(Optional<IBookmarkModelComponent> dropTarget,
@@ -36,8 +34,9 @@ public class ImportDropListener extends BookmarkTreeDropListener {
 
         if (!causeRecursion(components, dropTarget)) {
 
-                commandInvoker.invoke(new ImportSelectedBookmarksCommand(components, commandInvoker,
-                        isCopyOperation, insertDropBeforeTarget, dropTarget));
+            commandInvoker.invoke(new ImportSelectedBookmarksCommand(components, commandInvoker, isCopyOperation,
+                    insertDropBeforeTarget, dropTarget));
         }
     }
+
 }

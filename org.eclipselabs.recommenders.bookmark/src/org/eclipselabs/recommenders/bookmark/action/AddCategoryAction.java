@@ -4,7 +4,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.commands.AddCategoryCommand;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
-import org.eclipselabs.recommenders.bookmark.view.tree.HideableComboViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer;
 
 public class AddCategoryAction extends Action{
     

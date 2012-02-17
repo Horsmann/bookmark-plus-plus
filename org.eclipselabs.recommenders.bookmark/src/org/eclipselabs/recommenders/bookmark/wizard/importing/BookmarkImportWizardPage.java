@@ -48,9 +48,11 @@ import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkIO;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
+import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -191,7 +193,19 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void addDragDropSupportToLocalTreeViewer() {
-        final ImportDropListener dropListener = new ImportDropListener(new BookmarkCommandInvoker() {
+
+        addDropListenerToLocalTreeViewer();
+        addDragListenerToLocalTreeViewer();
+    }
+
+    private void addDragListenerToLocalTreeViewer() {
+        final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
+        localTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
+                dragListener);
+    }
+
+    private void addDropListenerToLocalTreeViewer() {
+        final WizardDropStrategy strategy = new WizardDropStrategy(new BookmarkCommandInvoker() {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {
@@ -200,12 +214,10 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
                 importTreeViewer.refresh();
             }
         });
+        final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(strategy);
         localTreeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
 
-        final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
-        localTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
-                dragListener);
     }
 
     private void setLocalTreeViewerKeyListener() {
@@ -561,7 +573,7 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
                 setPageComplete(true);
             } else {
                 selectedFile = null;
-                importTreeViewer.setInput((BookmarkModel)null);
+                importTreeViewer.setInput((BookmarkModel) null);
                 container.layout(true, true);
             }
 
