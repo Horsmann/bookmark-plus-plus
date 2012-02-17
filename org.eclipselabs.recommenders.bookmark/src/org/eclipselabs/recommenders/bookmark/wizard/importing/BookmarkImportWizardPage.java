@@ -221,7 +221,7 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void setLocalTreeViewerKeyListener() {
-        localTreeViewer.overrideKeyListener(new KeyListener() {
+        localTreeViewer.addKeyListener(new KeyListener() {
 
             @Override
             public void keyReleased(KeyEvent e) {

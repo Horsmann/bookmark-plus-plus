@@ -44,7 +44,6 @@ public class RepresentationSwitchableTreeViewer {
     private IRepresentationMode currentMode;
     private TreeViewer treeViewer;
     private BookmarkModel model;
-    private KeyListener treeKeyListener;
 
     public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
             final BookmarkModel model) {
@@ -206,13 +205,6 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.getTree().setLayoutData(data);
     }
 
-    public void overrideKeyListener(KeyListener keyListener) {
-        if (treeKeyListener != null) {
-            treeViewer.getTree().removeKeyListener((KeyListener) treeKeyListener);
-        }
-        treeViewer.getTree().addKeyListener(keyListener);
-
-    }
 
     public void addSelectionChangedListener(ISelectionChangedListener selectionListener) {
         treeViewer.addSelectionChangedListener(selectionListener);

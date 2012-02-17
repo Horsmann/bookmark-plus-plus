@@ -203,7 +203,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void setExportTreeViewerKeyListener() {
-        exportTreeViewer.overrideKeyListener(new KeyListener() {
+        exportTreeViewer.addKeyListener(new KeyListener() {
 
             @Override
             public void keyReleased(KeyEvent e) {
