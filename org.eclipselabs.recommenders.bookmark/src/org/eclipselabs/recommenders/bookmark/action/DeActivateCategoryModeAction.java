@@ -29,6 +29,11 @@ public class DeActivateCategoryModeAction extends Action implements SelfEnabling
 
     @Override
     public void run() {
+        
+        if (model.getCategories().size() == 0){
+            return;
+        }
+        
         if (hideableComboViewer.isVisible()) {
             hideableComboViewer.hide();
             setSelection();

@@ -79,6 +79,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private BookmarkDeletionAction deleteBookmarks;
     private HideableComboViewer hideableComboViewer;
     private DeActivateCategoryModeAction switchCategory;
+    private BookmarkTreeDropListener dropListener;
+    private DefaultDropStrategy defaultDropStrategy;
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -91,7 +93,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
             e.printStackTrace();
         }
         addDragDropListeners(treeViewer);
-        createHideableComboViewer(parent, treeViewer, model);
+        createHideableComboViewer(parent);
         setUpActions();
         setUpToolbar();
         setUpPluginPreferences();
@@ -105,7 +107,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private void createTreeViewer(Composite parent) {
         treeViewer = new RepresentationSwitchableTreeViewer(parent, new HierarchicalRepresentationMode(), model);
-
         createContextActions();
         addTreeViewerSelectionChangedListener();
         addContextMenu();
@@ -132,9 +133,9 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         treeViewer.addSelectionChangedListener(selectionListener);
     }
 
-    private void createHideableComboViewer(Composite parent, RepresentationSwitchableTreeViewer treeViewer,
-            BookmarkModel model) {
-        hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer);
+    private void createHideableComboViewer(Composite parent) {
+        hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer, dropListener,
+                defaultDropStrategy);
     }
 
     private void createContextActions() {
@@ -229,14 +230,21 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     public void addDragDropListeners(final RepresentationSwitchableTreeViewer treeViewer) {
 
+        addDragSupportToViewer();
+        addDropSupportToViewer();
+    }
+
+    private void addDropSupportToViewer() {
+        defaultDropStrategy = new DefaultDropStrategy(this);
+        dropListener = new BookmarkTreeDropListener(defaultDropStrategy);
+        treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
+                dropListener);
+    }
+
+    private void addDragSupportToViewer() {
         final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
         treeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
                 dragListener);
-
-        DefaultDropStrategy defaultDropStrategy = new DefaultDropStrategy(this);
-        BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(defaultDropStrategy);
-        treeViewer.addDropSupport(dropListener.getSupportedOperations(),
-                dropListener.getSupportedTransfers(), dropListener);
 
     }
 

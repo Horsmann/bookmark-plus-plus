@@ -24,6 +24,8 @@ import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
+import org.eclipselabs.recommenders.bookmark.view.IDropStrategy;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 
 import com.google.common.base.Optional;
@@ -37,13 +39,20 @@ public class HideableComboViewer extends Composite {
     private String newCategoryName = "";
     private final BookmarkModel model;
     private final RepresentationSwitchableTreeViewer treeViewer;
+    private final IDropStrategy defaultDropStrategy;
+    private CategoryModeDropStrategy comboVisibleDropStrategy;
+    private final BookmarkTreeDropListener dropListener;
 
     public HideableComboViewer(Composite parent, int style, BookmarkModel model,
-            RepresentationSwitchableTreeViewer treeViewer) {
+            RepresentationSwitchableTreeViewer treeViewer, BookmarkTreeDropListener dropListener,
+            IDropStrategy defaultDropStrategy) {
         super(parent, style);
         this.parent = parent;
         this.model = model;
         this.treeViewer = treeViewer;
+        this.dropListener = dropListener;
+        this.defaultDropStrategy = defaultDropStrategy;
+        comboVisibleDropStrategy = new CategoryModeDropStrategy(getCommandInvoker());
         setLayout();
         addCategoryIcon();
         addComboViewer();
@@ -58,6 +67,7 @@ public class HideableComboViewer extends Composite {
             @Override
             public void invoke(IBookmarkModelCommand command) {
                 command.execute(model);
+                treeViewer.refresh();
             }
         };
     }
@@ -100,13 +110,15 @@ public class HideableComboViewer extends Composite {
 
     public void hide() {
         treeViewer.setInput(model);
+        dropListener.setNewDropStrategy(defaultDropStrategy);
         setVisible(false);
         setLayoutData(new GridData(0, 0));
         parent.layout(true, true);
     }
 
     public void show(Category category) {
-        // setCategoryDropListener(category);
+        comboVisibleDropStrategy.setCategory(category);
+        dropListener.setNewDropStrategy(comboVisibleDropStrategy);
         setNewSelections(model.getCategories());
         setCategoryAsInput(category);
         this.selected = Optional.of(category);
@@ -114,12 +126,6 @@ public class HideableComboViewer extends Composite {
         setVisible(true);
         parent.layout(true, true);
     }
-
-//    private void setCategoryDropListener(Category category) {
-//        dropListener.setTargetCategory(category);
-//        treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
-//                dropListener);
-//    }
 
     private class ComboContentProvider implements IStructuredContentProvider {
 

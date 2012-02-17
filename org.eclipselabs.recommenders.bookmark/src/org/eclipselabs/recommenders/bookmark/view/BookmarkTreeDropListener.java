@@ -19,7 +19,7 @@ import org.eclipse.ui.part.ResourceTransfer;
 
 public class BookmarkTreeDropListener implements DropTargetListener {
 
-    private final IDropStrategy strategy;
+    private IDropStrategy strategy;
 
     public BookmarkTreeDropListener(IDropStrategy initialStrategy) {
         this.strategy = initialStrategy;
@@ -57,5 +57,9 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
     public Transfer[] getSupportedTransfers() {
         return new Transfer[] { ResourceTransfer.getInstance(), LocalSelectionTransfer.getTransfer() };
+    }
+    
+    public void setNewDropStrategy(IDropStrategy strategy){
+        this.strategy = strategy;
     }
 }
