@@ -29,12 +29,9 @@ public class CopyHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-
         IBookmarkModelComponent[] components = getSelectedComponents();
         IBookmark[] bookmarks = getSelectedBookmarks(components);
-
         addDataToClipboard(bookmarks);
-
         return null;
     }
 
