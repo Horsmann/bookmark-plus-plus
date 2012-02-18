@@ -20,14 +20,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
-import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
-import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
-import org.eclipselabs.recommenders.bookmark.view.IDropStrategy;
-import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.IPasteStrategy;
-import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 
 import com.google.common.base.Optional;
@@ -41,43 +35,21 @@ public class HideableComboViewer extends Composite {
     private String newCategoryName = "";
     private final BookmarkModel model;
     private final RepresentationSwitchableTreeViewer treeViewer;
-    private final IDropStrategy defaultDropStrategy;
-    private CategoryModeDropStrategy comboDropStrategy;
-    private final BookmarkTreeDropListener dropListener;
-    private final PasteHandler pasteHandler;
-    private final IPasteStrategy defaultPasteStrategy;
-    private CategoryModePasteStrategy comboPasteStrategy;
+    private final ComboViewerDependendStrategyChanger strategyChanger;
 
     public HideableComboViewer(Composite parent, int style, BookmarkModel model,
-            RepresentationSwitchableTreeViewer treeViewer, BookmarkTreeDropListener dropListener,
-            IDropStrategy defaultDropStrategy, PasteHandler pasteHandler, IPasteStrategy defaultPasteStrategy) {
+            RepresentationSwitchableTreeViewer treeViewer, ComboViewerDependendStrategyChanger strategyChanger) {
         super(parent, style);
         this.parent = parent;
         this.model = model;
         this.treeViewer = treeViewer;
-        this.dropListener = dropListener;
-        this.defaultDropStrategy = defaultDropStrategy;
-        this.pasteHandler = pasteHandler;
-        this.defaultPasteStrategy = defaultPasteStrategy;
-        comboDropStrategy = new CategoryModeDropStrategy(getCommandInvoker());
-        comboPasteStrategy = new CategoryModePasteStrategy(getCommandInvoker(), treeViewer);
+        this.strategyChanger = strategyChanger;
         setLayout();
         addCategoryIcon();
         addComboViewer();
         addSaveButton();
         addComboViewerListener();
         hide();
-    }
-
-    private BookmarkCommandInvoker getCommandInvoker() {
-        return new BookmarkCommandInvoker() {
-
-            @Override
-            public void invoke(IBookmarkModelCommand command) {
-                command.execute(model);
-                treeViewer.refresh();
-            }
-        };
     }
 
     private void setLayout() {
@@ -118,20 +90,14 @@ public class HideableComboViewer extends Composite {
 
     public void hide() {
         treeViewer.setInput(model);
-        dropListener.setNewStrategy(defaultDropStrategy);
-        pasteHandler.setNewStrategy(defaultPasteStrategy);
+        strategyChanger.resetStrategies();
         setVisible(false);
         setLayoutData(new GridData(0, 0));
         parent.layout(true, true);
     }
 
     public void show(Category category) {
-        comboDropStrategy.setCategory(category);
-        dropListener.setNewStrategy(comboDropStrategy);
-
-        comboPasteStrategy.setCategory(category);
-        pasteHandler.setNewStrategy(comboPasteStrategy);
-
+        strategyChanger.setComboViewerSpecificStrategies(category);
         setNewSelections(model.getCategories());
         setCategoryAsInput(category);
         this.selected = Optional.of(category);
@@ -217,11 +183,11 @@ public class HideableComboViewer extends Composite {
             if (index < 0) {
                 return;
             }
-            
+
             Category selectedCategory = model.getCategories().get(index);
             selected = Optional.of(selectedCategory);
             treeViewer.setInput(selectedCategory);
-            comboPasteStrategy.setCategory(selectedCategory);
+            strategyChanger.update(selectedCategory);
             saveButton.setEnabled(false);
         }
 

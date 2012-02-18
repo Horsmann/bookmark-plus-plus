@@ -61,7 +61,10 @@ import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.view.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.combo.ComboViewerDependendStrategyChanger;
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.combo.MouseDropStrategyChanger;
+import org.eclipselabs.recommenders.bookmark.view.tree.combo.PasteStrategyChanger;
 
 import com.google.common.collect.Lists;
 
@@ -101,6 +104,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         setUpActions();
         setUpToolbar();
         setUpPluginPreferences();
+        
         activateHierarchicalMode();
         addViewPartListener();
         addResourceListener();
@@ -136,8 +140,16 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     private void createHideableComboViewer(Composite parent) {
-        hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer, dropListener,
-                defaultDropStrategy, pasteHandler, defaultPasteStrategy);
+
+        MouseDropStrategyChanger mouseDropStrategy = new MouseDropStrategyChanger(dropListener, defaultDropStrategy,
+                this);
+        PasteStrategyChanger pasteStrategy = new PasteStrategyChanger(pasteHandler, defaultPasteStrategy, treeViewer,
+                this);
+        ComboViewerDependendStrategyChanger strategyChanger = new ComboViewerDependendStrategyChanger();
+        strategyChanger.register(mouseDropStrategy);
+        strategyChanger.register(pasteStrategy);
+
+        hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer, strategyChanger);
     }
 
     private void createContextActions() {

@@ -3,6 +3,7 @@ package org.eclipselabs.recommenders.bookmark.view.copyCutPaste;
 import java.util.LinkedList;
 
 import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.widgets.Display;
 import org.eclipselabs.recommenders.bookmark.commands.AddElementToModelCommand;
@@ -14,12 +15,12 @@ import org.eclipselabs.recommenders.bookmark.visitor.GetValueVisitor;
 
 import com.google.common.base.Optional;
 
-public class DefaultPasteStrategy implements IPasteStrategy{
-    
+public class DefaultPasteStrategy implements IPasteStrategy {
+
     private final BookmarkCommandInvoker invoker;
     protected final RepresentationSwitchableTreeViewer treeViewer;
 
-    public DefaultPasteStrategy(BookmarkCommandInvoker inovker, RepresentationSwitchableTreeViewer treeViewer){
+    public DefaultPasteStrategy(BookmarkCommandInvoker inovker, RepresentationSwitchableTreeViewer treeViewer) {
         this.invoker = inovker;
         this.treeViewer = treeViewer;
     }
@@ -40,9 +41,13 @@ public class DefaultPasteStrategy implements IPasteStrategy{
         }
 
     }
-    
+
     protected Optional<IBookmarkModelComponent> getDropTarget() {
-        IBookmarkModelComponent target = (IBookmarkModelComponent) treeViewer.getSelections().getFirstElement();
+        IBookmarkModelComponent target = null;
+        IStructuredSelection selections = treeViewer.getSelections();
+        if (selections.size() > 0) {
+            target = (IBookmarkModelComponent) treeViewer.getSelections().getFirstElement();
+        }
         Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
         if (target != null) {
             dropTarget = Optional.of(target);
