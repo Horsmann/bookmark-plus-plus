@@ -56,6 +56,17 @@ public class HideableComboViewer extends Composite {
         setLayout(GridLayoutFactory.fillDefaults().numColumns(3).create());
     }
 
+    public int getNumberOfSelectedCategory() {
+        if (selected.isPresent()) {
+            for (int i = 0; i < model.getCategories().size(); i++) {
+                if (selected.get() == model.getCategories().get(i)) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     private void addComboViewerListener() {
         combo.getCombo().addModifyListener(new ComboModifyListener());
         combo.getCombo().addSelectionListener(new ComboSelectionListener());

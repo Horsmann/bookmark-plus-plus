@@ -34,7 +34,10 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPartService;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
@@ -71,6 +74,11 @@ import com.google.common.collect.Lists;
 
 public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
+    private String MEMENTO_GUI_STATE = "GUISTATE";
+    private String MEMENTO_IS_FLAT = "isFlat";
+    private String MEMENTO_IS_CATEGORY_MODE_ACTIVE = "isCategoryModeActive";
+    private String MEMENTO_CATEGORY_MODE_SELECTED_CATEGORY = "selectedCategory";
+
     private BookmarkModel model;
     private RepresentationSwitchableTreeViewer treeViewer;
     private Action switchFlatHierarchical;
@@ -88,6 +96,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private DefaultDropStrategy defaultDropStrategy;
     private DefaultPasteStrategy defaultPasteStrategy;
     private PasteHandler pasteHandler;
+    private IMemento memento;
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -101,6 +110,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         addViewPartListener();
         addResourceListener();
         Activator.setBookmarkView(this);
+
+        restoreState(memento);
     }
 
     private void initGuiComponentsLoadModel(Composite parent) {
@@ -108,7 +119,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         loadModelAndSetForTreeViewer();
         initHideableComboViewer(parent, model, treeViewer, dropListener, defaultDropStrategy, pasteHandler,
                 defaultPasteStrategy);
-        initActions(treeViewer, model, hideableComboViewer);        
+        initActions(treeViewer, model, hideableComboViewer);
     }
 
     private void loadModelAndSetForTreeViewer() {
@@ -326,6 +337,57 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     public void invoke(final IBookmarkModelCommand command) {
         command.execute(model);
         treeViewer.refresh();
+    }
+
+    @Override
+    public void saveState(IMemento memento) {
+        super.saveState(memento);
+        memento = memento.createChild(MEMENTO_GUI_STATE);
+        memento.putBoolean(MEMENTO_IS_FLAT, !isHierarchicalModeActive());
+        memento.putBoolean(MEMENTO_IS_CATEGORY_MODE_ACTIVE, hideableComboViewer.isVisible());
+        memento.putInteger(MEMENTO_CATEGORY_MODE_SELECTED_CATEGORY, hideableComboViewer.getNumberOfSelectedCategory());
+    }
+
+    private void restoreState(IMemento memento) {
+        if (memento == null) {
+            return;
+        }
+
+        memento = memento.getChild(MEMENTO_GUI_STATE);
+        if (memento != null) {
+            processFlatState(memento);
+            processCategoryMode(memento);
+        }
+    }
+
+    private void processCategoryMode(IMemento memento) {
+        Boolean isCategoryModeActive = memento.getBoolean(MEMENTO_IS_CATEGORY_MODE_ACTIVE);
+        if (isCategoryModeActive != null && isCategoryModeActive) {
+            Integer selectedCategory = memento.getInteger(MEMENTO_CATEGORY_MODE_SELECTED_CATEGORY);
+            if (isCategoryNumberValid(selectedCategory)) {
+                hideableComboViewer.show(model.getCategories().get(selectedCategory));
+            }
+        }
+    }
+
+    private void processFlatState(IMemento memento) {
+        Boolean isFlat = memento.getBoolean(MEMENTO_IS_FLAT);
+        if (isFlat != null && isFlat) {
+            activateFlatMode();
+        }
+    }
+
+    private boolean isCategoryNumberValid(Integer selectedCategory) {
+        if (selectedCategory == null || selectedCategory < 0 || selectedCategory > model.getCategories().size()) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void init(IViewSite site, IMemento memento) throws PartInitException {
+        this.memento = memento;
+        init(site);
     }
 
     private class ResourceListener implements IResourceChangeListener {
