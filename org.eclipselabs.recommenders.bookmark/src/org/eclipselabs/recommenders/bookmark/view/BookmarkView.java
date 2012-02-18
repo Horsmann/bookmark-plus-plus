@@ -291,8 +291,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     private void addDropSupportToViewer() {
-        // defaultDropStrategy = new DefaultDropStrategy(this);
-        // dropListener = new BookmarkTreeDropListener(defaultDropStrategy);
         treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
     }
