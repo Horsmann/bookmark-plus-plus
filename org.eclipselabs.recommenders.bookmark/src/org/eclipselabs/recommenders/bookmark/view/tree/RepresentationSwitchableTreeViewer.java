@@ -45,9 +45,7 @@ public class RepresentationSwitchableTreeViewer {
     private TreeViewer treeViewer;
     private BookmarkModel model;
 
-    public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode,
-            final BookmarkModel model) {
-        this.model = model;
+    public RepresentationSwitchableTreeViewer(final Composite parent, final IRepresentationMode initialMode) {
         createTreeViewer(parent);
         currentMode = initialMode;
     }

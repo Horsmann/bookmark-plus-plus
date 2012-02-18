@@ -189,7 +189,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     private void createLocalTreeViewer(Composite bookmarkSelComposite) {
         GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
         localTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
-                new HierarchicalRepresentationMode(), null);
+                new HierarchicalRepresentationMode());
         localTreeViewer.setTreeLayoutData(data);
 
         addDragSupportToLocalTreeViewer();
@@ -454,7 +454,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     private void createProspectiveExportTreeViewer(Composite bookmarkSelComposite) {
         GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
         exportTreeViewer = new RepresentationSwitchableTreeViewer(bookmarkSelComposite,
-                new HierarchicalRepresentationMode(), null);
+                new HierarchicalRepresentationMode());
         exportTreeViewer.setTreeLayoutData(data);
 
         addDragDropSupportToExportView();

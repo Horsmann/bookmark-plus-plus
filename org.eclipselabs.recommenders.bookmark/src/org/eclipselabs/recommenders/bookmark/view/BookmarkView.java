@@ -57,6 +57,7 @@ import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.CopyHandler;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.CutHandler;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.DefaultPasteStrategy;
+import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.IPasteStrategy;
 import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.view.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
@@ -92,39 +93,68 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     public void createPartControl(final Composite parent) {
         parent.setLayout(GridLayoutFactory.fillDefaults().create());
 
-        createTreeViewer(parent);
-        try {
-            loadModel();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        addDragDropListeners(treeViewer);
-        addCopyCutPasteFeatures();
-        createHideableComboViewer(parent);
-        setUpActions();
-        setUpToolbar();
-        setUpPluginPreferences();
-        
+        initGuiComponentsLoadModel(parent);
+        configureTreeViewer(treeViewer, model, hideableComboViewer);
+        addCopyCutPasteFeatures(pasteHandler);
+        enableActionsInToolbar(closeAllEditors, switchFlatHierarchical, categoryMode, addNewCategory);
         activateHierarchicalMode();
         addViewPartListener();
         addResourceListener();
         Activator.setBookmarkView(this);
     }
 
-    private void createTreeViewer(Composite parent) {
-        treeViewer = new RepresentationSwitchableTreeViewer(parent, new HierarchicalRepresentationMode(), model);
-        createContextActions();
-        addTreeViewerSelectionChangedListener();
-        addContextMenu();
-        addTreeKeyListener();
-        addDoubleClickListener();
+    private void initGuiComponentsLoadModel(Composite parent) {
+        initTreeViewerWithDropAndPasteHandlingComponents(parent);
+        loadModelAndSetForTreeViewer();
+        initHideableComboViewer(parent, model, treeViewer, dropListener, defaultDropStrategy, pasteHandler,
+                defaultPasteStrategy);
+        initActions(treeViewer, model, hideableComboViewer);        
     }
 
-    private void addDoubleClickListener() {
+    private void loadModelAndSetForTreeViewer() {
+        try {
+            loadModel();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initTreeViewerWithDropAndPasteHandlingComponents(Composite parent) {
+        initTreeViewer(parent);
+        initDropListenerAndDefaultDropStrategy();
+        initPasteHandlerAndDefaultPasteStrategy();
+    }
+
+    private void initPasteHandlerAndDefaultPasteStrategy() {
+        defaultPasteStrategy = new DefaultPasteStrategy(this, treeViewer);
+        pasteHandler = new PasteHandler(defaultPasteStrategy);
+    }
+
+    private void initDropListenerAndDefaultDropStrategy() {
+        defaultDropStrategy = new DefaultDropStrategy(this);
+        dropListener = new BookmarkTreeDropListener(defaultDropStrategy);
+    }
+
+    private void initTreeViewer(Composite parent) {
+        treeViewer = new RepresentationSwitchableTreeViewer(parent, new HierarchicalRepresentationMode());
+    }
+
+    private void configureTreeViewer(RepresentationSwitchableTreeViewer treeViewer, BookmarkModel model,
+            HideableComboViewer hideableComboViewer) {
+        createContextActions(treeViewer, model, hideableComboViewer);
+        addTreeKeyListener(treeViewer);
+        addDoubleClickListener(treeViewer);
+
+        addTreeViewerSelectionChangedListener();
+
+        addDragDropListeners(treeViewer);
+    }
+
+    private void addDoubleClickListener(RepresentationSwitchableTreeViewer treeViewer) {
         treeViewer.addDoubleclickListener(new DoubleclickListener(this, this));
     }
 
-    private void addTreeKeyListener() {
+    private void addTreeKeyListener(RepresentationSwitchableTreeViewer treeViewer) {
         TreeKeyListener listener = new TreeKeyListener(this, this);
         treeViewer.addKeyListener(listener);
 
@@ -139,7 +169,9 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         treeViewer.addSelectionChangedListener(selectionListener);
     }
 
-    private void createHideableComboViewer(Composite parent) {
+    private void initHideableComboViewer(Composite parent, BookmarkModel model,
+            RepresentationSwitchableTreeViewer treeViewer, BookmarkTreeDropListener dropListener,
+            IDropStrategy defaultDropStrategy, PasteHandler pasteHandler, IPasteStrategy defaultPasteStrategy) {
 
         MouseDropStrategyChanger mouseDropStrategy = new MouseDropStrategyChanger(dropListener, defaultDropStrategy,
                 this);
@@ -152,15 +184,20 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer, strategyChanger);
     }
 
-    private void createContextActions() {
+    private void createContextActions(RepresentationSwitchableTreeViewer treeViewer, BookmarkModel model,
+            HideableComboViewer hideableComboViewer) {
         renameCategory = new RenameCategoryAction(treeViewer, this);
         openInEditor = new OpenBookmarkAction(treeViewer, this, this);
         openInFileSystem = new OpenInFileSystemAction(treeViewer);
         deleteBookmarks = new BookmarkDeletionAction(treeViewer, this);
         switchCategory = new DeActivateCategoryModeAction(hideableComboViewer, model, treeViewer);
+        addContextMenu(treeViewer, renameCategory, openInEditor, openInFileSystem, deleteBookmarks, switchCategory);
     }
 
-    private void addContextMenu() {
+    private void addContextMenu(RepresentationSwitchableTreeViewer treeViewer,
+            final RenameCategoryAction renameCategory, final OpenBookmarkAction openInEditor,
+            final OpenInFileSystemAction openInFileSystem, final BookmarkDeletionAction deleteBookmarks,
+            final DeActivateCategoryModeAction switchCategory) {
 
         final MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown(true);
@@ -180,16 +217,14 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         getSite().registerContextMenu(menuMgr, treeViewer.getSelectionProvider());
     }
 
-    private void addCopyCutPasteFeatures() {
+    private void addCopyCutPasteFeatures(PasteHandler pasteHandler) {
         IHandlerService handlerServ = (IHandlerService) getSite().getService(IHandlerService.class);
         addCopyFeature(handlerServ);
         addCutFeature(handlerServ);
-        addPasteFeature(handlerServ);
+        addPasteFeature(handlerServ, pasteHandler);
     }
 
-    private void addPasteFeature(IHandlerService handlerServ) {
-        defaultPasteStrategy = new DefaultPasteStrategy(this, treeViewer);
-        pasteHandler = new PasteHandler(defaultPasteStrategy);
+    private void addPasteFeature(IHandlerService handlerServ, PasteHandler pasteHandler) {
         handlerServ.activateHandler("org.eclipse.ui.edit.paste", pasteHandler);
     }
 
@@ -211,23 +246,21 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(new ResourceListener());
     }
 
-    private void setUpPluginPreferences() {
-
-    }
-
     private void addViewPartListener() {
         IPartService service = (IPartService) getSite().getService(IPartService.class);
         service.addPartListener(new ViewPartListener(this));
     }
 
-    private void setUpActions() {
+    private void initActions(RepresentationSwitchableTreeViewer treeViewer, BookmarkModel model,
+            HideableComboViewer hideableComboViewer) {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
         closeAllEditors = new CloseAllEditorWindowsAction(this);
         addNewCategory = new AddCategoryAction(this, hideableComboViewer);
         categoryMode = new DeActivateCategoryModeAction(hideableComboViewer, model, treeViewer);
     }
 
-    private void setUpToolbar() {
+    private void enableActionsInToolbar(Action closeAllEditors, Action switchFlatHierarchical, Action categoryMode,
+            Action addNewCategory) {
         IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
         mgr.removeAll();
         mgr.add(closeAllEditors);
@@ -253,14 +286,13 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     public void addDragDropListeners(final RepresentationSwitchableTreeViewer treeViewer) {
-
         addDragSupportToViewer();
         addDropSupportToViewer();
     }
 
     private void addDropSupportToViewer() {
-        defaultDropStrategy = new DefaultDropStrategy(this);
-        dropListener = new BookmarkTreeDropListener(defaultDropStrategy);
+        // defaultDropStrategy = new DefaultDropStrategy(this);
+        // dropListener = new BookmarkTreeDropListener(defaultDropStrategy);
         treeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
     }
