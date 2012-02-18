@@ -145,7 +145,9 @@ public class RepresentationSwitchableTreeViewer {
                 return categories.toArray();
             } else if (inputElement instanceof Category) {
                 Category category = (Category) inputElement;
-                return category.getBookmarks().toArray();
+                final IChildrenResolverVisitor visitor = currentMode.createChildrenResolverVisitor();
+                acceptVisitor(category, visitor);
+                return visitor.getChildren().toArray();
             } else {
                 throw new IllegalStateException(String.format("Input element of TreeViewer is not of type '%s'.",
                         BookmarkModel.class.toString()));
@@ -199,7 +201,6 @@ public class RepresentationSwitchableTreeViewer {
     public void setTreeLayoutData(GridData data) {
         treeViewer.getTree().setLayoutData(data);
     }
-
 
     public void addSelectionChangedListener(ISelectionChangedListener selectionListener) {
         treeViewer.addSelectionChangedListener(selectionListener);
