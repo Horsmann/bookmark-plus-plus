@@ -102,6 +102,7 @@ public class HideableComboViewer extends Composite {
         setCategoryAsInput(category);
         this.selected = Optional.of(category);
         setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        saveButton.setEnabled(false);
         setVisible(true);
         parent.layout(true, true);
     }
