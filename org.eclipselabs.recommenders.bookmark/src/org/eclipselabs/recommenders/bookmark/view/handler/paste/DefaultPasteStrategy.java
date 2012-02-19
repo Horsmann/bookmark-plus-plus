@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view.copyCutPaste;
+package org.eclipselabs.recommenders.bookmark.view.handler.paste;
 
 import java.util.LinkedList;
 
@@ -10,6 +10,8 @@ import org.eclipselabs.recommenders.bookmark.commands.AddElementToModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
+import org.eclipselabs.recommenders.bookmark.view.handler.BookmarkTransfer;
+import org.eclipselabs.recommenders.bookmark.view.handler.BookmarkTransferObject;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.visitor.GetValueVisitor;
 

@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view.copyCutPaste;
+package org.eclipselabs.recommenders.bookmark.view.handler.paste;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

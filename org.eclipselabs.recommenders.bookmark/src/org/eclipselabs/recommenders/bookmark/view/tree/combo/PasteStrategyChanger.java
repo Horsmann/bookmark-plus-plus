@@ -4,9 +4,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
-import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.DefaultPasteStrategy;
-import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.IPasteStrategy;
-import org.eclipselabs.recommenders.bookmark.view.copyCutPaste.PasteHandler;
+import org.eclipselabs.recommenders.bookmark.view.handler.paste.DefaultPasteStrategy;
+import org.eclipselabs.recommenders.bookmark.view.handler.paste.IPasteStrategy;
+import org.eclipselabs.recommenders.bookmark.view.handler.paste.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 
 import com.google.common.base.Optional;

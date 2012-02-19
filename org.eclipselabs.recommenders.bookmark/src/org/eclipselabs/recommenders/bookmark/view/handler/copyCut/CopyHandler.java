@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view.copyCutPaste;
+package org.eclipselabs.recommenders.bookmark.view.handler.copyCut;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -17,6 +17,8 @@ import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
+import org.eclipselabs.recommenders.bookmark.view.handler.BookmarkTransfer;
+import org.eclipselabs.recommenders.bookmark.view.handler.BookmarkTransferObject;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 
 public class CopyHandler extends AbstractHandler {

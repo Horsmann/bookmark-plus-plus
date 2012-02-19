@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark.view.copyCutPaste;
+package org.eclipselabs.recommenders.bookmark.view.handler.copyCut;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
