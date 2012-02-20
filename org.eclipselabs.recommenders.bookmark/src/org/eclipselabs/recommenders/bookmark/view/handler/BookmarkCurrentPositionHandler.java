@@ -11,12 +11,10 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeSelection;
-import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.swt.internal.cocoa.objc_super;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -47,15 +45,9 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
 
         if (selection instanceof ITreeSelection) {
             processTreeSelection((ITreeSelection) selection);
+        } else if (part instanceof IEditorPart && selection instanceof ITextSelection) {
+            processEditorSelection((IEditorPart) part, (ITextSelection) selection);
         }
-
-        // if (part instanceof IEditorPart && selection instanceof
-        // ITextSelection) {
-        // processEditorSelection((IEditorPart)part, (ITextSelection)selection);
-        //
-        // int a = 0;
-        // a++;
-        // }
 
         return null;
     }
@@ -63,19 +55,39 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
     private void processEditorSelection(IEditorPart part, ITextSelection selection) {
         IEditorInput editorInput = ((IEditorPart) part).getEditorInput();
         final ITypeRoot root = (ITypeRoot) JavaUI.getEditorInputJavaElement(editorInput);
-        IJavaElement[] elements = null;
+
+        Optional<IJavaElement[]> elements = getJavaElements(root, selection);
+        List<Object> objects = Lists.newArrayList();
+        if (elements.isPresent()) {
+            for (IJavaElement element : elements.get()) {
+                objects.add(element);
+            }
+        } else {
+            String handleIdentifier = root.getHandleIdentifier();
+            IJavaElement file = JavaCore.create(handleIdentifier);
+            objects.add(file);
+        }
+        bookmark(objects.toArray());
+    }
+
+    private void bookmark(Object[] array) {
+        Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
+        Optional<String> nameForNewCategory = Optional.absent();
+        invoker.invoke(new AddElementToModelCommand(array, invoker, false, dropTarget, nameForNewCategory));
+    }
+
+    private Optional<IJavaElement[]> getJavaElements(ITypeRoot root, ITextSelection selection) {
+        Optional<IJavaElement[]> javaEle = Optional.absent();
         try {
-            int offset = ((ITextSelection) selection).getOffset();
-            elements = root.codeSelect(offset, 0);
+            int offset = (selection).getOffset();
+            IJavaElement[] codeSelect = root.codeSelect(offset, 0);
+            if (codeSelect.length > 0) {
+                javaEle = Optional.of(codeSelect);
+            }
         } catch (JavaModelException e) {
             e.printStackTrace();
         }
-        if (elements != null && elements.length > 0) {
-            IJavaElement javaElement = elements[0];
-            System.out.println(javaElement.getHandleIdentifier());
-        }
-        String handleIdentifier = root.getHandleIdentifier();
-        IJavaElement create = JavaCore.create(handleIdentifier);
+        return javaEle;
     }
 
     private void processTreeSelection(ITreeSelection selection) {
@@ -92,9 +104,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
                 objects.add(next);
             }
         }
-
-        Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
-        Optional<String> nameForNewCategory = Optional.absent();
-        invoker.invoke(new AddElementToModelCommand(objects.toArray(), invoker, false, dropTarget, nameForNewCategory));
+        
+        bookmark(objects.toArray());
     }
 }
