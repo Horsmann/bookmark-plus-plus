@@ -11,20 +11,20 @@ import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableT
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer;
 import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
 
-public class DeActivateCategoryModeAction extends Action implements SelfEnabling {
+public class GoToCategoryModeAction extends Action implements SelfEnabling {
 
     private final BookmarkModel model;
     private final RepresentationSwitchableTreeViewer treeViewer;
     private final HideableComboViewer hideableComboViewer;
 
-    public DeActivateCategoryModeAction(HideableComboViewer hideableComboViewer, BookmarkModel model,
+    public GoToCategoryModeAction(HideableComboViewer hideableComboViewer, BookmarkModel model,
             RepresentationSwitchableTreeViewer representationSwitchableTreeViewer) {
         this.hideableComboViewer = hideableComboViewer;
         this.model = model;
         treeViewer = representationSwitchableTreeViewer;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(Activator.ICON_TOGGLE_VIEW));
         this.setToolTipText("Switches between the hierarchical and the category mode");
-        this.setText("Switch to category");
+        this.setText("Go to Category");
     }
 
     @Override

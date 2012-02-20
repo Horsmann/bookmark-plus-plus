@@ -44,7 +44,7 @@ import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.AddCategoryAction;
 import org.eclipselabs.recommenders.bookmark.action.BookmarkDeletionAction;
 import org.eclipselabs.recommenders.bookmark.action.CloseAllEditorWindowsAction;
-import org.eclipselabs.recommenders.bookmark.action.DeActivateCategoryModeAction;
+import org.eclipselabs.recommenders.bookmark.action.GoToCategoryModeAction;
 import org.eclipselabs.recommenders.bookmark.action.OpenBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.action.OpenInFileSystemAction;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
@@ -85,13 +85,13 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private boolean isHierarchicalModeActive;
     private CloseAllEditorWindowsAction closeAllEditors;
     private AddCategoryAction addNewCategory;
-    private DeActivateCategoryModeAction categoryMode;
+    private GoToCategoryModeAction categoryMode;
     private RenameCategoryAction renameCategory;
     private OpenBookmarkAction openInEditor;
     private OpenInFileSystemAction openInFileSystem;
     private BookmarkDeletionAction deleteBookmarks;
     private HideableComboViewer hideableComboViewer;
-    private DeActivateCategoryModeAction switchCategory;
+    private GoToCategoryModeAction switchCategory;
     private BookmarkTreeDropListener dropListener;
     private DefaultDropStrategy defaultDropStrategy;
     private DefaultPasteStrategy defaultPasteStrategy;
@@ -201,14 +201,14 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         openInEditor = new OpenBookmarkAction(treeViewer, this, this);
         openInFileSystem = new OpenInFileSystemAction(treeViewer);
         deleteBookmarks = new BookmarkDeletionAction(treeViewer, this);
-        switchCategory = new DeActivateCategoryModeAction(hideableComboViewer, model, treeViewer);
+        switchCategory = new GoToCategoryModeAction(hideableComboViewer, model, treeViewer);
         addContextMenu(treeViewer, renameCategory, openInEditor, openInFileSystem, deleteBookmarks, switchCategory);
     }
 
     private void addContextMenu(RepresentationSwitchableTreeViewer treeViewer,
             final RenameCategoryAction renameCategory, final OpenBookmarkAction openInEditor,
             final OpenInFileSystemAction openInFileSystem, final BookmarkDeletionAction deleteBookmarks,
-            final DeActivateCategoryModeAction switchCategory) {
+            final GoToCategoryModeAction switchCategory) {
 
         final MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown(true);
@@ -267,7 +267,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
         closeAllEditors = new CloseAllEditorWindowsAction(this);
         addNewCategory = new AddCategoryAction(this, hideableComboViewer);
-        categoryMode = new DeActivateCategoryModeAction(hideableComboViewer, model, treeViewer);
+        categoryMode = new GoToCategoryModeAction(hideableComboViewer, model, treeViewer);
     }
 
     private void enableActionsInToolbar(Action closeAllEditors, Action switchFlatHierarchical, Action categoryMode,
