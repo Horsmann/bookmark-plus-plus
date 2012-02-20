@@ -85,20 +85,14 @@
          point="org.eclipse.ui.bindings">
       <key
             commandId="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition"
-            contextId="org.eclipse.jdt.ui.javaEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+M2+B">
-      </key>
-      <key
-            commandId="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition"
-            contextId="org.eclipse.ui.textEditorScope"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+M2+B">
+            sequence="M1+M2+M3+B">
       </key>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
       <command
+            categoryId="org.eclipse.ui.category.navigate"
             id="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition"
             name="Bookmark It!">
       </command>
