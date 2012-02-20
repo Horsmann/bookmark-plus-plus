@@ -534,4 +534,9 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         }
 
     }
+
+    public void resetGui() {
+        treeViewer.setRepresentation(new HierarchicalRepresentationMode());
+        hideableComboViewer.hide();
+    }
 }

@@ -16,6 +16,8 @@ import java.util.List;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -103,6 +105,13 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
                 } else {
                     add.setEnabled(true);
                 }
+            }
+        });
+        localTreeViewer.addDoubleclickListener(new IDoubleClickListener() {
+
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                addSelectionFromLocalToExport();
             }
         });
     }
@@ -260,7 +269,6 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         buttonPanel.setLayout(new GridLayout());
         buttonPanel.setLayoutData(data);
 
-        addDragExplainingLabel(buttonPanel);
         addAddButton(buttonPanel);
         addAddAllButton(buttonPanel);
         addRemoveButton(buttonPanel);
@@ -277,6 +285,31 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         addMouseListenerToAddButton(add);
     }
 
+    private void addSelectionFromLocalToExport() {
+        IBookmarkModelComponent[] components = getSelectedBookmarkComponents();
+
+        if (exportTreeViewer.getSelections().size() == 0) {
+            Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
+            invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
+        } else {
+            Optional<IBookmarkModelComponent> dropTarget = Optional.of((IBookmarkModelComponent) exportTreeViewer
+                    .getSelections().getFirstElement());
+            invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
+        }
+
+    }
+
+    private IBookmarkModelComponent[] getSelectedBookmarkComponents() {
+        IStructuredSelection selections = localTreeViewer.getSelections();
+        List<IBookmarkModelComponent> components = Lists.newArrayList();
+        @SuppressWarnings("rawtypes")
+        Iterator iterator = selections.iterator();
+        while (iterator.hasNext()) {
+            components.add((IBookmarkModelComponent) iterator.next());
+        }
+        return components.toArray(new IBookmarkModelComponent[0]);
+    }
+
     private void addMouseListenerToAddButton(Button add) {
         add.addMouseListener(new MouseListener() {
 
@@ -286,27 +319,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
 
             @Override
             public void mouseDown(MouseEvent e) {
-                IBookmarkModelComponent[] components = getSelectedBookmarkComponents();
-
-                if (exportTreeViewer.getSelections().size() == 0) {
-                    Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
-                    invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
-                } else {
-                    Optional<IBookmarkModelComponent> dropTarget = Optional
-                            .of((IBookmarkModelComponent) exportTreeViewer.getSelections().getFirstElement());
-                    invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
-                }
-            }
-
-            private IBookmarkModelComponent[] getSelectedBookmarkComponents() {
-                IStructuredSelection selections = localTreeViewer.getSelections();
-                List<IBookmarkModelComponent> components = Lists.newArrayList();
-                @SuppressWarnings("rawtypes")
-                Iterator iterator = selections.iterator();
-                while (iterator.hasNext()) {
-                    components.add((IBookmarkModelComponent) iterator.next());
-                }
-                return components.toArray(new IBookmarkModelComponent[0]);
+                addSelectionFromLocalToExport();
             }
 
             @Override
@@ -356,19 +369,6 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         addAll.setLayoutData(data);
         addMouseListenerToAddAllButton(addAll);
-    }
-
-    private void addDragExplainingLabel(Composite buttonPanel) {
-        Label manual1 = new Label(buttonPanel, SWT.CENTER);
-        manual1.setText("drag to export");
-        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-        manual1.setLayoutData(data);
-
-        Label manual2 = new Label(buttonPanel, SWT.CENTER);
-        manual2.setText("===DRAG==>");
-        data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-        manual2.setLayoutData(data);
-
     }
 
     private void addMouseListenerToAddAllButton(Button addAll) {

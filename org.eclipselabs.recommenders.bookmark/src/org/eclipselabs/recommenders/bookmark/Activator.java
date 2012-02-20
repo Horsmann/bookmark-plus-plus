@@ -74,6 +74,7 @@ public class Activator extends AbstractUIPlugin {
 
     public static void setNewModel(BookmarkModel newModel) {
         bookmarkView.setNewModelForTreeViewer(newModel);
+        bookmarkView.resetGui();
     }
 
     @Override
