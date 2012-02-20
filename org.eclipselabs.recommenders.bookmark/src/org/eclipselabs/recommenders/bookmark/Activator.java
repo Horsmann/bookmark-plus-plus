@@ -11,10 +11,13 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModelCloner;
+import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+
+import com.google.common.base.Optional;
 
 public class Activator extends AbstractUIPlugin {
 
@@ -75,6 +78,10 @@ public class Activator extends AbstractUIPlugin {
     public static void setNewModel(BookmarkModel newModel) {
         bookmarkView.setNewModelForTreeViewer(newModel);
         bookmarkView.resetGui();
+    }
+    
+    public static Optional<Category> getSuggestedTargetCategory() {
+        return bookmarkView.getTargetCaegory();
     }
 
     @Override

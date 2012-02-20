@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
+import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
@@ -43,8 +44,9 @@ public class AddElementCommand implements IBookmarkModelCommand {
     private final Optional<String> nameForNewCategory;
     private final boolean isDropBeforeTarget;
 
-    public AddElementCommand(final Object[] elements,
-             BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget, final Optional<IBookmarkModelComponent> dropTarget, Optional<String> nameForNewCategory) {
+    public AddElementCommand(final Object[] elements, BookmarkCommandInvoker commandInvoker,
+            boolean isDropBeforeTarget, final Optional<IBookmarkModelComponent> dropTarget,
+            Optional<String> nameForNewCategory) {
         this.dropTarget = dropTarget;
         this.elements = elements;
         this.nameForNewCategory = nameForNewCategory;
@@ -96,7 +98,14 @@ public class AddElementCommand implements IBookmarkModelCommand {
             return getCategoryOf(target);
         } else {
 
-            Category category;
+            Category category = null;
+
+            //TODO: Ugly
+            Optional<Category> suggestedTargetCategory = Activator.getSuggestedTargetCategory();
+            if (suggestedTargetCategory.isPresent()) {
+                return suggestedTargetCategory.get();
+            }//TODO: Ugly-end
+
             if (nameForNewCategory.isPresent()) {
                 category = new Category(nameForNewCategory.get());
             } else {

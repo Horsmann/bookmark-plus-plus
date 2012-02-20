@@ -91,7 +91,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private OpenBookmarkAction openInEditor;
     private OpenInFileSystemAction openInFileSystem;
     private BookmarkDeletionAction deleteBookmarks;
-    private HideableComboViewer hideableComboViewer;
+    private HideableComboViewer comboViewer;
     private GoToCategoryModeAction switchCategory;
     private BookmarkTreeDropListener dropListener;
     private DefaultDropStrategy defaultDropStrategy;
@@ -99,13 +99,14 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private PasteHandler pasteHandler;
     private IMemento memento;
     private ComboStrategySwapper comboStrategySwapper;
+    private CategoryDirectory categoryDirectory;
 
     @Override
     public void createPartControl(final Composite parent) {
         parent.setLayout(GridLayoutFactory.fillDefaults().create());
 
         initGuiComponentsAndLoadModel(parent);
-        configureTreeViewer(treeViewer, model, hideableComboViewer);
+        configureTreeViewer(treeViewer, model, comboViewer);
         addCopyCutPasteFeatures(pasteHandler);
         enableActionsInToolbar(closeAllEditors, switchFlatHierarchical, categoryMode, addNewCategory);
         activateHierarchicalMode();
@@ -121,7 +122,12 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         loadModelAndSetForTreeViewer();
         initHideableComboViewer(parent, model, treeViewer, dropListener, defaultDropStrategy, pasteHandler,
                 defaultPasteStrategy);
-        initActions(treeViewer, model, hideableComboViewer);
+        initCategoryDirectory(comboViewer, model);
+        initActions(treeViewer, model, comboViewer);
+    }
+
+    private void initCategoryDirectory(HideableComboViewer comboViewer, BookmarkModel model) {
+        categoryDirectory = new CategoryDirectory(comboViewer, model);
     }
 
     private void loadModelAndSetForTreeViewer() {
@@ -194,7 +200,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         comboStrategySwapper.register(mouseDropStrategy);
         comboStrategySwapper.register(pasteStrategy);
 
-        hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer, comboStrategySwapper);
+        comboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer, comboStrategySwapper);
     }
 
     private void createContextActions(RepresentationSwitchableTreeViewer treeViewer, BookmarkModel model,
@@ -346,8 +352,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         super.saveState(memento);
         memento = memento.createChild(MEMENTO_GUI_STATE);
         memento.putBoolean(MEMENTO_IS_FLAT, !isHierarchicalModeActive());
-        memento.putBoolean(MEMENTO_IS_CATEGORY_MODE_ACTIVE, hideableComboViewer.isVisible());
-        memento.putInteger(MEMENTO_CATEGORY_MODE_SELECTED_CATEGORY, hideableComboViewer.getNumberOfSelectedCategory());
+        memento.putBoolean(MEMENTO_IS_CATEGORY_MODE_ACTIVE, comboViewer.isVisible());
+        memento.putInteger(MEMENTO_CATEGORY_MODE_SELECTED_CATEGORY, comboViewer.getNumberOfSelectedCategory());
     }
 
     private void restoreState(IMemento memento) {
@@ -367,7 +373,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         if (isCategoryModeActive != null && isCategoryModeActive) {
             Integer selectedCategory = memento.getInteger(MEMENTO_CATEGORY_MODE_SELECTED_CATEGORY);
             if (isCategoryNumberValid(selectedCategory)) {
-                hideableComboViewer.show(model.getCategories().get(selectedCategory));
+                comboViewer.show(model.getCategories().get(selectedCategory));
             }
         }
     }
@@ -534,8 +540,12 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     }
     
+    public Optional<Category> getTargetCaegory() {
+        return categoryDirectory.getCategory();
+    }
+    
     public void resetGui() {
         treeViewer.setRepresentation(new HierarchicalRepresentationMode());
-        hideableComboViewer.hide();
+        comboViewer.hide();
     }
 }
