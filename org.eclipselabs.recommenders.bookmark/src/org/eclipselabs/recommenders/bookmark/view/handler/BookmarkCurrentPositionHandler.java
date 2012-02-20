@@ -55,7 +55,10 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
     private void processEditorSelection(IEditorPart part, ITextSelection selection) {
         IEditorInput editorInput = ((IEditorPart) part).getEditorInput();
         final ITypeRoot root = (ITypeRoot) JavaUI.getEditorInputJavaElement(editorInput);
-
+        if (root == null) {
+            return;
+        }
+        //TODO: wie krieg ich nicht-java dateien?
         Optional<IJavaElement[]> elements = getJavaElements(root, selection);
         List<Object> objects = Lists.newArrayList();
         if (elements.isPresent()) {
@@ -104,7 +107,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
                 objects.add(next);
             }
         }
-        
+
         bookmark(objects.toArray());
     }
 }
