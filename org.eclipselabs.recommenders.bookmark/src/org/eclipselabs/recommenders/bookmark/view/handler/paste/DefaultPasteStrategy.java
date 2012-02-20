@@ -6,7 +6,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.widgets.Display;
-import org.eclipselabs.recommenders.bookmark.commands.AddElementToModelCommand;
+import org.eclipselabs.recommenders.bookmark.commands.AddElementCommand;
 import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
@@ -39,7 +39,7 @@ public class DefaultPasteStrategy implements IPasteStrategy {
             Object[] values = getValues(transferData.bookmarks);
 
             Optional<String> name = Optional.absent();
-            invoker.invoke(new AddElementToModelCommand(values, invoker, false, dropTarget, name));
+            invoker.invoke(new AddElementCommand(values, invoker, false, dropTarget, name));
         }
 
     }

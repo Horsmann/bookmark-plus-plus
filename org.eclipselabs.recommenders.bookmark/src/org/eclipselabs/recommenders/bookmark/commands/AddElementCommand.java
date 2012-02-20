@@ -33,7 +33,7 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
-public class AddElementToModelCommand implements IBookmarkModelCommand {
+public class AddElementCommand implements IBookmarkModelCommand {
 
     private final Object[] elements;
     private BookmarkModel model;
@@ -43,7 +43,7 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
     private final Optional<String> nameForNewCategory;
     private final boolean isDropBeforeTarget;
 
-    public AddElementToModelCommand(final Object[] elements,
+    public AddElementCommand(final Object[] elements,
              BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget, final Optional<IBookmarkModelComponent> dropTarget, Optional<String> nameForNewCategory) {
         this.dropTarget = dropTarget;
         this.elements = elements;
@@ -147,7 +147,6 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
                 JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
                         bookmarkParent);
                 newBookmark.setExpanded(true);
-                // bookmarkParent.addChildElement(newBookmark);
 
                 return newBookmark;
             }
@@ -163,7 +162,6 @@ public class AddElementToModelCommand implements IBookmarkModelCommand {
                 JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
                         category);
                 newBookmark.setExpanded(true);
-                // category.add(newBookmark);
 
                 return newBookmark;
             }

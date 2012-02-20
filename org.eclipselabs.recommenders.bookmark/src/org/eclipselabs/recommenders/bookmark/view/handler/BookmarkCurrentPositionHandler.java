@@ -21,7 +21,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.commands.AddElementToModelCommand;
+import org.eclipselabs.recommenders.bookmark.commands.AddElementCommand;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 
@@ -73,7 +73,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
     private void bookmark(Object[] array) {
         Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
         Optional<String> nameForNewCategory = Optional.absent();
-        invoker.invoke(new AddElementToModelCommand(array, invoker, false, dropTarget, nameForNewCategory));
+        invoker.invoke(new AddElementCommand(array, invoker, false, dropTarget, nameForNewCategory));
     }
 
     private Optional<IJavaElement[]> getJavaElements(ITypeRoot root, ITextSelection selection) {

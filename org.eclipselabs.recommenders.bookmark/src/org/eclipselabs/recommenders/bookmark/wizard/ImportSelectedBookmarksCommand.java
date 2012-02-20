@@ -3,7 +3,7 @@ package org.eclipselabs.recommenders.bookmark.wizard;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipselabs.recommenders.bookmark.commands.ChangeElementInModelCommand;
+import org.eclipselabs.recommenders.bookmark.commands.ChangeElementCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
@@ -48,7 +48,7 @@ public class ImportSelectedBookmarksCommand implements IBookmarkModelCommand {
                 }
             }
 
-            invoker.invoke(new ChangeElementInModelCommand(list.toArray(new IBookmarkModelComponent[0]),
+            invoker.invoke(new ChangeElementCommand(list.toArray(new IBookmarkModelComponent[0]),
                     isCopyOperation, invoker, insertDropBeforeTarget, dropTarget, categoryName));
             categoryName = Optional.absent();
         }

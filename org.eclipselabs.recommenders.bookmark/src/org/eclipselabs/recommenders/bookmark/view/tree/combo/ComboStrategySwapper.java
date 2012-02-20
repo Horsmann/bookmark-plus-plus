@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import org.eclipselabs.recommenders.bookmark.model.Category;
 
-public class ComboViewerDependendStrategyChanger {
+public class ComboStrategySwapper {
     
     private LinkedList<IChangeableStrategy> strategies = new LinkedList<IChangeableStrategy>();
     

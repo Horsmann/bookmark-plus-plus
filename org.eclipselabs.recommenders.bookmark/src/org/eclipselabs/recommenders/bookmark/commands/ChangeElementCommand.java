@@ -9,7 +9,7 @@ import org.eclipselabs.recommenders.bookmark.visitor.RemoveBookmarkModelComponen
 
 import com.google.common.base.Optional;
 
-public class ChangeElementInModelCommand implements IBookmarkModelCommand {
+public class ChangeElementCommand implements IBookmarkModelCommand {
 
     private final Optional<IBookmarkModelComponent> dropTarget;
     private final IBookmarkModelComponent[] bookmarks;
@@ -18,7 +18,7 @@ public class ChangeElementInModelCommand implements IBookmarkModelCommand {
     private final boolean isDropBeforeTarget;
     private final Optional<String> newCategoryName;
 
-    public ChangeElementInModelCommand(final IBookmarkModelComponent[] components, final boolean keepSource,
+    public ChangeElementCommand(final IBookmarkModelComponent[] components, final boolean keepSource,
             BookmarkCommandInvoker commandInvoker, boolean isDropBeforeTarget,
             final Optional<IBookmarkModelComponent> dropTarget, final Optional<String> newCategoryName) {
         this.dropTarget = dropTarget;
@@ -45,7 +45,7 @@ public class ChangeElementInModelCommand implements IBookmarkModelCommand {
         }
 
         if (!visitor.getValues().isEmpty()) {
-            commandInvoker.invoke(new AddElementToModelCommand(visitor.getValues().toArray(), commandInvoker,
+            commandInvoker.invoke(new AddElementCommand(visitor.getValues().toArray(), commandInvoker,
                     isDropBeforeTarget, dropTarget, newCategoryName));
         }
 

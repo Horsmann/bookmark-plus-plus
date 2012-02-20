@@ -65,11 +65,12 @@ import org.eclipselabs.recommenders.bookmark.view.handler.paste.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.view.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
-import org.eclipselabs.recommenders.bookmark.view.tree.combo.ComboViewerDependendStrategyChanger;
+import org.eclipselabs.recommenders.bookmark.view.tree.combo.ComboStrategySwapper;
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.MouseDropStrategyChanger;
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.PasteStrategyChanger;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
@@ -97,12 +98,13 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private DefaultPasteStrategy defaultPasteStrategy;
     private PasteHandler pasteHandler;
     private IMemento memento;
+    private ComboStrategySwapper comboStrategySwapper;
 
     @Override
     public void createPartControl(final Composite parent) {
         parent.setLayout(GridLayoutFactory.fillDefaults().create());
 
-        initGuiComponentsLoadModel(parent);
+        initGuiComponentsAndLoadModel(parent);
         configureTreeViewer(treeViewer, model, hideableComboViewer);
         addCopyCutPasteFeatures(pasteHandler);
         enableActionsInToolbar(closeAllEditors, switchFlatHierarchical, categoryMode, addNewCategory);
@@ -114,7 +116,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         restoreState(memento);
     }
 
-    private void initGuiComponentsLoadModel(Composite parent) {
+    private void initGuiComponentsAndLoadModel(Composite parent) {
         initTreeViewerWithDropAndPasteHandlingComponents(parent);
         loadModelAndSetForTreeViewer();
         initHideableComboViewer(parent, model, treeViewer, dropListener, defaultDropStrategy, pasteHandler,
@@ -188,11 +190,11 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
                 this);
         PasteStrategyChanger pasteStrategy = new PasteStrategyChanger(pasteHandler, defaultPasteStrategy, treeViewer,
                 this);
-        ComboViewerDependendStrategyChanger strategyChanger = new ComboViewerDependendStrategyChanger();
-        strategyChanger.register(mouseDropStrategy);
-        strategyChanger.register(pasteStrategy);
+        comboStrategySwapper = new ComboStrategySwapper();
+        comboStrategySwapper.register(mouseDropStrategy);
+        comboStrategySwapper.register(pasteStrategy);
 
-        hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer, strategyChanger);
+        hideableComboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer, comboStrategySwapper);
     }
 
     private void createContextActions(RepresentationSwitchableTreeViewer treeViewer, BookmarkModel model,
@@ -492,9 +494,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
         private void searchBookmarkDeleteSelection(TreeItem item) {
             if (item.isDisposed()) {
-                // happens if a parent node of the current one was delete before
-                // than the current child is already
-                // disposed
                 return;
             }
             IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
@@ -534,7 +533,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         }
 
     }
-
+    
     public void resetGui() {
         treeViewer.setRepresentation(new HierarchicalRepresentationMode());
         hideableComboViewer.hide();

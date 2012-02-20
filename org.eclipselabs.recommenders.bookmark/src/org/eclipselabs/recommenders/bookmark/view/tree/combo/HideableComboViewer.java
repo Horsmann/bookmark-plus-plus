@@ -35,10 +35,10 @@ public class HideableComboViewer extends Composite {
     private String newCategoryName = "";
     private final BookmarkModel model;
     private final RepresentationSwitchableTreeViewer treeViewer;
-    private final ComboViewerDependendStrategyChanger strategyChanger;
+    private final ComboStrategySwapper strategyChanger;
 
     public HideableComboViewer(Composite parent, int style, BookmarkModel model,
-            RepresentationSwitchableTreeViewer treeViewer, ComboViewerDependendStrategyChanger strategyChanger) {
+            RepresentationSwitchableTreeViewer treeViewer, ComboStrategySwapper strategyChanger) {
         super(parent, style);
         this.parent = parent;
         this.model = model;
