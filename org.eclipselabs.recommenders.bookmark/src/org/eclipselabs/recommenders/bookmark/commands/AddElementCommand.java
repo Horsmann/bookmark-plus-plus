@@ -100,11 +100,11 @@ public class AddElementCommand implements IBookmarkModelCommand {
 
             Category category = null;
 
-            //TODO: Ugly
-            Optional<Category> suggestedTargetCategory = Activator.getSuggestedTargetCategory();
-            if (suggestedTargetCategory.isPresent()) {
-                return suggestedTargetCategory.get();
-            }//TODO: Ugly-end
+            //TODO: Ugly and buggy falls aus dem Im/Exportdialog ausgeführt wird
+//            Optional<Category> suggestedTargetCategory = Activator.getSuggestedTargetCategory();
+//            if (suggestedTargetCategory.isPresent()) {
+//                return suggestedTargetCategory.get();
+//            }//TODO: Ugly-end
 
             if (nameForNewCategory.isPresent()) {
                 category = new Category(nameForNewCategory.get());

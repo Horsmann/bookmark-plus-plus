@@ -65,6 +65,7 @@ import org.eclipselabs.recommenders.bookmark.view.handler.paste.PasteHandler;
 import org.eclipselabs.recommenders.bookmark.view.tree.FlatRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.ComboStrategySwapper;
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.MouseDropStrategyChanger;
@@ -428,22 +429,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         setModel(newModel);
     }
 
-    private class SelectionChangedListener implements ISelectionChangedListener {
-
-        List<SelfEnabling> clients = Lists.newArrayList();
-
-        public void register(SelfEnabling selfEnabling) {
-            clients.add(selfEnabling);
-        }
-
-        @Override
-        public void selectionChanged(SelectionChangedEvent event) {
-            for (SelfEnabling client : clients) {
-                client.updateEnableStatus();
-            }
-        }
-
-    }
 
     private class TreeKeyListener implements KeyListener {
 

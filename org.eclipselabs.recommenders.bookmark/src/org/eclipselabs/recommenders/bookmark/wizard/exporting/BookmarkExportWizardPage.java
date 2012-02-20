@@ -14,6 +14,9 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -38,6 +41,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
@@ -49,6 +53,7 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
 
@@ -91,8 +96,33 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
 
         localTreeViewer.setInput(localClonedModel);
         exportTreeViewer.setInput(exportModel);
+        RenameCategoryAction renameCategoryAction = new RenameCategoryAction(exportTreeViewer, invoker);
+        addContextMenu(exportTreeViewer, renameCategoryAction);
         setControl(parent);
         setPageComplete(false);
+    }
+
+
+    private void addContextMenu(final RepresentationSwitchableTreeViewer exportTreeViewer, final RenameCategoryAction renameCategoryAction) {
+        final MenuManager menuMgr = new MenuManager();
+        menuMgr.setRemoveAllWhenShown(true);
+
+        menuMgr.addMenuListener(new IMenuListener() {
+            public void menuAboutToShow(IMenuManager mgr) {
+                menuMgr.add(renameCategoryAction);
+            }
+        });
+
+        menuMgr.update(true);      
+        exportTreeViewer.setContextMenu(menuMgr);
+        addTreeViewerSelectionChangedListener(exportTreeViewer, renameCategoryAction);
+    }
+    
+    
+    private void addTreeViewerSelectionChangedListener(RepresentationSwitchableTreeViewer exportTreeViewer, RenameCategoryAction renameCategory) {
+        SelectionChangedListener selectionListener = new SelectionChangedListener();
+        selectionListener.register(renameCategory);
+        exportTreeViewer.addSelectionChangedListener(selectionListener);
     }
 
     private void makeAddButtonEnDisableOnSelections() {
@@ -484,7 +514,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
 
         data = new GridData(SWT.LEFT, SWT.CENTER, true, false);
         Label right = new Label(composite, SWT.CENTER);
-        right.setText("Export bookm. (F2=Rename Cat.)");
+        right.setText("Export bookmarks");
         right.setLayoutData(data);
 
     }
