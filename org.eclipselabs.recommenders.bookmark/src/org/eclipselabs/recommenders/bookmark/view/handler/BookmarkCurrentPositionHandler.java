@@ -75,9 +75,9 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
         List<Object> objects = Lists.newArrayList();
         if (elements.isPresent()) {
             for (IJavaElement element : elements.get()) {
-                // TODO: Testen ob Selektionsergebnisse
-                if (isReturnedElementDefinedInCompilationUnit(root, element)) {
-                    objects.add(element);
+                IJavaElement obtained = determineJavaElement(root, selection.getOffset(), element);
+                if (obtained != null) {
+                    objects.add(obtained);
                 }
             }
         } else {
@@ -86,6 +86,22 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
             objects.add(file);
         }
         bookmark(objects.toArray());
+    }
+
+    private IJavaElement determineJavaElement(ITypeRoot root, int offset, IJavaElement element) {
+        if (isReturnedElementDefinedInCompilationUnit(root, element)) {
+            return element;
+        }
+        return getEnclosingIJavaElement(root, offset);
+    }
+
+    private IJavaElement getEnclosingIJavaElement(ITypeRoot root, int offset) {
+        try {
+            return root.getElementAt(offset);
+        } catch (JavaModelException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private boolean isReturnedElementDefinedInCompilationUnit(ITypeRoot root, IJavaElement element) {
@@ -104,11 +120,11 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
     }
 
     private void bookmark(Object[] objects) {
-        
-        if (objects.length == 0){
+
+        if (objects.length == 0) {
             return;
         }
-        
+
         Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
         Optional<String> nameForNewCategory = Optional.absent();
         invoker.invoke(new AddElementCommand(objects, invoker, false, dropTarget, nameForNewCategory));
