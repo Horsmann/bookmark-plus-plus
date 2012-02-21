@@ -75,13 +75,6 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
         List<Object> objects = Lists.newArrayList();
         if (elements.isPresent()) {
             for (IJavaElement element : elements.get()) {
-                System.out.println(element.getHandleIdentifier());
-                System.out.println(element.getParent().getHandleIdentifier());
-                System.out.println(element.getElementType());
-                System.out.println(element.exists());
-                IJavaElement primaryElement = element.getPrimaryElement();
-                System.out.println(primaryElement.getHandleIdentifier() + " " + primaryElement.getElementType());
-
                 // TODO: Testen ob Selektionsergebnisse
                 if (isReturnedElementDefinedInCompilationUnit(root, element)) {
                     objects.add(element);
