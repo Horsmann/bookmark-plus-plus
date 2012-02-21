@@ -71,52 +71,25 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
     }
 
     private void processJavaElements(ITypeRoot root, ITextSelection selection) {
-        Optional<IJavaElement[]> elements = getJavaElements(root, selection);
-        List<Object> objects = Lists.newArrayList();
-        if (elements.isPresent()) {
-            for (IJavaElement element : elements.get()) {
-                IJavaElement obtained = determineJavaElement(root, selection.getOffset(), element);
-                if (obtained != null) {
-                    objects.add(obtained);
-                }
-            }
-        } else {
+
+        IJavaElement element;
+        element = getEnclosingJavaElement(root, selection.getOffset());
+        if (element == null) {
             String handleIdentifier = root.getHandleIdentifier();
-            IJavaElement file = JavaCore.create(handleIdentifier);
-            objects.add(file);
+            element = JavaCore.create(handleIdentifier);
         }
-        bookmark(objects.toArray());
+        if (element != null) {
+            bookmark(new Object[] { element });
+        }
     }
 
-    private IJavaElement determineJavaElement(ITypeRoot root, int offset, IJavaElement element) {
-        if (isReturnedElementDefinedInCompilationUnit(root, element)) {
-            return element;
-        }
-        return getEnclosingIJavaElement(root, offset);
-    }
-
-    private IJavaElement getEnclosingIJavaElement(ITypeRoot root, int offset) {
+    private IJavaElement getEnclosingJavaElement(ITypeRoot root, int offset) {
         try {
             return root.getElementAt(offset);
         } catch (JavaModelException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    private boolean isReturnedElementDefinedInCompilationUnit(ITypeRoot root, IJavaElement element) {
-        String handleIdentifier = root.getHandleIdentifier();
-
-        boolean isContained = false;
-        while (element != null) {
-            if (element.getHandleIdentifier().equals(handleIdentifier)) {
-                isContained = true;
-                break;
-            }
-            element = element.getParent();
-        }
-
-        return isContained;
     }
 
     private void bookmark(Object[] objects) {
@@ -128,20 +101,6 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
         Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
         Optional<String> nameForNewCategory = Optional.absent();
         invoker.invoke(new AddElementCommand(objects, invoker, false, dropTarget, nameForNewCategory));
-    }
-
-    private Optional<IJavaElement[]> getJavaElements(ITypeRoot root, ITextSelection selection) {
-        Optional<IJavaElement[]> javaEle = Optional.absent();
-        try {
-            int offset = selection.getOffset();
-            IJavaElement[] codeSelect = root.codeSelect(offset, 0);
-            if (codeSelect.length > 0) {
-                javaEle = Optional.of(codeSelect);
-            }
-        } catch (JavaModelException e) {
-            e.printStackTrace();
-        }
-        return javaEle;
     }
 
     private void processTreeSelection(ITreeSelection selection) {
