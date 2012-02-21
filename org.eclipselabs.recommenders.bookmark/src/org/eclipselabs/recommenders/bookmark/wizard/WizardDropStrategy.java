@@ -18,10 +18,10 @@ public class WizardDropStrategy extends DefaultDropStrategy {
 
     @Override
     public void performDrop(DropTargetEvent event) {
+        
+        setDropOperation(event);
         final Optional<IBookmarkModelComponent> dropTarget = getDropTarget(event);
-
         boolean insertDropBeforeTarget = determineInsertLocation(event);
-
         ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
         if (selections instanceof IStructuredSelection) {
             processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event),

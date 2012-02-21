@@ -37,18 +37,10 @@ public class DefaultDropStrategy implements IDropStrategy {
     }
 
     @Override
-    public void updateOnDragEvent(DropTargetEvent event) {
-        if ((event.operations & DND.DROP_MOVE) != 0) {
-            event.detail = DND.DROP_MOVE;
-        } else {
-            event.detail = DND.DROP_COPY;
-        }
-    }
-
-    @Override
     public void performDrop(DropTargetEvent event) {
-        final Optional<IBookmarkModelComponent> dropTarget = getDropTarget(event);
 
+        setDropOperation(event);
+        final Optional<IBookmarkModelComponent> dropTarget = getDropTarget(event);
         boolean insertDropBeforeTarget = determineInsertLocation(event);
 
         // drops from external
@@ -61,6 +53,14 @@ public class DefaultDropStrategy implements IDropStrategy {
                 processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event),
                         insertDropBeforeTarget);
             }
+        }
+    }
+
+    protected void setDropOperation(DropTargetEvent event) {
+        if ((event.operations & DND.DROP_MOVE) != 0) {
+            event.detail = DND.DROP_MOVE;
+        } else {
+            event.detail = DND.DROP_COPY;
         }
     }
 

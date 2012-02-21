@@ -27,7 +27,6 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
     @Override
     public void dragEnter(final DropTargetEvent event) {
-        strategy.updateOnDragEvent(event);
     }
 
     @Override
@@ -40,6 +39,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
     @Override
     public void dragOver(final DropTargetEvent event) {
+        event.feedback = DND.FEEDBACK_EXPAND;
     }
 
     @Override
