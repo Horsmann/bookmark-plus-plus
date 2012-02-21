@@ -74,6 +74,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
                     createdElements.add(created.get());
                 }
             } else if (element instanceof IFile) {
+                //TODO: wenns file schon gibt, wirds doppelt hinzugefügt
                 createdElements.add(processFile((IFile) element));
             }
         }
