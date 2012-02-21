@@ -6,6 +6,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
@@ -59,6 +60,11 @@ public class IsResourceAvailableVisitor implements IModelVisitor {
         if (element instanceof IType) {
             IType type = (IType) element;
             return type.exists();
+        }
+
+        if (element instanceof IPackageDeclaration) {
+            IPackageDeclaration pack = (IPackageDeclaration) element;
+            return pack.exists();
         }
 
         if (element instanceof ICompilationUnit) {

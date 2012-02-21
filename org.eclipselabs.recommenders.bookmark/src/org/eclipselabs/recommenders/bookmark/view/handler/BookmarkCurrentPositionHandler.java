@@ -7,7 +7,14 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IImportContainer;
+import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageDeclaration;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -111,13 +118,21 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
 
         while (iterator.hasNext()) {
             Object next = iterator.next();
-            if (next instanceof IJavaElement) {
+            if (next instanceof IJavaElement && isInHierarchyOfICompilationUnit(next)) {
                 objects.add(next);
             } else if (next instanceof IFile) {
                 objects.add(next);
             }
         }
 
-        bookmark(objects.toArray());
+        if (objects.size() > 0) {
+            bookmark(objects.toArray());
+        }
+    }
+
+    private boolean isInHierarchyOfICompilationUnit(Object element) {
+        return element instanceof IMethod || element instanceof IType || element instanceof IField
+                || element instanceof IImportDeclaration || element instanceof IImportContainer
+                || element instanceof IPackageDeclaration || element instanceof ICompilationUnit;
     }
 }
