@@ -104,6 +104,20 @@
             commandId="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition">
       </handler>
    </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition"
+               icon="icons/bkmrk_nav.gif"
+               label="Bookmark It!"
+               style="push"
+               tooltip="Bookmarks the current cursor position">
+         </command>
+      </menuContribution>
+   </extension>
 
 
 </plugin>
