@@ -117,7 +117,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
     private Optional<IJavaElement[]> getJavaElements(ITypeRoot root, ITextSelection selection) {
         Optional<IJavaElement[]> javaEle = Optional.absent();
         try {
-            int offset = (selection).getOffset();
+            int offset = selection.getOffset();
             IJavaElement[] codeSelect = root.codeSelect(offset, 0);
             if (codeSelect.length > 0) {
                 javaEle = Optional.of(codeSelect);
