@@ -95,7 +95,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private PasteHandler pasteHandler;
     private IMemento memento;
     private ComboStrategySwapper comboStrategySwapper;
-    private CategoryDirectory categoryDirectory;
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -118,12 +117,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         loadModelAndSetForTreeViewer();
         initHideableComboViewer(parent, model, treeViewer, dropListener, defaultDropStrategy, pasteHandler,
                 defaultPasteStrategy);
-        initCategoryDirectory(comboViewer, model);
         initActions(treeViewer, model, comboViewer);
-    }
-
-    private void initCategoryDirectory(HideableComboViewer comboViewer, BookmarkModel model) {
-        categoryDirectory = new CategoryDirectory(comboViewer, model);
     }
 
     private void loadModelAndSetForTreeViewer() {
@@ -522,10 +516,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
                     .getActivePage(), commandInvoker));
         }
 
-    }
-
-    public Optional<Category> getTargetCaegory() {
-        return categoryDirectory.getCategory();
     }
 
     public void resetGui() {

@@ -53,6 +53,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
     }
 
     private void processEditorSelection(IEditorPart part, ITextSelection selection) {
+        
         IEditorInput editorInput = ((IEditorPart) part).getEditorInput();
         final ITypeRoot root = (ITypeRoot) JavaUI.getEditorInputJavaElement(editorInput);
         if (root != null) {
@@ -74,6 +75,10 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
         List<Object> objects = Lists.newArrayList();
         if (elements.isPresent()) {
             for (IJavaElement element : elements.get()) {
+                System.out.println(element.getHandleIdentifier());
+                System.out.println(element.getParent().getHandleIdentifier());
+                System.out.println(element.getElementType());
+                System.out.println(element.exists());
                 objects.add(element);
             }
         } else {

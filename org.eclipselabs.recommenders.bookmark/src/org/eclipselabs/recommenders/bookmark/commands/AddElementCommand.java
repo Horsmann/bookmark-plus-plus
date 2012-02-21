@@ -55,6 +55,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
 
     @Override
     public void execute(final BookmarkModel model) {
+        this.model = model;
         Category category = findCategory();
         execute(model, category);
     }
