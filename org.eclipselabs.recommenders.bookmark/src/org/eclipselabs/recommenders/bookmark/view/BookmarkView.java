@@ -67,8 +67,6 @@ import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.MouseDropStrategyChanger;
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.PasteStrategyChanger;
 
-import com.google.common.base.Optional;
-
 public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private String MEMENTO_GUI_STATE = "GUISTATE";
@@ -381,7 +379,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     private boolean isCategoryNumberValid(Integer selectedCategory) {
-        if (selectedCategory == null || selectedCategory < 0 || selectedCategory > model.getCategories().size()) {
+        if (selectedCategory == null || selectedCategory < 0 || selectedCategory >= model.getCategories().size()) {
             return false;
         }
         return true;

@@ -53,7 +53,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
     }
 
     private void processEditorSelection(IEditorPart part, ITextSelection selection) {
-        
+
         IEditorInput editorInput = ((IEditorPart) part).getEditorInput();
         final ITypeRoot root = (ITypeRoot) JavaUI.getEditorInputJavaElement(editorInput);
         if (root != null) {
@@ -79,7 +79,13 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
                 System.out.println(element.getParent().getHandleIdentifier());
                 System.out.println(element.getElementType());
                 System.out.println(element.exists());
-                objects.add(element);
+                IJavaElement primaryElement = element.getPrimaryElement();
+                System.out.println(primaryElement.getHandleIdentifier() + " " + primaryElement.getElementType());
+
+                // TODO: Testen ob Selektionsergebnisse
+                if (isReturnedElementDefinedInCompilationUnit(root, element)) {
+                    objects.add(element);
+                }
             }
         } else {
             String handleIdentifier = root.getHandleIdentifier();
@@ -89,10 +95,30 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
         bookmark(objects.toArray());
     }
 
-    private void bookmark(Object[] array) {
+    private boolean isReturnedElementDefinedInCompilationUnit(ITypeRoot root, IJavaElement element) {
+        String handleIdentifier = root.getHandleIdentifier();
+
+        boolean isContained = false;
+        while (element != null) {
+            if (element.getHandleIdentifier().equals(handleIdentifier)) {
+                isContained = true;
+                break;
+            }
+            element = element.getParent();
+        }
+
+        return isContained;
+    }
+
+    private void bookmark(Object[] objects) {
+        
+        if (objects.length == 0){
+            return;
+        }
+        
         Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
         Optional<String> nameForNewCategory = Optional.absent();
-        invoker.invoke(new AddElementCommand(array, invoker, false, dropTarget, nameForNewCategory));
+        invoker.invoke(new AddElementCommand(objects, invoker, false, dropTarget, nameForNewCategory));
     }
 
     private Optional<IJavaElement[]> getJavaElements(ITypeRoot root, ITextSelection selection) {
