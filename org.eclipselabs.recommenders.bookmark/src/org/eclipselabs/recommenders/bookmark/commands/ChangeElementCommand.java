@@ -80,4 +80,9 @@ public class ChangeElementCommand implements IBookmarkModelCommand {
         }
     }
 
+    @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
+    }
+
 }

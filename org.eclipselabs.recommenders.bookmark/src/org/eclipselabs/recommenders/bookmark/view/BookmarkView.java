@@ -11,7 +11,6 @@
 package org.eclipselabs.recommenders.bookmark.view;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -25,9 +24,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -48,7 +45,6 @@ import org.eclipselabs.recommenders.bookmark.action.GoToCategoryModeAction;
 import org.eclipselabs.recommenders.bookmark.action.OpenBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.action.OpenInFileSystemAction;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
-import org.eclipselabs.recommenders.bookmark.action.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.action.SwitchFlatHierarchicalAction;
 import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
@@ -72,7 +68,6 @@ import org.eclipselabs.recommenders.bookmark.view.tree.combo.MouseDropStrategyCh
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.PasteStrategyChanger;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
@@ -344,7 +339,12 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     @Override
     public void invoke(final IBookmarkModelCommand command) {
-        command.execute(model);
+        Object input = treeViewer.getInput();
+        if (input instanceof Category) {
+            command.execute(model, (Category) input);
+        } else {
+            command.execute(model);
+        }
         treeViewer.refresh();
     }
 
@@ -428,7 +428,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     public void setNewModelForTreeViewer(BookmarkModel newModel) {
         setModel(newModel);
     }
-
 
     private class TreeKeyListener implements KeyListener {
 
@@ -524,11 +523,11 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         }
 
     }
-    
+
     public Optional<Category> getTargetCaegory() {
         return categoryDirectory.getCategory();
     }
-    
+
     public void resetGui() {
         treeViewer.setRepresentation(new HierarchicalRepresentationMode());
         comboViewer.hide();

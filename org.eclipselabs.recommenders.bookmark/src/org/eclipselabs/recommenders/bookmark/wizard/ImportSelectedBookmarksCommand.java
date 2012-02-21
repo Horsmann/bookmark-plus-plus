@@ -91,4 +91,9 @@ public class ImportSelectedBookmarksCommand implements IBookmarkModelCommand {
         return poll;
     }
 
+    @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
+    }
+
 }

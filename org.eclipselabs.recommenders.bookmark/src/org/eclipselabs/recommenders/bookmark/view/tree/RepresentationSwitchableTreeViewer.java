@@ -227,4 +227,8 @@ public class RepresentationSwitchableTreeViewer {
         treeViewer.setSelection(selection, true);
     }
 
+    public Object getInput() {
+        return treeViewer.getInput();
+    }
+
 }

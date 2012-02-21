@@ -21,7 +21,6 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IType;
-import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
@@ -56,9 +55,14 @@ public class AddElementCommand implements IBookmarkModelCommand {
 
     @Override
     public void execute(final BookmarkModel model) {
+        Category category = findCategory();
+        execute(model, category);
+    }
+    
+    @Override
+    public void execute(BookmarkModel model, Category category) {
+        this.category = category;
         this.model = model;
-        this.category = findCategory();
-
         List<IBookmarkModelComponent> createdElements = Lists.newLinkedList();
 
         for (Object element : elements) {
@@ -74,7 +78,6 @@ public class AddElementCommand implements IBookmarkModelCommand {
         }
 
         sortInIfDropAndTargetShareSameParent(createdElements);
-
     }
 
     private void sortInIfDropAndTargetShareSameParent(List<IBookmarkModelComponent> createdElements) {
@@ -99,12 +102,6 @@ public class AddElementCommand implements IBookmarkModelCommand {
         } else {
 
             Category category = null;
-
-            //TODO: Ugly and buggy falls aus dem Im/Exportdialog ausgeführt wird
-//            Optional<Category> suggestedTargetCategory = Activator.getSuggestedTargetCategory();
-//            if (suggestedTargetCategory.isPresent()) {
-//                return suggestedTargetCategory.get();
-//            }//TODO: Ugly-end
 
             if (nameForNewCategory.isPresent()) {
                 category = new Category(nameForNewCategory.get());
@@ -226,4 +223,6 @@ public class AddElementCommand implements IBookmarkModelCommand {
         }
 
     }
+
+  
 }

@@ -25,4 +25,9 @@ public class AddCategoryCommand implements IBookmarkModelCommand {
         }
     }
 
+    @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
+    }
+
 }

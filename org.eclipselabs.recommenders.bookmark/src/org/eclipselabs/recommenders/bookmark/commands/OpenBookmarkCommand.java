@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.preferences.PreferenceConstants;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
@@ -19,15 +20,21 @@ public class OpenBookmarkCommand implements IBookmarkModelCommand {
     private final IWorkbenchPage activePage;
     private final BookmarkCommandInvoker commandInvoker;
 
-    public OpenBookmarkCommand(IStructuredSelection selections, IWorkbenchPage activePage, BookmarkCommandInvoker commandInvoker) {
+    public OpenBookmarkCommand(IStructuredSelection selections, IWorkbenchPage activePage,
+            BookmarkCommandInvoker commandInvoker) {
         this.selections = selections;
         this.activePage = activePage;
         this.commandInvoker = commandInvoker;
     }
 
     @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
+    }
+
+    @Override
     public void execute(BookmarkModel model) {
-        
+
         @SuppressWarnings("rawtypes")
         Iterator iterator = selections.iterator();
         while (iterator.hasNext()) {
@@ -54,11 +61,10 @@ public class OpenBookmarkCommand implements IBookmarkModelCommand {
     }
 
     private void closeAllOpenEditors() {
-        IPreferenceStore preferenceStore = Activator.getDefault()
-                .getPreferenceStore();
+        IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
         boolean closeOpenEditors = preferenceStore
                 .getBoolean(PreferenceConstants.CLOSE_ALL_OPEN_EDITOR_WINDOWS_IF_BOOKMARK_CATEGORY_IS_OPENED);
-        if (closeOpenEditors){
+        if (closeOpenEditors) {
             commandInvoker.invoke(new CloseAllOpenEditorsCommand());
         }
     }

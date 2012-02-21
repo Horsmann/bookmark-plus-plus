@@ -18,6 +18,11 @@ public class BookmarkDeletionCommand implements IBookmarkModelCommand {
         deletionForCategories(component, model);
         deletionForIBookmarks(component, model);
     }
+    
+    @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
+    }
 
     private void deletionForIBookmarks(IBookmarkModelComponent component, BookmarkModel model) {
         RemoveBookmarkModelComponentVisitor visitor = new RemoveBookmarkModelComponentVisitor(component);
@@ -29,5 +34,7 @@ public class BookmarkDeletionCommand implements IBookmarkModelCommand {
     private void deletionForCategories(IBookmarkModelComponent selection, BookmarkModel model) {
         model.remove(selection);
     }
+
+   
 
 }

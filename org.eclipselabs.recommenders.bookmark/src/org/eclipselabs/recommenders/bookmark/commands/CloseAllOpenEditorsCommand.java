@@ -4,6 +4,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.model.Category;
 
 public class CloseAllOpenEditorsCommand implements IBookmarkModelCommand {
 
@@ -17,5 +18,10 @@ public class CloseAllOpenEditorsCommand implements IBookmarkModelCommand {
                 page.closeAllEditors(true);
             }
         }
+    }
+
+    @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
     }
 }

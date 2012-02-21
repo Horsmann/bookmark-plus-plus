@@ -116,7 +116,7 @@ public class OpenInFileSystemAction extends Action implements SelfEnabling {
             if (!availVisitor.isAvailable()) {
                 return;
             }
-
+            //TODO: resource ist null
             IResource resource = getResource(javaElementBookmark.getJavaElement());
             file = Optional.of(resource.getParent().getRawLocation().toFile());
         }
