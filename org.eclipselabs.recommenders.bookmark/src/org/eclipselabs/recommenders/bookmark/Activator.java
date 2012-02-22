@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModelCloner;
@@ -77,7 +78,10 @@ public class Activator extends AbstractUIPlugin {
         bookmarkView.setNewModelForTreeViewer(newModel);
         bookmarkView.resetGui();
     }
-    
+
+    public static IStructuredSelection getCurrentTreeSelection() {
+        return bookmarkView.getSelections();
+    }
 
     @Override
     protected void initializeImageRegistry(ImageRegistry registry) {
@@ -90,7 +94,7 @@ public class Activator extends AbstractUIPlugin {
 
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/bookmark_obj_ovl.gif"), null));
         registry.put(ICON_SINGLE_BOOKMARK_OVERLAY, imgDesc);
-        
+
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/read_obj.gif"), null));
         registry.put(ICON_SHOW_IN_EDITOR, imgDesc);
 
@@ -111,7 +115,7 @@ public class Activator extends AbstractUIPlugin {
 
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/tree_explorer.gif"), null));
         registry.put(ICON_SWITCH_FLAT_HIERARCHY, imgDesc);
-        
+
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/save_edit.gif"), null));
         registry.put(ICON_SAVE, imgDesc);
 

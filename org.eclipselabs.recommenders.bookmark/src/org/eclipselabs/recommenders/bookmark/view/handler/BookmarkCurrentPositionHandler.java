@@ -7,20 +7,14 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IImportContainer;
-import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IPackageDeclaration;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -106,9 +100,18 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
             return;
         }
 
-        Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
+        Optional<IBookmarkModelComponent> dropTarget = getDropTarget();
         Optional<String> nameForNewCategory = Optional.absent();
         invoker.invoke(new AddElementCommand(objects, invoker, false, dropTarget, nameForNewCategory));
+    }
+
+    private Optional<IBookmarkModelComponent> getDropTarget() {
+        IStructuredSelection currentTreeSelection = Activator.getCurrentTreeSelection();
+        IBookmarkModelComponent target = (IBookmarkModelComponent) currentTreeSelection.getFirstElement();
+        if (target != null) {
+            return Optional.of(target);
+        }
+        return Optional.absent();
     }
 
     private void processTreeSelection(ITreeSelection selection) {
@@ -119,7 +122,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
 
         while (iterator.hasNext()) {
             Object next = iterator.next();
-            if (next instanceof IJavaElement && isInHierarchyOfICompilationUnit(next)
+            if (next instanceof IJavaElement && BookmarkUtil.isBookmarkable(next)
                     && BookmarkUtil.isInternalElement((IJavaElement) next)) {
                 objects.add(next);
             } else if (next instanceof IFile) {
@@ -132,9 +135,4 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
         }
     }
 
-    private boolean isInHierarchyOfICompilationUnit(Object element) {
-        return element instanceof IMethod || element instanceof IType || element instanceof IField
-                || element instanceof IImportDeclaration || element instanceof IImportContainer
-                || element instanceof IPackageDeclaration || element instanceof ICompilationUnit;
-    }
 }

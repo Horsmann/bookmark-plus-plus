@@ -11,21 +11,18 @@ import org.eclipse.jdt.core.IType;
 
 public class BookmarkUtil {
 
-    //external would be stuff for instance from .class files
+    // external would be stuff for instance from .class files
     public static boolean isInternalElement(IJavaElement element) {
         return element.getResource() != null;
     }
-    
-    public static boolean isBookmarkable(Object value) {
-        return (value instanceof ICompilationUnit) || isValueInTypeHierarchyBelowICompilationUnit(value);
-    }
 
-    private static boolean isValueInTypeHierarchyBelowICompilationUnit(Object value) {
+    public static boolean isBookmarkable(Object value) {
+
         return value instanceof IMethod || value instanceof IType || value instanceof IField
                 || value instanceof IImportDeclaration || value instanceof IImportContainer
-                || value instanceof IPackageDeclaration;
+                || value instanceof IPackageDeclaration || value instanceof ICompilationUnit;
     }
-    
+
     public static boolean doesReferencedIJavaElementExist(IJavaElement element) {
         if (element instanceof IField) {
             IField field = (IField) element;
@@ -46,7 +43,7 @@ public class BookmarkUtil {
             IPackageDeclaration pack = (IPackageDeclaration) element;
             return pack.exists();
         }
-        
+
         if (element instanceof IImportDeclaration) {
             IImportDeclaration impDec = (IImportDeclaration) element;
             return impDec.exists();
@@ -58,5 +55,5 @@ public class BookmarkUtil {
         }
         return false;
     }
-    
+
 }
