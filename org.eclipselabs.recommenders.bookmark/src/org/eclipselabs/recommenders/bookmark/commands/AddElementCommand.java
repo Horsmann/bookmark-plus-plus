@@ -13,14 +13,8 @@ package org.eclipselabs.recommenders.bookmark.commands;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IImportContainer;
-import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IPackageDeclaration;
-import org.eclipse.jdt.core.IType;
+import org.eclipselabs.recommenders.bookmark.BookmarkUtil;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
@@ -55,7 +49,6 @@ public class AddElementCommand implements IBookmarkModelCommand {
 
     @Override
     public void execute(final BookmarkModel model) {
-        this.model = model;
         Category category = findCategory();
         execute(model, category);
     }
@@ -68,7 +61,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
 
         for (Object element : elements) {
 
-            if (element instanceof IJavaElement) {
+            if (element instanceof IJavaElement && BookmarkUtil.isInternalElement((IJavaElement) element)) {
                 Optional<JavaElementBookmark> created = processJavaElement((IJavaElement) element);
                 if (created.isPresent()) {
                     createdElements.add(created.get());
@@ -81,7 +74,14 @@ public class AddElementCommand implements IBookmarkModelCommand {
             }
         }
 
-        sortInIfDropAndTargetShareSameParent(createdElements);
+        if (createdElements.size() > 0) {
+            addCategoryToModel();
+            sortInIfDropAndTargetShareSameParent(createdElements);
+        }
+    }
+
+    private void addCategoryToModel() {
+        model.add(category);
     }
 
     private void sortInIfDropAndTargetShareSameParent(List<IBookmarkModelComponent> createdElements) {
@@ -112,7 +112,6 @@ public class AddElementCommand implements IBookmarkModelCommand {
             } else {
                 category = new Category("New Category");
             }
-            model.add(category);
             return category;
         }
     }
@@ -140,7 +139,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
 
         Optional<JavaElementBookmark> created = Optional.absent();
 
-        if (isBookmarkable(javaElement)) {
+        if (BookmarkUtil.isBookmarkable(javaElement)) {
             JavaElementBookmark createJavaElementBookmark = createJavaElementBookmark(javaElement);
             createJavaElementBookmark.setInferred(false);
             created = Optional.of(createJavaElementBookmark);
@@ -151,7 +150,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
 
     private JavaElementBookmark createJavaElementBookmark(IJavaElement javaElement) {
         IJavaElement parent = javaElement.getParent();
-        if (isBookmarkable(parent)) {
+        if (BookmarkUtil.isBookmarkable(parent)) {
             JavaElementBookmark bookmarkParent = createJavaElementBookmark(parent);
             FindJavaElementHandleVisitor visitor = new FindJavaElementHandleVisitor(javaElement.getHandleIdentifier());
             bookmarkParent.accept(visitor);
@@ -183,16 +182,6 @@ public class AddElementCommand implements IBookmarkModelCommand {
             }
         }
 
-    }
-
-    private boolean isBookmarkable(Object value) {
-        return (value instanceof ICompilationUnit) || isValueInTypeHierarchyBelowICompilationUnit(value);
-    }
-
-    private boolean isValueInTypeHierarchyBelowICompilationUnit(Object value) {
-        return value instanceof IMethod || value instanceof IType || value instanceof IField
-                || value instanceof IImportDeclaration || value instanceof IImportContainer
-                || value instanceof IPackageDeclaration;
     }
 
     private class FindJavaElementHandleVisitor implements IModelVisitor {

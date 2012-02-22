@@ -28,6 +28,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.BookmarkUtil;
 import org.eclipselabs.recommenders.bookmark.commands.AddElementCommand;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
@@ -85,7 +86,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
             String handleIdentifier = root.getHandleIdentifier();
             element = JavaCore.create(handleIdentifier);
         }
-        if (element != null) {
+        if (element != null && BookmarkUtil.isInternalElement(element)) {
             bookmark(new Object[] { element });
         }
     }
@@ -118,7 +119,8 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
 
         while (iterator.hasNext()) {
             Object next = iterator.next();
-            if (next instanceof IJavaElement && isInHierarchyOfICompilationUnit(next)) {
+            if (next instanceof IJavaElement && isInHierarchyOfICompilationUnit(next)
+                    && BookmarkUtil.isInternalElement((IJavaElement) next)) {
                 objects.add(next);
             } else if (next instanceof IFile) {
                 objects.add(next);
