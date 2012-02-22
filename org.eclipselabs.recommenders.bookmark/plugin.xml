@@ -86,7 +86,7 @@
       <key
             commandId="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+M2+B">
+            sequence="M1+M2+M3+B">
       </key>
    </extension>
    <extension
