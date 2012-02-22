@@ -52,12 +52,6 @@ public class JavaElementBookmark implements IBookmark {
         return JavaCore.create(handleId);
     }
 
-    // @Override
-    // public void remove(IBookmarkModelComponent bookmark) {
-    // childElements.remove(bookmark);
-    // bookmark.setParent(null);
-    // }
-
     public void remove(JavaElementBookmark element) {
         childElements.remove(element);
         element.setParent(null);

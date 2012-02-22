@@ -112,7 +112,7 @@
          <command
                commandId="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition"
                icon="icons/bkmrk_nav.gif"
-               label="Bookmark It!"
+               label="Add to Bookmark++"
                style="push"
                tooltip="Bookmarks the current cursor position">
          </command>
