@@ -81,6 +81,11 @@ public class AddElementCommand implements IBookmarkModelCommand {
     }
 
     private void addCategoryToModel() {
+        for (Category cat : model.getCategories()) {
+            if (cat == category) {
+                return;
+            }
+        }
         model.add(category);
     }
 
