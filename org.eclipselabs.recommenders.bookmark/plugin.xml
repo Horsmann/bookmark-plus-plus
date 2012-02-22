@@ -94,7 +94,7 @@
       <command
             categoryId="org.eclipse.ui.category.navigate"
             id="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition"
-            name="Bookmark It!">
+            name="Add to Bookmark++">
       </command>
    </extension>
    <extension
