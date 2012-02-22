@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
@@ -65,6 +66,11 @@ public class IsResourceAvailableVisitor implements IModelVisitor {
         if (element instanceof IPackageDeclaration) {
             IPackageDeclaration pack = (IPackageDeclaration) element;
             return pack.exists();
+        }
+        
+        if (element instanceof IImportDeclaration) {
+            IImportDeclaration impDec = (IImportDeclaration) element;
+            return impDec.exists();
         }
 
         if (element instanceof ICompilationUnit) {
