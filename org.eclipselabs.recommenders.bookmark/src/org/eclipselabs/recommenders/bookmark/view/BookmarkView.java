@@ -173,6 +173,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         selectionListener.register(openInEditor);
         selectionListener.register(openInFileSystem);
         selectionListener.register(deleteBookmarks);
+        selectionListener.register(switchCategory);
         treeViewer.addSelectionChangedListener(selectionListener);
     }
 

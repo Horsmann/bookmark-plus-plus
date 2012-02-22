@@ -29,6 +29,7 @@ public class Activator extends AbstractUIPlugin {
     private static BookmarkView bookmarkView;
 
     public static final String ICON_CATEGORY = "category";
+    public static final String ICON_SINGLE_BOOKMARK_OVERLAY = "singleBookmarkOverlay";
     public static final String ICON_SHOW_IN_EDITOR = "openBookmarksInEditor";
     public static final String ICON_CLOSE_ALL_OPEN_EDITORS = "closeAllOpenEditors";
     public static final String ICON_OPEN_IN_SYSTEM_EXPLORER = "openInSystemExplorer";
@@ -87,6 +88,9 @@ public class Activator extends AbstractUIPlugin {
                 new Path("icons/bkmrk_nav.gif"), null));
         registry.put(ICON_CATEGORY, imgDesc);
 
+        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/bookmark_obj_ovl.gif"), null));
+        registry.put(ICON_SINGLE_BOOKMARK_OVERLAY, imgDesc);
+        
         imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/read_obj.gif"), null));
         registry.put(ICON_SHOW_IN_EDITOR, imgDesc);
 

@@ -15,7 +15,10 @@ import java.util.List;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.DecorationOverlayIcon;
+import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.Activator;
@@ -173,6 +176,9 @@ public class HierarchicalRepresentationMode implements IRepresentationMode {
                 final IJavaElement javaElement = JavaCore.create(javaElementBookmark.getHandleId());
 
                 image = jelp.getImage(javaElement);
+                if (!javaElementBookmark.isInferredNode()) {
+                    decorateWithBookmarkImage();
+                }
             }
 
             @Override
@@ -180,17 +186,27 @@ public class HierarchicalRepresentationMode implements IRepresentationMode {
                 final AbstractUIPlugin plugin = Activator.getDefault();
                 final ImageRegistry registry = plugin.getImageRegistry();
                 image = registry.get(Activator.ICON_CATEGORY);
+
             }
 
             @Override
             public void visit(FileBookmark fileBookmark) {
 
                 image = jelp.getImage(fileBookmark.getFile());
+                if (!fileBookmark.isInferredNode()) {
+                    decorateWithBookmarkImage();
+                }
             }
 
             @Override
             public Image getImage() {
                 return image;
+            }
+
+            private void decorateWithBookmarkImage() {
+                ImageDescriptor descriptor = Activator.getDefault().getImageRegistry()
+                        .getDescriptor(Activator.ICON_SINGLE_BOOKMARK_OVERLAY);
+                image = new DecorationOverlayIcon(image, descriptor, IDecoration.BOTTOM_RIGHT).createImage();
             }
         };
     }

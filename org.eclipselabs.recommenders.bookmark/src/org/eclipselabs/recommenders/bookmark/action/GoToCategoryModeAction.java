@@ -74,7 +74,7 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
 
     @Override
     public void updateEnableStatus() {
-        if (model.getCategories().isEmpty()) {
+        if (model.getCategories().isEmpty() || hideableComboViewer.isVisible()) {
             setEnabled(false);
         } else {
             setEnabled(true);
