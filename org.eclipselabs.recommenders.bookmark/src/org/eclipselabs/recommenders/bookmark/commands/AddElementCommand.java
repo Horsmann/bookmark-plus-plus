@@ -59,7 +59,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
         Category category = findCategory();
         execute(model, category);
     }
-    
+
     @Override
     public void execute(BookmarkModel model, Category category) {
         this.category = category;
@@ -74,8 +74,10 @@ public class AddElementCommand implements IBookmarkModelCommand {
                     createdElements.add(created.get());
                 }
             } else if (element instanceof IFile) {
-                //TODO: wenns file schon gibt, wirds doppelt hinzugefügt
-                createdElements.add(processFile((IFile) element));
+                Optional<FileBookmark> file = processFile((IFile) element);
+                if (file.isPresent()) {
+                    createdElements.add(file.get());
+                }
             }
         }
 
@@ -124,8 +126,14 @@ public class AddElementCommand implements IBookmarkModelCommand {
         return getCategoryOf(component.getParent());
     }
 
-    private FileBookmark processFile(final IFile file) {
-        return new FileBookmark(file, category);
+    private Optional<FileBookmark> processFile(final IFile file) {
+        DoesIFileAlreadyExistsVisitor visitor = new DoesIFileAlreadyExistsVisitor(
+                new FileBookmark(file).getRelativeFilePath(file));
+        category.accept(visitor);
+        if (visitor.doesAlreadyExists()) {
+            return Optional.absent();
+        }
+        return Optional.of(new FileBookmark(file, category));
     }
 
     private Optional<JavaElementBookmark> processJavaElement(final IJavaElement javaElement) {
@@ -226,5 +234,37 @@ public class AddElementCommand implements IBookmarkModelCommand {
 
     }
 
-  
+    public class DoesIFileAlreadyExistsVisitor implements IModelVisitor {
+
+        private boolean exists = false;
+        private final String fileId;
+
+        public DoesIFileAlreadyExistsVisitor(String fileId) {
+            this.fileId = fileId;
+        }
+
+        public boolean doesAlreadyExists() {
+            return exists;
+        }
+
+        @Override
+        public void visit(FileBookmark fileBookmark) {
+            if (fileBookmark.getRelativeFilePath(fileBookmark.getFile()).equals(fileId)) {
+                exists = true;
+            }
+        }
+
+        @Override
+        public void visit(Category category) {
+            for (IBookmark bookmark : category.getBookmarks()) {
+                bookmark.accept(this);
+            }
+        }
+
+        @Override
+        public void visit(JavaElementBookmark javaElementBookmark) {
+        }
+
+    }
+
 }
