@@ -39,7 +39,7 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.AddCategoryAction;
-import org.eclipselabs.recommenders.bookmark.action.BookmarkDeletionAction;
+import org.eclipselabs.recommenders.bookmark.action.DeleteBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.action.CloseAllEditorWindowsAction;
 import org.eclipselabs.recommenders.bookmark.action.GoToCategoryModeAction;
 import org.eclipselabs.recommenders.bookmark.action.OpenBookmarkAction;
@@ -85,7 +85,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private RenameCategoryAction renameCategory;
     private OpenBookmarkAction openInEditor;
     private OpenInFileSystemAction openInFileSystem;
-    private BookmarkDeletionAction deleteBookmarks;
+    private DeleteBookmarkAction deleteBookmarks;
     private HideableComboViewer comboViewer;
     private GoToCategoryModeAction switchCategory;
     private SwitchInferredStateAction switchInferred;
@@ -200,7 +200,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         renameCategory = new RenameCategoryAction(treeViewer, this);
         openInEditor = new OpenBookmarkAction(treeViewer, this, this);
         openInFileSystem = new OpenInFileSystemAction(treeViewer);
-        deleteBookmarks = new BookmarkDeletionAction(treeViewer, this);
+        deleteBookmarks = new DeleteBookmarkAction(treeViewer, this);
         switchCategory = new GoToCategoryModeAction(hideableComboViewer, model, treeViewer);
         switchInferred = new SwitchInferredStateAction(treeViewer);
         addContextMenu(treeViewer, renameCategory, openInEditor, openInFileSystem, deleteBookmarks, switchCategory, switchInferred);
@@ -208,7 +208,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private void addContextMenu(RepresentationSwitchableTreeViewer treeViewer,
             final RenameCategoryAction renameCategory, final OpenBookmarkAction openInEditor,
-            final OpenInFileSystemAction openInFileSystem, final BookmarkDeletionAction deleteBookmarks,
+            final OpenInFileSystemAction openInFileSystem, final DeleteBookmarkAction deleteBookmarks,
             final GoToCategoryModeAction switchCategory, final SwitchInferredStateAction switchInferred) {
 
         final MenuManager menuMgr = new MenuManager();
