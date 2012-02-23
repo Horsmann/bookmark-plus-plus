@@ -18,7 +18,7 @@ public class SwitchInferredStateAction extends Action implements SelfEnabling {
 
     public SwitchInferredStateAction(RepresentationSwitchableTreeViewer treeViewer) {
         this.treeViewer = treeViewer;
-        this.setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(Activator.ICON_INFERRED));
+        this.setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(Activator.ICON_SINGLE_BOOKMARK));
         this.setToolTipText("Switches the inferred state of a bookmark");
         this.setText("Switch inferred");
     }
