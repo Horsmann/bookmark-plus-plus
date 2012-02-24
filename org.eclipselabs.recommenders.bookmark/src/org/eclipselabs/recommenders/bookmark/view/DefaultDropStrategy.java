@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Tree;
@@ -46,6 +47,8 @@ public class DefaultDropStrategy implements IDropStrategy {
         // drops from external
         if (event.data instanceof TreeSelection) {
             processTreeSelection(dropTarget, (TreeSelection) event.data, insertDropBeforeTarget);
+        } else if (event.data instanceof String[]) {
+            System.out.println("file array");
         } else {
             // internal drops
             ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
@@ -236,6 +239,17 @@ public class DefaultDropStrategy implements IDropStrategy {
 
         }
 
+    }
+
+    @Override
+    public void performDropEnter(DropTargetEvent event) {
+        // will accept text but prefer to have files dropped
+        for (int i = 0; i < event.dataTypes.length; i++) {
+            if (FileTransfer.getInstance().isSupportedType(event.dataTypes[i])) {
+                event.currentDataType = event.dataTypes[i];
+                break;
+            }
+        }
     }
 
 }
