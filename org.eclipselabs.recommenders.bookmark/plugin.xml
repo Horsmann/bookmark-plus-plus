@@ -108,7 +108,29 @@
          point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
-            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?after=additions">
+         <command
+               commandId="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition"
+               icon="icons/bkmrk_nav.gif"
+               label="Add to Bookmark++"
+               style="push"
+               tooltip="Bookmarks the current cursor position">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:#AbstractTextEditorContext?after=additions">
+         <command
+               commandId="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition"
+               icon="icons/bkmrk_nav.gif"
+               label="Add to Bookmark++"
+               style="push"
+               tooltip="Bookmarks the current cursor position">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.jdt.ui.ContentOutline?after=additions">
          <command
                commandId="org.eclipselabs.recommenders.bookmark.bookmarkCurrentPosition"
                icon="icons/bkmrk_nav.gif"
