@@ -32,11 +32,8 @@ public class ChangeElementCommand implements IBookmarkModelCommand {
     @Override
     public void execute(BookmarkModel model) {
 
-        // An unfinished drag which was aborted
-        for (IBookmarkModelComponent bookmark : bookmarks) {
-            if (dropTarget.isPresent() && isOperationWithinSameCategory(model, bookmark)) {
-                return;
-            }
+        if (isAbortedDrag(model)) {
+            return;
         }
 
         HierarchyValueVisitor visitor = new HierarchyValueVisitor();
@@ -53,6 +50,15 @@ public class ChangeElementCommand implements IBookmarkModelCommand {
             deleteDroppedBookmarks(model);
         }
 
+    }
+
+    private boolean isAbortedDrag(BookmarkModel model) {
+        for (IBookmarkModelComponent bookmark : bookmarks) {
+            if (dropTarget.isPresent() && isOperationWithinSameCategory(model, bookmark)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isOperationWithinSameCategory(BookmarkModel model, IBookmarkModelComponent bookmark) {
