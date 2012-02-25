@@ -19,15 +19,16 @@ public class FileBookmark implements IBookmark {
 
     private static final long serialVersionUID = -224963828339478664L;
     private final String relativeFilePath;
-
+    private boolean isInferred;
     private IBookmarkModelComponent parent;
 
     public FileBookmark(final IFile file, Category parent) {
         this.relativeFilePath = getRelativeFilePath(file);
         this.setParent(parent);
         parent.add(this);
+        isInferred = false;
     }
-    
+
     public FileBookmark(final IFile file) {
         this.relativeFilePath = getRelativeFilePath(file);
     }
@@ -42,7 +43,7 @@ public class FileBookmark implements IBookmark {
 
     @Override
     public boolean isInferredNode() {
-        return false;
+        return isInferred;
     }
 
     public IFile getFile() {
@@ -74,6 +75,10 @@ public class FileBookmark implements IBookmark {
     @Override
     public boolean hasParent() {
         return parent != null;
+    }
+
+    public void setInferred(boolean isInferred) {
+        this.isInferred = isInferred;
     }
 
 }

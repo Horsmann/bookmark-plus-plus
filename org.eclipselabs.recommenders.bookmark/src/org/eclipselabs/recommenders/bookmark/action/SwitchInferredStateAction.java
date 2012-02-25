@@ -44,10 +44,8 @@ public class SwitchInferredStateAction extends Action implements SelfEnabling {
         if (treeViewer.getSelections().size() == 1) {
             IBookmarkModelComponent component = (IBookmarkModelComponent) treeViewer.getSelections().getFirstElement();
             IsCategoryVisitor isCatVisitor = new IsCategoryVisitor();
-            IsFileVisitor isFileVisitor = new IsFileVisitor();
             component.accept(isCatVisitor);
-            component.accept(isFileVisitor);
-            if (!isCatVisitor.isCategory() && !isFileVisitor.isFile()) {
+            if (!isCatVisitor.isCategory()) {
                 setEnabled(true);
                 setTextAccordingToCurrentState(component);
             }
@@ -101,33 +99,15 @@ public class SwitchInferredStateAction extends Action implements SelfEnabling {
 
     }
 
-    private class IsFileVisitor implements IModelVisitor {
-
-        private boolean isFile = false;
-
-        public boolean isFile() {
-            return isFile;
-        }
-
-        @Override
-        public void visit(FileBookmark fileBookmark) {
-            isFile = true;
-        }
-
-        @Override
-        public void visit(Category category) {
-        }
-
-        @Override
-        public void visit(JavaElementBookmark javaElementBookmark) {
-        }
-
-    }
-
     private class SwapInferredStateVisitor implements IModelVisitor {
 
         @Override
         public void visit(FileBookmark fileBookmark) {
+            if (fileBookmark.isInferredNode()) {
+                fileBookmark.setInferred(false);
+            } else {
+                fileBookmark.setInferred(true);
+            }
         }
 
         @Override
