@@ -29,11 +29,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
@@ -203,7 +206,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         deleteBookmarks = new DeleteBookmarkAction(treeViewer, this);
         switchCategory = new GoToCategoryModeAction(hideableComboViewer, model, treeViewer);
         switchInferred = new SwitchInferredStateAction(treeViewer);
-        addContextMenu(treeViewer, renameCategory, openInEditor, openInFileSystem, deleteBookmarks, switchCategory, switchInferred);
+        addContextMenu(treeViewer, renameCategory, openInEditor, openInFileSystem, deleteBookmarks, switchCategory,
+                switchInferred);
     }
 
     private void addContextMenu(RepresentationSwitchableTreeViewer treeViewer,
@@ -270,7 +274,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         closeAllEditors = new CloseAllEditorWindowsAction(this);
         addNewCategory = new AddCategoryAction(this, hideableComboViewer);
         categoryMode = new GoToCategoryModeAction(hideableComboViewer, model, treeViewer);
-        
+
     }
 
     private void enableActionsInToolbar(Action closeAllEditors, Action switchFlatHierarchical, Action categoryMode,
@@ -402,8 +406,19 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
-
-            getSite().getShell().getDisplay().asyncExec(new GuiRunnable(event));
+            IWorkbenchPartSite site = getSite();
+            if (site == null) {
+                return;
+            }
+            Shell shell = site.getShell();
+            if (shell == null || shell.isDisposed()) {
+                return;
+            }
+            Display display = shell.getDisplay();
+            if (display == null || display.isDisposed()) {
+                return;
+            }
+            display.asyncExec(new GuiRunnable(event));
         }
 
         private class GuiRunnable implements Runnable {
