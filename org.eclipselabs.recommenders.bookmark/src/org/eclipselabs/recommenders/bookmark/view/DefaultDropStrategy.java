@@ -44,13 +44,9 @@ public class DefaultDropStrategy implements IDropStrategy {
         final Optional<IBookmarkModelComponent> dropTarget = getDropTarget(event);
         boolean insertDropBeforeTarget = determineInsertLocation(event);
 
-        // drops from external
         if (event.data instanceof TreeSelection) {
             processTreeSelection(dropTarget, (TreeSelection) event.data, insertDropBeforeTarget);
-        } else if (event.data instanceof String[]) {
-            System.out.println("file array");
         } else {
-            // internal drops
             ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
             if (selections instanceof IStructuredSelection) {
                 processStructuredSelection(dropTarget, (IStructuredSelection) selections, isCopyOperation(event),
