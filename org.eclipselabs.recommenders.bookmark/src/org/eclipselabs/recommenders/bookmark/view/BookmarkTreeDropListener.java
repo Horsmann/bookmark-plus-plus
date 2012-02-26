@@ -14,8 +14,8 @@ import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.ui.part.ResourceTransfer;
 
 public class BookmarkTreeDropListener implements DropTargetListener {
 
@@ -57,7 +57,7 @@ public class BookmarkTreeDropListener implements DropTargetListener {
     }
 
     public Transfer[] getSupportedTransfers() {
-        return new Transfer[] { FileTransfer.getInstance(), LocalSelectionTransfer.getTransfer() };
+        return new Transfer[] { ResourceTransfer.getInstance(), LocalSelectionTransfer.getTransfer() };
     }
 
     public void setNewStrategy(IDropStrategy strategy) {
