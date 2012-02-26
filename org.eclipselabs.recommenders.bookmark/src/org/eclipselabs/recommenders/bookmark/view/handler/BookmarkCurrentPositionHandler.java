@@ -40,7 +40,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-
+        
         final IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         IWorkbenchPart part = activePage.getActivePart();
         ISelection selection = activePage.getSelection();

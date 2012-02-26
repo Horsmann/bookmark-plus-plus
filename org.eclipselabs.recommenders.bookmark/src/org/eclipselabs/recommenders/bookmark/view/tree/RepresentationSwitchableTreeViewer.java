@@ -101,8 +101,10 @@ public class RepresentationSwitchableTreeViewer {
     }
 
     public void refresh() {
-        treeViewer.refresh();
-        updateExpansions(model);
+        if (!treeViewer.getControl().isDisposed()) {
+            treeViewer.refresh();
+            updateExpansions(model);
+        }
     }
 
     private class TreeViewListener implements ITreeViewerListener {
@@ -229,6 +231,10 @@ public class RepresentationSwitchableTreeViewer {
 
     public Object getInput() {
         return treeViewer.getInput();
+    }
+
+    public boolean isDisposed() {
+        return treeViewer.getControl().isDisposed();
     }
 
 }
