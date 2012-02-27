@@ -32,15 +32,9 @@ import com.google.common.collect.Lists;
 
 public class BookmarkCurrentPositionHandler extends AbstractHandler {
 
-    private BookmarkCommandInvoker invoker;
-
-    public BookmarkCurrentPositionHandler() {
-        invoker = Activator.getCommandInvoker();
-    }
-
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
-        
+        invoker = Activator.getCommandInvoker();
         final IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         IWorkbenchPart part = activePage.getActivePart();
         ISelection selection = activePage.getSelection();
