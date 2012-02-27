@@ -24,11 +24,27 @@ public class DeleteInferredBookmarksCommand implements IBookmarkModelCommand {
 
     @Override
     public void execute(BookmarkModel model) {
-        deleteIfParentIsCategory();
-        deleteRecursive();
+
+        // down
+        boolean continueDeletion = deleteDownwardsExcludingTriggeringBookmark();
+
+        // up
+        if (continueDeletion) {
+            deleteUpwardsIncludingTriggeringBookmark();
+        }
+
     }
 
-    private void deleteRecursive() {
+    private boolean deleteDownwardsExcludingTriggeringBookmark() {
+        HasChildrenVisitor visitor = new HasChildrenVisitor();
+        bookmark.accept(visitor);
+        if (visitor.hasChildren) {
+            return false;
+        }
+        return true;
+    }
+
+    private void deleteUpwardsIncludingTriggeringBookmark() {
         LinkedList<IBookmark> bookmarks = new LinkedList<IBookmark>();
         bookmarks.add(bookmark);
         IBookmarkModelComponent theBoomark = bookmark;
@@ -39,9 +55,9 @@ public class DeleteInferredBookmarksCommand implements IBookmarkModelCommand {
                 break;
             }
 
-            HasMoreThanOneChildVisitor visitor = new HasMoreThanOneChildVisitor();
-            theBoomark.accept(visitor);
-            if (visitor.hasMoreThanOneChild()) {
+            HasMoreThanOneChildVisitor moreThanOneChildVisitor = new HasMoreThanOneChildVisitor();
+            theBoomark.accept(moreThanOneChildVisitor);
+            if (moreThanOneChildVisitor.hasMoreThanOneChild() || !((IBookmark) theBoomark).isInferredNode()) {
                 break;
             } else {
                 bookmarks.add((IBookmark) theBoomark);
@@ -66,15 +82,6 @@ public class DeleteInferredBookmarksCommand implements IBookmarkModelCommand {
                 RemoveBookmarkModelComponentVisitor removeVisitor = new RemoveBookmarkModelComponentVisitor(bm);
                 category.get().accept(removeVisitor);
             }
-        }
-    }
-
-    private void deleteIfParentIsCategory() {
-        IBookmarkModelComponent parent = bookmark.getParent();
-        IsCategoryVisitor isCategoryVisitor = new IsCategoryVisitor();
-        parent.accept(isCategoryVisitor);
-        if (isCategoryVisitor.isCategory()) {
-            ((Category) parent).remove(bookmark);
         }
     }
 
@@ -111,6 +118,39 @@ public class DeleteInferredBookmarksCommand implements IBookmarkModelCommand {
                 hasMoreThanOneChild = true;
             } else {
                 hasMoreThanOneChild = false;
+            }
+        }
+
+    }
+
+    private class HasChildrenVisitor implements IModelVisitor {
+
+        private boolean hasChildren;
+
+        public boolean hasChildren() {
+            return hasChildren;
+        }
+
+        @Override
+        public void visit(FileBookmark fileBookmark) {
+            hasChildren = false;
+        }
+
+        @Override
+        public void visit(Category category) {
+            if (category.getBookmarks().size() > 0) {
+                hasChildren = true;
+            } else {
+                hasChildren = false;
+            }
+        }
+
+        @Override
+        public void visit(JavaElementBookmark javaElementBookmark) {
+            if (javaElementBookmark.getChildElements().size() > 0) {
+                hasChildren = true;
+            } else {
+                hasChildren = false;
             }
         }
 

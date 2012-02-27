@@ -36,7 +36,6 @@ public class ViewPartListener implements IPartListener2 {
 
     @Override
     public void partOpened(IWorkbenchPartReference partRef) {
-        bookmarkView.restoreState(memento);
     }
 
     @Override
