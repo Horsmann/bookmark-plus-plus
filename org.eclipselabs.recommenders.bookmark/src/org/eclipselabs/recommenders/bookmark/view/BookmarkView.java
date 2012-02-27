@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
@@ -99,7 +100,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     @Override
     public void createPartControl(final Composite parent) {
         parent.setLayout(GridLayoutFactory.fillDefaults().create());
-
         loadModel();
         initGuiComponents(parent);
         setModelForTreeViewer(model);
@@ -527,5 +527,9 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     public void resetGui() {
         treeViewer.setRepresentation(new HierarchicalRepresentationMode());
         comboViewer.hide();
+    }
+
+    public IMemento getMemento() {
+        return memento;
     }
 }

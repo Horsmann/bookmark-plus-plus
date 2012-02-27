@@ -1,11 +1,14 @@
 package org.eclipselabs.recommenders.bookmark.view;
 
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.XMLMemento;
 
 public class ViewPartListener implements IPartListener2 {
 
     private final BookmarkView bookmarkView;
+    IMemento memento = XMLMemento.createWriteRoot("root");
 
     public ViewPartListener(BookmarkView bookmarkView) {
         this.bookmarkView = bookmarkView;
@@ -13,17 +16,18 @@ public class ViewPartListener implements IPartListener2 {
 
     @Override
     public void partActivated(IWorkbenchPartReference partRef) {
-        
     }
 
     @Override
     public void partBroughtToTop(IWorkbenchPartReference partRef) {
-        
+
     }
 
     @Override
     public void partClosed(IWorkbenchPartReference partRef) {
-//        bookmarkView.saveState(bookmarkView.);
+        if (memento != null) {
+            bookmarkView.saveState(memento);
+        }
     }
 
     @Override
@@ -32,11 +36,12 @@ public class ViewPartListener implements IPartListener2 {
 
     @Override
     public void partOpened(IWorkbenchPartReference partRef) {
+        bookmarkView.restoreState(memento);
     }
 
     @Override
     public void partHidden(IWorkbenchPartReference partRef) {
-        
+
     }
 
     @Override
