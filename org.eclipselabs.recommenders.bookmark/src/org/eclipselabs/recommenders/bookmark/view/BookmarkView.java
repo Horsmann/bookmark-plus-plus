@@ -10,8 +10,6 @@
  */
 package org.eclipselabs.recommenders.bookmark.view;
 
-import java.io.IOException;
-
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -34,7 +32,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
@@ -42,8 +39,8 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.AddCategoryAction;
-import org.eclipselabs.recommenders.bookmark.action.DeleteBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.action.CloseAllEditorWindowsAction;
+import org.eclipselabs.recommenders.bookmark.action.DeleteBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.action.GoToCategoryModeAction;
 import org.eclipselabs.recommenders.bookmark.action.OpenBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.action.OpenInFileSystemAction;
@@ -103,32 +100,32 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     public void createPartControl(final Composite parent) {
         parent.setLayout(GridLayoutFactory.fillDefaults().create());
 
-        initGuiComponentsAndLoadModel(parent);
+        loadModel();
+        initGuiComponents(parent);
+        setModelForTreeViewer(model);
         configureTreeViewer(treeViewer, model, comboViewer);
         addCopyCutPasteFeatures(pasteHandler);
         enableActionsInToolbar(closeAllEditors, switchFlatHierarchical, categoryMode, addNewCategory);
         activateHierarchicalMode();
-        addViewPartListener();
         addResourceListener();
         Activator.setBookmarkView(this);
 
         restoreState(memento);
     }
 
-    private void initGuiComponentsAndLoadModel(Composite parent) {
+    private void setModelForTreeViewer(BookmarkModel model) {
+        setModel(model);
+    }
+
+    private void loadModel() {
+        model = Activator.getModel();
+    }
+
+    private void initGuiComponents(Composite parent) {
         initTreeViewerWithDropAndPasteHandlingComponents(parent);
-        loadModelAndSetForTreeViewer();
         initHideableComboViewer(parent, model, treeViewer, dropListener, defaultDropStrategy, pasteHandler,
                 defaultPasteStrategy);
         initActions(treeViewer, model, comboViewer);
-    }
-
-    private void loadModelAndSetForTreeViewer() {
-        try {
-            loadModel();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void initTreeViewerWithDropAndPasteHandlingComponents(Composite parent) {
@@ -263,11 +260,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(new ResourceListener());
     }
 
-    private void addViewPartListener() {
-        IPartService service = (IPartService) getSite().getService(IPartService.class);
-        service.addPartListener(new ViewPartListener(this));
-    }
-
     private void initActions(RepresentationSwitchableTreeViewer treeViewer, BookmarkModel model,
             HideableComboViewer hideableComboViewer) {
         switchFlatHierarchical = new SwitchFlatHierarchicalAction(this);
@@ -320,14 +312,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     }
 
-    private void loadModel() throws IOException {
-        setModel(BookmarkIO.loadFromDefaultFile());
-    }
-
     private void setModel(final BookmarkModel model) {
-        if (this.model == null) {
-            this.model = model;
-        } else {
+        if (this.model != model) {
             this.model.removeAll();
             for (Category category : model.getCategories()) {
                 this.model.add(category);

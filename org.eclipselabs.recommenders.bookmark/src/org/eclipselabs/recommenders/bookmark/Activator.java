@@ -1,6 +1,7 @@
 package org.eclipselabs.recommenders.bookmark;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -13,6 +14,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModelCloner;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkIO;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -44,18 +46,34 @@ public class Activator extends AbstractUIPlugin {
 
     public static final String AUTOSAVE_FILE = "bookmarkModel" + fileEnding;
 
+    private static BookmarkModel model;
+
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        loadModel();
+    }
+
+    private void loadModel() {
+        try {
+            model = BookmarkIO.loadFromDefaultFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void stop(BundleContext context) throws Exception {
+        BookmarkIO.writeToDefaultFile(model);
         plugin = null;
         super.stop(context);
     }
 
     public static Activator getDefault() {
         return plugin;
+    }
+
+    public static BookmarkModel getModel() {
+        return model;
     }
 
     public static File getDefaultLocationForStoringBookmark() {

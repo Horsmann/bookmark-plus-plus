@@ -23,7 +23,7 @@ public class ViewPartListener implements IPartListener2 {
 
     @Override
     public void partClosed(IWorkbenchPartReference partRef) {
-        BookmarkIO.writeToDefaultFile(bookmarkView.getModel());
+//        bookmarkView.saveState(bookmarkView.);
     }
 
     @Override
