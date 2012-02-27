@@ -16,56 +16,47 @@ import com.google.common.base.Optional;
 
 public class DeleteInferredBookmarksCommand implements IBookmarkModelCommand {
 
-    private final IBookmark bookmark;
+    private final IBookmark commandTriggeringBookmark;
 
     public DeleteInferredBookmarksCommand(IBookmark bookmark) {
-        this.bookmark = bookmark;
+        this.commandTriggeringBookmark = bookmark;
     }
 
     @Override
     public void execute(BookmarkModel model) {
-
-        // down
         boolean continueDeletion = deleteDownwardsExcludingTriggeringBookmark();
-
-        // up
         if (continueDeletion) {
             deleteUpwardsIncludingTriggeringBookmark();
         }
-
     }
 
     private boolean deleteDownwardsExcludingTriggeringBookmark() {
         HasChildrenVisitor visitor = new HasChildrenVisitor();
-        bookmark.accept(visitor);
-        if (visitor.hasChildren) {
+        commandTriggeringBookmark.accept(visitor);
+        if (visitor.hasChildren()) {
             return false;
         }
         return true;
     }
 
     private void deleteUpwardsIncludingTriggeringBookmark() {
-        LinkedList<IBookmark> bookmarks = new LinkedList<IBookmark>();
-        bookmarks.add(bookmark);
-        IBookmarkModelComponent theBoomark = bookmark;
-        while (theBoomark.hasParent()) {
-            theBoomark = theBoomark.getParent();
-
-            if (!(theBoomark instanceof IBookmark)) {
-                break;
-            }
-
-            HasMoreThanOneChildVisitor moreThanOneChildVisitor = new HasMoreThanOneChildVisitor();
-            theBoomark.accept(moreThanOneChildVisitor);
-            if (moreThanOneChildVisitor.hasMoreThanOneChild() || !((IBookmark) theBoomark).isInferredNode()) {
-                break;
-            } else {
-                bookmarks.add((IBookmark) theBoomark);
-            }
+        LinkedList<IBookmark> bookmarks = getCandidatesForDeletion();
+        Optional<Category> category = getCategory();
+        if (category.isPresent()) {
+            removeBookmarks(category.get(), bookmarks);
         }
+    }
 
+    private void removeBookmarks(Category category, LinkedList<IBookmark> bookmarks) {
+        for (IBookmark bm : bookmarks) {
+            RemoveBookmarkModelComponentVisitor removeVisitor = new RemoveBookmarkModelComponentVisitor(bm);
+            category.accept(removeVisitor);
+        }
+    }
+
+    private Optional<Category> getCategory() {
         Optional<Category> category = Optional.absent();
-        IBookmarkModelComponent component = bookmark;
+        IBookmarkModelComponent component = commandTriggeringBookmark;
         while (component.hasParent()) {
             component = component.getParent();
             IsCategoryVisitor isCat = new IsCategoryVisitor();
@@ -75,14 +66,33 @@ public class DeleteInferredBookmarksCommand implements IBookmarkModelCommand {
                 break;
             }
         }
+        return category;
+    }
 
-        if (category.isPresent()) {
+    private LinkedList<IBookmark> getCandidatesForDeletion() {
+        LinkedList<IBookmark> bookmarks = new LinkedList<IBookmark>();
+        bookmarks.add(commandTriggeringBookmark);
 
-            for (IBookmark bm : bookmarks) {
-                RemoveBookmarkModelComponentVisitor removeVisitor = new RemoveBookmarkModelComponentVisitor(bm);
-                category.get().accept(removeVisitor);
+        IBookmarkModelComponent theBoomark = commandTriggeringBookmark;
+        while (theBoomark.hasParent()) {
+            theBoomark = theBoomark.getParent();
+            if (!(theBoomark instanceof IBookmark)) {
+                break;
+            }
+
+            if (isUndeletable(theBoomark)) {
+                break;
+            } else {
+                bookmarks.add((IBookmark) theBoomark);
             }
         }
+        return bookmarks;
+    }
+
+    private boolean isUndeletable(IBookmarkModelComponent theBoomark) {
+        HasMoreThanOneChildVisitor moreThanOneChildVisitor = new HasMoreThanOneChildVisitor();
+        theBoomark.accept(moreThanOneChildVisitor);
+        return moreThanOneChildVisitor.hasMoreThanOneChild() || !((IBookmark) theBoomark).isInferredNode();
     }
 
     @Override
