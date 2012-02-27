@@ -527,7 +527,4 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         comboViewer.hide();
     }
 
-    public IMemento getMemento() {
-        return memento;
-    }
 }
