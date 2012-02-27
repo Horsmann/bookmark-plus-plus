@@ -32,6 +32,8 @@ import com.google.common.collect.Lists;
 
 public class BookmarkCurrentPositionHandler extends AbstractHandler {
 
+    private BookmarkCommandInvoker invoker;
+
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
         invoker = Activator.getCommandInvoker();
