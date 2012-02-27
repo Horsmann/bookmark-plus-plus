@@ -32,7 +32,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
@@ -109,7 +108,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         activateHierarchicalMode();
         addResourceListener();
         Activator.setBookmarkView(this);
-
         restoreState(memento);
     }
 
@@ -202,7 +200,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         openInFileSystem = new OpenInFileSystemAction(treeViewer);
         deleteBookmarks = new DeleteBookmarkAction(treeViewer, this);
         switchCategory = new GoToCategoryModeAction(hideableComboViewer, model, treeViewer);
-        switchInferred = new SwitchInferredStateAction(treeViewer);
+        switchInferred = new SwitchInferredStateAction(treeViewer, this);
         addContextMenu(treeViewer, renameCategory, openInEditor, openInFileSystem, deleteBookmarks, switchCategory,
                 switchInferred);
     }

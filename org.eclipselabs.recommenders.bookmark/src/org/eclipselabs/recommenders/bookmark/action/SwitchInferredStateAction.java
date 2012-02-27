@@ -4,20 +4,24 @@ import java.util.Iterator;
 
 import org.eclipse.jface.action.Action;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteInferredBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
 
 public class SwitchInferredStateAction extends Action implements SelfEnabling {
 
     private final RepresentationSwitchableTreeViewer treeViewer;
+    private final BookmarkCommandInvoker invoker;
 
-    public SwitchInferredStateAction(RepresentationSwitchableTreeViewer treeViewer) {
+    public SwitchInferredStateAction(RepresentationSwitchableTreeViewer treeViewer, BookmarkCommandInvoker invoker) {
         this.treeViewer = treeViewer;
+        this.invoker = invoker;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(Activator.ICON_SINGLE_BOOKMARK));
         this.setToolTipText("Switches the inferred state of a bookmark");
         this.setText("Switch inferred");
@@ -107,6 +111,7 @@ public class SwitchInferredStateAction extends Action implements SelfEnabling {
                 fileBookmark.setInferred(false);
             } else {
                 fileBookmark.setInferred(true);
+                invoker.invoke(new DeleteInferredBookmarksCommand(fileBookmark));
             }
         }
 
@@ -120,6 +125,7 @@ public class SwitchInferredStateAction extends Action implements SelfEnabling {
                 javaElementBookmark.setInferred(false);
             } else {
                 javaElementBookmark.setInferred(true);
+                invoker.invoke(new DeleteInferredBookmarksCommand(javaElementBookmark));
             }
         }
 
