@@ -15,6 +15,10 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ResourceTransfer;
 
 public class BookmarkTreeDropListener implements DropTargetListener {
@@ -40,8 +44,19 @@ public class BookmarkTreeDropListener implements DropTargetListener {
 
     @Override
     public void dragOver(final DropTargetEvent event) {
-        event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL | DND.FEEDBACK_INSERT_AFTER
-                | DND.FEEDBACK_INSERT_BEFORE;
+        event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
+        if (event.item != null) {
+            TreeItem item = (TreeItem) event.item;
+            Display display = item.getDisplay();
+            Point pt = display.map(null, item.getParent(), event.x, event.y);
+            Rectangle bounds = item.getBounds();
+            if (pt.y < bounds.y + bounds.height / 2) {
+                event.feedback |= DND.FEEDBACK_INSERT_BEFORE;
+            } else {
+                event.feedback |= DND.FEEDBACK_INSERT_AFTER;
+            }
+        }
+
     }
 
     @Override
