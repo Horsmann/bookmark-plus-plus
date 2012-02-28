@@ -15,14 +15,14 @@ import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
 
 import com.google.common.collect.Lists;
 
-public class RelocateNodesCommand implements IBookmarkModelCommand {
+public class RelocateBookmarksCommand implements IBookmarkModelCommand {
 
     private final IBookmarkModelComponent target;
     private final IBookmarkModelComponent[] components;
     private BookmarkModel model;
     private final boolean isDropBeforeTarget;
 
-    public RelocateNodesCommand(IBookmarkModelComponent target, IBookmarkModelComponent[] bookmarks,
+    public RelocateBookmarksCommand(IBookmarkModelComponent target, IBookmarkModelComponent[] bookmarks,
             boolean isDropBeforeTarget) {
         this.target = target;
         this.components = bookmarks;
