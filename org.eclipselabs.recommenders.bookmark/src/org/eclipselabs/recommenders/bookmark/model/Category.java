@@ -24,7 +24,7 @@ public class Category implements IBookmarkModelComponent {
 
     public Category(final String label, final IBookmark... bookmarks) {
         this.label = label;
-        Collections.addAll(this.getBookmarks(), bookmarks);
+        Collections.addAll(this.bookmarks, bookmarks);
     }
 
     public String getLabel() {

@@ -33,7 +33,7 @@ public class FileBookmark implements IBookmark {
         this.relativeFilePath = getRelativeFilePath(file);
     }
 
-    public String getRelativeFilePath(IFile file) {
+    public static String getRelativeFilePath(IFile file) {
         IPath path = file.getFullPath();
         IPath projectRelativePath = file.getProjectRelativePath();
         return path.makeRelativeTo(projectRelativePath).toOSString();

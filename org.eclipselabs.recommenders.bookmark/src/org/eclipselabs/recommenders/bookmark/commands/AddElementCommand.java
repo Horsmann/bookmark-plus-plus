@@ -60,7 +60,6 @@ public class AddElementCommand implements IBookmarkModelCommand {
         List<IBookmarkModelComponent> createdElements = Lists.newLinkedList();
 
         for (Object element : elements) {
-
             if (element instanceof IJavaElement && BookmarkUtil.isInternalElement((IJavaElement) element)) {
                 Optional<JavaElementBookmark> created = processJavaElement((IJavaElement) element);
                 if (created.isPresent()) {
@@ -132,7 +131,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
 
     private Optional<FileBookmark> processFile(final IFile file) {
         DoesIFileAlreadyExistsVisitor visitor = new DoesIFileAlreadyExistsVisitor(
-                new FileBookmark(file).getRelativeFilePath(file));
+                FileBookmark.getRelativeFilePath(file));
         category.accept(visitor);
         if (visitor.doesAlreadyExists()) {
             return Optional.absent();
@@ -141,15 +140,12 @@ public class AddElementCommand implements IBookmarkModelCommand {
     }
 
     private Optional<JavaElementBookmark> processJavaElement(final IJavaElement javaElement) {
-
         Optional<JavaElementBookmark> created = Optional.absent();
-
         if (BookmarkUtil.isBookmarkable(javaElement)) {
             JavaElementBookmark createJavaElementBookmark = createJavaElementBookmark(javaElement);
             createJavaElementBookmark.setInferred(false);
             created = Optional.of(createJavaElementBookmark);
         }
-
         return created;
     }
 
@@ -243,7 +239,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
 
         @Override
         public void visit(FileBookmark fileBookmark) {
-            if (fileBookmark.getRelativeFilePath(fileBookmark.getFile()).equals(fileId)) {
+            if (FileBookmark.getRelativeFilePath(fileBookmark.getFile()).equals(fileId)) {
                 exists = true;
             }
         }
