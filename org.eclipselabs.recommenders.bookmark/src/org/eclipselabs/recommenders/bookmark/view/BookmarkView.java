@@ -409,7 +409,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     @Override
     public void init(IViewSite site, IMemento memento) throws PartInitException {
-        File stateFile = Activator.getDefaultLocationForStoringGUIState();
+        File stateFile = Activator.getLocationForStoringGUIState();
         this.memento = GuiStateIO.readGuiStateMementoFromFile(stateFile);
         init(site);
     }

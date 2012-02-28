@@ -58,14 +58,14 @@ public class Activator extends AbstractUIPlugin {
 
     private void loadModel() {
         try {
-            model = BookmarkIO.loadFromDefaultFile();
+            model = BookmarkIO.load(getLocationForStoringBookmark());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void stop(BundleContext context) throws Exception {
-        BookmarkIO.writeToDefaultFile(model);
+        BookmarkIO.writeModel(getLocationForStoringBookmark(), model);
         plugin = null;
         super.stop(context);
     }
@@ -78,13 +78,13 @@ public class Activator extends AbstractUIPlugin {
         return model;
     }
 
-    public static File getDefaultLocationForStoringBookmark() {
+    public static File getLocationForStoringBookmark() {
         IPath stateLocation = Activator.getDefault().getStateLocation();
         File stateFile = stateLocation.append(Activator.AUTOSAVE_FILE).toFile();
         return stateFile;
     }
     
-    public static File getDefaultLocationForStoringGUIState() {
+    public static File getLocationForStoringGUIState() {
         IPath stateLocation = Activator.getDefault().getStateLocation();
         File stateFile = stateLocation.append(Activator.GUISTATE).toFile();
         return stateFile;

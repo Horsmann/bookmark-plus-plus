@@ -2,7 +2,11 @@ package org.eclipselabs.recommenders.bookmark.commands;
 
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
+import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
+import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
+import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
+import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.visitor.HierarchyValueVisitor;
 import org.eclipselabs.recommenders.bookmark.visitor.RemoveBookmarkModelComponentVisitor;
@@ -79,10 +83,24 @@ public class ChangeElementCommand implements IBookmarkModelCommand {
     private void deleteDroppedBookmarks(BookmarkModel model) {
 
         for (IBookmarkModelComponent bookmark : bookmarks) {
-            RemoveBookmarkModelComponentVisitor visitor = new RemoveBookmarkModelComponentVisitor(bookmark);
-            for (Category category : model.getCategories()) {
-                category.accept(visitor);
-            }
+            IBookmarkModelComponent parent = bookmark.getParent();
+            removeBookmark(bookmark, model);
+            deleteInferredNodes(parent);
+        }
+    }
+
+    private void deleteInferredNodes(IBookmarkModelComponent parent) {
+        IsBookmarkVisitor isBookmark = new IsBookmarkVisitor();
+        parent.accept(isBookmark);
+        if (isBookmark.isIBookmark()) {
+            //commandInvoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
+        }
+    }
+
+    private void removeBookmark(IBookmarkModelComponent bookmark, BookmarkModel model) {
+        RemoveBookmarkModelComponentVisitor visitor = new RemoveBookmarkModelComponentVisitor(bookmark);
+        for (Category category : model.getCategories()) {
+            category.accept(visitor);
         }
     }
 
@@ -91,4 +109,31 @@ public class ChangeElementCommand implements IBookmarkModelCommand {
         execute(model);
     }
 
+    private class IsBookmarkVisitor implements IModelVisitor {
+
+        boolean isIBookmark;
+
+        public boolean isIBookmark() {
+            return isIBookmark;
+        }
+
+        @Override
+        public void visit(FileBookmark fileBookmark) {
+            if (fileBookmark instanceof IBookmark) {
+                isIBookmark = true;
+            }
+        }
+
+        @Override
+        public void visit(Category category) {
+        }
+
+        @Override
+        public void visit(JavaElementBookmark javaElementBookmark) {
+            if (javaElementBookmark instanceof IBookmark) {
+                isIBookmark = true;
+            }
+        }
+
+    }
 }

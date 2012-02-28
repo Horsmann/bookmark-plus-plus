@@ -23,11 +23,6 @@ import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 
 public class BookmarkIO {
 
-    public static BookmarkModel loadFromDefaultFile() throws IOException {
-        File file = Activator.getDefaultLocationForStoringBookmark();
-        return load(file);
-    }
-
     public static BookmarkModel load(File file) throws IOException {
         BookmarkModel model = null;
 
@@ -50,7 +45,7 @@ public class BookmarkIO {
     }
 
     public static void writeToDefaultFile(BookmarkModel model) {
-        File file = Activator.getDefaultLocationForStoringBookmark();
+        File file = Activator.getLocationForStoringBookmark();
         writeModel(file, model);
     }
 

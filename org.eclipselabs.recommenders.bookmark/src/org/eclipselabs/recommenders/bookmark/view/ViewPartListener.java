@@ -25,7 +25,7 @@ public class ViewPartListener implements IPartListener2 {
 
     @Override
     public void partClosed(IWorkbenchPartReference partRef) {
-        File stateFile = Activator.getDefaultLocationForStoringGUIState();
+        File stateFile = Activator.getLocationForStoringGUIState();
         GuiStateIO.writeGuiStateToMemento(stateFile, bookmarkView);
     }
 
