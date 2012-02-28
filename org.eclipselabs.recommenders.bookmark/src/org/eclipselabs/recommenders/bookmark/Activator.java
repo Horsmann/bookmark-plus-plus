@@ -46,6 +46,8 @@ public class Activator extends AbstractUIPlugin {
 
     public static final String AUTOSAVE_FILE = "bookmarkModel" + fileEnding;
 
+    private static final String GUISTATE = "mementoGUIState";
+
     private static BookmarkModel model;
 
     public void start(BundleContext context) throws Exception {
@@ -79,6 +81,12 @@ public class Activator extends AbstractUIPlugin {
     public static File getDefaultLocationForStoringBookmark() {
         IPath stateLocation = Activator.getDefault().getStateLocation();
         File stateFile = stateLocation.append(Activator.AUTOSAVE_FILE).toFile();
+        return stateFile;
+    }
+    
+    public static File getDefaultLocationForStoringGUIState() {
+        IPath stateLocation = Activator.getDefault().getStateLocation();
+        File stateFile = stateLocation.append(Activator.GUISTATE).toFile();
         return stateFile;
     }
 

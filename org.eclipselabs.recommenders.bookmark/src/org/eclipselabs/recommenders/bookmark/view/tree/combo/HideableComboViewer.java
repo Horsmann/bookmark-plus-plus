@@ -36,6 +36,7 @@ public class HideableComboViewer extends Composite {
     private final BookmarkModel model;
     private final RepresentationSwitchableTreeViewer treeViewer;
     private final ComboStrategySwapper strategyChanger;
+    private boolean cachedIsVisible;
 
     public HideableComboViewer(Composite parent, int style, BookmarkModel model,
             RepresentationSwitchableTreeViewer treeViewer, ComboStrategySwapper strategyChanger) {
@@ -100,6 +101,7 @@ public class HideableComboViewer extends Composite {
     }
 
     public void hide() {
+        cachedIsVisible = false;
         treeViewer.setInput(model);
         strategyChanger.resetStrategies();
         setVisible(false);
@@ -108,6 +110,7 @@ public class HideableComboViewer extends Composite {
     }
 
     public void show(Category category) {
+        cachedIsVisible = true;
         strategyChanger.setComboViewerSpecificStrategies(category);
         setNewSelections(model.getCategories());
         setCategoryAsInput(category);
@@ -228,5 +231,9 @@ public class HideableComboViewer extends Composite {
         for (Category category : categories) {
             combo.add(category.getLabel());
         }
+    }
+    
+    public boolean isComboViewerVisible() {
+        return cachedIsVisible;
     }
 }

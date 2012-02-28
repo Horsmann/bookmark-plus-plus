@@ -10,6 +10,9 @@
  */
 package org.eclipselabs.recommenders.bookmark.view;
 
+import java.io.File;
+import java.util.List;
+
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -32,9 +35,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.handlers.IHandlerActivation;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
@@ -68,6 +73,8 @@ import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.MouseDropStrategyChanger;
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.PasteStrategyChanger;
 
+import com.google.common.collect.Lists;
+
 public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private String MEMENTO_GUI_STATE = "GUISTATE";
@@ -95,6 +102,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private PasteHandler pasteHandler;
     private IMemento memento;
     private ComboStrategySwapper comboStrategySwapper;
+    private List<IHandlerActivation> removeOnDispose = Lists.newArrayList();
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -107,8 +115,14 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         enableActionsInToolbar(closeAllEditors, switchFlatHierarchical, categoryMode, addNewCategory);
         activateHierarchicalMode();
         addResourceListener();
+        addViewPartListener();
         Activator.setBookmarkView(this);
-        restoreState(memento);
+        restoreGUIState(memento);
+    }
+
+    private void addViewPartListener() {
+        IPartService adapter = (IPartService) getSite().getService(IPartService.class);
+        adapter.addPartListener(new ViewPartListener(this));
     }
 
     private void setModelForTreeViewer(BookmarkModel model) {
@@ -151,9 +165,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         createContextActions(treeViewer, model, hideableComboViewer);
         addTreeKeyListener(treeViewer);
         addDoubleClickListener(treeViewer);
-
         addTreeViewerSelectionChangedListener();
-
         addDragDropListeners(treeViewer);
     }
 
@@ -164,7 +176,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private void addTreeKeyListener(RepresentationSwitchableTreeViewer treeViewer) {
         TreeKeyListener listener = new TreeKeyListener(this, this);
         treeViewer.addKeyListener(listener);
-
     }
 
     private void addTreeViewerSelectionChangedListener() {
@@ -237,17 +248,26 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     private void addPasteFeature(IHandlerService handlerServ, PasteHandler pasteHandler) {
-        handlerServ.activateHandler("org.eclipse.ui.edit.paste", pasteHandler);
+        IHandlerActivation activateHandler = handlerServ.activateHandler("org.eclipse.ui.edit.paste", pasteHandler);
+        if (activateHandler != null) {
+            removeOnDispose.add(activateHandler);
+        }
     }
 
     private void addCutFeature(IHandlerService handlerServ) {
         CutHandler cut = new CutHandler(treeViewer, this);
-        handlerServ.activateHandler("org.eclipse.ui.edit.cut", cut);
+        IHandlerActivation activateHandler = handlerServ.activateHandler("org.eclipse.ui.edit.cut", cut);
+        if (activateHandler != null) {
+            removeOnDispose.add(activateHandler);
+        }
     }
 
     private void addCopyFeature(IHandlerService handlerServ) {
         CopyHandler copy = new CopyHandler(treeViewer);
-        handlerServ.activateHandler("org.eclipse.ui.edit.copy", copy);
+        IHandlerActivation activateHandler = handlerServ.activateHandler("org.eclipse.ui.edit.copy", copy);
+        if (activateHandler != null) {
+            removeOnDispose.add(activateHandler);
+        }
     }
 
     public BookmarkModel getModel() {
@@ -336,19 +356,26 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     @Override
+    public void dispose() {
+        IHandlerService handlerServ = (IHandlerService) getSite().getService(IHandlerService.class);
+        for (IHandlerActivation activation : removeOnDispose) {
+            handlerServ.deactivateHandler(activation);
+        }
+    }
+
+    @Override
     public void saveState(IMemento memento) {
         super.saveState(memento);
         memento = memento.createChild(MEMENTO_GUI_STATE);
         memento.putBoolean(MEMENTO_IS_FLAT, !isHierarchicalModeActive());
-        memento.putBoolean(MEMENTO_IS_CATEGORY_MODE_ACTIVE, comboViewer.isVisible());
+        memento.putBoolean(MEMENTO_IS_CATEGORY_MODE_ACTIVE, comboViewer.isComboViewerVisible());
         memento.putInteger(MEMENTO_CATEGORY_MODE_SELECTED_CATEGORY, comboViewer.getNumberOfSelectedCategory());
     }
 
-    private void restoreState(IMemento memento) {
+    private void restoreGUIState(IMemento memento) {
         if (memento == null) {
             return;
         }
-
         memento = memento.getChild(MEMENTO_GUI_STATE);
         if (memento != null) {
             processFlatState(memento);
@@ -382,7 +409,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     @Override
     public void init(IViewSite site, IMemento memento) throws PartInitException {
-        this.memento = memento;
+        File stateFile = Activator.getDefaultLocationForStoringGUIState();
+        this.memento = GuiStateIO.readGuiStateMementoFromFile(stateFile);
         init(site);
     }
 
