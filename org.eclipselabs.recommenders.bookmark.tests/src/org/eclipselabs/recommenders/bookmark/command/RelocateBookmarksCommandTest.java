@@ -1,5 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.command;
 
+import static org.junit.Assert.*;
+
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.ReorderBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
@@ -18,14 +20,37 @@ public class RelocateBookmarksCommandTest {
     private JavaElementBookmark varWed;
     private JavaElementBookmark varSat;
     private BookmarkCommandInvoker invoker;
+    private JavaElementBookmark type;
+    private JavaElementBookmark varTue;
+    private JavaElementBookmark varThu;
+    private JavaElementBookmark varFri;
+    private JavaElementBookmark varSun;
+    private Category category;
+    private JavaElementBookmark compUnit;
 
     @Test
     public void testMoveMondayWednesdayBehindSaturday() {
-        performReordering();
+        invoker.invoke(new ReorderBookmarksCommand(varSat, new IBookmarkModelComponent[] { varMon, varWed }, false));
+        assertEquals(type.getChildElements().get(0), varTue);
+        assertEquals(type.getChildElements().get(1), varThu);
+        assertEquals(type.getChildElements().get(2), varFri);
+        assertEquals(type.getChildElements().get(3), varSat);
+        assertEquals(type.getChildElements().get(4), varMon);
+        assertEquals(type.getChildElements().get(5), varWed);
+        assertEquals(type.getChildElements().get(6), varSun);
     }
 
-    private void performReordering() {
-        invoker.invoke(new ReorderBookmarksCommand(varSat, new IBookmarkModelComponent[] { varMon, varWed }, false));        
+    @Test
+    public void testIfAllBookmarksOfALevelAreSelected() {
+        invoker.invoke(new ReorderBookmarksCommand(varWed, new IBookmarkModelComponent[] { varMon, varTue, varWed,
+                varThu, varFri, varSat, varSun }, true));
+        assertEquals(type.getChildElements().get(0), varMon);
+        assertEquals(type.getChildElements().get(1), varTue);
+        assertEquals(type.getChildElements().get(2), varWed);
+        assertEquals(type.getChildElements().get(3), varThu);
+        assertEquals(type.getChildElements().get(4), varFri);
+        assertEquals(type.getChildElements().get(5), varSat);
+        assertEquals(type.getChildElements().get(6), varSun);
     }
 
     @Before
@@ -45,18 +70,15 @@ public class RelocateBookmarksCommandTest {
     }
 
     private void buildModel() {
-        Category category = new Category("JUnit");
-        JavaElementBookmark compUnit = new JavaElementBookmark("=LKJLD/src<test.project{MyEnum.java", true);
+        createComponents();
+        setRelationshipOfComponents();
+        model = new BookmarkModel();
+        model.add(category);
+    }
+
+    private void setRelationshipOfComponents() {
         compUnit.setParent(category);
-        typePath = "=LKJLD/src<test.project{MyEnum.java[MyEnum";
-        JavaElementBookmark type = new JavaElementBookmark(typePath, true);
-        varMon = new JavaElementBookmark(typePath + "^MONDAY", false);
-        JavaElementBookmark varTue = new JavaElementBookmark(typePath + "^TUESDAY", false);
-        varWed = new JavaElementBookmark(typePath + "^WEDNESDAY", false);
-        JavaElementBookmark varThu = new JavaElementBookmark(typePath + "^THURSDAY", false);
-        JavaElementBookmark varFri = new JavaElementBookmark(typePath + "^FRIDAY", false);
-        varSat = new JavaElementBookmark(typePath + "^SATURDAY", false);
-        JavaElementBookmark varSun = new JavaElementBookmark(typePath + "^SUNDAY", false);
+        category.add(compUnit);
         type.addChildElement(varMon);
         type.addChildElement(varTue);
         type.addChildElement(varWed);
@@ -66,8 +88,21 @@ public class RelocateBookmarksCommandTest {
         type.addChildElement(varSun);
         compUnit.addChildElement(type);
 
-        model = new BookmarkModel();
-        model.add(category);
+    }
+
+    private void createComponents() {
+        category = new Category("JUnit");
+        compUnit = new JavaElementBookmark("=LKJLD/src<test.project{MyEnum.java", true);
+        typePath = "=LKJLD/src<test.project{MyEnum.java[MyEnum";
+        type = new JavaElementBookmark(typePath, true);
+        varMon = new JavaElementBookmark(typePath + "^MONDAY", false);
+        varTue = new JavaElementBookmark(typePath + "^TUESDAY", false);
+        varWed = new JavaElementBookmark(typePath + "^WEDNESDAY", false);
+        varThu = new JavaElementBookmark(typePath + "^THURSDAY", false);
+        varFri = new JavaElementBookmark(typePath + "^FRIDAY", false);
+        varSat = new JavaElementBookmark(typePath + "^SATURDAY", false);
+        varSun = new JavaElementBookmark(typePath + "^SUNDAY", false);
+
     }
 
 }
