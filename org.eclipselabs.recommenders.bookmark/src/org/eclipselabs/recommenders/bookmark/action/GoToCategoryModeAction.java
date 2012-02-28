@@ -19,6 +19,7 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
 
     public GoToCategoryModeAction(HideableComboViewer hideableComboViewer, BookmarkModel model,
             RepresentationSwitchableTreeViewer representationSwitchableTreeViewer) {
+        super("", AS_CHECK_BOX);
         this.hideableComboViewer = hideableComboViewer;
         this.model = model;
         treeViewer = representationSwitchableTreeViewer;
@@ -29,15 +30,17 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
 
     @Override
     public void run() {
-        
-        if (model.getCategories().size() == 0){
+
+        if (model.getCategories().size() == 0) {
             return;
         }
-        
+
         if (hideableComboViewer.isVisible()) {
+            this.setChecked(false);
             hideableComboViewer.hide();
             setSelection();
         } else {
+            this.setChecked(true);
             Category category = getActivatedCategory();
             hideableComboViewer.show(category);
         }
@@ -77,7 +80,7 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
         if (model.getCategories().isEmpty() || hideableComboViewer.isVisible()) {
             setEnabled(false);
         } else {
-            setEnabled(true);
+                setEnabled(true);
         }
     }
 

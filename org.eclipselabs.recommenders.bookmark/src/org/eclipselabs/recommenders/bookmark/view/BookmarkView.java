@@ -389,6 +389,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
             Integer selectedCategory = memento.getInteger(MEMENTO_CATEGORY_MODE_SELECTED_CATEGORY);
             if (isCategoryNumberValid(selectedCategory)) {
                 comboViewer.show(model.getCategories().get(selectedCategory));
+                categoryMode.setChecked(true);
             }
         }
     }
@@ -397,6 +398,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         Boolean isFlat = memento.getBoolean(MEMENTO_IS_FLAT);
         if (isFlat != null && isFlat) {
             activateFlatMode();
+            switchFlatHierarchical.setChecked(true);
         }
     }
 
