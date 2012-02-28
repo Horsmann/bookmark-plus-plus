@@ -10,6 +10,7 @@ import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
+import org.eclipselabs.recommenders.bookmark.visitor.IsIBookmarkVisitor;
 import org.eclipselabs.recommenders.bookmark.visitor.RemoveBookmarkModelComponentVisitor;
 
 import com.google.common.base.Optional;
@@ -71,22 +72,28 @@ public class DeleteInferredBookmarksCommand implements IBookmarkModelCommand {
 
     private LinkedList<IBookmark> getCandidatesForDeletion() {
         LinkedList<IBookmark> bookmarks = new LinkedList<IBookmark>();
-        bookmarks.add(commandTriggeringBookmark);
-
-        IBookmarkModelComponent theBoomark = commandTriggeringBookmark;
-        while (theBoomark.hasParent()) {
-            theBoomark = theBoomark.getParent();
-            if (!(theBoomark instanceof IBookmark)) {
+        IBookmarkModelComponent theBookmark = commandTriggeringBookmark;
+        while (theBookmark.hasParent()) {
+            if (!isIBookmark(theBookmark)) {
                 break;
             }
-
-            if (isUndeletable(theBoomark)) {
+            if (isUndeletable(theBookmark)) {
                 break;
             } else {
-                bookmarks.add((IBookmark) theBoomark);
+                bookmarks.add((IBookmark) theBookmark);
             }
+            theBookmark = theBookmark.getParent();
         }
         return bookmarks;
+    }
+
+    private boolean isIBookmark(IBookmarkModelComponent theBookmark) {
+        IsIBookmarkVisitor visitor = new IsIBookmarkVisitor();
+        theBookmark.accept(visitor);
+        if (visitor.isIBookmark()) {
+            return true;
+        }
+        return false;
     }
 
     private boolean isUndeletable(IBookmarkModelComponent theBoomark) {

@@ -2,13 +2,11 @@ package org.eclipselabs.recommenders.bookmark.commands;
 
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
-import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
-import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
-import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.visitor.HierarchyValueVisitor;
+import org.eclipselabs.recommenders.bookmark.visitor.IsIBookmarkVisitor;
 import org.eclipselabs.recommenders.bookmark.visitor.RemoveBookmarkModelComponentVisitor;
 
 import com.google.common.base.Optional;
@@ -90,10 +88,10 @@ public class ChangeElementCommand implements IBookmarkModelCommand {
     }
 
     private void deleteInferredNodes(IBookmarkModelComponent parent) {
-        IsBookmarkVisitor isBookmark = new IsBookmarkVisitor();
+        IsIBookmarkVisitor isBookmark = new IsIBookmarkVisitor();
         parent.accept(isBookmark);
         if (isBookmark.isIBookmark()) {
-            //commandInvoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
+            commandInvoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
         }
     }
 
@@ -109,31 +107,4 @@ public class ChangeElementCommand implements IBookmarkModelCommand {
         execute(model);
     }
 
-    private class IsBookmarkVisitor implements IModelVisitor {
-
-        boolean isIBookmark;
-
-        public boolean isIBookmark() {
-            return isIBookmark;
-        }
-
-        @Override
-        public void visit(FileBookmark fileBookmark) {
-            if (fileBookmark instanceof IBookmark) {
-                isIBookmark = true;
-            }
-        }
-
-        @Override
-        public void visit(Category category) {
-        }
-
-        @Override
-        public void visit(JavaElementBookmark javaElementBookmark) {
-            if (javaElementBookmark instanceof IBookmark) {
-                isIBookmark = true;
-            }
-        }
-
-    }
 }
