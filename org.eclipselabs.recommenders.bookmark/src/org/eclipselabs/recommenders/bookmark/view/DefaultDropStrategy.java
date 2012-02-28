@@ -16,8 +16,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipselabs.recommenders.bookmark.commands.AddElementCommand;
-import org.eclipselabs.recommenders.bookmark.commands.ChangeElementCommand;
+import org.eclipselabs.recommenders.bookmark.commands.AddBookmarksCommand;
+import org.eclipselabs.recommenders.bookmark.commands.ChangeBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RelocateBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
@@ -174,7 +174,7 @@ public class DefaultDropStrategy implements IDropStrategy {
     protected void processDroppedElementOriginatedFromOutsideTheView(
             final Optional<IBookmarkModelComponent> dropTarget, final Object[] elements, boolean isDropBeforeTarget) {
         Optional<String> categoryName = Optional.absent();
-        commandInvoker.invoke(new AddElementCommand(elements, commandInvoker, isDropBeforeTarget, dropTarget,
+        commandInvoker.invoke(new AddBookmarksCommand(elements, commandInvoker, isDropBeforeTarget, dropTarget,
                 categoryName));
     }
 
@@ -183,7 +183,7 @@ public class DefaultDropStrategy implements IDropStrategy {
 
         if (!causeRecursion(components, dropTarget)) {
             Optional<String> categoryName = Optional.absent();
-            commandInvoker.invoke(new ChangeElementCommand(components, isCopyOperation, commandInvoker,
+            commandInvoker.invoke(new ChangeBookmarksCommand(components, isCopyOperation, commandInvoker,
                     insertDropBeforeTarget, dropTarget, categoryName));
         }
     }

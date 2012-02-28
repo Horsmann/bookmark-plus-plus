@@ -6,7 +6,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipselabs.recommenders.bookmark.commands.AddElementCommand;
+import org.eclipselabs.recommenders.bookmark.commands.AddBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import com.google.common.base.Optional;
 
-public class AddElementCommandIFileTest {
+public class AddBookmarkCommandIFileTest {
 
     BookmarkCommandInvoker invoker;
     BookmarkModel model;
@@ -51,7 +51,7 @@ public class AddElementCommandIFileTest {
         IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
         Optional<String> name = Optional.absent();
         Optional<IBookmarkModelComponent> dropTarget = Optional.of((IBookmarkModelComponent) category);
-        invoker.invoke(new AddElementCommand(new Object[] { file }, invoker, true, dropTarget, name));
+        invoker.invoke(new AddBookmarksCommand(new Object[] { file }, invoker, true, dropTarget, name));
     }
 
     @Before

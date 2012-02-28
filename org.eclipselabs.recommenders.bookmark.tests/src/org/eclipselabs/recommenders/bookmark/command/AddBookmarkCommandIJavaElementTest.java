@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipselabs.recommenders.bookmark.commands.AddElementCommand;
+import org.eclipselabs.recommenders.bookmark.commands.AddBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import com.google.common.base.Optional;
 
-public class AddElementCommandIJavaElementTest {
+public class AddBookmarkCommandIJavaElementTest {
 
     BookmarkCommandInvoker invoker;
     JavaElementBookmark dropTarget;
@@ -62,7 +62,7 @@ public class AddElementCommandIJavaElementTest {
     private void insertElementToModel(String handleId) {
         IJavaElement javaElement = JavaCore.create(handleId);
         Optional<String> name = Optional.absent();
-        invoker.invoke(new AddElementCommand(new Object[] { javaElement }, invoker, true, Optional
+        invoker.invoke(new AddBookmarksCommand(new Object[] { javaElement }, invoker, true, Optional
                 .of((IBookmarkModelComponent) dropTarget), name));
     }
 

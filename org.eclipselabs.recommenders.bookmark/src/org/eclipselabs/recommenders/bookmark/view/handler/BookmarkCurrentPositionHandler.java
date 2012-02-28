@@ -23,7 +23,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.BookmarkUtil;
-import org.eclipselabs.recommenders.bookmark.commands.AddElementCommand;
+import org.eclipselabs.recommenders.bookmark.commands.AddBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 
@@ -98,7 +98,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
 
         Optional<IBookmarkModelComponent> dropTarget = getDropTarget();
         Optional<String> nameForNewCategory = Optional.absent();
-        invoker.invoke(new AddElementCommand(objects, invoker, false, dropTarget, nameForNewCategory));
+        invoker.invoke(new AddBookmarksCommand(objects, invoker, false, dropTarget, nameForNewCategory));
     }
 
     private Optional<IBookmarkModelComponent> getDropTarget() {

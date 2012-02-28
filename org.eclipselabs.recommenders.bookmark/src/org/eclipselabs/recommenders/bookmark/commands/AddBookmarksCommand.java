@@ -27,7 +27,7 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
-public class AddElementCommand implements IBookmarkModelCommand {
+public class AddBookmarksCommand implements IBookmarkModelCommand {
 
     private final Object[] elements;
     private BookmarkModel model;
@@ -38,7 +38,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
     private final boolean isDropBeforeTarget;
     private boolean newBookmarkCreated = false;
 
-    public AddElementCommand(final Object[] elements, BookmarkCommandInvoker commandInvoker,
+    public AddBookmarksCommand(final Object[] elements, BookmarkCommandInvoker commandInvoker,
             boolean isDropBeforeTarget, final Optional<IBookmarkModelComponent> dropTarget,
             Optional<String> nameForNewCategory) {
         this.dropTarget = dropTarget;
@@ -59,8 +59,10 @@ public class AddElementCommand implements IBookmarkModelCommand {
         this.category = category;
         this.model = model;
         List<IBookmarkModelComponent> createdElements = Lists.newLinkedList();
+        
+        Object [] inversedOrderElements = inverseElementOrder();
 
-        for (Object element : elements) {
+        for (Object element : inversedOrderElements) {
             if (isIJavaElement(element)) {
                 Optional<JavaElementBookmark> created = processJavaElement((IJavaElement) element);
                 if (created.isPresent()) {
@@ -78,6 +80,15 @@ public class AddElementCommand implements IBookmarkModelCommand {
             addCategoryToModel();
             sortInIfDropAndTargetShareSameParent(createdElements);
         }
+    }
+
+    private Object[] inverseElementOrder() {
+        List<Object> inverse = Lists.newArrayList();
+        for (int i=elements.length - 1; i >= 0; i--){
+            inverse.add(elements[i]);
+        }
+        
+        return inverse.toArray();
     }
 
     private boolean isIJavaElement(Object element) {
@@ -150,8 +161,9 @@ public class AddElementCommand implements IBookmarkModelCommand {
             JavaElementBookmark createBookmark = createJavaElementBookmark(javaElement);
             if (newBookmarkCreated) {
                 createBookmark.setInferred(false);
+                created = Optional.of(createBookmark);
+                newBookmarkCreated = false;
             }
-            created = Optional.of(createBookmark);
         }
         return created;
     }
