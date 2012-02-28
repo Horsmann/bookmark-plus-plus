@@ -26,10 +26,19 @@ public class AddElementCommandIFileTest {
     String relativePath = "../LKJLD/testfile.txt";
 
     @Test
-    public void testInsertJavaElement() {
+    public void testInsertFile() {
         insertFileToModel();
         FileBookmark target = getElementInModelAtTargetPosition();
         assertEquals(relativePath, FileBookmark.getRelativeFilePath(target.getFile()));
+    }
+
+    @Test
+    public void testInsertOfAlreadyExistingFile() {
+        insertFileToModel();
+        insertFileToModel();
+        FileBookmark target = getElementInModelAtTargetPosition();
+        assertEquals(relativePath, FileBookmark.getRelativeFilePath(target.getFile()));
+        assertEquals(1, category.getBookmarks().size());
     }
 
     private FileBookmark getElementInModelAtTargetPosition() {

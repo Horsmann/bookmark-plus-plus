@@ -36,6 +36,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
     private final Optional<IBookmarkModelComponent> dropTarget;
     private final Optional<String> nameForNewCategory;
     private final boolean isDropBeforeTarget;
+    private boolean newBookmarkCreated = false;
 
     public AddElementCommand(final Object[] elements, BookmarkCommandInvoker commandInvoker,
             boolean isDropBeforeTarget, final Optional<IBookmarkModelComponent> dropTarget,
@@ -143,7 +144,9 @@ public class AddElementCommand implements IBookmarkModelCommand {
         Optional<JavaElementBookmark> created = Optional.absent();
         if (BookmarkUtil.isBookmarkable(javaElement)) {
             JavaElementBookmark createJavaElementBookmark = createJavaElementBookmark(javaElement);
-            createJavaElementBookmark.setInferred(false);
+            if (newBookmarkCreated) {
+                createJavaElementBookmark.setInferred(false);
+            }
             created = Optional.of(createJavaElementBookmark);
         }
         return created;
@@ -163,7 +166,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
                 JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
                         bookmarkParent);
                 newBookmark.setExpanded(true);
-
+                newBookmarkCreated = true;
                 return newBookmark;
             }
 
@@ -178,7 +181,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
                 JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
                         category);
                 newBookmark.setExpanded(true);
-
+                newBookmarkCreated = true;
                 return newBookmark;
             }
         }

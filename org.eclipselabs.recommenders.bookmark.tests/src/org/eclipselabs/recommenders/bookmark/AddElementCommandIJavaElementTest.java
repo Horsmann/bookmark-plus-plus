@@ -25,10 +25,23 @@ public class AddElementCommandIJavaElementTest {
 
     @Test
     public void testInsertNewJavaElement() {
+        String handleId = "=LKJLD/src<test.project{XXX.java[XXX^ZZZZZ";
+        insertElementToModel(handleId);
+        JavaElementBookmark target = ((JavaElementBookmark) model.getCategories().get(0).getBookmarks().get(1))
+                .getChildElements().get(0).getChildElements().get(0);
+        assertEquals(handleId, target.getHandleId());
+        assertFalse(target.isInferredNode());
+        assertTrue(((IBookmark) target.getParent()).isInferredNode());
+        assertTrue(((IBookmark) target.getParent().getParent()).isInferredNode());
+
+    }
+
+    @Test
+    public void testInsertNewJavaElementIntoExistingStructure() {
         String handleId = "=LKJLD/src<test.project{MyEnum.java[MyEnum^SATURDAY";
         insertElementToModel(handleId);
-        JavaElementBookmark target = ((JavaElementBookmark) model.getCategories().get(0).getBookmarks().get(0)).getChildElements().get(0)
-                .getChildElements().get(0);
+        JavaElementBookmark target = ((JavaElementBookmark) model.getCategories().get(0).getBookmarks().get(0))
+                .getChildElements().get(0).getChildElements().get(0);
         assertEquals(handleId, target.getHandleId());
         assertFalse(target.isInferredNode());
         assertTrue(((IBookmark) target.getParent()).isInferredNode());
@@ -40,7 +53,8 @@ public class AddElementCommandIJavaElementTest {
     public void testInsertOfAlreadyExistingJavaElement() {
         String handleId = "=LKJLD/src<test.project{MyEnum.java[MyEnum";
         insertElementToModel(handleId);
-        JavaElementBookmark target = ((JavaElementBookmark) model.getCategories().get(0).getBookmarks().get(0)).getChildElements().get(0);
+        JavaElementBookmark target = ((JavaElementBookmark) model.getCategories().get(0).getBookmarks().get(0))
+                .getChildElements().get(0);
         assertEquals(handleId, target.getHandleId());
         assertTrue(target.isInferredNode());
     }
@@ -88,6 +102,7 @@ public class AddElementCommandIJavaElementTest {
         type.addChildElement(method);
 
         compUnit.addChildElement(type);
+        category.add(compUnit);
 
         model = new BookmarkModel();
         model.add(category);
