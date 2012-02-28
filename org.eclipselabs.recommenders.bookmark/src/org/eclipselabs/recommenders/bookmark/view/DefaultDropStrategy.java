@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.commands.AddBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.ChangeBookmarksCommand;
-import org.eclipselabs.recommenders.bookmark.commands.RelocateBookmarksCommand;
+import org.eclipselabs.recommenders.bookmark.commands.ReorderBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmark;
@@ -133,7 +133,7 @@ public class DefaultDropStrategy implements IDropStrategy {
 
     private void processReorderingofNodes(IBookmarkModelComponent target, IBookmarkModelComponent[] components,
             boolean insertDropBeforeTarget) {
-        commandInvoker.invoke(new RelocateBookmarksCommand(target, components, insertDropBeforeTarget));
+        commandInvoker.invoke(new ReorderBookmarksCommand(target, components, insertDropBeforeTarget));
 
     }
 

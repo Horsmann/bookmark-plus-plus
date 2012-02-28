@@ -108,7 +108,7 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
         if (dropTarget.isPresent()) {
             for (IBookmarkModelComponent component : createdElements) {
                 if (hasSameParentAsTarget(component)) {
-                    commandInvoker.invoke(new RelocateBookmarksCommand(dropTarget.get(),
+                    commandInvoker.invoke(new ReorderBookmarksCommand(dropTarget.get(),
                             new IBookmarkModelComponent[] { component }, isDropBeforeTarget));
                 }
             }
