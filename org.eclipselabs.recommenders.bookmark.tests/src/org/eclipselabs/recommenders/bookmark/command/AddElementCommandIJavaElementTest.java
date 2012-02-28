@@ -1,4 +1,4 @@
-package org.eclipselabs.recommenders.bookmark;
+package org.eclipselabs.recommenders.bookmark.command;
 
 import static org.junit.Assert.*;
 
