@@ -27,23 +27,18 @@ public class RelocateBookmarksCommand implements IBookmarkModelCommand {
         this.target = target;
         this.components = bookmarks;
         this.isDropBeforeTarget = isDropBeforeTarget;
-
     }
 
     @Override
     public void execute(BookmarkModel model) {
-
         this.model = model;
-
         List<IBookmarkModelComponent> newOrder = Lists.newArrayList();
         List<IBookmarkModelComponent> allSilblings = getAllSilblings();
         LinkedList<IBookmarkModelComponent> unselectedSilblings = getUnselectedSilblings(allSilblings);
         if (unselectedSilblings.isEmpty()) {
             return;
         }
-
         int index = moveUnselectedNodesToNewOrderUntilTargetNode(unselectedSilblings, newOrder);
-
         if (isDropBeforeTarget) {
             insertBeforeTarget(unselectedSilblings, newOrder, index);
         } else {
@@ -54,19 +49,14 @@ public class RelocateBookmarksCommand implements IBookmarkModelCommand {
 
     private void insertAfterTarget(LinkedList<IBookmarkModelComponent> unselectedSilblings,
             List<IBookmarkModelComponent> newOrder, int index) {
-
         newOrder.add(unselectedSilblings.get(index));
-
         for (IBookmarkModelComponent component : components) {
             newOrder.add(component);
         }
-
         for (int i = (index + 1); i < unselectedSilblings.size(); i++) {
             newOrder.add(unselectedSilblings.get(i));
         }
-
         setNewOrder(newOrder);
-
     }
 
     private void setNewOrder(List<IBookmarkModelComponent> newOrder) {
@@ -85,9 +75,7 @@ public class RelocateBookmarksCommand implements IBookmarkModelCommand {
     }
 
     private void setNewOrderForCategories(List<IBookmarkModelComponent> newOrder) {
-
         model.removeAll();
-
         for (IBookmarkModelComponent component : newOrder) {
             IsCategoryVisitor visitor = new IsCategoryVisitor();
             component.accept(visitor);
@@ -102,13 +90,10 @@ public class RelocateBookmarksCommand implements IBookmarkModelCommand {
         for (IBookmarkModelComponent selected : components) {
             newOrder.add(selected);
         }
-
         for (int i = index; i < unselectedSilblings.size(); i++) {
             newOrder.add(unselectedSilblings.get(i));
         }
-
         setNewOrder(newOrder);
-
     }
 
     private int moveUnselectedNodesToNewOrderUntilTargetNode(LinkedList<IBookmarkModelComponent> unselectedSilblings,
@@ -122,7 +107,6 @@ public class RelocateBookmarksCommand implements IBookmarkModelCommand {
             }
             newOrder.add(current);
         }
-
         return index;
     }
 
@@ -133,13 +117,11 @@ public class RelocateBookmarksCommand implements IBookmarkModelCommand {
         target.accept(targetVisitor);
 
         for (IBookmarkModelComponent component : components) {
-
             GetValueVisitor visitor = new GetValueVisitor();
             component.accept(visitor);
             if (isValueOfDroppedAndTargetElementEqual(targetVisitor.getValue(), visitor.getValue())) {
                 return new LinkedList<IBookmarkModelComponent>();
             }
-
             unselectedSilblings.remove(component);
         }
         return unselectedSilblings;
@@ -154,7 +136,6 @@ public class RelocateBookmarksCommand implements IBookmarkModelCommand {
         if (target instanceof Category) {
             return new LinkedList<IBookmarkModelComponent>(model.getCategories());
         }
-
         GetSilblingsVisitor visitor = new GetSilblingsVisitor();
         IBookmarkModelComponent parent = target.getParent();
         parent.accept(visitor);
@@ -187,7 +168,6 @@ public class RelocateBookmarksCommand implements IBookmarkModelCommand {
     }
 
     private class AddListAsChildrenVisitor implements IModelVisitor {
-
         private final List<IBookmarkModelComponent> newOrder;
 
         public AddListAsChildrenVisitor(List<IBookmarkModelComponent> newOrder) {
@@ -219,7 +199,6 @@ public class RelocateBookmarksCommand implements IBookmarkModelCommand {
     }
 
     private class GetSilblingsVisitor implements IModelVisitor {
-
         private List<IBookmarkModelComponent> silblings = Lists.newArrayList();
 
         public List<IBookmarkModelComponent> getSilblings() {
