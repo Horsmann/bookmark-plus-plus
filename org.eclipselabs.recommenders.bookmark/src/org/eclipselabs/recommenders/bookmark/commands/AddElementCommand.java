@@ -61,7 +61,7 @@ public class AddElementCommand implements IBookmarkModelCommand {
         List<IBookmarkModelComponent> createdElements = Lists.newLinkedList();
 
         for (Object element : elements) {
-            if (element instanceof IJavaElement && BookmarkUtil.isInternalElement((IJavaElement) element)) {
+            if (isIJavaElement(element)) {
                 Optional<JavaElementBookmark> created = processJavaElement((IJavaElement) element);
                 if (created.isPresent()) {
                     createdElements.add(created.get());
@@ -78,6 +78,10 @@ public class AddElementCommand implements IBookmarkModelCommand {
             addCategoryToModel();
             sortInIfDropAndTargetShareSameParent(createdElements);
         }
+    }
+
+    private boolean isIJavaElement(Object element) {
+        return (element instanceof IJavaElement && BookmarkUtil.isInternalElement((IJavaElement) element));
     }
 
     private void addCategoryToModel() {
@@ -143,11 +147,11 @@ public class AddElementCommand implements IBookmarkModelCommand {
     private Optional<JavaElementBookmark> processJavaElement(final IJavaElement javaElement) {
         Optional<JavaElementBookmark> created = Optional.absent();
         if (BookmarkUtil.isBookmarkable(javaElement)) {
-            JavaElementBookmark createJavaElementBookmark = createJavaElementBookmark(javaElement);
+            JavaElementBookmark createBookmark = createJavaElementBookmark(javaElement);
             if (newBookmarkCreated) {
-                createJavaElementBookmark.setInferred(false);
+                createBookmark.setInferred(false);
             }
-            created = Optional.of(createJavaElementBookmark);
+            created = Optional.of(createBookmark);
         }
         return created;
     }
@@ -156,36 +160,52 @@ public class AddElementCommand implements IBookmarkModelCommand {
         IJavaElement parent = javaElement.getParent();
         if (BookmarkUtil.isBookmarkable(parent)) {
             JavaElementBookmark bookmarkParent = createJavaElementBookmark(parent);
-            FindJavaElementHandleVisitor visitor = new FindJavaElementHandleVisitor(javaElement.getHandleIdentifier());
-            bookmarkParent.accept(visitor);
-            if (visitor.getFoundElement().isPresent()) {
-                JavaElementBookmark foundBookmark = visitor.getFoundElement().get();
-                foundBookmark.setExpanded(true);
-                return foundBookmark;
-            } else {
-                JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
-                        bookmarkParent);
-                newBookmark.setExpanded(true);
-                newBookmarkCreated = true;
-                return newBookmark;
-            }
-
+            return searchJavaElementBelowBookmarkParent(bookmarkParent, javaElement);
         } else {
-            FindJavaElementHandleVisitor visitor = new FindJavaElementHandleVisitor(javaElement.getHandleIdentifier());
-            category.accept(visitor);
-            if (visitor.getFoundElement().isPresent()) {
-                JavaElementBookmark foundBookmark = visitor.getFoundElement().get();
-                foundBookmark.setExpanded(true);
-                return foundBookmark;
-            } else {
-                JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
-                        category);
-                newBookmark.setExpanded(true);
-                newBookmarkCreated = true;
-                return newBookmark;
-            }
+            return searchJavaElementInCategory(javaElement);
         }
 
+    }
+
+    private JavaElementBookmark searchJavaElementBelowBookmarkParent(JavaElementBookmark bookmarkParent,
+            IJavaElement javaElement) {
+        FindJavaElementHandleVisitor visitor = new FindJavaElementHandleVisitor(javaElement.getHandleIdentifier());
+        bookmarkParent.accept(visitor);
+        if (visitor.getFoundElement().isPresent()) {
+            return getFoundElement(visitor);
+        }
+        return createNewJavaElementBookmarkWithExistingParent(bookmarkParent, javaElement);
+    }
+
+    private JavaElementBookmark createNewJavaElementBookmarkWithExistingParent(JavaElementBookmark bookmarkParent,
+            IJavaElement javaElement) {
+        JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true,
+                bookmarkParent);
+        newBookmark.setExpanded(true);
+        newBookmarkCreated = true;
+        return newBookmark;
+    }
+
+    private JavaElementBookmark searchJavaElementInCategory(IJavaElement javaElement) {
+        FindJavaElementHandleVisitor visitor = new FindJavaElementHandleVisitor(javaElement.getHandleIdentifier());
+        category.accept(visitor);
+        if (visitor.getFoundElement().isPresent()) {
+            return getFoundElement(visitor);
+        }
+        return createNewJavaElementBookmarkWithCategoryAsParent(javaElement);
+    }
+
+    private JavaElementBookmark getFoundElement(FindJavaElementHandleVisitor visitor) {
+        JavaElementBookmark foundBookmark = visitor.getFoundElement().get();
+        foundBookmark.setExpanded(true);
+        return foundBookmark;
+    }
+
+    private JavaElementBookmark createNewJavaElementBookmarkWithCategoryAsParent(IJavaElement javaElement) {
+        JavaElementBookmark newBookmark = new JavaElementBookmark(javaElement.getHandleIdentifier(), true, category);
+        newBookmark.setExpanded(true);
+        newBookmarkCreated = true;
+        return newBookmark;
     }
 
     private class FindJavaElementHandleVisitor implements IModelVisitor {
