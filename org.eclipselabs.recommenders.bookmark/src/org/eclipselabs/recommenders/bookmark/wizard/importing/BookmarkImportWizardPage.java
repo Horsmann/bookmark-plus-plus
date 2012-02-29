@@ -41,7 +41,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.action.SwitchInferredStateAction;
-import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteInferredBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
@@ -58,6 +57,7 @@ import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableT
 import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
 import org.eclipselabs.recommenders.bookmark.visitor.IsIBookmarkVisitor;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
+import org.eclipselabs.recommenders.bookmark.wizard.RemoveAllMouseListener;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
 
 import com.google.common.base.Optional;
@@ -330,22 +330,7 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void addMouseListenerToRemoveAllButton(Button removeAll) {
-        removeAll.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseUp(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseDown(MouseEvent e) {
-                invoker.invoke(new DeleteAllBookmarksCommand());
-                localTreeViewer.refresh();
-            }
-
-            @Override
-            public void mouseDoubleClick(MouseEvent e) {
-            }
-        });
+        removeAll.addMouseListener(new RemoveAllMouseListener(invoker));
     }
 
     private void addRemoveButton(Composite buttonPanel) {
