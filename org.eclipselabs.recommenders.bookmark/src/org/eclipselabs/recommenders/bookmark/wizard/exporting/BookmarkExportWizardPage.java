@@ -11,17 +11,12 @@
 package org.eclipselabs.recommenders.bookmark.wizard.exporting;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -37,7 +32,6 @@ import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.action.SwitchInferredStateAction;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
-import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
@@ -46,15 +40,11 @@ import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableT
 import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
 import org.eclipselabs.recommenders.bookmark.wizard.AddAllMouseListener;
 import org.eclipselabs.recommenders.bookmark.wizard.AddMouseAndDoubleClickerListener;
-import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveAllMouseListener;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveMouseListener;
 import org.eclipselabs.recommenders.bookmark.wizard.TreeSelectionDependendButtonEnabler;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardKeyListener;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 public class BookmarkExportWizardPage extends WizardPage implements BookmarkCommandInvoker {
 
@@ -245,48 +235,8 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         add.setEnabled(false);
     }
 
-    private void addSelectionFromLocalToExport() {
-        IBookmarkModelComponent[] components = getSelectedBookmarkComponents();
-
-        if (exportTreeViewer.getSelections().size() == 0) {
-            Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
-            invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
-        } else {
-            Optional<IBookmarkModelComponent> dropTarget = Optional.of((IBookmarkModelComponent) exportTreeViewer
-                    .getSelections().getFirstElement());
-            invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
-        }
-
-    }
-
-    private IBookmarkModelComponent[] getSelectedBookmarkComponents() {
-        IStructuredSelection selections = localTreeViewer.getSelections();
-        List<IBookmarkModelComponent> components = Lists.newArrayList();
-        @SuppressWarnings("rawtypes")
-        Iterator iterator = selections.iterator();
-        while (iterator.hasNext()) {
-            components.add((IBookmarkModelComponent) iterator.next());
-        }
-        return components.toArray(new IBookmarkModelComponent[0]);
-    }
-
     private void addMouseListenerToAddButton(Button add) {
         add.addMouseListener(new AddMouseAndDoubleClickerListener(localTreeViewer, exportTreeViewer, invoker));
-        // add.addMouseListener(new MouseListener() {
-        //
-        // @Override
-        // public void mouseUp(MouseEvent e) {
-        // }
-        //
-        // @Override
-        // public void mouseDown(MouseEvent e) {
-        // addSelectionFromLocalToExport();
-        // }
-        //
-        // @Override
-        // public void mouseDoubleClick(MouseEvent e) {
-        // }
-        // });
     }
 
     private void addRemoveAllButton(Composite buttonPanel) {

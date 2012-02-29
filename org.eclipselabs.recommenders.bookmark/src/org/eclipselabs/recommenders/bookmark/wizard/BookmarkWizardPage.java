@@ -1,5 +1,8 @@
 package org.eclipselabs.recommenders.bookmark.wizard;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
@@ -11,6 +14,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipselabs.recommenders.bookmark.Activator;
+import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
+import org.eclipselabs.recommenders.bookmark.action.SwitchInferredStateAction;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
@@ -18,6 +23,7 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
 
 public class BookmarkWizardPage extends WizardPage implements BookmarkCommandInvoker {
 
@@ -44,6 +50,54 @@ public class BookmarkWizardPage extends WizardPage implements BookmarkCommandInv
         container = initializeContainerComposite(parent);
         addRowWithTextFieldForLoadedFileAndBrowseButton(container);
         addTreeViewerWithAddRemoveButton(container);
+        makeAddButtonEnDisableOnSelections();
+        makeRemoveButtonEnDisableOnSelections();
+        setContextMenu();
+        setControl(parent);
+        setPageComplete(false);
+    }
+
+    private void setContextMenu() {
+        RenameCategoryAction renameCategoryAction = new RenameCategoryAction(rightTreeViewer, invoker);
+        SwitchInferredStateAction switchInferredStateAction = new SwitchInferredStateAction(rightTreeViewer, invoker);
+        MenuManager contextMenu = createContextMenu(renameCategoryAction, switchInferredStateAction);
+        SelectionChangedListener selectionChangedListener = createSelectionChangedListener(renameCategoryAction, switchInferredStateAction);
+        rightTreeViewer.setContextMenu(contextMenu);
+        rightTreeViewer.addSelectionChangedListener(selectionChangedListener);
+    }
+
+    private SelectionChangedListener createSelectionChangedListener(RenameCategoryAction renameCategoryAction,
+            SwitchInferredStateAction switchInferredStateAction) {
+        SelectionChangedListener selectionListener = new SelectionChangedListener();
+        selectionListener.register(renameCategoryAction);
+        selectionListener.register(switchInferredStateAction);
+        return selectionListener;
+    }
+
+    private MenuManager createContextMenu(final RenameCategoryAction renameCategoryAction,
+            final SwitchInferredStateAction switchInferredStateAction) {
+        final MenuManager menuMgr = new MenuManager();
+        menuMgr.setRemoveAllWhenShown(true);
+
+        menuMgr.addMenuListener(new IMenuListener() {
+            public void menuAboutToShow(IMenuManager mgr) {
+                menuMgr.add(renameCategoryAction);
+                menuMgr.add(switchInferredStateAction);
+            }
+        });
+
+        menuMgr.update(true);
+        return menuMgr;
+    }
+
+    private void makeRemoveButtonEnDisableOnSelections() {
+        rightTreeViewer.addSelectionChangedListener(new TreeSelectionDependendButtonEnabler(rightTreeViewer, remove));
+    }
+
+    private void makeAddButtonEnDisableOnSelections() {
+        leftTreeViewer.addSelectionChangedListener(new TreeSelectionDependendButtonEnabler(leftTreeViewer, add));
+        rightTreeViewer.addDoubleclickListener(new AddMouseAndDoubleClickerListener(rightTreeViewer, leftTreeViewer,
+                invoker));
     }
 
     private Composite initializeContainerComposite(Composite parent) {

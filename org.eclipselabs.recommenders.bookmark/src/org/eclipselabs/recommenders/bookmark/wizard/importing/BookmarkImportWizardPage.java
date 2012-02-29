@@ -20,8 +20,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -256,30 +254,6 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         add.setLayoutData(data);
         add.setEnabled(false);
-    }
-
-    private void addSelectionFromImportToLocal() {
-        IBookmarkModelComponent[] components = getSelectedBookmarkComponents();
-
-        if (localTreeViewer.getSelections().size() == 0) {
-            Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
-            invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
-        } else {
-            Optional<IBookmarkModelComponent> dropTarget = Optional.of((IBookmarkModelComponent) localTreeViewer
-                    .getSelections().getFirstElement());
-            invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
-        }
-    }
-
-    private IBookmarkModelComponent[] getSelectedBookmarkComponents() {
-        IStructuredSelection selections = importTreeViewer.getSelections();
-        List<IBookmarkModelComponent> components = Lists.newArrayList();
-        @SuppressWarnings("rawtypes")
-        Iterator iterator = selections.iterator();
-        while (iterator.hasNext()) {
-            components.add((IBookmarkModelComponent) iterator.next());
-        }
-        return components.toArray(new IBookmarkModelComponent[0]);
     }
 
     private void addMouseListenerToAddButton(Button add) {
