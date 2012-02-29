@@ -25,8 +25,6 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -41,7 +39,6 @@ import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.action.SwitchInferredStateAction;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
-import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkIO;
@@ -50,6 +47,8 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
+import org.eclipselabs.recommenders.bookmark.wizard.AddAllMouseListener;
+import org.eclipselabs.recommenders.bookmark.wizard.AddMouseAndDoubleClickerListener;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveAllMouseListener;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveMouseListener;
@@ -194,6 +193,7 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
         addMouseListenerToRemoveAllButton(removeAll);
         addMouseListenerToAddButton(add);
         addMouseListenerToAddAllButton(addAll);
+        importTreeViewer.addDoubleclickListener(new AddMouseAndDoubleClickerListener(importTreeViewer, localTreeViewer, invoker));
     }
 
     private void createProspectiveLocalTreeViewer(Composite bookmarkSelComposite) {
@@ -283,21 +283,7 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void addMouseListenerToAddButton(Button add) {
-        add.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseUp(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseDown(MouseEvent e) {
-                addSelectionFromImportToLocal();
-            }
-
-            @Override
-            public void mouseDoubleClick(MouseEvent e) {
-            }
-        });
+        add.addMouseListener(new AddMouseAndDoubleClickerListener(importTreeViewer, localTreeViewer, invoker));
     }
 
     private void addRemoveAllButton(Composite buttonPanel) {
@@ -327,34 +313,7 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void addMouseListenerToAddAllButton(Button addAll) {
-        addAll.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseUp(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseDown(MouseEvent e) {
-
-                File file = new File(selectedFileTextField.getText());
-                if (isValid(file)) {
-                    BookmarkModel model = null;
-                    try {
-                        model = BookmarkIO.load(file);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                    for (Category cat : model.getCategories()) {
-                        clonedModel.add(cat);
-                    }
-                    localTreeViewer.refresh();
-                }
-            }
-
-            @Override
-            public void mouseDoubleClick(MouseEvent e) {
-            }
-        });
+        addAll.addMouseListener(new AddAllMouseListener(importTreeViewer, localTreeViewer, invoker));
     }
 
     private boolean isValid(File file) {
@@ -389,13 +348,6 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
         final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
         importTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
                 dragListener);
-        importTreeViewer.addDoubleclickListener(new IDoubleClickListener() {
-
-            @Override
-            public void doubleClick(DoubleClickEvent event) {
-                addSelectionFromImportToLocal();
-            }
-        });
     }
 
     private void addHeadline(Composite composite) {

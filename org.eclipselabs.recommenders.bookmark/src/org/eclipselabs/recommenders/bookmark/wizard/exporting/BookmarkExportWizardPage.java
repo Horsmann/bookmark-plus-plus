@@ -24,8 +24,6 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -46,6 +44,8 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
+import org.eclipselabs.recommenders.bookmark.wizard.AddAllMouseListener;
+import org.eclipselabs.recommenders.bookmark.wizard.AddMouseAndDoubleClickerListener;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveAllMouseListener;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveMouseListener;
@@ -127,13 +127,8 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
 
     private void makeAddButtonEnDisableOnSelections() {
         localTreeViewer.addSelectionChangedListener(new TreeSelectionDependendButtonEnabler(localTreeViewer, add));
-        localTreeViewer.addDoubleclickListener(new IDoubleClickListener() {
-
-            @Override
-            public void doubleClick(DoubleClickEvent event) {
-                addSelectionFromLocalToExport();
-            }
-        });
+        localTreeViewer.addDoubleclickListener(new AddMouseAndDoubleClickerListener(localTreeViewer, exportTreeViewer,
+                invoker));
     }
 
     private void makeRemoveButtonEnDisableOnSelections() {
@@ -276,21 +271,22 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void addMouseListenerToAddButton(Button add) {
-        add.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseUp(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseDown(MouseEvent e) {
-                addSelectionFromLocalToExport();
-            }
-
-            @Override
-            public void mouseDoubleClick(MouseEvent e) {
-            }
-        });
+        add.addMouseListener(new AddMouseAndDoubleClickerListener(localTreeViewer, exportTreeViewer, invoker));
+        // add.addMouseListener(new MouseListener() {
+        //
+        // @Override
+        // public void mouseUp(MouseEvent e) {
+        // }
+        //
+        // @Override
+        // public void mouseDown(MouseEvent e) {
+        // addSelectionFromLocalToExport();
+        // }
+        //
+        // @Override
+        // public void mouseDoubleClick(MouseEvent e) {
+        // }
+        // });
     }
 
     private void addRemoveAllButton(Composite buttonPanel) {
@@ -320,42 +316,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void addMouseListenerToAddAllButton(Button addAll) {
-        addAll.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseUp(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseDown(MouseEvent e) {
-
-                Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
-                IBookmarkModelComponent[] components = localClonedModel.getCategories().toArray(
-                        new IBookmarkModelComponent[0]);
-
-                invoker.invoke(new ImportSelectedBookmarksCommand(components, getInvoker(), true, false, dropTarget));
-                exportTreeViewer.refresh();
-            }
-
-            // the default invoker refreshes the view after each command is
-            // executed. The invoker is also provided as parameter for cascading
-            // command invocations what causes gui flickering on "add all" which
-            // is prevented
-            // with this one
-            private BookmarkCommandInvoker getInvoker() {
-                return new BookmarkCommandInvoker() {
-
-                    @Override
-                    public void invoke(IBookmarkModelCommand command) {
-                        command.execute(exportModel);
-                    }
-                };
-            }
-
-            @Override
-            public void mouseDoubleClick(MouseEvent e) {
-            }
-        });
+        addAll.addMouseListener(new AddAllMouseListener(exportTreeViewer, localTreeViewer, invoker));
     }
 
     private boolean isValid(File file) {
@@ -377,44 +338,6 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
 
     private void addMouseListenerToRemoveButton(Button remove) {
         remove.addMouseListener(new RemoveMouseListener(exportTreeViewer, invoker));
-        // remove.addMouseListener(new MouseListener() {
-        //
-        // @Override
-        // public void mouseUp(MouseEvent e) {
-        // }
-        //
-        // @Override
-        // public void mouseDown(MouseEvent e) {
-        // IStructuredSelection selections = exportTreeViewer.getSelections();
-        // @SuppressWarnings("rawtypes")
-        // Iterator iterator = selections.iterator();
-        // while (iterator.hasNext()) {
-        // IBookmarkModelComponent component = (IBookmarkModelComponent)
-        // iterator.next();
-        // IBookmarkModelComponent parent = component.getParent();
-        // invoker.invoke(new DeleteSingleBookmarkCommand(component));
-        // deleteInferredNodes(parent);
-        //
-        // exportTreeViewer.refresh();
-        // }
-        // }
-        //
-        // private void deleteInferredNodes(IBookmarkModelComponent parent) {
-        // if (parent == null) {
-        // return;
-        // }
-        // IsIBookmarkVisitor isBookmark = new IsIBookmarkVisitor();
-        // parent.accept(isBookmark);
-        // if (isBookmark.isIBookmark()) {
-        // invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark)
-        // parent));
-        // }
-        // }
-        //
-        // @Override
-        // public void mouseDoubleClick(MouseEvent e) {
-        // }
-        // });
     }
 
     private void createProspectiveExportTreeViewer(Composite bookmarkSelComposite) {
