@@ -26,8 +26,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
@@ -38,17 +36,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
-import org.eclipselabs.recommenders.bookmark.commands.DeleteInferredBookmarksCommand;
-import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
-import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
-import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
@@ -56,9 +49,9 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
-import org.eclipselabs.recommenders.bookmark.visitor.IsIBookmarkVisitor;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
+import org.eclipselabs.recommenders.bookmark.wizard.WizardKeyListener;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -245,72 +238,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void setExportTreeViewerKeyListener() {
-        exportTreeViewer.addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (isDeletion(e)) {
-                    processDeletion(e);
-                } else if (isRename(e)) {
-                    processRename(e);
-                }
-                exportTreeViewer.refresh();
-            }
-
-            private void processDeletion(KeyEvent e) {
-                TreeItem[] selections = getTreeSelections(e);
-                for (TreeItem item : selections) {
-                    searchBookmarkDeleteSelection(item);
-                }
-            }
-
-            private boolean isRename(KeyEvent e) {
-                return e.keyCode == SWT.F2;
-            }
-
-            private void processRename(KeyEvent e) {
-                invoke(new RenameCategoryCommand(exportTreeViewer));
-            }
-
-            private TreeItem[] getTreeSelections(KeyEvent e) {
-                Tree tree = (Tree) e.getSource();
-                TreeItem[] selections = tree.getSelection();
-                return selections;
-            }
-
-            private void searchBookmarkDeleteSelection(TreeItem item) {
-                if (!item.isDisposed()) {
-                    IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
-                    IBookmarkModelComponent parent = component.getParent();
-                    delete(component);
-                    deleteInferredBookmarksRecursively(parent);
-                }
-            }
-
-            private void deleteInferredBookmarksRecursively(IBookmarkModelComponent parent) {
-                if (parent == null) {
-                    return;
-                }
-                IsIBookmarkVisitor isIBookmark = new IsIBookmarkVisitor();
-                parent.accept(isIBookmark);
-                if (isIBookmark.isIBookmark()) {
-                    invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
-                }
-            }
-
-            private void delete(IBookmarkModelComponent component) {
-                invoker.invoke(new DeleteSingleBookmarkCommand(component));
-            }
-
-            private boolean isDeletion(KeyEvent e) {
-                int BACKSPACE = 8;
-                return (e.keyCode == SWT.DEL || e.keyCode == BACKSPACE);
-            }
-        });
+        exportTreeViewer.addKeyListener(new WizardKeyListener(exportTreeViewer, invoker));
     }
 
     private void createPanelWithAddRemoveButtons(Composite bookmarkSelComposite) {
