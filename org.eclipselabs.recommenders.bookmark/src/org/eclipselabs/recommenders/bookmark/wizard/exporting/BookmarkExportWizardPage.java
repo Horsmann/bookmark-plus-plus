@@ -42,11 +42,13 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteInferredBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
@@ -54,6 +56,7 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
+import org.eclipselabs.recommenders.bookmark.visitor.IsIBookmarkVisitor;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
 
@@ -102,8 +105,8 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         setPageComplete(false);
     }
 
-
-    private void addContextMenu(final RepresentationSwitchableTreeViewer exportTreeViewer, final RenameCategoryAction renameCategoryAction) {
+    private void addContextMenu(final RepresentationSwitchableTreeViewer exportTreeViewer,
+            final RenameCategoryAction renameCategoryAction) {
         final MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown(true);
 
@@ -113,13 +116,13 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
             }
         });
 
-        menuMgr.update(true);      
+        menuMgr.update(true);
         exportTreeViewer.setContextMenu(menuMgr);
         addTreeViewerSelectionChangedListener(exportTreeViewer, renameCategoryAction);
     }
-    
-    
-    private void addTreeViewerSelectionChangedListener(RepresentationSwitchableTreeViewer exportTreeViewer, RenameCategoryAction renameCategory) {
+
+    private void addTreeViewerSelectionChangedListener(RepresentationSwitchableTreeViewer exportTreeViewer,
+            RenameCategoryAction renameCategory) {
         SelectionChangedListener selectionListener = new SelectionChangedListener();
         selectionListener.register(renameCategory);
         exportTreeViewer.addSelectionChangedListener(selectionListener);
@@ -282,8 +285,25 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
             private void searchBookmarkDeleteSelection(TreeItem item) {
                 if (!item.isDisposed()) {
                     IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
-                    invoker.invoke(new DeleteSingleBookmarkCommand(component));
+                    IBookmarkModelComponent parent = component.getParent();
+                    delete(component);
+                    deleteInferredBookmarksRecursively(parent);
                 }
+            }
+
+            private void deleteInferredBookmarksRecursively(IBookmarkModelComponent parent) {
+                if (parent == null) {
+                    return;
+                }
+                IsIBookmarkVisitor isIBookmark = new IsIBookmarkVisitor();
+                parent.accept(isIBookmark);
+                if (isIBookmark.isIBookmark()) {
+                    invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
+                }
+            }
+
+            private void delete(IBookmarkModelComponent component) {
+                invoker.invoke(new DeleteSingleBookmarkCommand(component));
             }
 
             private boolean isDeletion(KeyEvent e) {

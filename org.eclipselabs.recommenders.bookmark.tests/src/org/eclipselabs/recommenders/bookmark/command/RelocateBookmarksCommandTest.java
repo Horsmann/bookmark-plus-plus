@@ -2,10 +2,15 @@ package org.eclipselabs.recommenders.bookmark.command;
 
 import static org.junit.Assert.*;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.ReorderBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
+import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
@@ -26,7 +31,30 @@ public class RelocateBookmarksCommandTest {
     private JavaElementBookmark varFri;
     private JavaElementBookmark varSun;
     private Category category;
-    private JavaElementBookmark compUnit;
+    private JavaElementBookmark compUnitA;
+    private JavaElementBookmark compUnitB;
+    private JavaElementBookmark compUnitC;
+    private FileBookmark fileBookmarkA;
+    private FileBookmark fileBookmarkB;
+
+    @Test
+    public void testMoveFileBbeforeCompilationUnitC() {
+        invoker.invoke(new ReorderBookmarksCommand(compUnitC, new IBookmarkModelComponent[] { fileBookmarkB }, true));
+        assertEquals(compUnitA, category.getBookmarks().get(0));
+        assertEquals(compUnitB, category.getBookmarks().get(1));
+        assertEquals(fileBookmarkB, category.getBookmarks().get(2));
+        assertEquals(compUnitC, category.getBookmarks().get(3));
+        assertEquals(fileBookmarkA, category.getBookmarks().get(4));
+    }
+
+    @Test
+    public void testMoveCompilationUnitBandCbeforeCompilationUnitA() {
+        invoker.invoke(new ReorderBookmarksCommand(compUnitA, new IBookmarkModelComponent[] { compUnitB, compUnitC },
+                true));
+        assertEquals(compUnitB, category.getBookmarks().get(0));
+        assertEquals(compUnitC, category.getBookmarks().get(1));
+        assertEquals(compUnitA, category.getBookmarks().get(2));
+    }
 
     @Test
     public void testMoveMondayWednesdayBehindSaturday() {
@@ -64,7 +92,7 @@ public class RelocateBookmarksCommandTest {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {
-                command.execute(model);
+                command.execute(model, null);
             }
         };
     }
@@ -77,8 +105,25 @@ public class RelocateBookmarksCommandTest {
     }
 
     private void setRelationshipOfComponents() {
-        compUnit.setParent(category);
-        category.add(compUnit);
+        setRelationshipOfJavaElements();
+        setRelationshipOfIFile();
+
+    }
+
+    private void setRelationshipOfIFile() {
+        fileBookmarkA.setParent(category);
+        fileBookmarkB.setParent(category);
+        category.add(fileBookmarkA);
+        category.add(fileBookmarkB);
+    }
+
+    private void setRelationshipOfJavaElements() {
+        compUnitA.setParent(category);
+        compUnitB.setParent(category);
+        compUnitC.setParent(category);
+        category.add(compUnitA);
+        category.add(compUnitB);
+        category.add(compUnitC);
         type.addChildElement(varMon);
         type.addChildElement(varTue);
         type.addChildElement(varWed);
@@ -86,13 +131,19 @@ public class RelocateBookmarksCommandTest {
         type.addChildElement(varFri);
         type.addChildElement(varSat);
         type.addChildElement(varSun);
-        compUnit.addChildElement(type);
-
+        compUnitA.addChildElement(type);
     }
 
     private void createComponents() {
+        createJavaElements();
+        createIFiles();
+    }
+
+    private void createJavaElements() {
         category = new Category("JUnit");
-        compUnit = new JavaElementBookmark("=LKJLD/src<test.project{MyEnum.java", true);
+        compUnitA = new JavaElementBookmark("=LKJLD/src<test.project{MyEnum.java", true);
+        compUnitB = new JavaElementBookmark("=LKJLD/src<test.project{B.java", false);
+        compUnitC = new JavaElementBookmark("=LKJLD/src<test.project{C.java", false);
         typePath = "=LKJLD/src<test.project{MyEnum.java[MyEnum";
         type = new JavaElementBookmark(typePath, true);
         varMon = new JavaElementBookmark(typePath + "^MONDAY", false);
@@ -103,6 +154,16 @@ public class RelocateBookmarksCommandTest {
         varSat = new JavaElementBookmark(typePath + "^SATURDAY", false);
         varSun = new JavaElementBookmark(typePath + "^SUNDAY", false);
 
+    }
+
+    private void createIFiles() {
+        IPath location = Path.fromOSString("../LKJLD/fileA.txt");
+        IFile fileA = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
+        fileBookmarkA = new FileBookmark(fileA);
+
+        location = Path.fromOSString("../LKJLD/fileB.txt");
+        IFile fileB = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
+        fileBookmarkB = new FileBookmark(fileB);
     }
 
 }

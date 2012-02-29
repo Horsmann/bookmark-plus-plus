@@ -44,12 +44,15 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
+import org.eclipselabs.recommenders.bookmark.action.SwitchInferredStateAction;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteInferredBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
+import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkIO;
@@ -58,6 +61,7 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
+import org.eclipselabs.recommenders.bookmark.visitor.IsIBookmarkVisitor;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
 
@@ -98,30 +102,34 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
 
         localTreeViewer.setInput(clonedModel);
         RenameCategoryAction renameCategoryAction = new RenameCategoryAction(localTreeViewer, invoker);
-        addContextMenu(localTreeViewer, renameCategoryAction);
+        SwitchInferredStateAction switchInferredStateAction = new SwitchInferredStateAction(localTreeViewer, invoker);
+        addContextMenu(localTreeViewer, renameCategoryAction, switchInferredStateAction);
         setControl(parent);
         setPageComplete(false);
     }
 
-    private void addContextMenu(final RepresentationSwitchableTreeViewer localTreeViewer, final RenameCategoryAction renameCategoryAction) {
+    private void addContextMenu(final RepresentationSwitchableTreeViewer localTreeViewer,
+            final RenameCategoryAction renameCategoryAction, final SwitchInferredStateAction switchInferredStateAction) {
         final MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown(true);
 
         menuMgr.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager mgr) {
                 menuMgr.add(renameCategoryAction);
+                menuMgr.add(switchInferredStateAction);
             }
         });
 
-        menuMgr.update(true);      
+        menuMgr.update(true);
         localTreeViewer.setContextMenu(menuMgr);
-        addTreeViewerSelectionChangedListener(localTreeViewer, renameCategoryAction);
+        addTreeViewerSelectionChangedListener(localTreeViewer, renameCategoryAction, switchInferredStateAction);
     }
-    
-    
-    private void addTreeViewerSelectionChangedListener(RepresentationSwitchableTreeViewer exportTreeViewer, RenameCategoryAction renameCategory) {
+
+    private void addTreeViewerSelectionChangedListener(RepresentationSwitchableTreeViewer exportTreeViewer,
+            RenameCategoryAction renameCategory, SwitchInferredStateAction switchInferredStateAction) {
         SelectionChangedListener selectionListener = new SelectionChangedListener();
         selectionListener.register(renameCategory);
+        selectionListener.register(switchInferredStateAction);
         exportTreeViewer.addSelectionChangedListener(selectionListener);
     }
 
@@ -291,14 +299,36 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
 
             private void searchBookmarkDeleteSelection(TreeItem item) {
                 IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
-                BookmarkCommandInvoker invoker = new BookmarkCommandInvoker() {
+                IBookmarkModelComponent parent = component.getParent();
+                BookmarkCommandInvoker invoker = getInvokerImplementationWithoutTreeViewerRefresh();
+                delete(invoker, component);
+                deleteInferredBookmarksRecursively(invoker, parent);
+            }
+
+            private void deleteInferredBookmarksRecursively(BookmarkCommandInvoker invoker,
+                    IBookmarkModelComponent parent) {
+                if (parent == null) {
+                    return;
+                }
+                IsIBookmarkVisitor isIBookmark = new IsIBookmarkVisitor();
+                parent.accept(isIBookmark);
+                if (isIBookmark.isIBookmark()) {
+                    invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
+                }
+            }
+
+            private void delete(BookmarkCommandInvoker invoker, IBookmarkModelComponent component) {
+                invoker.invoke(new DeleteSingleBookmarkCommand(component));
+            }
+
+            private BookmarkCommandInvoker getInvokerImplementationWithoutTreeViewerRefresh() {
+                return new BookmarkCommandInvoker() {
 
                     @Override
                     public void invoke(IBookmarkModelCommand command) {
                         command.execute(clonedModel);
                     }
                 };
-                invoker.invoke(new DeleteSingleBookmarkCommand(component));
             }
 
             private boolean isDeletion(KeyEvent e) {

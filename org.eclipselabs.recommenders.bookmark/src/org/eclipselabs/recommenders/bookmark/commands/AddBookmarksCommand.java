@@ -124,9 +124,7 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
             final IBookmarkModelComponent target = dropTarget.get();
             return getCategoryOf(target);
         } else {
-
             Category category = null;
-
             if (nameForNewCategory.isPresent()) {
                 category = new Category(nameForNewCategory.get());
             } else {

@@ -24,6 +24,31 @@ public class AddBookmarkCommandIJavaElementTest {
     BookmarkModel model;
 
     @Test
+    public void testInsertWithAbsentDropTargetAndProvidedCategoryName() {
+        String categoryName = "NEWNAME";
+        insertElementToModelAbsentDropTarget(categoryName);
+
+        assertEquals(2, model.getCategories().size());
+        assertEquals(categoryName, model.getCategories().get(1).getLabel());
+        assertEquals(1, model.getCategories().get(0).getBookmarks().size());
+        assertEquals(1, ((JavaElementBookmark) model.getCategories().get(1).getBookmarks().get(0)).getChildElements()
+                .size());
+        assertEquals(1, ((JavaElementBookmark) model.getCategories().get(1).getBookmarks().get(0)).getChildElements()
+                .get(0).getChildElements().size());
+    }
+
+    private void insertElementToModelAbsentDropTarget(String categoryName) {
+        String handleId = "=LKJLD/src<test.project{XXX.java[XXX^ZZZZZ";
+        IJavaElement javaElement = JavaCore.create(handleId);
+        Optional<String> name = Optional.absent();
+        if (categoryName != null) {
+            name = Optional.of(categoryName);
+        }
+        Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
+        invoker.invoke(new AddBookmarksCommand(new Object[] { javaElement }, invoker, true, dropTarget, name));
+    }
+
+    @Test
     public void testInsertNewJavaElement() {
         String handleId = "=LKJLD/src<test.project{XXX.java[XXX^ZZZZZ";
         insertElementToModel(handleId);

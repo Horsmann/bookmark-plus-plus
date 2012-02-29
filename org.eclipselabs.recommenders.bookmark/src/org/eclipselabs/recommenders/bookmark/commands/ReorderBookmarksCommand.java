@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
+import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
@@ -27,7 +28,7 @@ public class ReorderBookmarksCommand implements IBookmarkModelCommand {
         this.components = bookmarks;
         this.isDropBeforeTarget = isDropBeforeTarget;
     }
-    
+
     @Override
     public void execute(BookmarkModel model, Category category) {
         execute(model);
@@ -154,11 +155,10 @@ public class ReorderBookmarksCommand implements IBookmarkModelCommand {
 
         @Override
         public void visit(Category category) {
-            // IBookmark[] bookmarks = category.getBookmarks().toArray(new
-            // IBookmark[0]);
-            // for (IBookmark bookmark : bookmarks) {
-            // category.remove(bookmark);
-            // }
+            IBookmark[] bookmarks = category.getBookmarks().toArray(new IBookmark[0]);
+            for (IBookmark bookmark : bookmarks) {
+                category.remove(bookmark);
+            }
         }
 
         @Override
@@ -185,11 +185,11 @@ public class ReorderBookmarksCommand implements IBookmarkModelCommand {
 
         @Override
         public void visit(Category category) {
-            // for (IBookmarkModelComponent component : newOrder) {
-            // if (component instanceof IBookmark) {
-            // category.add((IBookmark) component);
-            // }
-            // }
+            for (IBookmarkModelComponent component : newOrder) {
+                if (component instanceof IBookmark) {
+                    category.add((IBookmark) component);
+                }
+            }
         }
 
         @Override
@@ -216,7 +216,7 @@ public class ReorderBookmarksCommand implements IBookmarkModelCommand {
 
         @Override
         public void visit(Category category) {
-            // silblings.addAll(category.getBookmarks());
+            silblings.addAll(category.getBookmarks());
         }
 
         @Override
