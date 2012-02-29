@@ -34,36 +34,40 @@ public class ChangeBookmarksCommand implements IBookmarkModelCommand {
     @Override
     public void execute(BookmarkModel model) {
 
-        if (isAbortedDrag(model)) {
+        if (isAbortedDrag()) {
             return;
         }
+        addBookmarks();
+        removeOldBookmarksIfMoved(model);
+    }
 
+    private void removeOldBookmarksIfMoved(BookmarkModel model) {
+        if (!keepSource) {
+            deleteDroppedBookmarks(model);
+        }
+    }
+
+    private void addBookmarks() {
         HierarchyValueVisitor visitor = new HierarchyValueVisitor();
         for (IBookmarkModelComponent bookmark : bookmarks) {
             bookmark.accept(visitor);
         }
-
         if (!visitor.getValues().isEmpty()) {
             commandInvoker.invoke(new AddBookmarksCommand(visitor.getValues().toArray(), commandInvoker,
                     isDropBeforeTarget, dropTarget, newCategoryName));
         }
-
-        if (!keepSource) {
-            deleteDroppedBookmarks(model);
-        }
-
     }
 
-    private boolean isAbortedDrag(BookmarkModel model) {
+    private boolean isAbortedDrag() {
         for (IBookmarkModelComponent bookmark : bookmarks) {
-            if (dropTarget.isPresent() && isOperationWithinSameCategory(model, bookmark)) {
+            if (dropTarget.isPresent() && isOperationWithinSameCategory(bookmark)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean isOperationWithinSameCategory(BookmarkModel model, IBookmarkModelComponent bookmark) {
+    private boolean isOperationWithinSameCategory(IBookmarkModelComponent bookmark) {
         Category category1 = getCategoryOf(dropTarget.get());
         Category category2 = getCategoryOf(bookmark);
         return category1 == category2;
@@ -88,6 +92,9 @@ public class ChangeBookmarksCommand implements IBookmarkModelCommand {
     }
 
     private void deleteInferredNodes(IBookmarkModelComponent parent) {
+        if (parent == null) {
+            return;
+        }
         IsIBookmarkVisitor isBookmark = new IsIBookmarkVisitor();
         parent.accept(isBookmark);
         if (isBookmark.isIBookmark()) {

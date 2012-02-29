@@ -85,25 +85,18 @@ public class AddBookmarkCommandIJavaElementTest {
 
     private BookmarkModel buildModel() {
         Category category = new Category("JUnit");
-
-        JavaElementBookmark compUnit = new JavaElementBookmark("=LKJLD/src<test.project{MyEnum.java", true);
+        String compUnitPath = "=LKJLD/src<test.project{MyEnum.java";
+        JavaElementBookmark compUnit = new JavaElementBookmark(compUnitPath, true);
         compUnit.setParent(category);
-
-        JavaElementBookmark type = new JavaElementBookmark("=LKJLD/src<test.project{MyEnum.java[MyEnum", true);
-
-        JavaElementBookmark variable = new JavaElementBookmark("=LKJLD/src<test.project{MyEnum.java[MyEnum^FRIDAY",
-                false);
-
+        JavaElementBookmark type = new JavaElementBookmark(compUnitPath + "[MyEnum", true);
+        JavaElementBookmark variable = new JavaElementBookmark(compUnitPath + "[MyEnum^FRIDAY", false);
         dropTarget = variable;
-        JavaElementBookmark method = new JavaElementBookmark("=LKJLD/src<test.project{MyEnum.java[MyEnum~printMessage",
-                false);
+        JavaElementBookmark method = new JavaElementBookmark(compUnitPath + "[MyEnum~printMessage", false);
 
         type.addChildElement(variable);
         type.addChildElement(method);
-
         compUnit.addChildElement(type);
         category.add(compUnit);
-
         model = new BookmarkModel();
         model.add(category);
         return model;
