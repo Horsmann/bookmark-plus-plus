@@ -37,12 +37,10 @@ public class BookmarkWizardPage extends WizardPage implements BookmarkCommandInv
     private Button addAll;
     private Button remove;
     private Button removeAll;
-    private BookmarkModel localClonedModel;
 
     protected BookmarkWizardPage(String pageName) {
         super(pageName);
         invoker = this;
-        localClonedModel = Activator.getClonedModel();
     }
 
     @Override
