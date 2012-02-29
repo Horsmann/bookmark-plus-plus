@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
-import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
@@ -282,7 +282,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
             private void searchBookmarkDeleteSelection(TreeItem item) {
                 if (!item.isDisposed()) {
                     IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
-                    invoker.invoke(new BookmarkDeletionCommand(component));
+                    invoker.invoke(new DeleteSingleBookmarkCommand(component));
                 }
             }
 
@@ -470,7 +470,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
                 @SuppressWarnings("rawtypes")
                 Iterator iterator = selections.iterator();
                 while (iterator.hasNext()) {
-                    invoker.invoke(new BookmarkDeletionCommand((IBookmarkModelComponent) iterator.next()));
+                    invoker.invoke(new DeleteSingleBookmarkCommand((IBookmarkModelComponent) iterator.next()));
                     exportTreeViewer.refresh();
                 }
             }

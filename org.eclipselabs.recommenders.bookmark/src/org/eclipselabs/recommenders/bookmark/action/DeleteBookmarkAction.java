@@ -5,7 +5,7 @@ import java.util.Iterator;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipselabs.recommenders.bookmark.Activator;
-import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
@@ -33,7 +33,7 @@ public class DeleteBookmarkAction extends Action implements SelfEnabling {
         while (iterator.hasNext()) {
             Object selectedObject = iterator.next();
             if (selectedObject instanceof IBookmarkModelComponent) {
-                commandInvoker.invoke(new BookmarkDeletionCommand((IBookmarkModelComponent) selectedObject));
+                commandInvoker.invoke(new DeleteSingleBookmarkCommand((IBookmarkModelComponent) selectedObject));
             }
         }
 

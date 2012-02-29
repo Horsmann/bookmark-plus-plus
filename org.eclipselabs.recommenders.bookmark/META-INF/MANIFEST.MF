@@ -15,7 +15,8 @@ Import-Package: org.eclipse.core.resources,
 Export-Package: org.eclipselabs.recommenders.bookmark,
  org.eclipselabs.recommenders.bookmark.commands,
  org.eclipselabs.recommenders.bookmark.model,
- org.eclipselabs.recommenders.bookmark.view
+ org.eclipselabs.recommenders.bookmark.view,
+ org.eclipselabs.recommenders.bookmark.view.tree.combo
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.jdt.ui,

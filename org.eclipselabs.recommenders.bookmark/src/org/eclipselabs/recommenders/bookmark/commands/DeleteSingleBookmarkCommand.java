@@ -5,11 +5,11 @@ import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.visitor.RemoveBookmarkModelComponentVisitor;
 
-public class BookmarkDeletionCommand implements IBookmarkModelCommand {
+public class DeleteSingleBookmarkCommand implements IBookmarkModelCommand {
 
     private final IBookmarkModelComponent component;
 
-    public BookmarkDeletionCommand(IBookmarkModelComponent component) {
+    public DeleteSingleBookmarkCommand(IBookmarkModelComponent component) {
         this.component = component;
     }
 

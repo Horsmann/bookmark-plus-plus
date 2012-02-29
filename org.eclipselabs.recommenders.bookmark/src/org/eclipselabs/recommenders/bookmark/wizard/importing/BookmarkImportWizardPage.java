@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
-import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
@@ -298,7 +298,7 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
                         command.execute(clonedModel);
                     }
                 };
-                invoker.invoke(new BookmarkDeletionCommand(component));
+                invoker.invoke(new DeleteSingleBookmarkCommand(component));
             }
 
             private boolean isDeletion(KeyEvent e) {
@@ -480,7 +480,7 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
                 @SuppressWarnings("rawtypes")
                 Iterator iterator = selections.iterator();
                 while (iterator.hasNext()) {
-                    invoker.invoke(new BookmarkDeletionCommand((IBookmarkModelComponent) iterator.next()));
+                    invoker.invoke(new DeleteSingleBookmarkCommand((IBookmarkModelComponent) iterator.next()));
                     localTreeViewer.refresh();
                 }
             }

@@ -83,7 +83,7 @@ public class ChangeBookmarksCommandTest {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {
-                command.execute(model, null);
+                command.execute(model);
             }
         };
     }

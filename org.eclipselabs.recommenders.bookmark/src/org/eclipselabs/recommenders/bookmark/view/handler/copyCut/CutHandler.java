@@ -2,7 +2,7 @@ package org.eclipselabs.recommenders.bookmark.view.handler.copyCut;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteInferredBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
@@ -27,7 +27,7 @@ public class CutHandler extends CopyHandler {
         for (IBookmarkModelComponent component : selectedComponents) {
             IBookmarkModelComponent parent = component.getParent();
             
-            invoker.invoke(new BookmarkDeletionCommand(component));
+            invoker.invoke(new DeleteSingleBookmarkCommand(component));
             if (needsCheckForRecursiveDeletion(parent)) {
                 invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
             }

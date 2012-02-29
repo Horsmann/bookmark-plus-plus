@@ -52,7 +52,7 @@ import org.eclipselabs.recommenders.bookmark.action.OpenInFileSystemAction;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.action.SwitchFlatHierarchicalAction;
 import org.eclipselabs.recommenders.bookmark.action.SwitchInferredStateAction;
-import org.eclipselabs.recommenders.bookmark.commands.BookmarkDeletionCommand;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.OpenBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
@@ -515,7 +515,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
                 return;
             }
             IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
-            commandInvoker.invoke(new BookmarkDeletionCommand(component));
+            commandInvoker.invoke(new DeleteSingleBookmarkCommand(component));
         }
 
         private boolean isDeletion(KeyEvent e) {
