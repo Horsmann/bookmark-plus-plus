@@ -21,9 +21,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -51,6 +49,7 @@ import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveAllMouseListener;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveMouseListener;
+import org.eclipselabs.recommenders.bookmark.wizard.TreeSelectionDependendButtonEnabler;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardKeyListener;
 
@@ -127,17 +126,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void makeAddButtonEnDisableOnSelections() {
-        localTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                if (localTreeViewer.getSelections().size() == 0) {
-                    add.setEnabled(false);
-                } else {
-                    add.setEnabled(true);
-                }
-            }
-        });
+        localTreeViewer.addSelectionChangedListener(new TreeSelectionDependendButtonEnabler(localTreeViewer, add));
         localTreeViewer.addDoubleclickListener(new IDoubleClickListener() {
 
             @Override
@@ -148,17 +137,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void makeRemoveButtonEnDisableOnSelections() {
-        exportTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                if (exportTreeViewer.getSelections().size() == 0) {
-                    remove.setEnabled(false);
-                } else {
-                    remove.setEnabled(true);
-                }
-            }
-        });
+        exportTreeViewer.addSelectionChangedListener(new TreeSelectionDependendButtonEnabler(exportTreeViewer, remove));
     }
 
     public BookmarkModel getExportModel() {

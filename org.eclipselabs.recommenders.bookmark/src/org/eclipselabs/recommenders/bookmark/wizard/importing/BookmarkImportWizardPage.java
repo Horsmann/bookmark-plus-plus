@@ -22,9 +22,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -55,6 +53,7 @@ import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveAllMouseListener;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveMouseListener;
+import org.eclipselabs.recommenders.bookmark.wizard.TreeSelectionDependendButtonEnabler;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
 
 import com.google.common.base.Optional;
@@ -127,31 +126,11 @@ public class BookmarkImportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void makeAddButtonEnDisabledOnSelections() {
-        importTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                if (importTreeViewer.getSelections().size() == 0) {
-                    add.setEnabled(false);
-                } else {
-                    add.setEnabled(true);
-                }
-            }
-        });
+        importTreeViewer.addSelectionChangedListener(new TreeSelectionDependendButtonEnabler(importTreeViewer, add));
     }
 
     private void makeRemoveButtonEnDisabledOnSelections() {
-        localTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                if (localTreeViewer.getSelections().size() == 0) {
-                    remove.setEnabled(false);
-                } else {
-                    remove.setEnabled(true);
-                }
-            }
-        });
+        localTreeViewer.addSelectionChangedListener(new TreeSelectionDependendButtonEnabler(localTreeViewer, remove));
     }
 
     private Composite initializeContainerComposite(Composite parent) {
