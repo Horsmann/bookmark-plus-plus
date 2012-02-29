@@ -39,11 +39,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.action.SwitchInferredStateAction;
-import org.eclipselabs.recommenders.bookmark.commands.DeleteInferredBookmarksCommand;
-import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
-import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
@@ -51,9 +48,9 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
-import org.eclipselabs.recommenders.bookmark.visitor.IsIBookmarkVisitor;
 import org.eclipselabs.recommenders.bookmark.wizard.ImportSelectedBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.wizard.RemoveAllMouseListener;
+import org.eclipselabs.recommenders.bookmark.wizard.RemoveMouseListener;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardDropStrategy;
 import org.eclipselabs.recommenders.bookmark.wizard.WizardKeyListener;
 
@@ -76,6 +73,7 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     private Button removeAll;
     private Button add;
     private BookmarkCommandInvoker invoker;
+    private Button addAll;
 
     protected BookmarkExportWizardPage(String pageName) {
         super(pageName, pageName, null);
@@ -225,6 +223,10 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         createLocalTreeViewer(bookmarkSelComposite);
         createPanelWithAddRemoveButtons(bookmarkSelComposite);
         createProspectiveExportTreeViewer(bookmarkSelComposite);
+        addMouseListenerToRemoveButton(remove);
+        addMouseListenerToRemoveAllButton(removeAll);
+        addMouseListenerToAddButton(add);
+        addMouseListenerToAddAllButton(addAll);
 
     }
 
@@ -267,7 +269,6 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         add.setLayoutData(data);
         add.setEnabled(false);
-        addMouseListenerToAddButton(add);
     }
 
     private void addSelectionFromLocalToExport() {
@@ -318,7 +319,6 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         removeAll.setText("Remove All");
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         removeAll.setLayoutData(data);
-        addMouseListenerToRemoveAllButton(removeAll);
     }
 
     private void addMouseListenerToRemoveAllButton(Button removeAll) {
@@ -331,15 +331,13 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         remove.setLayoutData(data);
         remove.setEnabled(false);
-        addMouseListenerToRemoveButton(remove);
     }
 
     private void addAddAllButton(Composite buttonPanel) {
-        Button addAll = new Button(buttonPanel, SWT.CENTER);
+        addAll = new Button(buttonPanel, SWT.CENTER);
         addAll.setText("Add All");
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         addAll.setLayoutData(data);
-        addMouseListenerToAddAllButton(addAll);
     }
 
     private void addMouseListenerToAddAllButton(Button addAll) {
@@ -399,42 +397,45 @@ public class BookmarkExportWizardPage extends WizardPage implements BookmarkComm
     }
 
     private void addMouseListenerToRemoveButton(Button remove) {
-        remove.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseUp(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseDown(MouseEvent e) {
-                IStructuredSelection selections = exportTreeViewer.getSelections();
-                @SuppressWarnings("rawtypes")
-                Iterator iterator = selections.iterator();
-                while (iterator.hasNext()) {
-                    IBookmarkModelComponent component = (IBookmarkModelComponent) iterator.next();
-                    IBookmarkModelComponent parent = component.getParent();
-                    invoker.invoke(new DeleteSingleBookmarkCommand(component));
-                    deleteInferredNodes(parent);
-
-                    exportTreeViewer.refresh();
-                }
-            }
-
-            private void deleteInferredNodes(IBookmarkModelComponent parent) {
-                if (parent == null) {
-                    return;
-                }
-                IsIBookmarkVisitor isBookmark = new IsIBookmarkVisitor();
-                parent.accept(isBookmark);
-                if (isBookmark.isIBookmark()) {
-                    invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
-                }
-            }
-
-            @Override
-            public void mouseDoubleClick(MouseEvent e) {
-            }
-        });
+        remove.addMouseListener(new RemoveMouseListener(exportTreeViewer, invoker));
+        // remove.addMouseListener(new MouseListener() {
+        //
+        // @Override
+        // public void mouseUp(MouseEvent e) {
+        // }
+        //
+        // @Override
+        // public void mouseDown(MouseEvent e) {
+        // IStructuredSelection selections = exportTreeViewer.getSelections();
+        // @SuppressWarnings("rawtypes")
+        // Iterator iterator = selections.iterator();
+        // while (iterator.hasNext()) {
+        // IBookmarkModelComponent component = (IBookmarkModelComponent)
+        // iterator.next();
+        // IBookmarkModelComponent parent = component.getParent();
+        // invoker.invoke(new DeleteSingleBookmarkCommand(component));
+        // deleteInferredNodes(parent);
+        //
+        // exportTreeViewer.refresh();
+        // }
+        // }
+        //
+        // private void deleteInferredNodes(IBookmarkModelComponent parent) {
+        // if (parent == null) {
+        // return;
+        // }
+        // IsIBookmarkVisitor isBookmark = new IsIBookmarkVisitor();
+        // parent.accept(isBookmark);
+        // if (isBookmark.isIBookmark()) {
+        // invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark)
+        // parent));
+        // }
+        // }
+        //
+        // @Override
+        // public void mouseDoubleClick(MouseEvent e) {
+        // }
+        // });
     }
 
     private void createProspectiveExportTreeViewer(Composite bookmarkSelComposite) {
