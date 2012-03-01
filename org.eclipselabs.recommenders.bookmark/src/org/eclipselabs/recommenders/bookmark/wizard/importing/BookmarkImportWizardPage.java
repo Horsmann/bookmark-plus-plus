@@ -75,6 +75,19 @@ public class BookmarkImportWizardPage extends BookmarkWizardPage {
         command.execute(clonedModel);
         rightTreeViewer.refresh();
     }
+    
+    public void setPathOfFileIntoTextField(File file) {
+        if (file != null) {
+            selectedFileTextField.setText(file.getAbsolutePath());
+        } else {
+            selectedFileTextField.setText("");
+        }
+
+    }
+
+    public BookmarkModel getClonedModel() {
+        return clonedModel;
+    }
 
     private class OpenFileButtonListener implements MouseListener {
         private final Text textField;
@@ -175,17 +188,5 @@ public class BookmarkImportWizardPage extends BookmarkWizardPage {
         }
 
     }
-
-    public void setPathOfFileIntoTextField(File file) {
-        if (file != null) {
-            selectedFileTextField.setText(file.getAbsolutePath());
-        } else {
-            selectedFileTextField.setText("");
-        }
-
-    }
-
-    public BookmarkModel getClonedModel() {
-        return clonedModel;
-    }
+   
 }

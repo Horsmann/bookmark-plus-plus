@@ -55,6 +55,14 @@ public class BookmarkExportWizardPage extends BookmarkWizardPage {
         command.execute(exportModel);
         rightTreeViewer.refresh();
     }
+    
+    public File getExportFile() {
+        return new File(selectedFileTextField.getText());
+    }
+
+    public BookmarkModel getExportModel() {
+        return exportModel;
+    }
 
     private class OpenFileButtonListener implements MouseListener {
         private final BookmarkExportWizardPage page;
@@ -120,11 +128,4 @@ public class BookmarkExportWizardPage extends BookmarkWizardPage {
         }
     }
 
-    public File getExportFile() {
-        return new File(selectedFileTextField.getText());
-    }
-
-    public BookmarkModel getExportModel() {
-        return exportModel;
-    }
 }
