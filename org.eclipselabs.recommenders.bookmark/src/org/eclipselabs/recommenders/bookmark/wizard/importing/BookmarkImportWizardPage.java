@@ -24,6 +24,7 @@ public class BookmarkImportWizardPage extends BookmarkWizardPage {
 
     public BookmarkImportWizardPage(String pageName) {
         super(pageName, "Import bookmarks", "Local bookmarks");
+        setTitle("Import Bookmarks");
         setDescription("Imports the bookmark provided in an external file");
         clonedModel = Activator.getClonedModel();
     }

@@ -22,6 +22,7 @@ public class BookmarkExportWizardPage extends BookmarkWizardPage {
 
     public BookmarkExportWizardPage(String pageName, String rightViewerLabel, String leftViewerLabel) {
         super(pageName, rightViewerLabel, leftViewerLabel);
+        setTitle("Export Bookmarks");
         setDescription("Export bookmarks to an external file");
         localClonedModel = Activator.getClonedModel();
         exportModel = new BookmarkModel();

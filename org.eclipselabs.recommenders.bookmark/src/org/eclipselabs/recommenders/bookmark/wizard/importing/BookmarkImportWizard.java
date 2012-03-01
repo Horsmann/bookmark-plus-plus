@@ -32,7 +32,6 @@ public class BookmarkImportWizard extends Wizard implements IImportWizard {
     }
 
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-        setWindowTitle("File Import Wizard");
         setNeedsProgressMonitor(true);
         mainPage = new BookmarkImportWizardPage("Import");
 
