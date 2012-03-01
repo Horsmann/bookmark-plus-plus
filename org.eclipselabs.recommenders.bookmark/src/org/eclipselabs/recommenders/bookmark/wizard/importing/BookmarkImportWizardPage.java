@@ -40,7 +40,8 @@ public class BookmarkImportWizardPage extends BookmarkWizardPage {
         addFilePathModifyListener();
     }
 
-    private void addFilePathModifyListener() {
+    @Override
+    protected void addFilePathModifyListener() {
         selectedFileTextField.addListener(SWT.KeyUp, new FilePathModifyListener(selectedFileTextField, leftTreeViewer,
                 this));
     }
