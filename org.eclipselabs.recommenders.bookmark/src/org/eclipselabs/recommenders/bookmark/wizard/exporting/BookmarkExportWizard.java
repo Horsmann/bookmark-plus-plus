@@ -19,7 +19,7 @@ public class BookmarkExportWizard extends Wizard implements IExportWizard {
 
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
-        mainPage = new BookmarkExportWizardPage("Export Bookmarks");
+        mainPage = new BookmarkExportWizardPage("Export Bookmarks", "Local bookmarks", "Export bookmarks");
     }
 
     @Override
@@ -30,9 +30,9 @@ public class BookmarkExportWizard extends Wizard implements IExportWizard {
 
     @Override
     public boolean performFinish() {
-        File exportFile = mainPage.getExportFile();
-        BookmarkModel exportModel = mainPage.getExportModel();
-        BookmarkIO.writeModel(exportFile, exportModel);
+//        File exportFile = mainPage.getExportFile();
+//        BookmarkModel exportModel = mainPage.getExportModel();
+//        BookmarkIO.writeModel(exportFile, exportModel);
         return true;
     }
 

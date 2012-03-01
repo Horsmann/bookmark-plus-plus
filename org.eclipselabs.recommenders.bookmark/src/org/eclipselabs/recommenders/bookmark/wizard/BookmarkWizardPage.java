@@ -148,19 +148,15 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
     }
 
     protected abstract void addMouseListenerForOpenFileButton();
+    
+    protected abstract void addFilePathModifyListener();
 
     private void addFilePathField(Composite fileSelectionComposite) {
         selectedFileTextField = new Text(fileSelectionComposite, SWT.BORDER);
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         selectedFileTextField.setLayoutData(data);
-
-        // addListenerToFilePath(selectedFileTextField);
     }
-
-    // private void addListenerToFilePath(Text selectedFileTextField) {
-    // filePathListener = new FilePathModifyListener(selectedFileTextField);
-    // selectedFileTextField.addListener(SWT.KeyUp, filePathListener);
-    // }
+    
 
     private void addFileLabel(Composite fileSelectionComposite) {
         GridData data = new GridData(SWT.LEFT, SWT.CENTER, false, false);
