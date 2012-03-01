@@ -555,6 +555,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     public void resetGui() {
         treeViewer.setRepresentation(new HierarchicalRepresentationMode());
         comboViewer.hide();
+        switchCategory.setChecked(false);
+        switchFlatHierarchical.setChecked(false);
     }
 
 }
