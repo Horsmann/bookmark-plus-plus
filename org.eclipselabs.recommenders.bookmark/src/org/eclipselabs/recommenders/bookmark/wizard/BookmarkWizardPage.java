@@ -1,45 +1,67 @@
 package org.eclipselabs.recommenders.bookmark.wizard;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.action.SwitchInferredStateAction;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteInferredBookmarksCommand;
+import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.model.IBookmark;
+import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDragListener;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkTreeDropListener;
 import org.eclipselabs.recommenders.bookmark.view.tree.HierarchicalRepresentationMode;
 import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
 import org.eclipselabs.recommenders.bookmark.view.tree.SelectionChangedListener;
+import org.eclipselabs.recommenders.bookmark.visitor.IsIBookmarkVisitor;
 
-public class BookmarkWizardPage extends WizardPage implements BookmarkCommandInvoker {
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 
-    private Composite container;
-    private Button selectFileButton;
-    private Text selectedFileTextField;
-    private RepresentationSwitchableTreeViewer leftTreeViewer;
-    private RepresentationSwitchableTreeViewer rightTreeViewer;
+public abstract class BookmarkWizardPage extends WizardPage implements BookmarkCommandInvoker {
+
+    protected Composite container;
+    protected Button selectFileButton;
+    protected Text selectedFileTextField;
+    protected RepresentationSwitchableTreeViewer leftTreeViewer;
+    protected RepresentationSwitchableTreeViewer rightTreeViewer;
     private Button add;
     private BookmarkCommandInvoker invoker;
     private Button addAll;
     private Button remove;
     private Button removeAll;
+    private final String rightViewerLabel;
+    private final String leftViewerLabel;
 
-    protected BookmarkWizardPage(String pageName) {
+    public BookmarkWizardPage(String pageName, String rightViewerLabel, String leftViewerLabel) {
         super(pageName);
+        this.rightViewerLabel = rightViewerLabel;
+        this.leftViewerLabel = leftViewerLabel;
         invoker = this;
     }
 
@@ -59,7 +81,8 @@ public class BookmarkWizardPage extends WizardPage implements BookmarkCommandInv
         RenameCategoryAction renameCategoryAction = new RenameCategoryAction(rightTreeViewer, invoker);
         SwitchInferredStateAction switchInferredStateAction = new SwitchInferredStateAction(rightTreeViewer, invoker);
         MenuManager contextMenu = createContextMenu(renameCategoryAction, switchInferredStateAction);
-        SelectionChangedListener selectionChangedListener = createSelectionChangedListener(renameCategoryAction, switchInferredStateAction);
+        SelectionChangedListener selectionChangedListener = createSelectionChangedListener(renameCategoryAction,
+                switchInferredStateAction);
         rightTreeViewer.setContextMenu(contextMenu);
         rightTreeViewer.addSelectionChangedListener(selectionChangedListener);
     }
@@ -122,9 +145,9 @@ public class BookmarkWizardPage extends WizardPage implements BookmarkCommandInv
         selectFileButton = new Button(fileSelectionComposite, SWT.NONE);
         selectFileButton.setText("Select File");
         selectFileButton.setLayoutData(data);
-        // selectFileButton.addListener(SWT.MouseDown, new
-        // ButtonMouseDownListener(this));
     }
+
+    protected abstract void addMouseListenerForOpenFileButton();
 
     private void addFilePathField(Composite fileSelectionComposite) {
         selectedFileTextField = new Text(fileSelectionComposite, SWT.BORDER);
@@ -176,7 +199,7 @@ public class BookmarkWizardPage extends WizardPage implements BookmarkCommandInv
     }
 
     private void addMouseListenerToAddAllButton(Button addAll) {
-        addAll.addMouseListener(new AddAllMouseListener(rightTreeViewer, rightTreeViewer, invoker));
+        addAll.addMouseListener(new AddAllMouseListener(leftTreeViewer, rightTreeViewer, invoker));
     }
 
     private void addMouseListenerToRemoveButton(Button remove) {
@@ -190,7 +213,7 @@ public class BookmarkWizardPage extends WizardPage implements BookmarkCommandInv
     private void addHeadline(Composite composite) {
         GridData data = new GridData(SWT.LEFT, SWT.CENTER, true, false);
         Label left = new Label(composite, SWT.CENTER);
-        left.setText("Local bookmarks");
+        left.setText(leftViewerLabel);
         left.setLayoutData(data);
 
         data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
@@ -200,7 +223,7 @@ public class BookmarkWizardPage extends WizardPage implements BookmarkCommandInv
 
         data = new GridData(SWT.LEFT, SWT.CENTER, true, false);
         Label right = new Label(composite, SWT.CENTER);
-        right.setText("Export bookmarks");
+        right.setText(rightViewerLabel);
         right.setLayoutData(data);
 
     }
@@ -288,7 +311,205 @@ public class BookmarkWizardPage extends WizardPage implements BookmarkCommandInv
     }
 
     @Override
-    public void invoke(IBookmarkModelCommand command) {
+    public abstract void invoke(IBookmarkModelCommand command);
+
+    public Text getTextField() {
+        return selectedFileTextField;
     }
 
+    private class AddMouseAndDoubleClickerListener implements MouseListener, IDoubleClickListener {
+
+        private final RepresentationSwitchableTreeViewer leftTreeViewer;
+        private final RepresentationSwitchableTreeViewer rightTreeViewer;
+        private final BookmarkCommandInvoker invoker;
+
+        public AddMouseAndDoubleClickerListener(RepresentationSwitchableTreeViewer leftTreeViewer,
+                RepresentationSwitchableTreeViewer rightTreeViewer, BookmarkCommandInvoker invoker) {
+            this.leftTreeViewer = leftTreeViewer;
+            this.rightTreeViewer = rightTreeViewer;
+            this.invoker = invoker;
+
+        }
+
+        @Override
+        public void doubleClick(DoubleClickEvent event) {
+            addSelections();
+        }
+
+        @Override
+        public void mouseDoubleClick(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseDown(MouseEvent e) {
+            addSelections();
+        }
+
+        @Override
+        public void mouseUp(MouseEvent e) {
+        }
+
+        private void addSelections() {
+            IBookmarkModelComponent[] components = getSelectedBookmarkComponents();
+
+            if (rightTreeViewer.getSelections().size() == 0) {
+                Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
+                invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
+            } else {
+                Optional<IBookmarkModelComponent> dropTarget = Optional.of((IBookmarkModelComponent) rightTreeViewer
+                        .getSelections().getFirstElement());
+                invoker.invoke(new ImportSelectedBookmarksCommand(components, invoker, true, false, dropTarget));
+            }
+        }
+
+        private IBookmarkModelComponent[] getSelectedBookmarkComponents() {
+            IStructuredSelection selections = leftTreeViewer.getSelections();
+            List<IBookmarkModelComponent> components = Lists.newArrayList();
+            @SuppressWarnings("rawtypes")
+            Iterator iterator = selections.iterator();
+            while (iterator.hasNext()) {
+                components.add((IBookmarkModelComponent) iterator.next());
+            }
+            return components.toArray(new IBookmarkModelComponent[0]);
+        }
+
+    }
+
+    private class AddAllMouseListener implements MouseListener {
+
+        private final RepresentationSwitchableTreeViewer leftViewer;
+        private final RepresentationSwitchableTreeViewer rightViewer;
+        private final BookmarkCommandInvoker invoker;
+
+        public AddAllMouseListener(RepresentationSwitchableTreeViewer leftViewer,
+                RepresentationSwitchableTreeViewer rightViewer, BookmarkCommandInvoker invoker) {
+            this.leftViewer = leftViewer;
+            this.rightViewer = rightViewer;
+            this.invoker = invoker;
+        }
+
+        @Override
+        public void mouseUp(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseDown(MouseEvent e) {
+            BookmarkModel source = (BookmarkModel) leftViewer.getInput();
+            BookmarkModel target = (BookmarkModel) rightViewer.getInput();
+            if (source == null || target == null) {
+                return;
+            }
+
+            Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
+            IBookmarkModelComponent[] components = source.getCategories().toArray(new IBookmarkModelComponent[0]);
+            invoker.invoke(new ImportSelectedBookmarksCommand(components, getInvoker(target), true, false, dropTarget));
+            rightViewer.refresh();
+        }
+
+        // the default invoker refreshes the view after each command is
+        // executed. The invoker is also provided as parameter for cascading
+        // command invocations what causes gui flickering on "add all" which
+        // is prevented
+        // with this one
+        private BookmarkCommandInvoker getInvoker(final BookmarkModel model) {
+            return new BookmarkCommandInvoker() {
+
+                @Override
+                public void invoke(IBookmarkModelCommand command) {
+                    command.execute(model);
+                }
+            };
+        }
+
+        @Override
+        public void mouseDoubleClick(MouseEvent e) {
+        }
+    }
+
+    private class RemoveMouseListener implements MouseListener {
+
+        private final RepresentationSwitchableTreeViewer treeViewer;
+        private final BookmarkCommandInvoker invoker;
+
+        public RemoveMouseListener(RepresentationSwitchableTreeViewer treeViewer, BookmarkCommandInvoker invoker) {
+            this.treeViewer = treeViewer;
+            this.invoker = invoker;
+        }
+
+        @Override
+        public void mouseUp(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseDown(MouseEvent e) {
+            IStructuredSelection selections = treeViewer.getSelections();
+            @SuppressWarnings("rawtypes")
+            Iterator iterator = selections.iterator();
+            while (iterator.hasNext()) {
+                IBookmarkModelComponent component = (IBookmarkModelComponent) iterator.next();
+                IBookmarkModelComponent parent = component.getParent();
+                invoker.invoke(new DeleteSingleBookmarkCommand(component));
+                deleteInferredNodes(parent);
+
+                treeViewer.refresh();
+            }
+        }
+
+        private void deleteInferredNodes(IBookmarkModelComponent parent) {
+            if (parent == null) {
+                return;
+            }
+            IsIBookmarkVisitor isBookmark = new IsIBookmarkVisitor();
+            parent.accept(isBookmark);
+            if (isBookmark.isIBookmark()) {
+                invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
+            }
+        }
+
+        @Override
+        public void mouseDoubleClick(MouseEvent e) {
+        }
+    }
+
+    private class RemoveAllMouseListener implements MouseListener {
+
+        private final BookmarkCommandInvoker invoker;
+
+        public RemoveAllMouseListener(BookmarkCommandInvoker invoker) {
+            this.invoker = invoker;
+        }
+
+        @Override
+        public void mouseUp(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseDown(MouseEvent e) {
+            invoker.invoke(new DeleteAllBookmarksCommand());
+        }
+
+        @Override
+        public void mouseDoubleClick(MouseEvent e) {
+        }
+    }
+    
+    private class TreeSelectionDependendButtonEnabler implements ISelectionChangedListener {
+
+        private final RepresentationSwitchableTreeViewer treeViewer;
+        private final Button button;
+
+        public TreeSelectionDependendButtonEnabler(RepresentationSwitchableTreeViewer treeViewer, Button button) {
+            this.treeViewer = treeViewer;
+            this.button = button;
+        }
+
+        @Override
+        public void selectionChanged(SelectionChangedEvent event) {
+            if (treeViewer.getSelections().size() == 0) {
+                button.setEnabled(false);
+            } else {
+                button.setEnabled(true);
+            }
+        }
+    }
 }

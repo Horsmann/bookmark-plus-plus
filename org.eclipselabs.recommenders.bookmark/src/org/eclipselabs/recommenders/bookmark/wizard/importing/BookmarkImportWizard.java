@@ -31,11 +31,11 @@ public class BookmarkImportWizard extends Wizard implements IImportWizard {
         return true;
     }
 
-
     public void init(IWorkbench workbench, IStructuredSelection selection) {
         setWindowTitle("File Import Wizard");
         setNeedsProgressMonitor(true);
-        mainPage = new BookmarkImportWizardPage("Import Bookmarks");
+        mainPage = new BookmarkImportWizardPage("Import");
+
     }
 
     @Override
