@@ -117,7 +117,7 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
 
     private void makeAddButtonEnDisableOnSelections() {
         leftTreeViewer.addSelectionChangedListener(new TreeSelectionDependendButtonEnabler(leftTreeViewer, add));
-        rightTreeViewer.addDoubleclickListener(new AddMouseAndDoubleClickerListener(rightTreeViewer, leftTreeViewer,
+        leftTreeViewer.addDoubleclickListener(new AddMouseAndDoubleClickerListener(leftTreeViewer, rightTreeViewer,
                 invoker));
     }
 

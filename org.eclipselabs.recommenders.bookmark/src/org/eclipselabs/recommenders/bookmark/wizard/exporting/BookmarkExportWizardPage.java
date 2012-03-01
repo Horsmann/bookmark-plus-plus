@@ -120,7 +120,11 @@ public class BookmarkExportWizardPage extends BookmarkWizardPage {
         }
     }
 
-    public File getExportFile(File file) {
+    public File getExportFile() {
         return new File(selectedFileTextField.getText());
+    }
+
+    public BookmarkModel getExportModel() {
+        return exportModel;
     }
 }
