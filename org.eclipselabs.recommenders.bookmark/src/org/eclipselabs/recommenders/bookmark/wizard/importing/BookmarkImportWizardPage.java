@@ -61,11 +61,7 @@ public class BookmarkImportWizardPage extends BookmarkWizardPage {
     public void setRighTreeViewerInput(BookmarkModel model) {
         rightTreeViewer.setInput(model);
     }
-
-    public void layout() {
-        container.layout(true, true);
-    }
-
+  
     @Override
     protected void addMouseListenerForOpenFileButton() {
         selectFileButton.addMouseListener(new OpenFileButtonListener(selectedFileTextField, this));

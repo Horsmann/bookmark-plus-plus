@@ -55,6 +55,7 @@ public class BookmarkExportWizardPage extends BookmarkWizardPage {
     public void invoke(IBookmarkModelCommand command) {
         command.execute(exportModel);
         rightTreeViewer.refresh();
+        layout();
     }
     
     public File getExportFile() {

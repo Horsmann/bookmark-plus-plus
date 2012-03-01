@@ -313,6 +313,11 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         addAll.setLayoutData(data);
     }
+    
+    public void layout() {
+        container.layout(true, true);
+    }
+
 
     @Override
     public abstract void invoke(IBookmarkModelCommand command);
