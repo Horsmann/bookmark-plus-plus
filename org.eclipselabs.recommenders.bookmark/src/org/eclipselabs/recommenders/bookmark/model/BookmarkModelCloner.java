@@ -2,12 +2,9 @@ package org.eclipselabs.recommenders.bookmark.model;
 
 import java.util.List;
 
-import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
-import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
-
 import com.google.common.collect.Lists;
 
-public class BookmarkModelCloner implements BookmarkCommandInvoker {
+public class BookmarkModelCloner {
 
     private final BookmarkModel master;
     private BookmarkModel cloned;
@@ -26,14 +23,6 @@ public class BookmarkModelCloner implements BookmarkCommandInvoker {
                 newCategory.add(newBookmark);
             }
             cloned.add(newCategory);
-//
-//             HierarchyValueVisitor valueVisitor = new HierarchyValueVisitor();
-//             cat.accept(valueVisitor);
-//            
-//             Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
-//             Optional<String> label = Optional.of(cat.getLabel());
-//             invoke(new AddElementToModelCommand(dropTarget,
-//             valueVisitor.getValues().toArray(), label, this, false));
         }
 
         return cloned;
@@ -56,10 +45,6 @@ public class BookmarkModelCloner implements BookmarkCommandInvoker {
         return newBookmark;
     }
 
-    @Override
-    public void invoke(IBookmarkModelCommand command) {
-        command.execute(cloned);
-    }
 
     private class LinkClonedBookmarksVisitor implements IModelVisitor {
 
