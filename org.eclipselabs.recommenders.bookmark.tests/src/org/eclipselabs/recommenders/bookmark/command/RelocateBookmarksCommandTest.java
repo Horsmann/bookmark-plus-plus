@@ -159,11 +159,11 @@ public class RelocateBookmarksCommandTest {
     private void createIFiles() {
         IPath location = Path.fromOSString("../LKJLD/fileA.txt");
         IFile fileA = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
-        fileBookmarkA = new FileBookmark(fileA);
+        fileBookmarkA = new FileBookmark(fileA, true);
 
         location = Path.fromOSString("../LKJLD/fileB.txt");
         IFile fileB = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
-        fileBookmarkB = new FileBookmark(fileB);
+        fileBookmarkB = new FileBookmark(fileB, true);
     }
 
 }

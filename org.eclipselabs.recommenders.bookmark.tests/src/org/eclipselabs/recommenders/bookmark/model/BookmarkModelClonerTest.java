@@ -50,8 +50,8 @@ public class BookmarkModelClonerTest {
         assertNotSame(compUnitA2, cA.getBookmarks().get(1));
         assertEquals(compUnitA2.getHandleId(), ((JavaElementBookmark) cA.getBookmarks().get(1)).getHandleId());
         assertNotSame(fileBM, cA.getBookmarks().get(2));
-        assertEquals(FileBookmark.getRelativePath(ifile),
-                FileBookmark.getRelativePath(((FileBookmark) cA.getBookmarks().get(2)).getFile()));
+        assertEquals(FileBookmark.getPath(ifile, false),
+                FileBookmark.getPath(((FileBookmark) cA.getBookmarks().get(2)).getFile(), false));
 
         assertEquals(mB.getBookmarks().size(), cB.getBookmarks().size());
         assertNotSame(compUnitB1, cB.getBookmarks().get(0));
@@ -101,7 +101,7 @@ public class BookmarkModelClonerTest {
 
         IPath location = Path.fromOSString("../LKJLD/testfile.txt");
         ifile = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
-        fileBM = new FileBookmark(ifile);
+        fileBM = new FileBookmark(ifile, false);
         compUnitB1 = new JavaElementBookmark("=LKJLD/src<test.project{B1.java", false);
         compUnitB2 = new JavaElementBookmark("=LKJLD/src<test.project{B2.java", false);
         compUnitB3 = new JavaElementBookmark("=LKJLD/src<test.project{B3.java", false);
