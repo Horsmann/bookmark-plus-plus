@@ -21,12 +21,14 @@ public class FileBookmark implements IBookmark {
     private final String relativeFilePath;
     private boolean isInferred;
     private IBookmarkModelComponent parent;
+    private boolean isInWorkspace;
 
     public FileBookmark(final IFile file, Category parent) {
         this.relativeFilePath = getRelativeFilePath(file);
         this.setParent(parent);
         parent.add(this);
         isInferred = false;
+        isInWorkspace = true;
     }
 
     public FileBookmark(final IFile file) {
@@ -79,4 +81,11 @@ public class FileBookmark implements IBookmark {
         this.isInferred = isInferred;
     }
 
+    public void setLocatedInWorkspace(boolean isInWorkspace) {
+        this.isInWorkspace = isInWorkspace;
+    }
+
+    public boolean isInWorkspace() {
+        return isInWorkspace;
+    }
 }

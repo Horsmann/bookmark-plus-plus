@@ -1,5 +1,7 @@
 package org.eclipselabs.recommenders.bookmark.visitor;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaElement;
@@ -19,12 +21,16 @@ public class IsResourceAvailableVisitor implements IModelVisitor {
 
     @Override
     public void visit(FileBookmark fileBookmark) {
-        IFile file = fileBookmark.getFile();
-        IProject project = file.getProject();
-        boolean isOpen = project.isOpen();
-        boolean exists = file.exists();
-
-        isAvailable = isOpen && exists;
+        if (fileBookmark.isInWorkspace()) {
+            IFile file = fileBookmark.getFile();
+            IProject project = file.getProject();
+            boolean isOpen = project.isOpen();
+            boolean exists = file.exists();
+            isAvailable = isOpen && exists;
+        } else {
+            File file = fileBookmark.getFile().getFullPath().toFile();
+            isAvailable = file.exists();
+        }
     }
 
     @Override

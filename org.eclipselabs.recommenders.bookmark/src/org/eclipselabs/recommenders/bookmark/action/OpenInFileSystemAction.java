@@ -3,7 +3,9 @@ package org.eclipselabs.recommenders.bookmark.action;
 import java.io.File;
 import java.util.Iterator;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
@@ -99,7 +101,11 @@ public class OpenInFileSystemAction extends Action implements SelfEnabling {
 
         @Override
         public void visit(FileBookmark fileBookmark) {
-            File targetFile = fileBookmark.getFile().getRawLocation().toFile();
+            IPath rawLocation = fileBookmark.getFile().getRawLocation();
+            if (rawLocation == null){
+                return;
+            }
+            File targetFile = rawLocation.toFile();
             File parent = targetFile.getParentFile();
             file = Optional.of(parent);
         }

@@ -1,8 +1,14 @@
 package org.eclipselabs.recommenders.bookmark.view;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -12,10 +18,12 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipselabs.recommenders.bookmark.commands.AddBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.ChangeBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.ReorderBookmarksCommand;
@@ -46,6 +54,23 @@ public class DefaultDropStrategy implements IDropStrategy {
 
         if (event.data instanceof TreeSelection) {
             processTreeSelection(dropTarget, (TreeSelection) event.data, insertDropBeforeTarget);
+        } else if (isWorkbenchInternalFileDrop(event)) {
+            IFile[] ifiles = createWorkbenchInternalIFiles((String[]) event.data);
+            List<TreePath> paths = Lists.newArrayList();
+            for (IFile file : ifiles) {
+                paths.add(new TreePath(new Object[] { file }));
+            }
+            TreeSelection sel = new TreeSelection(paths.toArray(new TreePath[0]));
+            processTreeSelection(dropTarget, sel, insertDropBeforeTarget);
+            return;
+        } else if (isExternalFileDrop(event)) {
+            IFile[] ifiles = createWorkbenchExternalIFiles((String[]) event.data);
+            List<TreePath> paths = Lists.newArrayList();
+            for (IFile file : ifiles) {
+                paths.add(new TreePath(new Object[] { new ExternalFile(file) }));
+            }
+            TreeSelection sel = new TreeSelection(paths.toArray(new TreePath[0]));
+            processTreeSelection(dropTarget, sel, insertDropBeforeTarget);
         } else {
             ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
             if (selections instanceof IStructuredSelection) {
@@ -53,6 +78,61 @@ public class DefaultDropStrategy implements IDropStrategy {
                         insertDropBeforeTarget);
             }
         }
+    }
+
+    private IFile[] createWorkbenchExternalIFiles(String[] data) {
+        List<IFile> files = Lists.newArrayList();
+        for (String abs : data) {
+            IPath path = new Path(abs);
+            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+            if (!isDirectory(file)){
+            files.add(file);
+            }
+        }
+        return files.toArray(new IFile[0]);
+    }
+
+    private boolean isDirectory(IFile ifile) {
+        File file = ifile.getFullPath().toFile();
+        return file.isDirectory();
+    }
+
+    private boolean isExternalFileDrop(DropTargetEvent event) {
+        return isFileTransferSupported(event.dataTypes) && event.data instanceof String[];
+    }
+
+    private boolean isFileTransferSupported(TransferData[] dataTypes) {
+        for (TransferData data : dataTypes) {
+            if (FileTransfer.getInstance().isSupportedType(data)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isWorkbenchInternalFileDrop(DropTargetEvent event) {
+        return isResourceTransferSupported(event.dataTypes) && event.data instanceof String[];
+    }
+
+    private IFile[] createWorkbenchInternalIFiles(String[] data) {
+        List<IFile> files = Lists.newArrayList();
+        for (String s : data) {
+            IWorkspace workspace = ResourcesPlugin.getWorkspace();
+            IPath location = Path.fromOSString((String) s);
+            IFile file = workspace.getRoot().getFileForLocation(location);
+            files.add(file);
+        }
+
+        return files.toArray(new IFile[0]);
+    }
+
+    private boolean isResourceTransferSupported(TransferData[] dataTypes) {
+        for (TransferData data : dataTypes) {
+            if (ResourceTransfer.getInstance().isSupportedType(data)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected void setDropOperation(DropTargetEvent event) {
@@ -69,9 +149,7 @@ public class DefaultDropStrategy implements IDropStrategy {
 
     protected void processStructuredSelection(Optional<IBookmarkModelComponent> dropTarget,
             IStructuredSelection selections, boolean keepSource, boolean insertDropBeforeTarget) {
-
         IBookmarkModelComponent[] components = getModelComponentsFromSelection(selections);
-
         if (dropTarget.isPresent() && areBookmarksSortedByHand(dropTarget.get(), components)) {
             processReorderingofNodes(dropTarget.get(), components, insertDropBeforeTarget);
         } else {
@@ -89,9 +167,7 @@ public class DefaultDropStrategy implements IDropStrategy {
             return false;
         }
         Rectangle bounds = item.getBounds();
-
         Rectangle upperHalf = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height / 2);
-
         return upperHalf.contains(controlRelativePoint);
 
     }
@@ -195,7 +271,6 @@ public class DefaultDropStrategy implements IDropStrategy {
         }
 
         for (IBookmarkModelComponent bookmark : components) {
-
             RecursionPreventerVisitor visitor = new RecursionPreventerVisitor(dropTarget.get());
             bookmark.accept(visitor);
             if (visitor.recursionFound) {
@@ -248,4 +323,12 @@ public class DefaultDropStrategy implements IDropStrategy {
         }
     }
 
+    public class ExternalFile {
+        public IFile file;
+
+        public ExternalFile(IFile file) {
+            this.file = file;
+        }
+
+    }
 }

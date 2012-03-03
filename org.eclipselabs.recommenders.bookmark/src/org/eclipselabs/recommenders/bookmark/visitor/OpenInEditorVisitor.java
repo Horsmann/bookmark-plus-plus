@@ -11,6 +11,8 @@ import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 
 public class OpenInEditorVisitor implements IModelVisitor {
     private final IWorkbenchPage activePage;
@@ -24,14 +26,16 @@ public class OpenInEditorVisitor implements IModelVisitor {
     @Override
     public void visit(FileBookmark fileBookmark) {
         try {
-
             IsResourceAvailableVisitor availVisitor = new IsResourceAvailableVisitor();
             fileBookmark.accept(availVisitor);
-
             if (availVisitor.isAvailable()) {
-                IDE.openEditor(activePage, fileBookmark.getFile());
+                if (fileBookmark.isInWorkspace()) {
+                    IDE.openEditor(activePage, fileBookmark.getFile());
+                } else {
+                    IFileStore store = EFS.getLocalFileSystem().getStore(fileBookmark.getFile().getFullPath());
+                    IDE.openEditorOnFileStore(activePage, store);
+                }
             }
-
         } catch (PartInitException e) {
             e.printStackTrace();
         }
@@ -67,7 +71,5 @@ public class OpenInEditorVisitor implements IModelVisitor {
             }
         }
     }
-
-  
 
 }

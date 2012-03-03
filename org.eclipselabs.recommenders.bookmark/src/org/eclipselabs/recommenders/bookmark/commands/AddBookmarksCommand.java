@@ -23,6 +23,7 @@ import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
+import org.eclipselabs.recommenders.bookmark.view.DefaultDropStrategy.ExternalFile;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -59,8 +60,8 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
         this.category = category;
         this.model = model;
         List<IBookmarkModelComponent> createdElements = Lists.newLinkedList();
-        
-        Object [] inversedOrderElements = inverseElementOrder();
+
+        Object[] inversedOrderElements = inverseElementOrder();
 
         for (Object element : inversedOrderElements) {
             if (isIJavaElement(element)) {
@@ -73,6 +74,11 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
                 if (file.isPresent()) {
                     createdElements.add(file.get());
                 }
+            } else if (element instanceof ExternalFile) {
+                Optional<FileBookmark> file = processExternalFile(((ExternalFile) element).file);
+                if (file.isPresent()) {
+                    createdElements.add(file.get());
+                }
             }
         }
 
@@ -82,12 +88,20 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
         }
     }
 
+    private Optional<FileBookmark> processExternalFile(IFile file) {
+        Optional<FileBookmark> processFile = processFile(file);
+        if (processFile.isPresent()) {
+            processFile.get().setLocatedInWorkspace(false);
+        }
+        return processFile;
+    }
+
     private Object[] inverseElementOrder() {
         List<Object> inverse = Lists.newArrayList();
-        for (int i=elements.length - 1; i >= 0; i--){
+        for (int i = elements.length - 1; i >= 0; i--) {
             inverse.add(elements[i]);
         }
-        
+
         return inverse.toArray();
     }
 
