@@ -35,7 +35,7 @@ public class FileBookmark implements IBookmark {
         this.path = getPath(file);
     }
 
-    public String getPath(IFile file) {
+    public static String getPath(IFile file) {
         IPath path = file.getFullPath();
         IPath projectRelativePath = file.getProjectRelativePath();
         return path.makeRelativeTo(projectRelativePath).toOSString();
