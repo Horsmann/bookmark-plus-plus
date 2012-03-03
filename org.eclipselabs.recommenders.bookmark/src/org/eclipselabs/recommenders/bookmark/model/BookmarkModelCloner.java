@@ -101,7 +101,7 @@ public class BookmarkModelCloner {
 
         @Override
         public void visit(FileBookmark fileBookmark) {
-            clone = new FileBookmark(fileBookmark.getFile());
+            clone = new FileBookmark(fileBookmark.getFile(), fileBookmark.isInWorkspace());
         }
 
         @Override

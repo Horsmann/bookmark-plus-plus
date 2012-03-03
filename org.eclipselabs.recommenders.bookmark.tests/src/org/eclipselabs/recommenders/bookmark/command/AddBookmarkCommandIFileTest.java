@@ -29,7 +29,7 @@ public class AddBookmarkCommandIFileTest {
     public void testInsertFile() {
         insertFileToModel();
         FileBookmark target = getElementInModelAtTargetPosition();
-        assertEquals(relativePath, FileBookmark.getPath(target.getFile()));
+        assertEquals(relativePath, FileBookmark.getRelativePath(target.getFile()));
     }
 
     @Test
@@ -37,7 +37,7 @@ public class AddBookmarkCommandIFileTest {
         insertFileToModel();
         insertFileToModel();
         FileBookmark target = getElementInModelAtTargetPosition();
-        assertEquals(relativePath, FileBookmark.getPath(target.getFile()));
+        assertEquals(relativePath, FileBookmark.getRelativePath(target.getFile()));
         assertEquals(1, category.getBookmarks().size());
     }
 

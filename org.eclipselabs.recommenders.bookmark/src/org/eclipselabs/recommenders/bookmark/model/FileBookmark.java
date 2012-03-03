@@ -18,24 +18,41 @@ import org.eclipse.core.runtime.Path;
 public class FileBookmark implements IBookmark {
 
     private static final long serialVersionUID = -224963828339478664L;
-    private final String path;
+    private String path;
     private boolean isInferred;
     private IBookmarkModelComponent parent;
     private boolean isInWorkspace;
 
-    public FileBookmark(final IFile file, Category parent) {
-        this.path = getPath(file);
+    public FileBookmark(final IFile file, Category parent, boolean isInWorkspace) {
         this.setParent(parent);
         parent.add(this);
-        isInferred = false;
-        isInWorkspace = true;
+        this.isInferred = false;
+        this.isInWorkspace = isInWorkspace;
+        setPath(file);
     }
 
-    public FileBookmark(final IFile file) {
-        this.path = getPath(file);
+    private void setPath(IFile file) {
+        if (isInWorkspace) {
+            this.path = getRelativePath(file);
+        } else {
+            this.path = getAbsolutePath(file);
+        }
     }
 
-    public static String getPath(IFile file) {
+    private String getAbsolutePath(IFile file) {
+        return file.getFullPath().toString();
+    }
+
+    public FileBookmark(final IFile file, boolean isInWorkspace) {
+        this.isInWorkspace = isInWorkspace;
+        setPath(file);
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    private String getRelativePath(IFile file) {
         IPath path = file.getFullPath();
         IPath projectRelativePath = file.getProjectRelativePath();
         return path.makeRelativeTo(projectRelativePath).toOSString();
@@ -47,14 +64,19 @@ public class FileBookmark implements IBookmark {
     }
 
     public IFile getFile() {
-        IFile file = createIFileFromRelativePath();
+        IFile file = createIFileFromPath();
         return file;
     }
 
-    private IFile createIFileFromRelativePath() {
-        IPath location = Path.fromOSString(path);
-        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
-        return file;
+    private IFile createIFileFromPath() {
+        if (isInWorkspace) {
+            IPath location = Path.fromOSString(path);
+            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
+            return file;
+        } else {
+            // TODO
+            return null;
+        }
     }
 
     @Override
@@ -87,5 +109,9 @@ public class FileBookmark implements IBookmark {
 
     public boolean isInWorkspace() {
         return isInWorkspace;
+    }
+
+    public static String getPath(IFile file, boolean isInWorkspace) {
+        return new FileBookmark(file, isInWorkspace).getPath();
     }
 }

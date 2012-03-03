@@ -158,13 +158,12 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
     }
 
     private Optional<FileBookmark> processFile(final IFile file) {
-        DoesIFileAlreadyExistsVisitor visitor = new DoesIFileAlreadyExistsVisitor(
-                FileBookmark.getPath(file));
+        DoesIFileAlreadyExistsVisitor visitor = new DoesIFileAlreadyExistsVisitor(FileBookmark.getPath(file, true));
         category.accept(visitor);
         if (visitor.doesAlreadyExists()) {
             return Optional.absent();
         }
-        return Optional.of(new FileBookmark(file, category));
+        return Optional.of(new FileBookmark(file, category, true));
     }
 
     private Optional<JavaElementBookmark> processJavaElement(final IJavaElement javaElement) {
@@ -286,7 +285,7 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
 
         @Override
         public void visit(FileBookmark fileBookmark) {
-            if (FileBookmark.getPath(fileBookmark.getFile()).equals(fileId)) {
+            if (FileBookmark.getPath(fileBookmark.getFile(), fileBookmark.isInWorkspace()).equals(fileId)) {
                 exists = true;
             }
         }
