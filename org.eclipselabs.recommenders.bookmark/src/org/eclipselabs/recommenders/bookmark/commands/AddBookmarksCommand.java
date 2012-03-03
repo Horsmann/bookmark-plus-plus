@@ -89,11 +89,13 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
     }
 
     private Optional<FileBookmark> processExternalFile(IFile file) {
-        Optional<FileBookmark> processFile = processFile(file);
-        if (processFile.isPresent()) {
-            processFile.get().setLocatedInWorkspace(false);
+        
+        DoesIFileAlreadyExistsVisitor visitor = new DoesIFileAlreadyExistsVisitor(FileBookmark.getPath(file, false));
+        category.accept(visitor);
+        if (visitor.doesAlreadyExists()) {
+            return Optional.absent();
         }
-        return processFile;
+        return Optional.of(new FileBookmark(file, category, false));
     }
 
     private Object[] inverseElementOrder() {

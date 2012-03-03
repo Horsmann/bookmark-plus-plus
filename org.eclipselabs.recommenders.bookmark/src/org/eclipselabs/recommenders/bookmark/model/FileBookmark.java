@@ -69,14 +69,9 @@ public class FileBookmark implements IBookmark {
     }
 
     private IFile createIFileFromPath() {
-        if (isInWorkspace) {
-            IPath location = Path.fromOSString(path);
-            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
-            return file;
-        } else {
-            // TODO
-            return null;
-        }
+        IPath location = Path.fromOSString(path);
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
+        return file;
     }
 
     @Override
