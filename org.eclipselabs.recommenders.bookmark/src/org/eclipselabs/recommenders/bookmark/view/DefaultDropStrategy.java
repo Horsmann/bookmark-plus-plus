@@ -28,6 +28,7 @@ import org.eclipselabs.recommenders.bookmark.commands.AddBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.ChangeBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.ReorderBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.model.Category;
+import org.eclipselabs.recommenders.bookmark.model.ExternalFile;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
@@ -85,8 +86,8 @@ public class DefaultDropStrategy implements IDropStrategy {
         for (String abs : data) {
             IPath path = new Path(abs);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-            if (!isDirectory(file)){
-            files.add(file);
+            if (!isDirectory(file)) {
+                files.add(file);
             }
         }
         return files.toArray(new IFile[0]);
@@ -323,12 +324,4 @@ public class DefaultDropStrategy implements IDropStrategy {
         }
     }
 
-    public class ExternalFile {
-        public IFile file;
-
-        public ExternalFile(IFile file) {
-            this.file = file;
-        }
-
-    }
 }

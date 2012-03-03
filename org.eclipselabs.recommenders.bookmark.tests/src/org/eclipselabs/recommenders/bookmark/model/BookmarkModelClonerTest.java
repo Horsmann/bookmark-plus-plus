@@ -50,8 +50,8 @@ public class BookmarkModelClonerTest {
         assertNotSame(compUnitA2, cA.getBookmarks().get(1));
         assertEquals(compUnitA2.getHandleId(), ((JavaElementBookmark) cA.getBookmarks().get(1)).getHandleId());
         assertNotSame(fileBM, cA.getBookmarks().get(2));
-        assertEquals(FileBookmark.getRelativeFilePath(ifile),
-                FileBookmark.getRelativeFilePath(((FileBookmark) cA.getBookmarks().get(2)).getFile()));
+        assertEquals(FileBookmark.getPath(ifile),
+                FileBookmark.getPath(((FileBookmark) cA.getBookmarks().get(2)).getFile()));
 
         assertEquals(mB.getBookmarks().size(), cB.getBookmarks().size());
         assertNotSame(compUnitB1, cB.getBookmarks().get(0));

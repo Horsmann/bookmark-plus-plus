@@ -3,7 +3,6 @@ package org.eclipselabs.recommenders.bookmark.action;
 import java.io.File;
 import java.util.Iterator;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;

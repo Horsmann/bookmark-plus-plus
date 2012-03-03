@@ -17,13 +17,13 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipselabs.recommenders.bookmark.BookmarkUtil;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
+import org.eclipselabs.recommenders.bookmark.model.ExternalFile;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
-import org.eclipselabs.recommenders.bookmark.view.DefaultDropStrategy.ExternalFile;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -159,7 +159,7 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
 
     private Optional<FileBookmark> processFile(final IFile file) {
         DoesIFileAlreadyExistsVisitor visitor = new DoesIFileAlreadyExistsVisitor(
-                FileBookmark.getRelativeFilePath(file));
+                FileBookmark.getPath(file));
         category.accept(visitor);
         if (visitor.doesAlreadyExists()) {
             return Optional.absent();
@@ -286,7 +286,7 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
 
         @Override
         public void visit(FileBookmark fileBookmark) {
-            if (FileBookmark.getRelativeFilePath(fileBookmark.getFile()).equals(fileId)) {
+            if (FileBookmark.getPath(fileBookmark.getFile()).equals(fileId)) {
                 exists = true;
             }
         }

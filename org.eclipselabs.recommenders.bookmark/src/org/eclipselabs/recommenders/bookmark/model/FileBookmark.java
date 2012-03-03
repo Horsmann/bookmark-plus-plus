@@ -18,13 +18,13 @@ import org.eclipse.core.runtime.Path;
 public class FileBookmark implements IBookmark {
 
     private static final long serialVersionUID = -224963828339478664L;
-    private final String relativeFilePath;
+    private final String path;
     private boolean isInferred;
     private IBookmarkModelComponent parent;
     private boolean isInWorkspace;
 
     public FileBookmark(final IFile file, Category parent) {
-        this.relativeFilePath = getRelativeFilePath(file);
+        this.path = getPath(file);
         this.setParent(parent);
         parent.add(this);
         isInferred = false;
@@ -32,10 +32,10 @@ public class FileBookmark implements IBookmark {
     }
 
     public FileBookmark(final IFile file) {
-        this.relativeFilePath = getRelativeFilePath(file);
+        this.path = getPath(file);
     }
 
-    public static String getRelativeFilePath(IFile file) {
+    public String getPath(IFile file) {
         IPath path = file.getFullPath();
         IPath projectRelativePath = file.getProjectRelativePath();
         return path.makeRelativeTo(projectRelativePath).toOSString();
@@ -52,7 +52,7 @@ public class FileBookmark implements IBookmark {
     }
 
     private IFile createIFileFromRelativePath() {
-        IPath location = Path.fromOSString(relativeFilePath);
+        IPath location = Path.fromOSString(path);
         IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
         return file;
     }

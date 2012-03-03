@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 
 public class BookmarkIO {
@@ -42,11 +41,6 @@ public class BookmarkIO {
         }
 
         return model;
-    }
-
-    public static void writeToDefaultFile(BookmarkModel model) {
-        File file = Activator.getLocationForStoringBookmark();
-        writeModel(file, model);
     }
 
     public static void writeModel(File file, BookmarkModel model) {

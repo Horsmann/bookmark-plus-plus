@@ -35,9 +35,7 @@ public class ImportSelectedBookmarksCommand implements IBookmarkModelCommand {
     @Override
     public void execute(BookmarkModel model) {
         LinkedList<List<IBookmarkModelComponent>> splitByCategory = splitByCategory(components);
-
         Optional<String> categoryName = Optional.absent();
-
         for (List<IBookmarkModelComponent> list : splitByCategory) {
             if (!list.isEmpty()) {
                 IBookmarkModelComponent category = getCategory(list.get(0));
@@ -47,7 +45,6 @@ public class ImportSelectedBookmarksCommand implements IBookmarkModelCommand {
                     categoryName = Optional.of(((Category) category).getLabel());
                 }
             }
-
             invoker.invoke(new ChangeBookmarksCommand(list.toArray(new IBookmarkModelComponent[0]),
                     isCopyOperation, invoker, insertDropBeforeTarget, dropTarget, categoryName));
             categoryName = Optional.absent();
