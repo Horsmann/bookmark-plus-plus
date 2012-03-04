@@ -65,12 +65,10 @@ public class ReorderBookmarksCommand implements IBookmarkModelCommand {
     }
 
     private void setNewOrder(List<IBookmarkModelComponent> newOrder) {
-
         if (target instanceof Category) {
             setNewOrderForCategories(newOrder);
             return;
         }
-
         IBookmarkModelComponent parent = target.getParent();
         RemoveChildrenVisitor removeVisitor = new RemoveChildrenVisitor();
         parent.accept(removeVisitor);
@@ -120,7 +118,6 @@ public class ReorderBookmarksCommand implements IBookmarkModelCommand {
 
         GetValueVisitor targetVisitor = new GetValueVisitor();
         target.accept(targetVisitor);
-
         for (IBookmarkModelComponent component : components) {
             GetValueVisitor visitor = new GetValueVisitor();
             component.accept(visitor);

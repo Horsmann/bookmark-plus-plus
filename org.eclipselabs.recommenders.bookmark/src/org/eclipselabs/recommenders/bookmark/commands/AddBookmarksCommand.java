@@ -89,7 +89,6 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
     }
 
     private Optional<FileBookmark> processExternalFile(IFile file) {
-        
         DoesIFileAlreadyExistsVisitor visitor = new DoesIFileAlreadyExistsVisitor(FileBookmark.getPath(file, false));
         category.accept(visitor);
         if (visitor.doesAlreadyExists()) {
@@ -103,7 +102,6 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
         for (int i = elements.length - 1; i >= 0; i--) {
             inverse.add(elements[i]);
         }
-
         return inverse.toArray();
     }
 

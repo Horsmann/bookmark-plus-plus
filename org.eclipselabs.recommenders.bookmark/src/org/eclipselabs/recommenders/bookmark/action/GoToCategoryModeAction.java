@@ -22,7 +22,7 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
         super("", AS_CHECK_BOX);
         this.hideableComboViewer = hideableComboViewer;
         this.model = model;
-        treeViewer = representationSwitchableTreeViewer;
+        this.treeViewer = representationSwitchableTreeViewer;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(Activator.ICON_TOGGLE_VIEW));
         this.setToolTipText("Switches between the hierarchical and the category mode");
         this.setText("Go to Category");
@@ -56,6 +56,16 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
     }
 
     private Category getActivatedCategory() {
+        IBookmarkModelComponent component = getCategoryAccordingToSelection();
+        IsCategoryVisitor visitor = new IsCategoryVisitor();
+        component.accept(visitor);
+        if (visitor.isCategory()) {
+            return (Category) component;
+        }
+        return null;
+    }
+
+    private IBookmarkModelComponent getCategoryAccordingToSelection() {
         IStructuredSelection selections = treeViewer.getSelections();
         IBookmarkModelComponent component = null;
         if (selections.isEmpty()) {
@@ -66,13 +76,7 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
         while (component.hasParent()) {
             component = component.getParent();
         }
-
-        IsCategoryVisitor visitor = new IsCategoryVisitor();
-        component.accept(visitor);
-        if (visitor.isCategory()) {
-            return (Category) component;
-        }
-        return null;
+        return component;
     }
 
     @Override
@@ -80,7 +84,7 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
         if (model.getCategories().isEmpty() || hideableComboViewer.isVisible()) {
             setEnabled(false);
         } else {
-                setEnabled(true);
+            setEnabled(true);
         }
     }
 

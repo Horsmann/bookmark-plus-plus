@@ -14,7 +14,6 @@ public class IsCategoryVisitor implements IModelVisitor {
 
     @Override
     public void visit(FileBookmark fileBookmark) {
-
     }
 
     @Override
@@ -24,6 +23,5 @@ public class IsCategoryVisitor implements IModelVisitor {
 
     @Override
     public void visit(JavaElementBookmark javaElementBookmark) {
-
     }
 }

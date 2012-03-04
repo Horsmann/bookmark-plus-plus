@@ -44,7 +44,6 @@ public class IsResourceAvailableVisitor implements IModelVisitor {
         IProject project = element.getJavaProject().getProject();
         boolean isOpen = project.isOpen();
         boolean exists = BookmarkUtil.doesReferencedIJavaElementExist(element);
-
         isAvailable = isOpen && exists;
     }
 

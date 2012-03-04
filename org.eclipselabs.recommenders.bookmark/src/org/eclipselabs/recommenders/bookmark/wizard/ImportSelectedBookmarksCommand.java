@@ -37,18 +37,24 @@ public class ImportSelectedBookmarksCommand implements IBookmarkModelCommand {
         LinkedList<List<IBookmarkModelComponent>> splitByCategory = splitByCategory(components);
         Optional<String> categoryName = Optional.absent();
         for (List<IBookmarkModelComponent> list : splitByCategory) {
-            if (!list.isEmpty()) {
-                IBookmarkModelComponent category = getCategory(list.get(0));
-                IsCategoryVisitor visitor = new IsCategoryVisitor();
-                category.accept(visitor);
-                if (visitor.isCategory()) {
-                    categoryName = Optional.of(((Category) category).getLabel());
-                }
-            }
-            invoker.invoke(new ChangeBookmarksCommand(list.toArray(new IBookmarkModelComponent[0]),
-                    isCopyOperation, invoker, insertDropBeforeTarget, dropTarget, categoryName));
-            categoryName = Optional.absent();
+            categoryName = getCategoryName(list);
+            invoker.invoke(new ChangeBookmarksCommand(list.toArray(new IBookmarkModelComponent[0]), isCopyOperation,
+                    invoker, insertDropBeforeTarget, dropTarget, categoryName));
         }
+    }
+
+    private Optional<String> getCategoryName(List<IBookmarkModelComponent> list) {
+        if (list.isEmpty()) {
+            return Optional.absent();
+        }
+        IBookmarkModelComponent category = getCategory(list.get(0));
+        IsCategoryVisitor visitor = new IsCategoryVisitor();
+        category.accept(visitor);
+        Optional<String> categoryName = Optional.absent();
+        if (visitor.isCategory()) {
+            categoryName = Optional.of(((Category) category).getLabel());
+        }
+        return categoryName;
     }
 
     private LinkedList<List<IBookmarkModelComponent>> splitByCategory(IBookmarkModelComponent[] components) {

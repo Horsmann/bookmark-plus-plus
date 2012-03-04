@@ -1,13 +1,3 @@
-/**
- * Copyright (c) 2010 Darmstadt University of Technology.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Johannes Lerch - initial API and implementation.
- */
 package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import java.util.List;
@@ -150,10 +140,9 @@ public class RepresentationSwitchableTreeViewer {
                 final IChildrenResolverVisitor visitor = currentMode.createChildrenResolverVisitor();
                 acceptVisitor(category, visitor);
                 return visitor.getChildren().toArray();
-            } else {
-                throw new IllegalStateException(String.format("Input element of TreeViewer is not of type '%s'.",
-                        BookmarkModel.class.toString()));
             }
+            throw new IllegalStateException(String.format("Input element of TreeViewer is not of type '%s'.",
+                    BookmarkModel.class.toString()));
         }
 
         @Override

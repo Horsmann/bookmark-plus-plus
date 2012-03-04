@@ -74,16 +74,13 @@ public class ChangeBookmarksCommand implements IBookmarkModelCommand {
     }
 
     private Category getCategoryOf(IBookmarkModelComponent component) {
-
         if (component instanceof Category) {
             return (Category) component;
         }
-
         return getCategoryOf(component.getParent());
     }
 
     private void deleteDroppedBookmarks(BookmarkModel model) {
-
         for (IBookmarkModelComponent bookmark : bookmarks) {
             IBookmarkModelComponent parent = bookmark.getParent();
             removeBookmark(bookmark, model);

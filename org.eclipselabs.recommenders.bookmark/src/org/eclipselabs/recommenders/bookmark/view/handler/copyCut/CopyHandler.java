@@ -50,12 +50,9 @@ public class CopyHandler extends AbstractHandler {
 
     private void addDataToClipboard(IBookmark[] bookmarks) {
         Clipboard cb = new Clipboard(Display.getCurrent());
-
         Object[] data = prepareDataForAddingToClipboard(bookmarks);
         Transfer[] transfer = prepareTransferHandles();
-
         cb.setContents(data, transfer, DND.CLIPBOARD);
-
         cb.dispose();
     }
 

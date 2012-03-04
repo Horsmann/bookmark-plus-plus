@@ -57,7 +57,7 @@ public class BookmarkExportWizardPage extends BookmarkWizardPage {
         rightTreeViewer.refresh();
         layout();
     }
-    
+
     public File getExportFile() {
         return new File(selectedFileTextField.getText());
     }

@@ -51,7 +51,6 @@ public class OpenInEditorVisitor implements IModelVisitor {
     @Override
     public void visit(JavaElementBookmark javaElementBookmark) {
         try {
-
             IsResourceAvailableVisitor availVisitor = new IsResourceAvailableVisitor();
             javaElementBookmark.accept(availVisitor);
 

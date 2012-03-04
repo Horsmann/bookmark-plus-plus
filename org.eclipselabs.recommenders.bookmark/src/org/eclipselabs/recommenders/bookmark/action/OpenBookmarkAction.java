@@ -31,7 +31,6 @@ public class OpenBookmarkAction extends Action implements SelfEnabling {
 
     @Override
     public void run() {
-
         IWorkbenchPage activePage = part.getSite().getWorkbenchWindow().getActivePage();
         commandInvoker.invoke(new OpenBookmarkCommand(treeViewer.getSelections(), activePage, commandInvoker));
     }
@@ -43,21 +42,17 @@ public class OpenBookmarkAction extends Action implements SelfEnabling {
             this.setEnabled(false);
             return;
         }
-
         this.setEnabled(true);
     }
 
     private boolean isNotSupportedType(IStructuredSelection selections) {
-
         @SuppressWarnings("rawtypes")
         Iterator iterator = selections.iterator();
-
         while (iterator.hasNext()) {
             if (!(iterator.next() instanceof IBookmarkModelComponent)) {
                 return true;
             }
         }
-
         return false;
     }
 

@@ -44,10 +44,8 @@ public class OpenInFileSystemAction extends Action implements SelfEnabling {
             Object next = iterator.next();
             if (isValid(next)) {
                 IBookmarkModelComponent component = (IBookmarkModelComponent) next;
-
                 boolean isAvailable = isAvailable(component);
                 Optional<File> file = getFileSystemLocation(component);
-
                 if (isAvailable && file.isPresent()) {
                     Program.launch(file.get().getAbsolutePath());
                 }
@@ -129,17 +127,13 @@ public class OpenInFileSystemAction extends Action implements SelfEnabling {
             IResource resource = null;
             try {
                 resource = element.getCorrespondingResource();
-
                 if (resource != null) {
                     return resource;
                 }
-
                 IJavaElement compUnit = element;
-
                 while (hasParent(compUnit) && notInstanceOfICompilationUnit(compUnit)) {
                     compUnit = compUnit.getParent();
                 }
-
                 resource = compUnit.getCorrespondingResource();
             } catch (JavaModelException e) {
                 e.printStackTrace();

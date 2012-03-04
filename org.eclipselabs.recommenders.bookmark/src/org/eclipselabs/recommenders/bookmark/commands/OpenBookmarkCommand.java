@@ -34,7 +34,6 @@ public class OpenBookmarkCommand implements IBookmarkModelCommand {
 
     @Override
     public void execute(BookmarkModel model) {
-
         @SuppressWarnings("rawtypes")
         Iterator iterator = selections.iterator();
         while (iterator.hasNext()) {

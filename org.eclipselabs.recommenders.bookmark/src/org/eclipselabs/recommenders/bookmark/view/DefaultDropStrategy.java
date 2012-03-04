@@ -56,22 +56,11 @@ public class DefaultDropStrategy implements IDropStrategy {
         if (event.data instanceof TreeSelection) {
             processTreeSelection(dropTarget, (TreeSelection) event.data, insertDropBeforeTarget);
         } else if (isWorkbenchInternalFileDrop(event)) {
-            IFile[] ifiles = createWorkbenchInternalIFiles((String[]) event.data);
-            List<TreePath> paths = Lists.newArrayList();
-            for (IFile file : ifiles) {
-                paths.add(new TreePath(new Object[] { file }));
-            }
-            TreeSelection sel = new TreeSelection(paths.toArray(new TreePath[0]));
-            processTreeSelection(dropTarget, sel, insertDropBeforeTarget);
-            return;
+            Object[] ifiles = createWorkbenchInternalIFiles((String[]) event.data);
+            processIFiles(ifiles, dropTarget, insertDropBeforeTarget);
         } else if (isExternalFileDrop(event)) {
-            IFile[] ifiles = createWorkbenchExternalIFiles((String[]) event.data);
-            List<TreePath> paths = Lists.newArrayList();
-            for (IFile file : ifiles) {
-                paths.add(new TreePath(new Object[] { new ExternalFile(file) }));
-            }
-            TreeSelection sel = new TreeSelection(paths.toArray(new TreePath[0]));
-            processTreeSelection(dropTarget, sel, insertDropBeforeTarget);
+            Object[] ifiles = createWorkbenchExternalIFiles((String[]) event.data);
+            processIFiles(ifiles, dropTarget, insertDropBeforeTarget);
         } else {
             ISelection selections = LocalSelectionTransfer.getTransfer().getSelection();
             if (selections instanceof IStructuredSelection) {
@@ -81,16 +70,26 @@ public class DefaultDropStrategy implements IDropStrategy {
         }
     }
 
-    private IFile[] createWorkbenchExternalIFiles(String[] data) {
-        List<IFile> files = Lists.newArrayList();
+    private void processIFiles(Object[] ifiles, Optional<IBookmarkModelComponent> dropTarget,
+            boolean insertDropBeforeTarget) {
+        List<TreePath> paths = Lists.newArrayList();
+        for (Object file : ifiles) {
+            paths.add(new TreePath(new Object[] { file }));
+        }
+        TreeSelection sel = new TreeSelection(paths.toArray(new TreePath[0]));
+        processTreeSelection(dropTarget, sel, insertDropBeforeTarget);
+    }
+
+    private Object[] createWorkbenchExternalIFiles(String[] data) {
+        List<ExternalFile> files = Lists.newArrayList();
         for (String abs : data) {
             IPath path = new Path(abs);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
             if (!isDirectory(file)) {
-                files.add(file);
+                files.add(new ExternalFile(file));
             }
         }
-        return files.toArray(new IFile[0]);
+        return files.toArray();
     }
 
     private boolean isDirectory(IFile ifile) {
@@ -115,7 +114,7 @@ public class DefaultDropStrategy implements IDropStrategy {
         return isResourceTransferSupported(event.dataTypes) && event.data instanceof String[];
     }
 
-    private IFile[] createWorkbenchInternalIFiles(String[] data) {
+    private Object[] createWorkbenchInternalIFiles(String[] data) {
         List<IFile> files = Lists.newArrayList();
         for (String s : data) {
             IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -123,8 +122,7 @@ public class DefaultDropStrategy implements IDropStrategy {
             IFile file = workspace.getRoot().getFileForLocation(location);
             files.add(file);
         }
-
-        return files.toArray(new IFile[0]);
+        return files.toArray();
     }
 
     private boolean isResourceTransferSupported(TransferData[] dataTypes) {
@@ -196,16 +194,7 @@ public class DefaultDropStrategy implements IDropStrategy {
     }
 
     private boolean hasEncapsulatedModelComponent(Object object) {
-
-        if (object instanceof TreeItem) {
-            if (((TreeItem) object).getData() instanceof IBookmarkModelComponent) {
-                return true;
-            }
-        } else {
-            return false;
-        }
-
-        return false;
+        return (object instanceof TreeItem) && (((TreeItem) object).getData() instanceof IBookmarkModelComponent);
     }
 
     private void processReorderingofNodes(IBookmarkModelComponent target, IBookmarkModelComponent[] components,
@@ -220,12 +209,10 @@ public class DefaultDropStrategy implements IDropStrategy {
                 return false;
             }
         }
-
         return true;
     }
 
     private boolean haveSameParent(IBookmarkModelComponent target, IBookmarkModelComponent bookmark) {
-
         return target.getParent() == bookmark.getParent();
     }
 
@@ -315,13 +302,13 @@ public class DefaultDropStrategy implements IDropStrategy {
 
     @Override
     public void performDropEnter(DropTargetEvent event) {
-        // will accept text but prefer to have files dropped
-        for (int i = 0; i < event.dataTypes.length; i++) {
-            if (FileTransfer.getInstance().isSupportedType(event.dataTypes[i])) {
-                event.currentDataType = event.dataTypes[i];
-                break;
-            }
-        }
+        // // will accept text but prefer to have files dropped
+        // for (int i = 0; i < event.dataTypes.length; i++) {
+        // if (FileTransfer.getInstance().isSupportedType(event.dataTypes[i])) {
+        // event.currentDataType = event.dataTypes[i];
+        // break;
+        // }
+        // }
     }
 
 }

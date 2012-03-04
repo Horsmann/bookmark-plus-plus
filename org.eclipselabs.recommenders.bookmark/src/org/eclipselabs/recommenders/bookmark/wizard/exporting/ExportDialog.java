@@ -8,21 +8,17 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipselabs.recommenders.bookmark.Activator;
 
-public class ExportDialog
-{
+public class ExportDialog {
 
-	public static File showDialog()
-	{
-		Shell shell = Display.getCurrent().getActiveShell();
-		FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
-		fileDialog.setFilterExtensions(new String[] { "*"
-				+ Activator.fileEnding });
-		String fileName = fileDialog.open();
-		if (fileName != null) {
-			return new File(fileName);
-		}
-
-		return null;
-	}
+    public static File showDialog() {
+        Shell shell = Display.getCurrent().getActiveShell();
+        FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
+        fileDialog.setFilterExtensions(new String[] { "*" + Activator.fileEnding });
+        String fileName = fileDialog.open();
+        if (fileName != null) {
+            return new File(fileName);
+        }
+        return null;
+    }
 
 }

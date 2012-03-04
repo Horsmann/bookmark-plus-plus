@@ -26,7 +26,6 @@ public class DeleteBookmarkAction extends Action implements SelfEnabling {
 
     @Override
     public void run() {
-
         IStructuredSelection selections = treeViewer.getSelections();
         @SuppressWarnings("rawtypes")
         Iterator iterator = selections.iterator();

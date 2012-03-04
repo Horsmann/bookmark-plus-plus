@@ -19,7 +19,7 @@ public class BookmarkModelCloner {
         for (Category cat : master.getCategories()) {
             Category newCategory = new Category(cat.getLabel());
             for (IBookmark bookmark : cat.getBookmarks()) {
-                IBookmark newBookmark = cloneRecursive(bookmark);
+                IBookmark newBookmark = cloneRecursively(bookmark);
                 newCategory.add(newBookmark);
             }
             cloned.add(newCategory);
@@ -28,7 +28,7 @@ public class BookmarkModelCloner {
         return cloned;
     }
 
-    private IBookmark cloneRecursive(IBookmark bookmark) {
+    private IBookmark cloneRecursively(IBookmark bookmark) {
 
         IBookmarkCloneVisitor visitor = new IBookmarkCloneVisitor();
         bookmark.accept(visitor);
@@ -37,11 +37,10 @@ public class BookmarkModelCloner {
         GetChildrenVisitor childrenVisitor = new GetChildrenVisitor();
         bookmark.accept(childrenVisitor);
         for (IBookmark child : childrenVisitor.getChildren()) {
-            IBookmark cloned = cloneRecursive(child);
+            IBookmark cloned = cloneRecursively(child);
             LinkClonedBookmarksVisitor linkVisitor = new LinkClonedBookmarksVisitor(newBookmark);
             cloned.accept(linkVisitor);
         }
-
         return newBookmark;
     }
 
