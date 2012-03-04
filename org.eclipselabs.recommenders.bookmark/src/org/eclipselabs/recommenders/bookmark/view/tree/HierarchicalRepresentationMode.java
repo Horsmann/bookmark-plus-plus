@@ -29,6 +29,7 @@ import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
 import org.eclipselabs.recommenders.bookmark.view.tree.ITreeExpansionVisitor.Action;
+import org.eclipselabs.recommenders.bookmark.visitor.IsResourceAvailableVisitor;
 
 import com.google.common.collect.Lists;
 
@@ -193,8 +194,21 @@ public class HierarchicalRepresentationMode implements IRepresentationMode {
             public void visit(FileBookmark fileBookmark) {
 
                 image = jelp.getImage(fileBookmark.getFile());
+                if (!fileBookmark.isInWorkspace()) {
+                    updateIconIfFileNotAvailable(fileBookmark);
+                }
                 if (!fileBookmark.isInferredNode()) {
                     decorateWithBookmarkImage();
+                }
+            }
+
+            private void updateIconIfFileNotAvailable(FileBookmark fileBookmark) {
+                IsResourceAvailableVisitor availVisitor = new IsResourceAvailableVisitor();
+                fileBookmark.accept(availVisitor);
+                if (!availVisitor.isAvailable()) {
+                    final AbstractUIPlugin plugin = Activator.getDefault();
+                    final ImageRegistry registry = plugin.getImageRegistry();
+                    image = registry.get(Activator.ICON_FILE_NOT_AVAILABLE);
                 }
             }
 

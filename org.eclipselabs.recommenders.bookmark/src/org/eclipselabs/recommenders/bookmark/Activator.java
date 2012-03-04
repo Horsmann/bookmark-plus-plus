@@ -43,6 +43,7 @@ public class Activator extends AbstractUIPlugin {
     public static final String ICON_RENAME_CATEGORY = "rename";
     public static final String ICON_SWITCH_FLAT_HIERARCHY = "toggleBetweenFlatAndTreeModus";
     public static final String ICON_SAVE = "save";
+    public static final String ICON_FILE_NOT_AVAILABLE = "fileNotAvailable";
 
     public static final String AUTOSAVE_FILE = "bookmarkModel" + fileEnding;
 
@@ -83,7 +84,7 @@ public class Activator extends AbstractUIPlugin {
         File stateFile = stateLocation.append(Activator.AUTOSAVE_FILE).toFile();
         return stateFile;
     }
-    
+
     public static File getLocationForStoringGUIState() {
         IPath stateLocation = Activator.getDefault().getStateLocation();
         File stateFile = stateLocation.append(Activator.GUISTATE).toFile();
@@ -116,40 +117,23 @@ public class Activator extends AbstractUIPlugin {
         super.initializeImageRegistry(registry);
         Bundle bundle = Platform.getBundle(PLUGIN_ID);
 
-        ImageDescriptor imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle,
-                new Path("icons/bkmrk_nav.gif"), null));
-        registry.put(ICON_CATEGORY, imgDesc);
+        String[][] icons = { { ICON_CATEGORY, "icons/bkmrk_nav.gif" },
+                { ICON_SINGLE_BOOKMARK, "icons/bookmark_obj.gif" },
+                { ICON_SINGLE_BOOKMARK_OVERLAY, "icons/bookmark_obj_ovl.gif" },
+                { ICON_SHOW_IN_EDITOR, "icons/read_obj.gif" }, { ICON_CLOSE_ALL_OPEN_EDITORS, "icons/clear_co.gif" },
+                { ICON_OPEN_IN_SYSTEM_EXPLORER, "icons/opentype.gif" }, { ICON_TOGGLE_VIEW, "icons/synced.gif" },
+                { ICON_DELETE, "icons/delete_obj.gif" }, { ICON_RENAME_CATEGORY, "icons/write_obj.gif" },
+                { ICON_SWITCH_FLAT_HIERARCHY, "icons/tree_explorer.gif" }, { ICON_SAVE, "icons/save_edit.gif" },
+                { ICON_FILE_NOT_AVAILABLE, "icons/errorwarning_tab.gif" } };
 
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/bookmark_obj.gif"), null));
-        registry.put(ICON_SINGLE_BOOKMARK, imgDesc);
+        registerIcons(bundle, registry, icons);
+    }
 
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/bookmark_obj_ovl.gif"), null));
-        registry.put(ICON_SINGLE_BOOKMARK_OVERLAY, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/read_obj.gif"), null));
-        registry.put(ICON_SHOW_IN_EDITOR, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/clear_co.gif"), null));
-        registry.put(ICON_CLOSE_ALL_OPEN_EDITORS, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/opentype.gif"), null));
-        registry.put(ICON_OPEN_IN_SYSTEM_EXPLORER, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/synced.gif"), null));
-        registry.put(ICON_TOGGLE_VIEW, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/delete_obj.gif"), null));
-        registry.put(ICON_DELETE, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/write_obj.gif"), null));
-        registry.put(ICON_RENAME_CATEGORY, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/tree_explorer.gif"), null));
-        registry.put(ICON_SWITCH_FLAT_HIERARCHY, imgDesc);
-
-        imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/save_edit.gif"), null));
-        registry.put(ICON_SAVE, imgDesc);
-
+    private void registerIcons(Bundle bundle, ImageRegistry registry, String[][] icons) {
+        for (String[] icon : icons) {
+            ImageDescriptor imgDesc = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path(icon[1]), null));
+            registry.put(icon[0], imgDesc);
+        }
     }
 
 }
