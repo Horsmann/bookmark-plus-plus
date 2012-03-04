@@ -30,6 +30,11 @@ public class ChangeBookmarksCommand implements IBookmarkModelCommand {
         this.isDropBeforeTarget = isDropBeforeTarget;
         this.newCategoryName = newCategoryName;
     }
+    
+    @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
+    }
 
     @Override
     public void execute(BookmarkModel model) {
@@ -106,9 +111,5 @@ public class ChangeBookmarksCommand implements IBookmarkModelCommand {
         }
     }
 
-    @Override
-    public void execute(BookmarkModel model, Category category) {
-        execute(model);
-    }
 
 }

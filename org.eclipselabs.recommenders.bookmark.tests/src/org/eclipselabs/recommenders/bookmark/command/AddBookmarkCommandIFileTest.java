@@ -10,6 +10,7 @@ import org.eclipselabs.recommenders.bookmark.commands.AddBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
+import org.eclipselabs.recommenders.bookmark.model.ExternalFile;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
@@ -24,9 +25,25 @@ public class AddBookmarkCommandIFileTest {
     BookmarkModel model;
     private Category category;
     String relativePath = "../LKJLD/testfile.txt";
+    String absolute = "/usr/local/dummy/testfile.txt";
 
     @Test
-    public void testInsertFile() {
+    public void testInsertWorkspaceExternalFile() {
+        insertExternalFileToModel();
+        assertEquals(2, model.getCategories().size());
+        assertEquals(absolute, ((FileBookmark) model.getCategories().get(1).getBookmarks().get(0)).getPath());
+    }
+
+    private void insertExternalFileToModel() {
+        IPath location = Path.fromOSString(absolute);
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
+        Optional<String> name = Optional.absent();
+        Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
+        invoker.invoke(new AddBookmarksCommand(new Object[] { new ExternalFile(file) }, invoker, true, dropTarget, name));
+    }
+
+    @Test
+    public void testInsertWorkspaceInternalFile() {
         insertFileToModel();
         FileBookmark target = getElementInModelAtTargetPosition();
         assertEquals(relativePath, FileBookmark.getPath(target.getFile(), target.isInWorkspace()));
@@ -37,7 +54,7 @@ public class AddBookmarkCommandIFileTest {
         insertFileToModel();
         insertFileToModel();
         FileBookmark target = getElementInModelAtTargetPosition();
-        assertEquals(relativePath,FileBookmark.getPath(target.getFile(), target.isInWorkspace()));
+        assertEquals(relativePath, FileBookmark.getPath(target.getFile(), target.isInWorkspace()));
         assertEquals(1, category.getBookmarks().size());
     }
 
