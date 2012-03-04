@@ -122,11 +122,11 @@ public class DeleteInferredBookmarksCommand implements IBookmarkModelCommand {
 
         @Override
         public void visit(Category category) {
-            if (category.getBookmarks().size() > 1) {
-                hasMoreThanOneChild = true;
-            } else {
-                hasMoreThanOneChild = false;
-            }
+//            if (category.getBookmarks().size() > 1) {
+//                hasMoreThanOneChild = true;
+//            } else {
+//                hasMoreThanOneChild = false;
+//            }
         }
 
         @Override
@@ -155,11 +155,11 @@ public class DeleteInferredBookmarksCommand implements IBookmarkModelCommand {
 
         @Override
         public void visit(Category category) {
-            if (category.getBookmarks().size() > 0) {
-                hasChildren = true;
-            } else {
-                hasChildren = false;
-            }
+//            if (category.getBookmarks().size() > 0) {
+//                hasChildren = true;
+//            } else {
+//                hasChildren = false;
+//            }
         }
 
         @Override
