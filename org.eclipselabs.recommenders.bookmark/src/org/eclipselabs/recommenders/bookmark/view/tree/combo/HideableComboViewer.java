@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
-import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableTreeViewer;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
 
 import com.google.common.base.Optional;
 
@@ -34,16 +34,16 @@ public class HideableComboViewer extends Composite {
     private Optional<Category> selected = Optional.absent();
     private String newCategoryName = "";
     private final BookmarkModel model;
-    private final RepresentationSwitchableTreeViewer treeViewer;
     private final ComboStrategySwapper strategyChanger;
     private boolean cachedIsVisible;
+    private final BookmarkView bookmarkView;
 
-    public HideableComboViewer(Composite parent, int style, BookmarkModel model,
-            RepresentationSwitchableTreeViewer treeViewer, ComboStrategySwapper strategyChanger) {
+    public HideableComboViewer(Composite parent, int style, BookmarkView bookmarkView,
+            ComboStrategySwapper strategyChanger) {
         super(parent, style);
         this.parent = parent;
-        this.model = model;
-        this.treeViewer = treeViewer;
+        this.bookmarkView = bookmarkView;
+        this.model = bookmarkView.getModel();
         this.strategyChanger = strategyChanger;
         setLayout();
         addCategoryIcon();
@@ -102,7 +102,7 @@ public class HideableComboViewer extends Composite {
 
     public void hide() {
         cachedIsVisible = false;
-        treeViewer.setInput(model);
+        bookmarkView.setContentForTreeViewer(model);
         strategyChanger.resetStrategies();
         setVisible(false);
         setLayoutData(new GridData(0, 0));
@@ -201,7 +201,7 @@ public class HideableComboViewer extends Composite {
 
             Category selectedCategory = model.getCategories().get(index);
             selected = Optional.of(selectedCategory);
-            treeViewer.setInput(selectedCategory);
+            bookmarkView.setContentForTreeViewer(selectedCategory);
             strategyChanger.update(selectedCategory);
             saveButton.setEnabled(false);
         }
@@ -223,7 +223,7 @@ public class HideableComboViewer extends Composite {
                 selectIndex(i);
             }
         }
-        treeViewer.setInput(category);
+        bookmarkView.setContentForTreeViewer(category);
     }
 
     private void setNewSelections(List<Category> categories) {
@@ -232,7 +232,7 @@ public class HideableComboViewer extends Composite {
             combo.add(category.getLabel());
         }
     }
-    
+
     public boolean isComboViewerVisible() {
         return cachedIsVisible;
     }

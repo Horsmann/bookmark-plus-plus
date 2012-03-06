@@ -98,7 +98,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         parent.setLayout(GridLayoutFactory.fillDefaults().create());
         loadModel();
         initGuiComponents(parent);
-        setModelForTreeViewer(model);
+        setContentForTreeViewer(model);
         configureTreeViewer(treeViewer, model, comboViewer);
         addCopyCutPasteFeatures(pasteHandler);
         enableActionsInToolbar(closeAllEditors, switchFlatHierarchical, categoryMode, addNewCategory);
@@ -114,17 +114,13 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         adapter.addPartListener(new ViewPartListener(this));
     }
 
-    public void setModelForTreeViewer(BookmarkModel model) {
-        setModel(model);
-    }
-
     void loadModel() {
         model = Activator.getModel();
     }
 
     private void initGuiComponents(Composite parent) {
         initTreeViewerWithDropAndPasteHandlingComponents(parent);
-        initHideableComboViewer(parent, model, treeViewer, dropListener, defaultDropStrategy, pasteHandler,
+        initHideableComboViewer(parent, treeViewer, dropListener, defaultDropStrategy, pasteHandler,
                 defaultPasteStrategy);
         initActions(treeViewer, model, comboViewer);
     }
@@ -178,9 +174,9 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         treeViewer.addSelectionChangedListener(selectionListener);
     }
 
-    private void initHideableComboViewer(Composite parent, BookmarkModel model,
-            RepresentationSwitchableTreeViewer treeViewer, BookmarkTreeDropListener dropListener,
-            IDropStrategy defaultDropStrategy, PasteHandler pasteHandler, IPasteStrategy defaultPasteStrategy) {
+    private void initHideableComboViewer(Composite parent, RepresentationSwitchableTreeViewer treeViewer,
+            BookmarkTreeDropListener dropListener, IDropStrategy defaultDropStrategy, PasteHandler pasteHandler,
+            IPasteStrategy defaultPasteStrategy) {
 
         MouseDropStrategyChanger mouseDropStrategy = new MouseDropStrategyChanger(dropListener, defaultDropStrategy,
                 this);
@@ -190,7 +186,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         comboStrategySwapper.register(mouseDropStrategy);
         comboStrategySwapper.register(pasteStrategy);
 
-        comboViewer = new HideableComboViewer(parent, SWT.NONE, model, treeViewer, comboStrategySwapper);
+        comboViewer = new HideableComboViewer(parent, SWT.NONE, this, comboStrategySwapper);
     }
 
     private void createContextActions(RepresentationSwitchableTreeViewer treeViewer, BookmarkModel model,
@@ -318,20 +314,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     }
 
-    private void setModel(final BookmarkModel model) {
-        if (this.model != model) {
-            this.model.removeAll();
-            for (Category category : model.getCategories()) {
-                this.model.add(category);
-            }
-        }
-        treeViewer.setInput(model);
-    }
-
-    @Override
-    public void setFocus() {
-    }
-
     @Override
     public void invoke(final IBookmarkModelCommand command) {
         Object input = treeViewer.getInput();
@@ -403,7 +385,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         this.memento = GuiStateIO.readGuiStateMementoFromFile(stateFile);
         init(site);
     }
-    
+
     public void resetGui() {
         Activator.getLocationForStoringGUIState().delete();
         if (!treeViewer.isDisposed()) {
@@ -451,17 +433,25 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         }
     }
 
-    public void setNewModelForTreeViewer(BookmarkModel newModel) {
+    public void setContentForTreeViewer(BookmarkModel newModel) {
+        updateModel(newModel);
         if (!treeViewer.isDisposed()) {
-            setModel(newModel);
-        } else {
-            if (model != newModel) {
-                model.removeAll();
-                for (Category category : newModel.getCategories()) {
-                    model.add(category);
-                }
+            treeViewer.setInput(newModel);
+        }
+
+    }
+
+    private void updateModel(BookmarkModel newModel) {
+        if (model != newModel) {
+            model.removeAll();
+            for (Category category : newModel.getCategories()) {
+                model.add(category);
             }
         }
+    }
+
+    public void setContentForTreeViewer(Category category) {
+        treeViewer.setInput(category);
     }
 
     private class TreeKeyListener implements KeyListener {
@@ -556,6 +546,10 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
                     .getActivePage(), commandInvoker));
         }
 
+    }
+
+    @Override
+    public void setFocus() {
     }
 
 }

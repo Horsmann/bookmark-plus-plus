@@ -107,7 +107,7 @@ public class Activator extends AbstractUIPlugin {
     public static void setNewModel(BookmarkModel newModel) {
         BookmarkIO.writeModel(getLocationForStoringBookmark(), newModel);
         if (bookmarkView != null) {
-            bookmarkView.setNewModelForTreeViewer(newModel);
+            bookmarkView.setContentForTreeViewer(newModel);
             bookmarkView.resetGui();
         } else {
             model.removeAll();

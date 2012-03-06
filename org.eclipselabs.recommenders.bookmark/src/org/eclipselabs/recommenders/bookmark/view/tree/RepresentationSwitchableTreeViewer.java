@@ -59,14 +59,7 @@ public class RepresentationSwitchableTreeViewer {
     }
 
     public void setInput(final BookmarkModel model) {
-        if (this.model == null) {
-            this.model = model;
-        } else if (this.model != model) {
-            this.model.removeAll();
-            for (Category category : model.getCategories()) {
-                this.model.add(category);
-            }
-        }
+        this.model = model;
         treeViewer.setInput(model);
         updateExpansions(model);
     }
