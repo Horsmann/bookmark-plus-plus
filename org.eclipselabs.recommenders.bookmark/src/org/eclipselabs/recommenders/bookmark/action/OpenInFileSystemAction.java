@@ -3,6 +3,7 @@ package org.eclipselabs.recommenders.bookmark.action;
 import java.io.File;
 import java.util.Iterator;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -98,13 +99,33 @@ public class OpenInFileSystemAction extends Action implements SelfEnabling {
 
         @Override
         public void visit(FileBookmark fileBookmark) {
-            IPath rawLocation = fileBookmark.getFile().getRawLocation();
-            if (rawLocation == null){
-                return;
+            if (fileBookmark.isInWorkspace()) {
+                file = getParentOfInternalFile(fileBookmark.getFile());
+            } else {
+                file = getParentOfExternalFile(fileBookmark.getFile());
             }
-            File targetFile = rawLocation.toFile();
-            File parent = targetFile.getParentFile();
-            file = Optional.of(parent);
+        }
+
+        private Optional<File> getParentOfExternalFile(IFile iFile) {
+            File bookmarkedFile = iFile.getFullPath().toFile();
+            File parent = bookmarkedFile.getParentFile();
+            if (parent != null) {
+                return Optional.of(parent);
+            }
+            return Optional.absent();
+        }
+
+        private Optional<File> getParentOfInternalFile(IFile iFile) {
+            IPath location = iFile.getRawLocation();
+            if (location == null) {
+                return Optional.absent();
+            }
+            File bookmarkedFile = location.toFile();
+            File parent = bookmarkedFile.getParentFile();
+            if (parent != null) {
+                return Optional.of(parent);
+            }
+            return Optional.absent();
         }
 
         @Override
