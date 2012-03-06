@@ -11,6 +11,8 @@ import org.eclipselabs.recommenders.bookmark.view.tree.RepresentationSwitchableT
 import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer;
 import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
 
+import com.google.common.base.Optional;
+
 public class GoToCategoryModeAction extends Action implements SelfEnabling {
 
     private final BookmarkModel model;
@@ -18,32 +20,39 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
     private final HideableComboViewer hideableComboViewer;
 
     public GoToCategoryModeAction(HideableComboViewer hideableComboViewer, BookmarkModel model,
-            RepresentationSwitchableTreeViewer representationSwitchableTreeViewer) {
+            RepresentationSwitchableTreeViewer treeViewer) {
         super("", AS_CHECK_BOX);
         this.hideableComboViewer = hideableComboViewer;
         this.model = model;
-        this.treeViewer = representationSwitchableTreeViewer;
+        this.treeViewer = treeViewer;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(Activator.ICON_TOGGLE_VIEW));
         this.setToolTipText("Switches between the hierarchical and the category mode");
-        this.setText("Go to Category");
     }
 
     @Override
     public void run() {
-
         if (model.getCategories().size() == 0) {
             return;
         }
-
         if (hideableComboViewer.isVisible()) {
-            this.setChecked(false);
-            hideableComboViewer.hide();
-            setSelection();
+            hide();
         } else {
-            this.setChecked(true);
-            Category category = getActivatedCategory();
-            hideableComboViewer.show(category);
+            show();
         }
+    }
+
+    private void show() {
+        this.setChecked(true);
+        Optional<Category> category = getActivatedCategory();
+        if (category.isPresent()) {
+            hideableComboViewer.show(category.get());
+        }
+    }
+
+    private void hide() {
+        this.setChecked(false);
+        hideableComboViewer.hide();
+        setSelection();
     }
 
     private void setSelection() {
@@ -55,36 +64,55 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
         treeViewer.selectComponent(selection);
     }
 
-    private Category getActivatedCategory() {
+    private Optional<Category> getActivatedCategory() {
         IBookmarkModelComponent component = getCategoryAccordingToSelection();
+        if (isCategory(component)) {
+            return Optional.of((Category) component);
+        }
+        return Optional.absent();
+    }
+
+    private boolean isCategory(IBookmarkModelComponent component) {
         IsCategoryVisitor visitor = new IsCategoryVisitor();
         component.accept(visitor);
-        if (visitor.isCategory()) {
-            return (Category) component;
-        }
-        return null;
+        return visitor.isCategory();
     }
 
     private IBookmarkModelComponent getCategoryAccordingToSelection() {
         IStructuredSelection selections = treeViewer.getSelections();
-        IBookmarkModelComponent component = null;
-        if (selections.isEmpty()) {
-            component = model.getCategories().get(0);
-        } else {
-            component = (IBookmarkModelComponent) selections.getFirstElement();
-        }
+        IBookmarkModelComponent component = getSelectedComponent(selections);
+        return getHighestElementInHierarchy(component);
+    }
+
+    private IBookmarkModelComponent getHighestElementInHierarchy(IBookmarkModelComponent component) {
         while (component.hasParent()) {
             component = component.getParent();
         }
         return component;
     }
 
+    private IBookmarkModelComponent getSelectedComponent(IStructuredSelection selections) {
+        if (selections.isEmpty()) {
+            return model.getCategories().get(0);
+        } else {
+            return (IBookmarkModelComponent) selections.getFirstElement();
+        }
+    }
+
     @Override
     public void updateEnableStatus() {
-        if (model.getCategories().isEmpty() || hideableComboViewer.isVisible()) {
-            setEnabled(false);
-        } else {
+
+        if (hideableComboViewer.isVisible()) {
             setEnabled(true);
+            this.setText("Leave Category");
+        } else {
+            if (model.getCategories().isEmpty()) {
+                setEnabled(false);
+                this.setText("Not Available");
+            } else {
+                setEnabled(true);
+                this.setText("Go to Category");
+            }
         }
     }
 

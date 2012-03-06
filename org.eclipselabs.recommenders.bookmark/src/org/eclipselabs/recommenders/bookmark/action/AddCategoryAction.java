@@ -8,11 +8,11 @@ import org.eclipselabs.recommenders.bookmark.view.tree.combo.HideableComboViewer
 
 public class AddCategoryAction extends Action{
     
-    private final BookmarkCommandInvoker invoker;
+    private final BookmarkCommandInvoker commandInvoker;
     private final HideableComboViewer hideableComboViewer;
 
-    public AddCategoryAction(BookmarkCommandInvoker invoker, HideableComboViewer hideableComboViewer) {
-        this.invoker = invoker;
+    public AddCategoryAction(BookmarkCommandInvoker commandInvoker, HideableComboViewer hideableComboViewer) {
+        this.commandInvoker = commandInvoker;
         this.hideableComboViewer = hideableComboViewer;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry()
                 .getDescriptor(Activator.ICON_CATEGORY));
@@ -22,6 +22,6 @@ public class AddCategoryAction extends Action{
 
     @Override
     public void run() {
-        invoker.invoke(new AddCategoryCommand(hideableComboViewer));
+        commandInvoker.invoke(new AddCategoryCommand(hideableComboViewer));
     }
 }

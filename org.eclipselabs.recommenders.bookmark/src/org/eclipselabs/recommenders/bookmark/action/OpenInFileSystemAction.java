@@ -145,22 +145,29 @@ public class OpenInFileSystemAction extends Action implements SelfEnabling {
         }
 
         private IResource getResource(IJavaElement element) {
-            IResource resource = null;
+            IResource resource = getElementsResource(element);
+            if (resource != null) {
+                return resource;
+            }
+            IJavaElement compUnit = getCompilationUnit(element);
+            resource = getElementsResource(compUnit);
+            return resource;
+        }
+
+        private IResource getElementsResource(IJavaElement element) {
             try {
-                resource = element.getCorrespondingResource();
-                if (resource != null) {
-                    return resource;
-                }
-                IJavaElement compUnit = element;
-                while (hasParent(compUnit) && notInstanceOfICompilationUnit(compUnit)) {
-                    compUnit = compUnit.getParent();
-                }
-                resource = compUnit.getCorrespondingResource();
+                return element.getCorrespondingResource();
             } catch (JavaModelException e) {
                 e.printStackTrace();
             }
+            return null;
+        }
 
-            return resource;
+        private IJavaElement getCompilationUnit(IJavaElement element) {
+            while (hasParent(element) && notInstanceOfICompilationUnit(element)) {
+                element = element.getParent();
+            }
+            return element;
         }
 
         private boolean notInstanceOfICompilationUnit(IJavaElement ele) {

@@ -84,7 +84,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private OpenInFileSystemAction openInFileSystem;
     private DeleteBookmarkAction deleteBookmarks;
     private HideableComboViewer comboViewer;
-    private GoToCategoryModeAction switchCategory;
+    // private GoToCategoryModeAction switchCategory;
     private SwitchInferredStateAction switchInferred;
     private BookmarkTreeDropListener dropListener;
     private DefaultDropStrategy defaultDropStrategy;
@@ -121,16 +121,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     void loadModel() {
         model = Activator.getModel();
-        // if (model == null) {
-        // model = Activator.getModel();
-        // } else {
-        // if (model != Activator.getModel()) {
-        // model.removeAll();
-        // for (Category category : Activator.getModel().getCategories()) {
-        // model.add(category);
-        // }
-        // }
-        // }
     }
 
     private void initGuiComponents(Composite parent) {
@@ -184,7 +174,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         selectionListener.register(openInEditor);
         selectionListener.register(openInFileSystem);
         selectionListener.register(deleteBookmarks);
-        selectionListener.register(switchCategory);
+        selectionListener.register(categoryMode);
         selectionListener.register(switchInferred);
         treeViewer.addSelectionChangedListener(selectionListener);
     }
@@ -210,9 +200,10 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         openInEditor = new OpenBookmarkAction(treeViewer, this, this);
         openInFileSystem = new OpenInFileSystemAction(treeViewer);
         deleteBookmarks = new DeleteBookmarkAction(treeViewer, this);
-        switchCategory = new GoToCategoryModeAction(hideableComboViewer, model, treeViewer);
+        // switchCategory = new GoToCategoryModeAction(hideableComboViewer,
+        // model, treeViewer);
         switchInferred = new SwitchInferredStateAction(treeViewer, this);
-        addContextMenu(treeViewer, renameCategory, openInEditor, openInFileSystem, deleteBookmarks, switchCategory,
+        addContextMenu(treeViewer, renameCategory, openInEditor, openInFileSystem, deleteBookmarks, categoryMode,
                 switchInferred);
     }
 
@@ -565,7 +556,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         if (!treeViewer.isDisposed()) {
             treeViewer.setRepresentation(new HierarchicalRepresentationMode());
             comboViewer.hide();
-            switchCategory.setChecked(false);
+            categoryMode.setChecked(false);
             switchFlatHierarchical.setChecked(false);
         }
     }

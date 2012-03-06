@@ -7,10 +7,10 @@ import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 
 public class CloseAllEditorWindowsAction extends Action {
 
-    private final BookmarkCommandInvoker invoker;
+    private final BookmarkCommandInvoker commandInvoker;
 
-    public CloseAllEditorWindowsAction(BookmarkCommandInvoker invoker) {
-        this.invoker = invoker;
+    public CloseAllEditorWindowsAction(BookmarkCommandInvoker commandInvoker) {
+        this.commandInvoker = commandInvoker;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry()
                 .getDescriptor(Activator.ICON_CLOSE_ALL_OPEN_EDITORS));
         this.setToolTipText("Closes all currently opened editor windows");
@@ -19,7 +19,7 @@ public class CloseAllEditorWindowsAction extends Action {
 
     @Override
     public void run() {
-        invoker.invoke(new CloseAllOpenEditorsCommand());
+        commandInvoker.invoke(new CloseAllOpenEditorsCommand());
     }
 
 }

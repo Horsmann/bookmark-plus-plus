@@ -46,27 +46,37 @@ public class SwitchInferredStateAction extends Action implements SelfEnabling {
         setEnabled(false);
 
         if (treeViewer.getSelections().size() == 1) {
-            IBookmarkModelComponent component = (IBookmarkModelComponent) treeViewer.getSelections().getFirstElement();
-            IsCategoryVisitor isCatVisitor = new IsCategoryVisitor();
-            component.accept(isCatVisitor);
-            if (!isCatVisitor.isCategory()) {
-                setEnabled(true);
-                setTextAccordingToCurrentState(component);
-            }
+            updateForSingleSelection();
         } else if (treeViewer.getSelections().size() >= 2) {
-            @SuppressWarnings("rawtypes")
-            Iterator iterator = treeViewer.getSelections().iterator();
-            while (iterator.hasNext()) {
-                IBookmarkModelComponent component = (IBookmarkModelComponent) iterator.next();
-                IsCategoryVisitor visitor = new IsCategoryVisitor();
-                component.accept(visitor);
-                if (!visitor.isCategory()) {
-                    setEnabled(true);
-                    break;
-                }
-            }
+            updateForMultiSelection();
         }
 
+    }
+
+    private void updateForMultiSelection() {
+        @SuppressWarnings("rawtypes")
+        Iterator iterator = treeViewer.getSelections().iterator();
+        while (iterator.hasNext()) {
+            IBookmarkModelComponent component = (IBookmarkModelComponent) iterator.next();
+            if (!isCategory(component)) {
+                setEnabled(true);
+                break;
+            }
+        }
+    }
+
+    private void updateForSingleSelection() {
+        IBookmarkModelComponent component = (IBookmarkModelComponent) treeViewer.getSelections().getFirstElement();
+        if (!isCategory(component)) {
+            setEnabled(true);
+            setTextAccordingToCurrentState(component);
+        }
+    }
+
+    private boolean isCategory(IBookmarkModelComponent component) {
+        IsCategoryVisitor isCatVisitor = new IsCategoryVisitor();
+        component.accept(isCatVisitor);
+        return isCatVisitor.isCategory();
     }
 
     private void setTextAccordingToCurrentState(IBookmarkModelComponent component) {
