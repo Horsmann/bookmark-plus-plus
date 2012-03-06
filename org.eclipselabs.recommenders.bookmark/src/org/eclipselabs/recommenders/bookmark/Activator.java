@@ -111,8 +111,8 @@ public class Activator extends AbstractUIPlugin {
             bookmarkView.resetGui();
         } else {
             model.removeAll();
-            for (Category cat : newModel.getCategories()) {
-                model.add(cat);
+            for (Category category : newModel.getCategories()) {
+                model.add(category);
             }
         }
     }

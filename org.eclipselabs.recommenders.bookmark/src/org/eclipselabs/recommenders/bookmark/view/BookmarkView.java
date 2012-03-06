@@ -120,16 +120,17 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     void loadModel() {
-        if (model == null) {
-            model = Activator.getModel();
-        } else {
-            if (model != Activator.getModel()) {
-                model.removeAll();
-                for (Category category : Activator.getModel().getCategories()) {
-                    model.add(category);
-                }
-            }
-        }
+        model = Activator.getModel();
+        // if (model == null) {
+        // model = Activator.getModel();
+        // } else {
+        // if (model != Activator.getModel()) {
+        // model.removeAll();
+        // for (Category category : Activator.getModel().getCategories()) {
+        // model.add(category);
+        // }
+        // }
+        // }
     }
 
     private void initGuiComponents(Composite parent) {
@@ -484,7 +485,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
             } else if (isEnter(e)) {
                 processEnter(e);
             }
-
             treeViewer.refresh();
         }
 
@@ -561,13 +561,12 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     public void resetGui() {
+        Activator.getLocationForStoringGUIState().delete();
         if (!treeViewer.isDisposed()) {
             treeViewer.setRepresentation(new HierarchicalRepresentationMode());
             comboViewer.hide();
             switchCategory.setChecked(false);
             switchFlatHierarchical.setChecked(false);
-        } else {
-            Activator.getLocationForStoringGUIState().delete();
         }
     }
 
