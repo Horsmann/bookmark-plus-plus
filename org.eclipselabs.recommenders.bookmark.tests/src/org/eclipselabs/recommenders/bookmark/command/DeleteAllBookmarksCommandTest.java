@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class DeleteAllBookmarksCommandTest {
-    private BookmarkCommandInvoker invoker;
+    private BookmarkCommandInvoker commandInvoker;
     private BookmarkModel model;
     private Category category;
     private JavaElementBookmark compUnit;
@@ -27,7 +27,7 @@ public class DeleteAllBookmarksCommandTest {
     
     @Test
     public void testeDeleteAll() {
-        invoker.invoke(new DeleteAllBookmarksCommand());
+        commandInvoker.invoke(new DeleteAllBookmarksCommand());
         assertEquals(0, model.getCategories().size());
     }
 
@@ -38,7 +38,7 @@ public class DeleteAllBookmarksCommandTest {
     }
 
     private void buildCommandInvoker() {
-        invoker = new BookmarkCommandInvoker() {
+        commandInvoker = new BookmarkCommandInvoker() {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {

@@ -20,7 +20,7 @@ import org.junit.Test;
 
 public class DeleteInferredBookmarksCommandTest {
 
-    private BookmarkCommandInvoker invoker;
+    private BookmarkCommandInvoker commandInvoker;
     private BookmarkModel model;
     private Category category;
     private FileBookmark fileBookmarkA;
@@ -32,7 +32,7 @@ public class DeleteInferredBookmarksCommandTest {
     @Test
     public void testDeletionWithBookmarkedNodesAsChildren() {
         compUnitA.setInferred(true);
-        invoker.invoke(new DeleteInferredBookmarksCommand(compUnitA));
+        commandInvoker.invoke(new DeleteInferredBookmarksCommand(compUnitA));
         assertEquals(varMon, ((JavaElementBookmark) model.getCategories().get(0).getBookmarks().get(0))
                 .getChildElements().get(0).getChildElements().get(0));
     }
@@ -53,8 +53,8 @@ public class DeleteInferredBookmarksCommandTest {
     }
 
     private void deleteTheBookmarkedElementAndTriggerRecursiveDeletion() {
-        invoker.invoke(new DeleteSingleBookmarkCommand(varMon));
-        invoker.invoke(new DeleteInferredBookmarksCommand(type));
+        commandInvoker.invoke(new DeleteSingleBookmarkCommand(varMon, commandInvoker));
+        commandInvoker.invoke(new DeleteInferredBookmarksCommand(type));
     }
 
     @Before
@@ -64,7 +64,7 @@ public class DeleteInferredBookmarksCommandTest {
     }
 
     private void buildCommandInvoker() {
-        invoker = new BookmarkCommandInvoker() {
+        commandInvoker = new BookmarkCommandInvoker() {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {

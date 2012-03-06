@@ -24,7 +24,7 @@ public class RelocateBookmarksCommandTest {
     private JavaElementBookmark varMon;
     private JavaElementBookmark varWed;
     private JavaElementBookmark varSat;
-    private BookmarkCommandInvoker invoker;
+    private BookmarkCommandInvoker commandInvoker;
     private JavaElementBookmark type;
     private JavaElementBookmark varTue;
     private JavaElementBookmark varThu;
@@ -39,7 +39,7 @@ public class RelocateBookmarksCommandTest {
 
     @Test
     public void testMoveFileBbeforeCompilationUnitC() {
-        invoker.invoke(new ReorderBookmarksCommand(compUnitC, new IBookmarkModelComponent[] { fileBookmarkB }, true));
+        commandInvoker.invoke(new ReorderBookmarksCommand(compUnitC, new IBookmarkModelComponent[] { fileBookmarkB }, true));
         assertEquals(compUnitA, category.getBookmarks().get(0));
         assertEquals(compUnitB, category.getBookmarks().get(1));
         assertEquals(fileBookmarkB, category.getBookmarks().get(2));
@@ -49,7 +49,7 @@ public class RelocateBookmarksCommandTest {
 
     @Test
     public void testMoveCompilationUnitBandCbeforeCompilationUnitA() {
-        invoker.invoke(new ReorderBookmarksCommand(compUnitA, new IBookmarkModelComponent[] { compUnitB, compUnitC },
+        commandInvoker.invoke(new ReorderBookmarksCommand(compUnitA, new IBookmarkModelComponent[] { compUnitB, compUnitC },
                 true));
         assertEquals(compUnitB, category.getBookmarks().get(0));
         assertEquals(compUnitC, category.getBookmarks().get(1));
@@ -58,7 +58,7 @@ public class RelocateBookmarksCommandTest {
 
     @Test
     public void testMoveMondayWednesdayBehindSaturday() {
-        invoker.invoke(new ReorderBookmarksCommand(varSat, new IBookmarkModelComponent[] { varMon, varWed }, false));
+        commandInvoker.invoke(new ReorderBookmarksCommand(varSat, new IBookmarkModelComponent[] { varMon, varWed }, false));
         assertEquals(type.getChildElements().get(0), varTue);
         assertEquals(type.getChildElements().get(1), varThu);
         assertEquals(type.getChildElements().get(2), varFri);
@@ -70,7 +70,7 @@ public class RelocateBookmarksCommandTest {
 
     @Test
     public void testIfAllBookmarksOfALevelAreSelected() {
-        invoker.invoke(new ReorderBookmarksCommand(varWed, new IBookmarkModelComponent[] { varMon, varTue, varWed,
+        commandInvoker.invoke(new ReorderBookmarksCommand(varWed, new IBookmarkModelComponent[] { varMon, varTue, varWed,
                 varThu, varFri, varSat, varSun }, true));
         assertEquals(type.getChildElements().get(0), varMon);
         assertEquals(type.getChildElements().get(1), varTue);
@@ -88,7 +88,7 @@ public class RelocateBookmarksCommandTest {
     }
 
     private void buildCommandInvoker() {
-        invoker = new BookmarkCommandInvoker() {
+        commandInvoker = new BookmarkCommandInvoker() {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {

@@ -11,18 +11,24 @@ import org.eclipselabs.recommenders.bookmark.visitor.RemoveBookmarkModelComponen
 public class DeleteSingleBookmarkCommand implements IBookmarkModelCommand {
 
     private final IBookmarkModelComponent component;
-    private final BookmarkCommandInvoker invoker;
+    private final BookmarkCommandInvoker commandInvoker;
 
     public DeleteSingleBookmarkCommand(IBookmarkModelComponent component, BookmarkCommandInvoker invoker) {
         this.component = component;
-        this.invoker = invoker;
+        this.commandInvoker = invoker;
     }
 
     @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
+    }
+    
+    @Override
     public void execute(BookmarkModel model) {
+        IBookmarkModelComponent parent = component.getParent();
         deletionForCategories(component, model);
         deletionForIBookmarks(component, model);
-        deleteInferred(component.getParent());
+        deleteInferred(parent);
     }
 
     private void deleteInferred(IBookmarkModelComponent parent) {
@@ -32,14 +38,10 @@ public class DeleteSingleBookmarkCommand implements IBookmarkModelCommand {
         IsIBookmarkVisitor visitor = new IsIBookmarkVisitor();
         parent.accept(visitor);
         if (visitor.isIBookmark()) {
-            invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) component));
+            commandInvoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
         }
     }
 
-    @Override
-    public void execute(BookmarkModel model, Category category) {
-        execute(model);
-    }
 
     private void deletionForIBookmarks(IBookmarkModelComponent component, BookmarkModel model) {
         RemoveBookmarkModelComponentVisitor visitor = new RemoveBookmarkModelComponentVisitor(component);

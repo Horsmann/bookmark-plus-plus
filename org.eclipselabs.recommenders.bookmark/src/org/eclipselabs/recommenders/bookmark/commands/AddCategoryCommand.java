@@ -13,6 +13,11 @@ public class AddCategoryCommand implements IBookmarkModelCommand {
     }
 
     @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
+    }
+    
+    @Override
     public void execute(BookmarkModel model) {
         Category category = new Category("New Category");
         model.add(category);
@@ -23,11 +28,6 @@ public class AddCategoryCommand implements IBookmarkModelCommand {
         if (hideableComboViewer.isVisible()) {
             hideableComboViewer.show(category);
         }
-    }
-
-    @Override
-    public void execute(BookmarkModel model, Category category) {
-        execute(model);
     }
 
 }

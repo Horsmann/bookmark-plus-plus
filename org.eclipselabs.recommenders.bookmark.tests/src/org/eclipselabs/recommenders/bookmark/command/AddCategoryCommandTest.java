@@ -17,12 +17,12 @@ public class AddCategoryCommandTest {
     private BookmarkModel model;
     private Category categoryB;
     private Category categoryA;
-    private BookmarkCommandInvoker invoker;
+    private BookmarkCommandInvoker commandInvoker;
     private HideableComboViewer combo;
 
     @Test
     public void testAddCategory() {
-        invoker.invoke(new AddCategoryCommand(combo));
+        commandInvoker.invoke(new AddCategoryCommand(combo));
         assertEquals(3, model.getCategories().size());
         assertEquals(categoryA, model.getCategories().get(0));
         assertEquals(categoryB, model.getCategories().get(1));
@@ -41,7 +41,7 @@ public class AddCategoryCommandTest {
     }
 
     private void buildInvoker() {
-        invoker = new BookmarkCommandInvoker() {
+        commandInvoker = new BookmarkCommandInvoker() {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {

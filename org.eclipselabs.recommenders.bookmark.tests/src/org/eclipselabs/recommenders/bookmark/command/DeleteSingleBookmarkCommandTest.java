@@ -17,18 +17,18 @@ public class DeleteSingleBookmarkCommandTest {
     private Category categoryB;
     private Category categoryA;
     private JavaElementBookmark compilationUnit;
-    private BookmarkCommandInvoker invoker;
+    private BookmarkCommandInvoker commandInvoker;
 
     @Test
     public void testDeleltionOfCategory() {
-        invoker.invoke(new DeleteSingleBookmarkCommand(categoryB));
+        commandInvoker.invoke(new DeleteSingleBookmarkCommand(categoryB, commandInvoker));
         assertEquals(1, model.getCategories().size());
         assertEquals(categoryA, model.getCategories().get(0));
     }
 
     @Test
     public void testDeleltionOfBookmark() {
-        invoker.invoke(new DeleteSingleBookmarkCommand(compilationUnit));
+        commandInvoker.invoke(new DeleteSingleBookmarkCommand(compilationUnit, commandInvoker));
         assertEquals(2, model.getCategories().size());
         assertEquals(categoryA, model.getCategories().get(0));
         assertEquals(0, model.getCategories().get(0).getBookmarks().size());
@@ -42,7 +42,7 @@ public class DeleteSingleBookmarkCommandTest {
     }
 
     private void buildInvoker() {
-        invoker = new BookmarkCommandInvoker() {
+        commandInvoker = new BookmarkCommandInvoker() {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {

@@ -19,7 +19,7 @@ import com.google.common.base.Optional;
 
 public class AddBookmarkCommandIJavaElementTest {
 
-    BookmarkCommandInvoker invoker;
+    BookmarkCommandInvoker commandInvoker;
     JavaElementBookmark dropTarget;
     BookmarkModel model;
 
@@ -45,7 +45,7 @@ public class AddBookmarkCommandIJavaElementTest {
             name = Optional.of(categoryName);
         }
         Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
-        invoker.invoke(new AddBookmarksCommand(new Object[] { javaElement }, invoker, true, dropTarget, name));
+        commandInvoker.invoke(new AddBookmarksCommand(new Object[] { javaElement }, commandInvoker, true, dropTarget, name));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class AddBookmarkCommandIJavaElementTest {
     private void insertElementToModel(String handleId) {
         IJavaElement javaElement = JavaCore.create(handleId);
         Optional<String> name = Optional.absent();
-        invoker.invoke(new AddBookmarksCommand(new Object[] { javaElement }, invoker, true, Optional
+        commandInvoker.invoke(new AddBookmarksCommand(new Object[] { javaElement }, commandInvoker, true, Optional
                 .of((IBookmarkModelComponent) dropTarget), name));
     }
 
@@ -99,7 +99,7 @@ public class AddBookmarkCommandIJavaElementTest {
     }
 
     private void initCommandInvoker() {
-        invoker = new BookmarkCommandInvoker() {
+        commandInvoker = new BookmarkCommandInvoker() {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {

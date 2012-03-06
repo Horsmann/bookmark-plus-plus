@@ -9,6 +9,11 @@ import org.eclipselabs.recommenders.bookmark.model.Category;
 public class CloseAllOpenEditorsCommand implements IBookmarkModelCommand {
 
     @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
+    }
+
+    @Override
     public void execute(BookmarkModel model) {
         PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
@@ -20,8 +25,4 @@ public class CloseAllOpenEditorsCommand implements IBookmarkModelCommand {
         }
     }
 
-    @Override
-    public void execute(BookmarkModel model, Category category) {
-        execute(model);
-    }
 }

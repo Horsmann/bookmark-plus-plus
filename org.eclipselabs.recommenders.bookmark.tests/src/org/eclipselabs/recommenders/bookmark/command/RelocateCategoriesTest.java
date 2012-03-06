@@ -15,7 +15,7 @@ import org.junit.Test;
 public class RelocateCategoriesTest {
 
     private BookmarkModel model;
-    private BookmarkCommandInvoker invoker;
+    private BookmarkCommandInvoker commandInvoker;
     private JavaElementBookmark compUnitA;
     private JavaElementBookmark compUnitB;
     private JavaElementBookmark compUnitC;
@@ -32,7 +32,7 @@ public class RelocateCategoriesTest {
     }
 
     private void moveCompUnitAafterCompuUnitC() {
-        invoker.invoke(new ReorderBookmarksCommand(categoryC, new IBookmarkModelComponent[] { categoryA }, false));
+        commandInvoker.invoke(new ReorderBookmarksCommand(categoryC, new IBookmarkModelComponent[] { categoryA }, false));
     }
 
     @Before
@@ -42,7 +42,7 @@ public class RelocateCategoriesTest {
     }
 
     private void buildCommandInvoker() {
-        invoker = new BookmarkCommandInvoker() {
+        commandInvoker = new BookmarkCommandInvoker() {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {

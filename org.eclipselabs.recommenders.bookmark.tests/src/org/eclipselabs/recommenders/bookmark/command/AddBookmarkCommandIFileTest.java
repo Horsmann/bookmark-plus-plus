@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 
 public class AddBookmarkCommandIFileTest {
 
-    BookmarkCommandInvoker invoker;
+    BookmarkCommandInvoker commandInvoker;
     BookmarkModel model;
     private Category category;
     String relativePath = "../LKJLD/testfile.txt";
@@ -39,7 +39,7 @@ public class AddBookmarkCommandIFileTest {
         IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
         Optional<String> name = Optional.absent();
         Optional<IBookmarkModelComponent> dropTarget = Optional.absent();
-        invoker.invoke(new AddBookmarksCommand(new Object[] { new ExternalFile(file) }, invoker, true, dropTarget, name));
+        commandInvoker.invoke(new AddBookmarksCommand(new Object[] { new ExternalFile(file) }, commandInvoker, true, dropTarget, name));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class AddBookmarkCommandIFileTest {
         IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(location);
         Optional<String> name = Optional.absent();
         Optional<IBookmarkModelComponent> dropTarget = Optional.of((IBookmarkModelComponent) category);
-        invoker.invoke(new AddBookmarksCommand(new Object[] { file }, invoker, true, dropTarget, name));
+        commandInvoker.invoke(new AddBookmarksCommand(new Object[] { file }, commandInvoker, true, dropTarget, name));
     }
 
     @Before
@@ -79,7 +79,7 @@ public class AddBookmarkCommandIFileTest {
     }
 
     private void initCommandInvoker() {
-        invoker = new BookmarkCommandInvoker() {
+        commandInvoker = new BookmarkCommandInvoker() {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {

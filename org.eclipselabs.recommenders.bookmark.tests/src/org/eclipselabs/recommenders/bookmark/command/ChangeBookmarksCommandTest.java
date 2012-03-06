@@ -24,7 +24,7 @@ public class ChangeBookmarksCommandTest {
     private JavaElementBookmark compUnitB2;
     private JavaElementBookmark compUnitB3;
     private BookmarkModel model;
-    private BookmarkCommandInvoker invoker;
+    private BookmarkCommandInvoker commandInvoker;
     private JavaElementBookmark typeA11;
 
     @Test
@@ -39,7 +39,7 @@ public class ChangeBookmarksCommandTest {
     private void moveTypeOfCompilationUnitA1ToCategoryB() {
         Optional<IBookmarkModelComponent> dropTarget = Optional.of((IBookmarkModelComponent) categoryB);
         Optional<String> categoryName = Optional.absent();
-        invoker.invoke(new ChangeBookmarksCommand(new IBookmarkModelComponent[] { typeA11 }, false, invoker, true,
+        commandInvoker.invoke(new ChangeBookmarksCommand(new IBookmarkModelComponent[] { typeA11 }, false, commandInvoker, true,
                 dropTarget, categoryName));
     }
 
@@ -53,7 +53,7 @@ public class ChangeBookmarksCommandTest {
     private void copyCompilationUnitA2ToCategoryB() {
         Optional<IBookmarkModelComponent> dropTarget = Optional.of((IBookmarkModelComponent) categoryB);
         Optional<String> categoryName = Optional.absent();
-        invoker.invoke(new ChangeBookmarksCommand(new IBookmarkModelComponent[] { compUnitA2 }, true, invoker, false,
+        commandInvoker.invoke(new ChangeBookmarksCommand(new IBookmarkModelComponent[] { compUnitA2 }, true, commandInvoker, false,
                 dropTarget, categoryName));
     }
 
@@ -68,8 +68,8 @@ public class ChangeBookmarksCommandTest {
     private void executeAbortingCommand() {
         Optional<IBookmarkModelComponent> dropTarget = Optional.of((IBookmarkModelComponent) compUnitB3);
         Optional<String> categoryName = Optional.absent();
-        invoker.invoke(new ChangeBookmarksCommand(new IBookmarkModelComponent[] { compUnitB1, compUnitB2 }, true,
-                invoker, false, dropTarget, categoryName));
+        commandInvoker.invoke(new ChangeBookmarksCommand(new IBookmarkModelComponent[] { compUnitB1, compUnitB2 }, true,
+                commandInvoker, false, dropTarget, categoryName));
     }
 
     @Before
@@ -79,7 +79,7 @@ public class ChangeBookmarksCommandTest {
     }
 
     private void buildInvoker() {
-        invoker = new BookmarkCommandInvoker() {
+        commandInvoker = new BookmarkCommandInvoker() {
 
             @Override
             public void invoke(IBookmarkModelCommand command) {

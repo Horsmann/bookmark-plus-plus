@@ -39,11 +39,6 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
         this.isDropBeforeTarget = isDropBeforeTarget;
     }
 
-    @Override
-    public void execute(final BookmarkModel model) {
-        Category category = findCategory();
-        execute(model, category);
-    }
 
     @Override
     public void execute(BookmarkModel model, Category category) {
@@ -76,6 +71,12 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
             addCategoryToModel();
             sortInIfDropAndTargetShareSameParent(createdElements);
         }
+    }
+    
+    @Override
+    public void execute(final BookmarkModel model) {
+        Category category = findCategory();
+        execute(model, category);
     }
 
     private Optional<FileBookmark> processExternalFile(IFile file) {

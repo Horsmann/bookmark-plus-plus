@@ -20,6 +20,12 @@ public class RenameCategoryCommand implements IBookmarkModelCommand {
     public RenameCategoryCommand(RepresentationSwitchableTreeViewer treeViewer) {
         this.treeViewer = treeViewer;
     }
+    
+
+    @Override
+    public void execute(BookmarkModel model, Category category) {
+        execute(model);
+    }
 
     @Override
     public void execute(BookmarkModel model) {
@@ -97,11 +103,6 @@ public class RenameCategoryCommand implements IBookmarkModelCommand {
             return null;
         }
 
-    }
-
-    @Override
-    public void execute(BookmarkModel model, Category category) {
-        execute(model);
     }
 
 }
