@@ -1,7 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.view;
 
-import java.io.File;
-
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipselabs.recommenders.bookmark.Activator;
@@ -25,8 +23,8 @@ public class ViewPartListener implements IPartListener2 {
 
     @Override
     public void partClosed(IWorkbenchPartReference partRef) {
-        File stateFile = Activator.getLocationForStoringGUIState();
-        GuiStateIO.writeGuiStateToMemento(stateFile, bookmarkView);
+        GuiStateIO.writeGuiStateToMemento(Activator.getLocationForStoringGUIState(), bookmarkView);
+        BookmarkIO.writeModel(Activator.getLocationForStoringBookmark(), Activator.getModel());
     }
 
     @Override

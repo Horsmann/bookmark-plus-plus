@@ -6,6 +6,7 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
+import org.eclipselabs.recommenders.bookmark.view.BookmarkIO;
 
 public class BookmarkImportWizard extends Wizard implements IImportWizard {
 
@@ -17,6 +18,7 @@ public class BookmarkImportWizard extends Wizard implements IImportWizard {
 
     public boolean performFinish() {
         BookmarkModel newModel = mainPage.getClonedModel();
+        BookmarkIO.writeModel(Activator.getLocationForStoringBookmark(), newModel);
         Activator.setNewModel(newModel);
         return true;
     }

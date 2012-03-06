@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModelCloner;
+import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkCommandInvoker;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkIO;
 import org.eclipselabs.recommenders.bookmark.view.BookmarkView;
@@ -92,7 +93,7 @@ public class Activator extends AbstractUIPlugin {
     }
 
     public static BookmarkModel getClonedModel() {
-        return new BookmarkModelCloner(Activator.bookmarkView.getModel()).clone();
+        return new BookmarkModelCloner(model).clone();
     }
 
     public static void setBookmarkView(BookmarkView bookmarkView) {
@@ -104,8 +105,16 @@ public class Activator extends AbstractUIPlugin {
     }
 
     public static void setNewModel(BookmarkModel newModel) {
-        bookmarkView.setNewModelForTreeViewer(newModel);
-        bookmarkView.resetGui();
+        BookmarkIO.writeModel(getLocationForStoringBookmark(), newModel);
+        if (bookmarkView != null) {
+            bookmarkView.setNewModelForTreeViewer(newModel);
+            bookmarkView.resetGui();
+        } else {
+            model.removeAll();
+            for (Category cat : newModel.getCategories()) {
+                model.add(cat);
+            }
+        }
     }
 
     public static IStructuredSelection getCurrentTreeSelection() {
