@@ -313,11 +313,10 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
         addAll.setLayoutData(data);
     }
-    
+
     public void layout() {
         container.layout(true, true);
     }
-
 
     @Override
     public abstract void invoke(IBookmarkModelCommand command);
@@ -438,11 +437,11 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
     private class RemoveMouseListener implements MouseListener {
 
         private final RepresentationSwitchableTreeViewer treeViewer;
-        private final BookmarkCommandInvoker invoker;
+        private final BookmarkCommandInvoker commandInvoker;
 
         public RemoveMouseListener(RepresentationSwitchableTreeViewer treeViewer, BookmarkCommandInvoker invoker) {
             this.treeViewer = treeViewer;
-            this.invoker = invoker;
+            this.commandInvoker = invoker;
         }
 
         @Override
@@ -457,7 +456,7 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
             while (iterator.hasNext()) {
                 IBookmarkModelComponent component = (IBookmarkModelComponent) iterator.next();
                 IBookmarkModelComponent parent = component.getParent();
-                invoker.invoke(new DeleteSingleBookmarkCommand(component));
+                commandInvoker.invoke(new DeleteSingleBookmarkCommand(component, commandInvoker));
                 deleteInferredNodes(parent);
 
                 treeViewer.refresh();
@@ -471,7 +470,7 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
             IsIBookmarkVisitor isBookmark = new IsIBookmarkVisitor();
             parent.accept(isBookmark);
             if (isBookmark.isIBookmark()) {
-                invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
+                commandInvoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
             }
         }
 
@@ -556,11 +555,11 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
     private class WizardKeyListener implements KeyListener {
 
         private final RepresentationSwitchableTreeViewer treeViewer;
-        private final BookmarkCommandInvoker invoker;
+        private final BookmarkCommandInvoker commandInvoker;
 
         public WizardKeyListener(RepresentationSwitchableTreeViewer treeViewer, BookmarkCommandInvoker invoker) {
             this.treeViewer = treeViewer;
-            this.invoker = invoker;
+            this.commandInvoker = invoker;
         }
 
         @Override
@@ -589,7 +588,7 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
         }
 
         private void processRename(KeyEvent e) {
-            invoker.invoke(new RenameCategoryCommand(treeViewer));
+            commandInvoker.invoke(new RenameCategoryCommand(treeViewer));
         }
 
         private TreeItem[] getTreeSelections(KeyEvent e) {
@@ -614,12 +613,12 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
             IsIBookmarkVisitor isIBookmark = new IsIBookmarkVisitor();
             parent.accept(isIBookmark);
             if (isIBookmark.isIBookmark()) {
-                invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
+                commandInvoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
             }
         }
 
         private void delete(IBookmarkModelComponent component) {
-            invoker.invoke(new DeleteSingleBookmarkCommand(component));
+            commandInvoker.invoke(new DeleteSingleBookmarkCommand(component, commandInvoker));
         }
 
         private boolean isDeletion(KeyEvent e) {

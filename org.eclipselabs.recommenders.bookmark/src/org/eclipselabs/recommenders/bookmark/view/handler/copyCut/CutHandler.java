@@ -12,11 +12,11 @@ import org.eclipselabs.recommenders.bookmark.visitor.IsCategoryVisitor;
 
 public class CutHandler extends CopyHandler {
 
-    private final BookmarkCommandInvoker invoker;
+    private final BookmarkCommandInvoker commandInvoker;
 
     public CutHandler(RepresentationSwitchableTreeViewer treeViewer, BookmarkCommandInvoker invoker) {
         super(treeViewer);
-        this.invoker = invoker;
+        this.commandInvoker = invoker;
     }
 
     @Override
@@ -26,12 +26,12 @@ public class CutHandler extends CopyHandler {
 
         for (IBookmarkModelComponent component : selectedComponents) {
             IBookmarkModelComponent parent = component.getParent();
-            
-            invoker.invoke(new DeleteSingleBookmarkCommand(component));
+
+            commandInvoker.invoke(new DeleteSingleBookmarkCommand(component, commandInvoker));
             if (needsCheckForRecursiveDeletion(parent)) {
-                invoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
+                commandInvoker.invoke(new DeleteInferredBookmarksCommand((IBookmark) parent));
             }
-            
+
         }
 
         return null;

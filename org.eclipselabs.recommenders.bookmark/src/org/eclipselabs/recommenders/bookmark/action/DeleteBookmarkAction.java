@@ -32,7 +32,7 @@ public class DeleteBookmarkAction extends Action implements SelfEnabling {
         while (iterator.hasNext()) {
             Object selectedObject = iterator.next();
             if (selectedObject instanceof IBookmarkModelComponent) {
-                commandInvoker.invoke(new DeleteSingleBookmarkCommand((IBookmarkModelComponent) selectedObject));
+                commandInvoker.invoke(new DeleteSingleBookmarkCommand((IBookmarkModelComponent) selectedObject, commandInvoker));
             }
         }
 

@@ -523,7 +523,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
                 return;
             }
             IBookmarkModelComponent component = (IBookmarkModelComponent) item.getData();
-            commandInvoker.invoke(new DeleteSingleBookmarkCommand(component));
+            commandInvoker.invoke(new DeleteSingleBookmarkCommand(component, commandInvoker));
         }
 
         private boolean isDeletion(KeyEvent e) {
