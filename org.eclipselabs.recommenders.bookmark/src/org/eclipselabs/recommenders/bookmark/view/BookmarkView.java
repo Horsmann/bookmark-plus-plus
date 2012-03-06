@@ -84,7 +84,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private OpenInFileSystemAction openInFileSystem;
     private DeleteBookmarkAction deleteBookmarks;
     private HideableComboViewer comboViewer;
-    // private GoToCategoryModeAction switchCategory;
     private SwitchInferredStateAction switchInferred;
     private BookmarkTreeDropListener dropListener;
     private DefaultDropStrategy defaultDropStrategy;
@@ -200,8 +199,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         openInEditor = new OpenBookmarkAction(treeViewer, this, this);
         openInFileSystem = new OpenInFileSystemAction(treeViewer);
         deleteBookmarks = new DeleteBookmarkAction(treeViewer, this);
-        // switchCategory = new GoToCategoryModeAction(hideableComboViewer,
-        // model, treeViewer);
         switchInferred = new SwitchInferredStateAction(treeViewer, this);
         addContextMenu(treeViewer, renameCategory, openInEditor, openInFileSystem, deleteBookmarks, categoryMode,
                 switchInferred);
@@ -406,6 +403,16 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         this.memento = GuiStateIO.readGuiStateMementoFromFile(stateFile);
         init(site);
     }
+    
+    public void resetGui() {
+        Activator.getLocationForStoringGUIState().delete();
+        if (!treeViewer.isDisposed()) {
+            treeViewer.setRepresentation(new HierarchicalRepresentationMode());
+            comboViewer.hide();
+            categoryMode.setChecked(false);
+            switchFlatHierarchical.setChecked(false);
+        }
+    }
 
     private class ResourceListener implements IResourceChangeListener {
 
@@ -549,16 +556,6 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
                     .getActivePage(), commandInvoker));
         }
 
-    }
-
-    public void resetGui() {
-        Activator.getLocationForStoringGUIState().delete();
-        if (!treeViewer.isDisposed()) {
-            treeViewer.setRepresentation(new HierarchicalRepresentationMode());
-            comboViewer.hide();
-            categoryMode.setChecked(false);
-            switchFlatHierarchical.setChecked(false);
-        }
     }
 
 }
