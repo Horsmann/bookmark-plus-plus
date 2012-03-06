@@ -3,6 +3,7 @@ package org.eclipselabs.recommenders.bookmark.wizard;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -30,7 +31,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipselabs.recommenders.bookmark.action.DeleteBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
+import org.eclipselabs.recommenders.bookmark.action.SelfEnabling;
 import org.eclipselabs.recommenders.bookmark.action.SwitchInferredStateAction;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteAllBookmarksCommand;
 import org.eclipselabs.recommenders.bookmark.commands.DeleteInferredBookmarksCommand;
@@ -60,7 +63,7 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
     protected RepresentationSwitchableTreeViewer leftTreeViewer;
     protected RepresentationSwitchableTreeViewer rightTreeViewer;
     private Button add;
-    private BookmarkCommandInvoker invoker;
+    private BookmarkCommandInvoker commandInvoker;
     private Button addAll;
     private Button remove;
     private Button removeAll;
@@ -71,7 +74,7 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
         super(pageName);
         this.rightViewerLabel = rightViewerLabel;
         this.leftViewerLabel = leftViewerLabel;
-        invoker = this;
+        commandInvoker = this;
     }
 
     @Override
@@ -87,32 +90,35 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
     }
 
     private void setContextMenu() {
-        RenameCategoryAction renameCategoryAction = new RenameCategoryAction(rightTreeViewer, invoker);
-        SwitchInferredStateAction switchInferredStateAction = new SwitchInferredStateAction(rightTreeViewer, invoker);
-        MenuManager contextMenu = createContextMenu(renameCategoryAction, switchInferredStateAction);
-        SelectionChangedListener selectionChangedListener = createSelectionChangedListener(renameCategoryAction,
-                switchInferredStateAction);
+        RenameCategoryAction renameCategoryAction = new RenameCategoryAction(rightTreeViewer, commandInvoker);
+        SwitchInferredStateAction switchInferredStateAction = new SwitchInferredStateAction(rightTreeViewer,
+                commandInvoker);
+        DeleteBookmarkAction deleteBookmarkAction = new DeleteBookmarkAction(rightTreeViewer, commandInvoker);
+        MenuManager contextMenu = createContextMenu(new IAction[] { renameCategoryAction, switchInferredStateAction,
+                deleteBookmarkAction });
+        SelectionChangedListener selectionChangedListener = createSelectionChangedListener(new SelfEnabling[] {
+                renameCategoryAction, switchInferredStateAction, deleteBookmarkAction });
         rightTreeViewer.setContextMenu(contextMenu);
         rightTreeViewer.addSelectionChangedListener(selectionChangedListener);
     }
 
-    private SelectionChangedListener createSelectionChangedListener(RenameCategoryAction renameCategoryAction,
-            SwitchInferredStateAction switchInferredStateAction) {
+    private SelectionChangedListener createSelectionChangedListener(SelfEnabling[] components) {
         SelectionChangedListener selectionListener = new SelectionChangedListener();
-        selectionListener.register(renameCategoryAction);
-        selectionListener.register(switchInferredStateAction);
+        for (SelfEnabling component : components) {
+            selectionListener.register(component);
+        }
         return selectionListener;
     }
 
-    private MenuManager createContextMenu(final RenameCategoryAction renameCategoryAction,
-            final SwitchInferredStateAction switchInferredStateAction) {
+    private MenuManager createContextMenu(final IAction[] actions) {
         final MenuManager menuMgr = new MenuManager();
         menuMgr.setRemoveAllWhenShown(true);
 
         menuMgr.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager mgr) {
-                menuMgr.add(renameCategoryAction);
-                menuMgr.add(switchInferredStateAction);
+                for (IAction action : actions) {
+                    menuMgr.add(action);
+                }
             }
         });
 
@@ -127,7 +133,7 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
     private void makeAddButtonEnDisableOnSelections() {
         leftTreeViewer.addSelectionChangedListener(new TreeSelectionDependendButtonEnabler(leftTreeViewer, add));
         leftTreeViewer.addDoubleclickListener(new AddMouseAndDoubleClickerListener(leftTreeViewer, rightTreeViewer,
-                invoker));
+                commandInvoker));
     }
 
     private Composite initializeContainerComposite(Composite parent) {
@@ -194,24 +200,24 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
 
     private void addDoubleclickListenerToLeftTreeViewer(RepresentationSwitchableTreeViewer leftTreeViewer) {
         leftTreeViewer.addDoubleclickListener(new AddMouseAndDoubleClickerListener(leftTreeViewer, leftTreeViewer,
-                invoker));
+                commandInvoker));
 
     }
 
     private void addMouseListenerToAddButton(Button add) {
-        add.addMouseListener(new AddMouseAndDoubleClickerListener(leftTreeViewer, rightTreeViewer, invoker));
+        add.addMouseListener(new AddMouseAndDoubleClickerListener(leftTreeViewer, rightTreeViewer, commandInvoker));
     }
 
     private void addMouseListenerToAddAllButton(Button addAll) {
-        addAll.addMouseListener(new AddAllMouseListener(leftTreeViewer, rightTreeViewer, invoker));
+        addAll.addMouseListener(new AddAllMouseListener(leftTreeViewer, rightTreeViewer, commandInvoker));
     }
 
     private void addMouseListenerToRemoveButton(Button remove) {
-        remove.addMouseListener(new RemoveMouseListener(rightTreeViewer, invoker));
+        remove.addMouseListener(new RemoveMouseListener(rightTreeViewer, commandInvoker));
     }
 
     private void addMouseListenerToRemoveAllButton(Button removeAll) {
-        removeAll.addMouseListener(new RemoveAllMouseListener(invoker));
+        removeAll.addMouseListener(new RemoveAllMouseListener(commandInvoker));
     }
 
     private void addHeadline(Composite composite) {
@@ -255,7 +261,7 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
         final BookmarkTreeDragListener dragListener = new BookmarkTreeDragListener();
         rightTreeViewer.addDragSupport(dragListener.getSupportedOperations(), dragListener.getSupportedTransfers(),
                 dragListener);
-        final WizardDropStrategy strategy = new WizardDropStrategy(invoker);
+        final WizardDropStrategy strategy = new WizardDropStrategy(commandInvoker);
         final BookmarkTreeDropListener dropListener = new BookmarkTreeDropListener(strategy);
         rightTreeViewer.addDropSupport(dropListener.getSupportedOperations(), dropListener.getSupportedTransfers(),
                 dropListener);
@@ -268,7 +274,7 @@ public abstract class BookmarkWizardPage extends WizardPage implements BookmarkC
     }
 
     private void setRightTreeViewerKeyListener() {
-        rightTreeViewer.addKeyListener(new WizardKeyListener(rightTreeViewer, invoker));
+        rightTreeViewer.addKeyListener(new WizardKeyListener(rightTreeViewer, commandInvoker));
     }
 
     private void createPanelWithAddRemoveButtons(Composite bookmarkSelComposite) {
