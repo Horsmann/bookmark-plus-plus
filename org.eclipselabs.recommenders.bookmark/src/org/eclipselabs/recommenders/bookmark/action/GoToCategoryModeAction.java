@@ -26,7 +26,7 @@ public class GoToCategoryModeAction extends Action implements SelfEnabling {
         this.model = model;
         this.treeViewer = treeViewer;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry().getDescriptor(Activator.ICON_TOGGLE_VIEW));
-        this.setToolTipText("Switches between the hierarchical and the category mode");
+        this.setToolTipText("Switches between showing all bookmarks or only those in the currently selected category");
     }
 
     @Override

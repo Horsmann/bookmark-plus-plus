@@ -16,7 +16,7 @@ public class AddCategoryAction extends Action{
         this.hideableComboViewer = hideableComboViewer;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry()
                 .getDescriptor(Activator.ICON_CATEGORY));
-        this.setToolTipText("Add new category");
+        this.setToolTipText("Adds a new category");
         this.setText("New Category");
     }
 
