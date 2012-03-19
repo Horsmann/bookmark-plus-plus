@@ -141,7 +141,9 @@ public class OpenInFileSystemAction extends Action implements SelfEnabling {
                 return;
             }
             IResource resource = getResource(javaElementBookmark.getJavaElement());
-            file = Optional.of(resource.getParent().getRawLocation().toFile());
+            if (resource != null) {
+                file = Optional.of(resource.getParent().getRawLocation().toFile());
+            }
         }
 
         private IResource getResource(IJavaElement element) {
