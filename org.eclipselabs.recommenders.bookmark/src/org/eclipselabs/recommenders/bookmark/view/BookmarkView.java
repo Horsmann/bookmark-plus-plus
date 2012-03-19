@@ -38,7 +38,7 @@ import org.eclipselabs.recommenders.bookmark.action.CloseAllEditorWindowsAction;
 import org.eclipselabs.recommenders.bookmark.action.DeleteBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.action.GoToCategoryModeAction;
 import org.eclipselabs.recommenders.bookmark.action.OpenBookmarkAction;
-import org.eclipselabs.recommenders.bookmark.action.OpenInFileSystemAction;
+import org.eclipselabs.recommenders.bookmark.action.OpenInSystemExplorerAction;
 import org.eclipselabs.recommenders.bookmark.action.RenameCategoryAction;
 import org.eclipselabs.recommenders.bookmark.action.SwitchFlatHierarchicalAction;
 import org.eclipselabs.recommenders.bookmark.action.SwitchInferredStateAction;
@@ -81,7 +81,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private GoToCategoryModeAction categoryMode;
     private RenameCategoryAction renameCategory;
     private OpenBookmarkAction openInEditor;
-    private OpenInFileSystemAction openInFileSystem;
+    private OpenInSystemExplorerAction openInFileSystem;
     private DeleteBookmarkAction deleteBookmarks;
     private HideableComboViewer comboViewer;
     private SwitchInferredStateAction switchInferred;
@@ -193,7 +193,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
             HideableComboViewer hideableComboViewer) {
         renameCategory = new RenameCategoryAction(treeViewer, this);
         openInEditor = new OpenBookmarkAction(treeViewer, this, this);
-        openInFileSystem = new OpenInFileSystemAction(treeViewer);
+        openInFileSystem = new OpenInSystemExplorerAction(treeViewer);
         deleteBookmarks = new DeleteBookmarkAction(treeViewer, this);
         switchInferred = new SwitchInferredStateAction(treeViewer, this);
         addContextMenu(treeViewer, renameCategory, openInEditor, openInFileSystem, deleteBookmarks, categoryMode,
@@ -202,7 +202,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
 
     private void addContextMenu(RepresentationSwitchableTreeViewer treeViewer,
             final RenameCategoryAction renameCategory, final OpenBookmarkAction openInEditor,
-            final OpenInFileSystemAction openInFileSystem, final DeleteBookmarkAction deleteBookmarks,
+            final OpenInSystemExplorerAction openInFileSystem, final DeleteBookmarkAction deleteBookmarks,
             final GoToCategoryModeAction switchCategory, final SwitchInferredStateAction switchInferred) {
 
         final MenuManager menuMgr = new MenuManager();

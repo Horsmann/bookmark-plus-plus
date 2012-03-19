@@ -23,11 +23,11 @@ import org.eclipselabs.recommenders.bookmark.visitor.IsResourceAvailableVisitor;
 
 import com.google.common.base.Optional;
 
-public class OpenInFileSystemAction extends Action implements SelfEnabling {
+public class OpenInSystemExplorerAction extends Action implements SelfEnabling {
 
     private final RepresentationSwitchableTreeViewer treeViewer;
 
-    public OpenInFileSystemAction(RepresentationSwitchableTreeViewer treeViewer) {
+    public OpenInSystemExplorerAction(RepresentationSwitchableTreeViewer treeViewer) {
         this.treeViewer = treeViewer;
         this.setImageDescriptor(Activator.getDefault().getImageRegistry()
                 .getDescriptor(Activator.ICON_OPEN_IN_SYSTEM_EXPLORER));

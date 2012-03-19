@@ -76,7 +76,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
             String handleIdentifier = root.getHandleIdentifier();
             element = JavaCore.create(handleIdentifier);
         }
-        if (element != null && BookmarkUtil.isInternalElement(element)) {
+        if (element != null) {
             bookmark(new Object[] { element });
         }
     }
@@ -118,8 +118,7 @@ public class BookmarkCurrentPositionHandler extends AbstractHandler {
 
         while (iterator.hasNext()) {
             Object next = iterator.next();
-            if (next instanceof IJavaElement && BookmarkUtil.isBookmarkable(next)
-                    && BookmarkUtil.isInternalElement((IJavaElement) next)) {
+            if (next instanceof IJavaElement && BookmarkUtil.isBookmarkable(next)) {
                 objects.add(next);
             } else if (next instanceof IFile) {
                 objects.add(next);

@@ -39,7 +39,6 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
         this.isDropBeforeTarget = isDropBeforeTarget;
     }
 
-
     @Override
     public void execute(BookmarkModel model, Category category) {
         this.category = category;
@@ -72,7 +71,7 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
             sortInIfDropAndTargetShareSameParent(createdElements);
         }
     }
-    
+
     @Override
     public void execute(final BookmarkModel model) {
         Category category = findCategory();
@@ -97,7 +96,7 @@ public class AddBookmarksCommand implements IBookmarkModelCommand {
     }
 
     private boolean isIJavaElement(Object element) {
-        return (element instanceof IJavaElement && BookmarkUtil.isInternalElement((IJavaElement) element));
+        return (element instanceof IJavaElement);
     }
 
     private void addCategoryToModel() {

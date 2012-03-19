@@ -5,7 +5,6 @@ import java.io.File;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipselabs.recommenders.bookmark.BookmarkUtil;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
@@ -43,7 +42,7 @@ public class IsResourceAvailableVisitor implements IModelVisitor {
         IJavaElement element = javaElementBookmark.getJavaElement();
         IProject project = element.getJavaProject().getProject();
         boolean isOpen = project.isOpen();
-        boolean exists = BookmarkUtil.doesReferencedIJavaElementExist(element);
+        boolean exists = element.exists();
         isAvailable = isOpen && exists;
     }
 
