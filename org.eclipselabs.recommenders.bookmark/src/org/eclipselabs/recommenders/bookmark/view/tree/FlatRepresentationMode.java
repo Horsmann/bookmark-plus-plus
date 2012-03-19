@@ -2,6 +2,7 @@ package org.eclipselabs.recommenders.bookmark.view.tree;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
@@ -107,36 +108,49 @@ public class FlatRepresentationMode implements IRepresentationMode {
             @Override
             public void visit(final JavaElementBookmark javaElementBookmark) {
                 final IJavaElement javaElement = javaElementBookmark.getJavaElement();
-                label = determineCompilationUnit(javaElement) + "." + jelp.getText(javaElement);
+                String unitname = determineUnitname(javaElement);
+                if (unitname.equals("")) {
+                    label = jelp.getText(javaElement);
+                } else {
+                    label = unitname + "." + jelp.getText(javaElement);
+                }
             }
 
-            private String determineCompilationUnit(IJavaElement element) {
+            private String determineUnitname(IJavaElement element) {
                 String compilationUnit = getCompilationUnitName(element);
                 compilationUnit = chopOffFileEnding(compilationUnit);
                 return compilationUnit;
             }
 
             public String getCompilationUnitName(IJavaElement element) {
-                ICompilationUnit compilationUnit = seekCompilationUnit(element);
-                if (compilationUnit == null) {
+                IJavaElement foundElement = seekCompilationUnitOrClassFile(element);
+
+                if (foundElement == null || originalAndFoundElementAreTheSame(element, foundElement)) {
                     return "";
                 }
-                String compilationUnitName = compilationUnit.getElementName();
-                return compilationUnitName;
+                return foundElement.getElementName();
             }
 
-            private ICompilationUnit seekCompilationUnit(IJavaElement element) {
-                if (element instanceof ICompilationUnit) {
-                    return (ICompilationUnit) element;
+            private boolean originalAndFoundElementAreTheSame(IJavaElement originalElement, IJavaElement foundElement) {
+                return originalElement.getHandleIdentifier().equals(foundElement.getHandleIdentifier());
+            }
+
+            private IJavaElement seekCompilationUnitOrClassFile(IJavaElement element) {
+                if (isCompilationUnitOrClassFile(element)) {
+                    return element;
                 }
 
                 while ((element = element.getParent()) != null) {
-                    if (element instanceof ICompilationUnit) {
-                        return (ICompilationUnit) element;
+                    if (isCompilationUnitOrClassFile(element)) {
+                        return element;
                     }
                 }
 
                 return null;
+            }
+
+            private boolean isCompilationUnitOrClassFile(IJavaElement element) {
+                return (element instanceof ICompilationUnit || element instanceof IClassFile);
             }
 
             private String chopOffFileEnding(String compilationUnit) {
