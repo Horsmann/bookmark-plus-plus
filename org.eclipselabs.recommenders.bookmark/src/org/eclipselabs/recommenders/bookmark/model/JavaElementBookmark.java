@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 public class JavaElementBookmark implements IBookmark {
 
     private static final long serialVersionUID = 4072214438975678506L;
-    private final String handleId;
+    private String handleId;
     private boolean isInferred;
     private final List<JavaElementBookmark> childElements = Lists.newLinkedList();
 
@@ -96,6 +96,10 @@ public class JavaElementBookmark implements IBookmark {
     @Override
     public IBookmarkModelComponent getParent() {
         return parent;
+    }
+
+    public void setHandleId(String newId) {
+        this.handleId = newId;
     }
 
 }
