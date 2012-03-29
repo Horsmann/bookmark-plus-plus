@@ -322,7 +322,19 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         } else {
             command.execute(model);
         }
-        treeViewer.refresh();
+
+        Display display = Display.getCurrent();
+        if (display == null){
+            display = Display.getDefault();
+        }
+        display.asyncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                treeViewer.refresh();
+            }
+        });
+        // treeViewer.refresh();
     }
 
     @Override

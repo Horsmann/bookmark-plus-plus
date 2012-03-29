@@ -49,30 +49,36 @@ public class JavaElementRenameParticipant extends RenameParticipant {
         String newName = getArguments().getNewName();
         switch (elementType) {
         case IFIELD:
-            id = updateIdStem(oldHandleId, newName, "^");
+            id = updateIdStem(oldHandleId, newName, "^", false);
             break;
         case ITYPE:
-            id = updateIdStem(oldHandleId, newName, "[");
+            id = updateIdStem(oldHandleId, newName, "[", false);
             break;
         case IMETHOD:
-            id = updateIdStem(oldHandleId, newName, "~");
+            id = updateIdStem(oldHandleId, newName, "~", false);
             break;
         case ICOMPILATION_UNIT:
-            id = updateIdStem(oldHandleId, newName, "{");
+            id = updateIdStem(oldHandleId, newName, "{", true);
             break;
         case IPACKAGE_FRAGMENT:
-            id = updateIdStem(oldHandleId, newName, "<");
+            id = updateIdStem(oldHandleId, newName, "<", true);
             break;
         case IPACKAGE_FRAGMENT_ROOT:
-            id = updateIdStem(oldHandleId, newName, "/");
+            id = updateIdStem(oldHandleId, newName, "/", true);
             break;
         }
 
         return id;
     }
 
-    private String updateIdStem(String oldHandleId, String newFieldName, String sign) {
-        int index = oldHandleId.lastIndexOf(sign);
+    private String updateIdStem(String oldHandleId, String newFieldName, String sign, boolean searchFromLeftSide) {
+        int index = -1;
+        if (searchFromLeftSide) {
+            index = oldHandleId.indexOf(sign);
+        } else {
+            index = oldHandleId.lastIndexOf(sign);
+        }
+        //TODO: Methoden mit Signaturen werden falsch behandelt
         String newId = oldHandleId.substring(0, index + 1) + newFieldName;
         return newId;
     }
