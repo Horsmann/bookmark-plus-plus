@@ -54,9 +54,6 @@ public class JavaElementRenameParticipant extends RenameParticipant {
         case ITYPE:
             id = updateIdStem(oldHandleId, newName, "[", false);
             break;
-        case IMETHOD:
-            id = updateIdStem(oldHandleId, newName, "~", false);
-            break;
         case ICOMPILATION_UNIT:
             id = updateIdStem(oldHandleId, newName, "{", true);
             break;
@@ -66,8 +63,25 @@ public class JavaElementRenameParticipant extends RenameParticipant {
         case IPACKAGE_FRAGMENT_ROOT:
             id = updateIdStem(oldHandleId, newName, "/", true);
             break;
+        case IMETHOD:
+            id = updateMethodIdStem(oldHandleId, newName);
+            break;
         }
 
+        return id;
+    }
+
+    private String updateMethodIdStem(String oldHandleId, String newName) {
+        String id = "";
+
+        int start = oldHandleId.indexOf("~");
+        int end = oldHandleId.indexOf("~", start + 1);
+
+        if (start > -1 && end > -1) {
+            id = oldHandleId.substring(0, start + 1) + newName + oldHandleId.substring(end);
+        } else if (start > -1) {
+            id = oldHandleId.substring(0, start + 1) + newName;
+        }
         return id;
     }
 
@@ -78,7 +92,6 @@ public class JavaElementRenameParticipant extends RenameParticipant {
         } else {
             index = oldHandleId.lastIndexOf(sign);
         }
-        //TODO: Methoden mit Signaturen werden falsch behandelt
         String newId = oldHandleId.substring(0, index + 1) + newFieldName;
         return newId;
     }

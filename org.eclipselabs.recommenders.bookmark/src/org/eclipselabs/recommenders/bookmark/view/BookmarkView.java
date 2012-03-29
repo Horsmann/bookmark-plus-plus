@@ -323,10 +323,15 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
             command.execute(model);
         }
 
-        Display display = Display.getCurrent();
-        if (display == null){
-            display = Display.getDefault();
-        }
+        refreshTreeViewer();
+    }
+
+    private void refreshTreeViewer() {
+        Display display = getDisplay();
+        refreshTreeViewer(display);
+    }
+
+    private void refreshTreeViewer(Display display) {
         display.asyncExec(new Runnable() {
 
             @Override
@@ -334,7 +339,15 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
                 treeViewer.refresh();
             }
         });
-        // treeViewer.refresh();
+        
+    }
+
+    private Display getDisplay() {
+        Display display = Display.getCurrent();
+        if (display == null) {
+            display = Display.getDefault();
+        }
+        return display;
     }
 
     @Override
