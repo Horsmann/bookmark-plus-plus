@@ -1,5 +1,6 @@
 package org.eclipselabs.recommenders.bookmark.renameparticipant;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -26,9 +27,10 @@ public class JavaElementRenameParticipant extends RenameParticipant {
     @Override
     protected boolean initialize(Object element) {
 
-        if (!(element instanceof IJavaElement)) {
+        if (!isJavaElement(element)) {
             return false;
         }
+
         oldHandleId = ((IJavaElement) element).getHandleIdentifier();
         detectElementType((IJavaElement) element);
         newHandleId = generateNewHandleId(oldHandleId);
@@ -36,6 +38,10 @@ public class JavaElementRenameParticipant extends RenameParticipant {
             return false;
         }
         return true;
+    }
+
+    private boolean isJavaElement(Object element) {
+        return element instanceof IJavaElement;
     }
 
     private boolean initSuccessful() {
@@ -146,5 +152,5 @@ public class JavaElementRenameParticipant extends RenameParticipant {
 }
 
 enum RenameSupported {
-    ICOMPILATION_UNIT, ITYPE, IMETHOD, IFIELD, IPACKAGE_FRAGMENT, IPACKAGE_FRAGMENT_ROOT, NOT_SUPPORTED;
+    IPACKAGE_FRAGMENT_ROOT, IPACKAGE_FRAGMENT, ICOMPILATION_UNIT, ITYPE, IMETHOD, IFIELD, NOT_SUPPORTED;
 }
