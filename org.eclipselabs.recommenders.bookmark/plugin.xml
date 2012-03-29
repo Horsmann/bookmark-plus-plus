@@ -156,7 +156,7 @@
   <renameParticipant
         class="org.eclipselabs.recommenders.bookmark.renameparticipant.JavaElementRenameParticipant"
         id="org.eclipselabs.recommenders.bookmark.JavaElementRenameParticipant"
-        name="Update Bookmark++ references">
+        name="Java Elements Rename">
      <enablement>
         <with
               variable="element">
@@ -180,6 +180,16 @@
                     value="org.eclipse.jdt.core.IPackageFragmentRoot">
               </instanceof></or>
         </with>
+     </enablement>
+  </renameParticipant>
+  <renameParticipant
+        class="org.eclipselabs.recommenders.bookmark.renameparticipant.ProjectRenameParticipant"
+        id="org.eclipselabs.recommenders.bookmark.ProjectRenameParticipant"
+        name="Project Rename">
+     <enablement>
+        <instanceof
+              value="org.eclipse.core.resources.IProject">
+        </instanceof>
      </enablement>
   </renameParticipant>
   </extension>
