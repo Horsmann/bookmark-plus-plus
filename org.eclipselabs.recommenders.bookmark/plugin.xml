@@ -172,6 +172,12 @@
               </instanceof>
               <instanceof
                     value="org.eclipse.jdt.core.IField">
+              </instanceof>
+              <instanceof
+                    value="org.eclipse.jdt.core.IPackageFragment">
+              </instanceof>
+              <instanceof
+                    value="org.eclipse.jdt.core.IPackageFragmentRoot">
               </instanceof></or>
         </with>
      </enablement>

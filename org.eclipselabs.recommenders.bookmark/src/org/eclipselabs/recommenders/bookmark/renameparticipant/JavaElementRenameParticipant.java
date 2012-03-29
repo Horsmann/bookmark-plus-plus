@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -48,26 +49,29 @@ public class JavaElementRenameParticipant extends RenameParticipant {
         String newName = getArguments().getNewName();
         switch (elementType) {
         case IFIELD:
-            id = updateEndOfId(oldHandleId, newName, "^");
+            id = updateIdStem(oldHandleId, newName, "^");
             break;
         case ITYPE:
-            id = updateEndOfId(oldHandleId, newName, "[");
+            id = updateIdStem(oldHandleId, newName, "[");
             break;
         case IMETHOD:
-            id = updateEndOfId(oldHandleId, newName, "~");
+            id = updateIdStem(oldHandleId, newName, "~");
             break;
         case ICOMPILATION_UNIT:
-            id = updateEndOfId(oldHandleId, newName, "{");
+            id = updateIdStem(oldHandleId, newName, "{");
             break;
         case IPACKAGE_FRAGMENT:
-            id = updateEndOfId(oldHandleId, newName, "<");
+            id = updateIdStem(oldHandleId, newName, "<");
+            break;
+        case IPACKAGE_FRAGMENT_ROOT:
+            id = updateIdStem(oldHandleId, newName, "/");
             break;
         }
 
         return id;
     }
 
-    private String updateEndOfId(String oldHandleId, String newFieldName, String sign) {
+    private String updateIdStem(String oldHandleId, String newFieldName, String sign) {
         int index = oldHandleId.lastIndexOf(sign);
         String newId = oldHandleId.substring(0, index + 1) + newFieldName;
         return newId;
@@ -83,8 +87,10 @@ public class JavaElementRenameParticipant extends RenameParticipant {
             elementType = RenameSupported.ITYPE;
         } else if (element instanceof ICompilationUnit) {
             elementType = RenameSupported.ICOMPILATION_UNIT;
-        } else if (element instanceof IPackageFragment){
+        } else if (element instanceof IPackageFragment) {
             elementType = RenameSupported.IPACKAGE_FRAGMENT;
+        } else if (element instanceof IPackageFragmentRoot) {
+            elementType = RenameSupported.IPACKAGE_FRAGMENT_ROOT;
         }
 
     }
@@ -121,5 +127,5 @@ public class JavaElementRenameParticipant extends RenameParticipant {
 }
 
 enum RenameSupported {
-    ICOMPILATION_UNIT, ITYPE, IMETHOD, IFIELD, IPACKAGE_FRAGMENT, NOT_SUPPORTED;
+    ICOMPILATION_UNIT, ITYPE, IMETHOD, IFIELD, IPACKAGE_FRAGMENT, IPACKAGE_FRAGMENT_ROOT, NOT_SUPPORTED;
 }
