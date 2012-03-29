@@ -8,6 +8,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -27,16 +28,12 @@ public class JavaElementRenameParticipant extends RenameParticipant {
         if (!(element instanceof IJavaElement)) {
             return false;
         }
-
         oldHandleId = ((IJavaElement) element).getHandleIdentifier();
         detectElementType((IJavaElement) element);
-
         newHandleId = generateNewHandleId(oldHandleId);
-
         if (!initSuccessful()) {
             return false;
         }
-
         return true;
     }
 
@@ -48,34 +45,30 @@ public class JavaElementRenameParticipant extends RenameParticipant {
 
         String id = "";
 
+        String newName = getArguments().getNewName();
         switch (elementType) {
         case IFIELD:
-            id = generateNewFieldHandleId(oldHandleId, getArguments().getNewName());
+            id = updateEndOfId(oldHandleId, newName, "^");
+            break;
+        case ITYPE:
+            id = updateEndOfId(oldHandleId, newName, "[");
             break;
         case IMETHOD:
-            id = generateNewMethodHandleId(oldHandleId, getArguments().getNewName());
+            id = updateEndOfId(oldHandleId, newName, "~");
+            break;
+        case ICOMPILATION_UNIT:
+            id = updateEndOfId(oldHandleId, newName, "{");
+            break;
+        case IPACKAGE_FRAGMENT:
+            id = updateEndOfId(oldHandleId, newName, "<");
             break;
         }
 
         return id;
     }
 
-    private String generateNewMethodHandleId(String oldHandleId, String newName) {
-        int start = oldHandleId.indexOf("~");
-        int end = oldHandleId.indexOf("~", start + 1);
-
-        if (start == -1) {
-            return "";
-        }
-        if (end > -1) {
-            return oldHandleId.substring(0, start + 1) + newName + oldHandleId.substring(end);
-        } else {
-            return oldHandleId.substring(0, start + 1) + newName;
-        }
-    }
-
-    private String generateNewFieldHandleId(String oldHandleId, String newFieldName) {
-        int index = oldHandleId.lastIndexOf("^");
+    private String updateEndOfId(String oldHandleId, String newFieldName, String sign) {
+        int index = oldHandleId.lastIndexOf(sign);
         String newId = oldHandleId.substring(0, index + 1) + newFieldName;
         return newId;
     }
@@ -90,6 +83,8 @@ public class JavaElementRenameParticipant extends RenameParticipant {
             elementType = RenameSupported.ITYPE;
         } else if (element instanceof ICompilationUnit) {
             elementType = RenameSupported.ICOMPILATION_UNIT;
+        } else if (element instanceof IPackageFragment){
+            elementType = RenameSupported.IPACKAGE_FRAGMENT;
         }
 
     }
@@ -120,22 +115,11 @@ public class JavaElementRenameParticipant extends RenameParticipant {
     }
 
     private IJavaElementChangeVisitor getVisitor(RenameSupported elementType, String oldHandleId, String newHandleId) {
-        if (isField(elementType) || isMethod(elementType)) {
-            return new MethodFieldUpdateVisitor(oldHandleId, newHandleId);
-        }
-        return null;
-    }
-
-    private boolean isField(RenameSupported elementType) {
-        return elementType == RenameSupported.IFIELD;
-    }
-
-    private boolean isMethod(RenameSupported elementType) {
-        return elementType == RenameSupported.IMETHOD;
+        return new JavaElementRenameVisitor(oldHandleId, newHandleId);
     }
 
 }
 
 enum RenameSupported {
-    ICOMPILATION_UNIT, ITYPE, IMETHOD, IFIELD, NOT_SUPPORTED;
+    ICOMPILATION_UNIT, ITYPE, IMETHOD, IFIELD, IPACKAGE_FRAGMENT, NOT_SUPPORTED;
 }
