@@ -16,8 +16,13 @@ public class BookmarkRenameVisitor implements IChangeBookmark {
     }
 
     @Override
+    public String toString() {
+        return "Old: " + oldId + "\n" + "New: " + newId;
+    }
+
+    @Override
     public void visit(FileBookmark fileBookmark) {
-        if (isEqual(fileBookmark.getPath())){
+        if (isEqual(fileBookmark.getPath())) {
             fileBookmark.setNewPath(newId);
         }
     }
@@ -33,10 +38,10 @@ public class BookmarkRenameVisitor implements IChangeBookmark {
     public void visit(JavaElementBookmark javaElementBookmark) {
         if (isEqual(javaElementBookmark.getHandleId())) {
             javaElementBookmark.setHandleId(newId);
-        } else if (idIsContained(javaElementBookmark)){
+        } else if (idIsContained(javaElementBookmark)) {
             updateElement(javaElementBookmark);
         }
-        
+
         for (JavaElementBookmark jeb : javaElementBookmark.getChildElements()) {
             jeb.accept(this);
         }
