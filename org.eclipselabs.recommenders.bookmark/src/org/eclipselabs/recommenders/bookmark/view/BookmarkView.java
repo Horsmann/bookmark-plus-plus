@@ -6,6 +6,11 @@ import java.util.List;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.ElementChangedEvent;
+import org.eclipse.jdt.core.IElementChangedListener;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaElementDelta;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -47,9 +52,11 @@ import org.eclipselabs.recommenders.bookmark.commands.DeleteSingleBookmarkComman
 import org.eclipselabs.recommenders.bookmark.commands.IBookmarkModelCommand;
 import org.eclipselabs.recommenders.bookmark.commands.OpenBookmarkCommand;
 import org.eclipselabs.recommenders.bookmark.commands.RenameCategoryCommand;
+import org.eclipselabs.recommenders.bookmark.commands.RenameJavaElementsCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
+import org.eclipselabs.recommenders.bookmark.renameparticipant.JavaElementRenameVisitor;
 import org.eclipselabs.recommenders.bookmark.view.handler.copyCut.CopyHandler;
 import org.eclipselabs.recommenders.bookmark.view.handler.copyCut.CutHandler;
 import org.eclipselabs.recommenders.bookmark.view.handler.paste.DefaultPasteStrategy;
@@ -107,8 +114,13 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         activateHierarchicalMode();
         addResourceListener();
         addViewPartListener();
+        addJavaElementChangeListener();
         Activator.setBookmarkView(this);
         restoreGUIState();
+    }
+
+    private void addJavaElementChangeListener() {
+        JavaCore.addElementChangedListener(new JavaElementChangedListener(), ElementChangedEvent.POST_RECONCILE);
     }
 
     private void addViewPartListener() {
@@ -584,4 +596,57 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     public void setFocus() {
     }
 
+    class JavaElementChangedListener implements IElementChangedListener {
+
+        @Override
+        public void elementChanged(ElementChangedEvent event) {
+            IJavaElementDelta delta = event.getDelta();
+            if (!(delta.getKind() == IJavaElementDelta.CHANGED)) {
+                return;
+            }
+
+            IJavaElementDelta[] affectedChildren = delta.getAffectedChildren();
+            for (IJavaElementDelta affected : affectedChildren) {
+                IJavaElementDelta[] beforeAfter = affected.getAffectedChildren();
+                String idAfter = getIdAfterChange(beforeAfter);
+                String idBefore = getIdBeforeChange(beforeAfter);
+
+                if (!validBeforeAfterId(idBefore, idAfter)) {
+                    return;
+                }
+
+                JavaElementRenameVisitor visitor = new JavaElementRenameVisitor(idBefore, idAfter);
+                invoke(new RenameJavaElementsCommand(visitor));
+            }
+        }
+
+        private boolean validBeforeAfterId(String idBefore, String idAfter) {
+            return !idBefore.equals("") && !idAfter.equals("");
+        }
+
+        private String getIdAfterChange(IJavaElementDelta[] beforeAfter) {
+            if (beforeAfter.length != 2) {
+                return "";
+            }
+            IJavaElementDelta after = beforeAfter[0];
+            IJavaElement element = after.getElement();
+            if (element != null) {
+                return element.getHandleIdentifier();
+            }
+            return "";
+        }
+
+        private String getIdBeforeChange(IJavaElementDelta[] beforeAfter) {
+            if (beforeAfter.length != 2) {
+                return "";
+            }
+            IJavaElementDelta before = beforeAfter[1];
+            IJavaElement element = before.getElement();
+            if (element != null) {
+                return element.getHandleIdentifier();
+            }
+            return "";
+        }
+
+    }
 }
