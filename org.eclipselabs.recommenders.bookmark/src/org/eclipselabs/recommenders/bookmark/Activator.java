@@ -45,6 +45,7 @@ public class Activator extends AbstractUIPlugin {
     public static final String ICON_SWITCH_FLAT_HIERARCHY = "toggleBetweenFlatAndTreeModus";
     public static final String ICON_SAVE = "save";
     public static final String ICON_FILE_NOT_AVAILABLE = "fileNotAvailable";
+    public static final String ICON_COLLAPSE_ALL = "collapseAll";
 
     public static final String AUTOSAVE_FILE = "bookmarkModel" + fileEnding;
 
@@ -133,7 +134,8 @@ public class Activator extends AbstractUIPlugin {
                 { ICON_OPEN_IN_SYSTEM_EXPLORER, "icons/opentype.gif" }, { ICON_TOGGLE_VIEW, "icons/synced.gif" },
                 { ICON_DELETE, "icons/delete_obj.gif" }, { ICON_RENAME_CATEGORY, "icons/write_obj.gif" },
                 { ICON_SWITCH_FLAT_HIERARCHY, "icons/tree_explorer.gif" }, { ICON_SAVE, "icons/save_edit.gif" },
-                { ICON_FILE_NOT_AVAILABLE, "icons/errorwarning_tab.gif" } };
+                { ICON_FILE_NOT_AVAILABLE, "icons/errorwarning_tab.gif" },
+                { ICON_COLLAPSE_ALL, "icons/collapseall.gif" } };
 
         registerIcons(bundle, registry, icons);
     }

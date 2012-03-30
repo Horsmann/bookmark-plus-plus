@@ -35,6 +35,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.action.AddCategoryAction;
 import org.eclipselabs.recommenders.bookmark.action.CloseAllEditorWindowsAction;
+import org.eclipselabs.recommenders.bookmark.action.CollapseAllAction;
 import org.eclipselabs.recommenders.bookmark.action.DeleteBookmarkAction;
 import org.eclipselabs.recommenders.bookmark.action.GoToCategoryModeAction;
 import org.eclipselabs.recommenders.bookmark.action.OpenBookmarkAction;
@@ -92,6 +93,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     private IMemento memento;
     private ComboStrategySwapper comboStrategySwapper;
     private List<IHandlerActivation> removeOnDispose = Lists.newArrayList();
+    private CollapseAllAction collapseAll;
 
     @Override
     public void createPartControl(final Composite parent) {
@@ -268,7 +270,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         closeAllEditors = new CloseAllEditorWindowsAction(this);
         addNewCategory = new AddCategoryAction(this, hideableComboViewer);
         categoryMode = new GoToCategoryModeAction(hideableComboViewer, model, treeViewer);
-
+        collapseAll = new CollapseAllAction();
     }
 
     private void enableActionsInToolbar(Action closeAllEditors, Action switchFlatHierarchical, Action categoryMode,
@@ -278,6 +280,8 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         mgr.add(closeAllEditors);
         mgr.add(switchFlatHierarchical);
         mgr.add(categoryMode);
+        mgr.add(new Separator());
+        mgr.add(collapseAll);
         mgr.add(new Separator());
         mgr.add(addNewCategory);
 
