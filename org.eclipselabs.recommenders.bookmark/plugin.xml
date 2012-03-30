@@ -192,6 +192,19 @@
         </instanceof>
      </enablement>
   </renameParticipant>
+  <renameParticipant
+        class="org.eclipselabs.recommenders.bookmark.renameparticipant.FileRenameParticipant"
+        id="org.eclipselabs.recommenders.bookmark.renameParticipant1"
+        name="IFile Rename">
+     <enablement>
+        <with
+              variable="element">
+           <instanceof
+                 value="org.eclipse.core.resources.IFile">
+           </instanceof>
+        </with>
+     </enablement>
+  </renameParticipant>
   </extension>
 
 </plugin>

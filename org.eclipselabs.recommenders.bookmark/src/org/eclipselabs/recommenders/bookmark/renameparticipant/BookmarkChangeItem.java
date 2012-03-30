@@ -8,11 +8,11 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.commands.RenameJavaElementsCommand;
 
-class ElementChange extends Change {
+class BookmarkChangeItem extends Change {
 
-    private final ChangeElementVisitor visitor;
+    private final IChangeBookmark visitor;
 
-    public ElementChange(ChangeElementVisitor visitor) {
+    public BookmarkChangeItem(IChangeBookmark visitor) {
         this.visitor = visitor;
     }
 
@@ -33,10 +33,10 @@ class ElementChange extends Change {
     @Override
     public Change perform(IProgressMonitor pm) throws CoreException {
         Activator.getCommandInvoker().invoke(new RenameJavaElementsCommand(visitor));
-        return new ElementChange(swapIdParameterForVisitor(visitor));
+        return new BookmarkChangeItem(swapIdParameterForVisitor(visitor));
     }
 
-    private ChangeElementVisitor swapIdParameterForVisitor(ChangeElementVisitor visitor) {
+    private IChangeBookmark swapIdParameterForVisitor(IChangeBookmark visitor) {
         String oldId = visitor.getOldId();
         String newId = visitor.getNewId();
         visitor.setNewId(oldId);

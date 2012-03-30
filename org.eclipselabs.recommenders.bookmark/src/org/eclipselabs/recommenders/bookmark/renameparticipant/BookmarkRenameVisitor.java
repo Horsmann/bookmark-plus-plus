@@ -5,18 +5,21 @@ import org.eclipselabs.recommenders.bookmark.model.FileBookmark;
 import org.eclipselabs.recommenders.bookmark.model.IBookmark;
 import org.eclipselabs.recommenders.bookmark.model.JavaElementBookmark;
 
-public class JavaElementRenameVisitor implements ChangeElementVisitor {
+public class BookmarkRenameVisitor implements IChangeBookmark {
 
     private String oldId;
     private String newId;
 
-    public JavaElementRenameVisitor(String oldId, String newId) {
+    public BookmarkRenameVisitor(String oldId, String newId) {
         this.oldId = oldId;
         this.newId = newId;
     }
 
     @Override
     public void visit(FileBookmark fileBookmark) {
+        if (isEqual(fileBookmark.getPath())){
+            fileBookmark.setNewPath(newId);
+        }
     }
 
     @Override

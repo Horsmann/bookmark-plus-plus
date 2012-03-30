@@ -99,4 +99,8 @@ public class FileBookmark implements IBookmark {
     public static String getPath(IFile file, boolean isInWorkspace) {
         return new FileBookmark(file, isInWorkspace).getPath();
     }
+
+    public void setNewPath(String newPath) {
+        this.path = newPath;
+    }
 }

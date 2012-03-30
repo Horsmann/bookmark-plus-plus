@@ -56,7 +56,7 @@ import org.eclipselabs.recommenders.bookmark.commands.RenameJavaElementsCommand;
 import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 import org.eclipselabs.recommenders.bookmark.model.Category;
 import org.eclipselabs.recommenders.bookmark.model.IBookmarkModelComponent;
-import org.eclipselabs.recommenders.bookmark.renameparticipant.JavaElementRenameVisitor;
+import org.eclipselabs.recommenders.bookmark.renameparticipant.BookmarkRenameVisitor;
 import org.eclipselabs.recommenders.bookmark.view.handler.copyCut.CopyHandler;
 import org.eclipselabs.recommenders.bookmark.view.handler.copyCut.CutHandler;
 import org.eclipselabs.recommenders.bookmark.view.handler.paste.DefaultPasteStrategy;
@@ -615,7 +615,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
                     return;
                 }
 
-                JavaElementRenameVisitor visitor = new JavaElementRenameVisitor(idBefore, idAfter);
+                BookmarkRenameVisitor visitor = new BookmarkRenameVisitor(idBefore, idAfter);
                 invoke(new RenameJavaElementsCommand(visitor));
             }
         }

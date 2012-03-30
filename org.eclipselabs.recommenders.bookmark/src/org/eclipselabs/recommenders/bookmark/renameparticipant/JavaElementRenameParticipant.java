@@ -141,11 +141,11 @@ public class JavaElementRenameParticipant extends RenameParticipant {
 
     @Override
     public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
-        return new ElementChange(getVisitor());
+        return new BookmarkChangeItem(getVisitor());
     }
 
-    private ChangeElementVisitor getVisitor() {
-        return new JavaElementRenameVisitor(oldHandleId, newHandleId);
+    private IChangeBookmark getVisitor() {
+        return new BookmarkRenameVisitor(oldHandleId, newHandleId);
     }
 
 }
