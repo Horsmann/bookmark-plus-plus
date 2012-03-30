@@ -331,6 +331,9 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         refreshTreeViewer(display);
     }
 
+    // Some events cause a refresh outside the SWT-thread, which causes an
+    // SWT-Exception. This makes sure every
+    // refresh is done in the correct thread
     private void refreshTreeViewer(Display display) {
         display.asyncExec(new Runnable() {
 
@@ -339,7 +342,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
                 treeViewer.refresh();
             }
         });
-        
+
     }
 
     private Display getDisplay() {

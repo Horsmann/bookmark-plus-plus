@@ -11,9 +11,10 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
 
 public class ProjectRenameParticipant extends RenameParticipant {
+    
+    private String oldHandleId="";
+    private String newHandleId="";
 
-    public ProjectRenameParticipant() {
-    }
 
     @Override
     protected boolean initialize(Object element) {
@@ -22,10 +23,26 @@ public class ProjectRenameParticipant extends RenameParticipant {
             return false;
         }
         IProject project = (IProject) element;
-        String name = project.getName();
-        String newName = getArguments().getNewName();
+        oldHandleId = createOldId(project);
+        newHandleId = createNewId();
 
+        if (!initSuccessful()) {
+            return false;
+        }
+        
         return true;
+    }
+
+    private boolean initSuccessful() {
+        return oldHandleId.length() > 1 && newHandleId.length() > 1;
+    }
+
+    private String createNewId() {
+        return "=" + getArguments().getNewName();
+    }
+
+    private String createOldId(IProject project) {
+        return "=" + project.getName();
     }
 
     private boolean isSupported(Object element) {
@@ -54,7 +71,11 @@ public class ProjectRenameParticipant extends RenameParticipant {
 
     @Override
     public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
-        return null;
+        return new ElementChange(getVisitor());
+    }
+    
+    private ChangeElementVisitor getVisitor() {
+        return new JavaElementRenameVisitor(oldHandleId, newHandleId);
     }
 
 }

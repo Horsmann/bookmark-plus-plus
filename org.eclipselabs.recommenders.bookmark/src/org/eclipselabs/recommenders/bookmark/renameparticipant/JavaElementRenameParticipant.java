@@ -1,6 +1,5 @@
 package org.eclipselabs.recommenders.bookmark.renameparticipant;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -142,10 +141,10 @@ public class JavaElementRenameParticipant extends RenameParticipant {
 
     @Override
     public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
-        return new JavaElementChange(getVisitor(elementType, oldHandleId, newHandleId));
+        return new ElementChange(getVisitor());
     }
 
-    private IJavaElementChangeVisitor getVisitor(RenameSupported elementType, String oldHandleId, String newHandleId) {
+    private ChangeElementVisitor getVisitor() {
         return new JavaElementRenameVisitor(oldHandleId, newHandleId);
     }
 

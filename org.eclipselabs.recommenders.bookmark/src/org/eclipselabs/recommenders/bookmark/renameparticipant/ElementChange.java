@@ -8,11 +8,11 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.commands.RenameJavaElementsCommand;
 
-class JavaElementChange extends Change {
+class ElementChange extends Change {
 
-    private final IJavaElementChangeVisitor visitor;
+    private final ChangeElementVisitor visitor;
 
-    public JavaElementChange(IJavaElementChangeVisitor visitor) {
+    public ElementChange(ChangeElementVisitor visitor) {
         this.visitor = visitor;
     }
 
@@ -33,10 +33,10 @@ class JavaElementChange extends Change {
     @Override
     public Change perform(IProgressMonitor pm) throws CoreException {
         Activator.getCommandInvoker().invoke(new RenameJavaElementsCommand(visitor));
-        return new JavaElementChange(swapIdParameterForVisitor(visitor));
+        return new ElementChange(swapIdParameterForVisitor(visitor));
     }
 
-    private IJavaElementChangeVisitor swapIdParameterForVisitor(IJavaElementChangeVisitor visitor) {
+    private ChangeElementVisitor swapIdParameterForVisitor(ChangeElementVisitor visitor) {
         String oldId = visitor.getOldId();
         String newId = visitor.getNewId();
         visitor.setNewId(oldId);
