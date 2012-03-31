@@ -13,6 +13,7 @@ import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartConstants;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -44,27 +45,41 @@ public class JavaElementChangedListener implements IElementChangedListener {
                 return;
             }
             BookmarkRenameVisitor visitor = new BookmarkRenameVisitor(pair[0], pair[1]);
-            // ////////
-
-            Optional<IEditorPart> editorPart = getEditorPartOfActivePage();
-            if (editorPart.isPresent()) {
-                
-                
-                storeChanges(visitor, editorPart.get());
-            }
-
-            // ////////
-            // Activator.getCommandInvoker().invoke(new
-            // RenameJavaElementsCommand(visitor));
+            saveChangeInQueueUntilEditorIsSaved(visitor);
         }
+    }
+
+    private void saveChangeInQueueUntilEditorIsSaved(BookmarkRenameVisitor visitor) {
+        Optional<IEditorPart> editorPart = getEditorPartOfActivePage();
+        if (editorPart.isPresent()) {
+            setUpDirtyEditorHandling(editorPart);
+            storeChanges(visitor, editorPart.get());
+        }
+    }
+
+    private void setUpDirtyEditorHandling(Optional<IEditorPart> editorPart) {
+        PropertyListener registerPropertyListener = registerPropertyListener(editorPart.get());
+        ActivePagePartListener registerPageCloseListener = registerPageCloseListener(editorPart.get());
+        registerPageCloseListener.setPropertyListener(registerPropertyListener);
     }
 
     private void storeChanges(BookmarkRenameVisitor visitor, IEditorPart iEditorPart) {
         List<IModelVisitor> list = getList(iEditorPart);
         list.add(visitor);
-        System.out.println("Stored 1 change for : " + iEditorPart.getTitle());
     }
 
+    private ActivePagePartListener registerPageCloseListener(IEditorPart iEditorPart) {
+        IWorkbenchPage page = iEditorPart.getSite().getPage();
+        ActivePagePartListener activePageListener = new ActivePagePartListener(iEditorPart, this);
+        page.addPartListener(activePageListener);
+        return activePageListener;
+    }
+
+    private PropertyListener registerPropertyListener(IEditorPart iEditorPart) {
+        PropertyListener propertyListener = new PropertyListener(iEditorPart);
+        iEditorPart.addPropertyListener(propertyListener);
+        return propertyListener;
+    }
 
     private String[] getRenameInformation(IJavaElementDelta[] affectedChildren) {
         String[] pair = new String[] { "", "" };
@@ -92,7 +107,6 @@ public class JavaElementChangedListener implements IElementChangedListener {
 
     public void removeAllChangesFor(IEditorPart editorPart) {
         pendingChanges.remove(editorPart);
-        System.out.println("Removed Changes for: " + editorPart.getTitle());
     }
 
     private List<IModelVisitor> getList(IEditorPart editorPart) {
@@ -110,7 +124,6 @@ public class JavaElementChangedListener implements IElementChangedListener {
         for (IModelVisitor change : changes) {
             Activator.getCommandInvoker().invoke(new RenameJavaElementsCommand(change));
         }
-        System.out.println(changes.size() + " changes executed for: " + part.getTitle());
     }
 
     private boolean validBeforeAfterId(String idBefore, String idAfter) {
@@ -143,22 +156,43 @@ public class JavaElementChangedListener implements IElementChangedListener {
 
     class PropertyListener implements IPropertyListener {
 
-        public PropertyListener() {
+        private final IEditorPart editorPart;
+
+        public PropertyListener(IEditorPart editorPart) {
+            this.editorPart = editorPart;
         }
 
         @Override
         public void propertyChanged(Object source, int propId) {
-//            if (propId == IWorkbenchPartConstants.PROP_DIRTY && !editorPart.isDirty()) {
-//            }
+            if (editorContentSaved(propId)) {
+                removeListener();
+                executeChanges(editorPart);
+            }
         }
+
+        private boolean editorContentSaved(int propId) {
+            return (propId == IWorkbenchPartConstants.PROP_DIRTY && !editorPart.isDirty());
+        }
+
+        public void removeListener() {
+            editorPart.removePropertyListener(this);
+        }
+
     }
 
     class ActivePagePartListener implements IPartListener2 {
 
+        private PropertyListener propertyListener;
         private final JavaElementChangedListener changeListener;
+        private IEditorPart editorPart;
 
-        public ActivePagePartListener(JavaElementChangedListener javaElementChangedListener) {
+        public ActivePagePartListener(IEditorPart editorPart, JavaElementChangedListener javaElementChangedListener) {
+            this.editorPart = editorPart;
             this.changeListener = javaElementChangedListener;
+        }
+
+        public void setPropertyListener(PropertyListener propertyListener) {
+            this.propertyListener = propertyListener;
         }
 
         @Override
@@ -171,6 +205,16 @@ public class JavaElementChangedListener implements IElementChangedListener {
 
         @Override
         public void partClosed(IWorkbenchPartReference partRef) {
+
+            IWorkbenchPart part = partRef.getPart(false);
+            if (part instanceof IEditorPart) {
+                IEditorPart eventEditorPart = (IEditorPart) part;
+                if (editorPart == eventEditorPart) {
+                    changeListener.removeAllChangesFor(editorPart);
+                    propertyListener.removeListener();
+                }
+            }
+
         }
 
         @Override
