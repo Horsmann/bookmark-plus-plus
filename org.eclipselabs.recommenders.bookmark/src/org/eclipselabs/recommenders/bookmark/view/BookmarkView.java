@@ -109,7 +109,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
         activateHierarchicalMode();
         addResourceListener();
         addViewPartListener();
-        addJavaElementChangeListener();
+//        addJavaElementChangeListener();
         Activator.setBookmarkView(this);
         restoreGUIState();
     }

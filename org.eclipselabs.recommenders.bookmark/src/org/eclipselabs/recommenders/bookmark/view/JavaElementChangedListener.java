@@ -28,20 +28,24 @@ import com.google.common.base.Optional;
 public class JavaElementChangedListener implements IElementChangedListener {
 
     private HashMap<IEditorPart, List<IModelVisitor>> pendingChanges = new HashMap<IEditorPart, List<IModelVisitor>>();
+    private HashMap<String, String> brokenChanges = new HashMap<String, String>();
 
     @Override
     public void elementChanged(ElementChangedEvent event) {
         IJavaElementDelta delta = event.getDelta();
-        if (!(delta.getKind() == IJavaElementDelta.CHANGED)) {
-            return;
-        }
+        // if (!(delta.getKind() == IJavaElementDelta.CHANGED)) {
+        // return;
+        // }
+
+        System.out.println("Event: " + delta.getKind());
 
         IJavaElementDelta[] affectedChildren = delta.getAffectedChildren();
         for (IJavaElementDelta affected : affectedChildren) {
             String[] pair = getRenameInformation(affected.getAffectedChildren());
 
             if (!validBeforeAfterId(pair[0], pair[1])) {
-                System.out.println("id pairs not valid: " + pair[0] + "|" + pair[1]);
+                // System.out.println("id pairs not valid: " + pair[0] + "|" +
+                // pair[1]);
                 return;
             }
             BookmarkRenameVisitor visitor = new BookmarkRenameVisitor(pair[0], pair[1]);
@@ -86,10 +90,71 @@ public class JavaElementChangedListener implements IElementChangedListener {
         if (affectedChildren.length == 2) {
             pair[0] = getIdBeforeChange(affectedChildren);
             pair[1] = getIdAfterChange(affectedChildren);
+            System.out.println("Before: " + pair[0] + "\nAfter: " + pair[1]);
         } else if (affectedChildren.length == 1) {
+            System.out.println("1-Element: " + affectedChildren[0].getElement().getHandleIdentifier());
             pair = getRenameInformation(affectedChildren[0].getAffectedChildren());
+        } else if (affectedChildren.length == 3) {
+            if (didElementBreakDuringRename(affectedChildren)) {
+                saveIdBeforeItBroke(affectedChildren);
+                System.out.println("broke");
+            } else if (isBrokenElementCorrected(affectedChildren)) {
+                pair = getValidIdPairFromStorage(affectedChildren);
+                System.out.println("fixed, Before: " + pair[0] + "\nAfter: " + pair[1]);
+            }
+            // System.out.println("Add: " + IJavaElementDelta.ADDED + "\n" +
+            // "Remove: " + IJavaElementDelta.REMOVED);
+//            System.out.println(affectedChildren[0].getKind() + "Id: "
+//                    + affectedChildren[0].getElement().getHandleIdentifier());
+//            System.out.println(affectedChildren[1].getKind() + " Id: "
+//                    + affectedChildren[1].getElement().getHandleIdentifier());
+//            System.out.println(affectedChildren[2].getKind() + " Id: "
+//                    + affectedChildren[2].getElement().getHandleIdentifier());
+        } else {
+            System.out.println("array-length: " + affectedChildren.length);
         }
+        // System.out.println("Length: " + affectedChildren.length);
+        System.out.println();
         return pair;
+    }
+
+    private String[] getValidIdPairFromStorage(IJavaElementDelta[] affectedChildren) {
+        String handleIdentifier = affectedChildren[1].getElement().getHandleIdentifier();
+        String string = brokenChanges.remove(handleIdentifier);
+        if (string != null) {
+            return new String[] { string, affectedChildren[0].getElement().getHandleIdentifier() };
+        }
+        return new String[] { "", "" };
+    }
+
+    private boolean isBrokenElementCorrected(IJavaElementDelta[] affectedChildren) {
+        IJavaElementDelta child1 = affectedChildren[0];
+        IJavaElementDelta child2 = affectedChildren[1];
+        IJavaElementDelta child3 = affectedChildren[2];
+        return isAdd(child1) && isRemove(child2) && isRemove(child3);
+    }
+
+    private void saveIdBeforeItBroke(IJavaElementDelta[] affectedChildren) {
+        String idChild1 = affectedChildren[0].getElement().getHandleIdentifier();
+        String idChild2 = affectedChildren[1].getElement().getHandleIdentifier();
+        String idChild3 = affectedChildren[2].getElement().getHandleIdentifier();
+        brokenChanges.put(idChild1, idChild3);
+        brokenChanges.put(idChild2, idChild3);
+    }
+
+    private boolean didElementBreakDuringRename(IJavaElementDelta[] affectedChildren) {
+        IJavaElementDelta child1 = affectedChildren[0];
+        IJavaElementDelta child2 = affectedChildren[1];
+        IJavaElementDelta child3 = affectedChildren[2];
+        return isAdd(child1) && isAdd(child2) && isRemove(child3);
+    }
+
+    private boolean isRemove(IJavaElementDelta child) {
+        return child.getKind() == IJavaElementDelta.REMOVED;
+    }
+
+    private boolean isAdd(IJavaElementDelta child) {
+        return child.getKind() == IJavaElementDelta.ADDED;
     }
 
     private Optional<IEditorPart> getEditorPartOfActivePage() {
