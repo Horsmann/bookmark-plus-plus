@@ -12,7 +12,7 @@ import org.eclipselabs.recommenders.bookmark.model.BookmarkModel;
 
 public class BookmarkIO {
 
-    public static BookmarkModel load(File file) throws IOException {
+    public static BookmarkModel load(File file) throws IOException, ClassNotFoundException {
         BookmarkModel model = null;
 
         try {
@@ -22,9 +22,7 @@ public class BookmarkIO {
             in.close();
         } catch (FileNotFoundException fileNotFound) {
             model = new BookmarkModel();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        } 
         if (model == null) {
             model = new BookmarkModel();
         }

@@ -64,6 +64,8 @@ public class Activator extends AbstractUIPlugin {
             model = BookmarkIO.load(getLocationForStoringBookmark());
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 

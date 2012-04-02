@@ -110,7 +110,11 @@ public class BookmarkImportWizardPage extends BookmarkWizardPage {
                 try {
                     model = BookmarkIO.load(file);
                 } catch (IOException ex) {
-                    bookmarkImportWizardPage.showErrorOnOpeningFilePopUp("File content could not be read",
+                    bookmarkImportWizardPage.showErrorOnOpeningFilePopUp("File could not be read",
+                            "Error opening file");
+                    return;
+                } catch (ClassNotFoundException ex) {
+                    bookmarkImportWizardPage.showErrorOnOpeningFilePopUp("File could not be read",
                             "Error opening file");
                     return;
                 }
@@ -148,6 +152,8 @@ public class BookmarkImportWizardPage extends BookmarkWizardPage {
                     setFileContentForViewer(file);
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
                 setPageComplete(true);
             } else {
@@ -157,7 +163,7 @@ public class BookmarkImportWizardPage extends BookmarkWizardPage {
 
         }
 
-        private void setFileContentForViewer(File file) throws IOException {
+        private void setFileContentForViewer(File file) throws IOException, ClassNotFoundException {
             if (isValid(file)) {
                 leftTreeViewer.setInput(BookmarkIO.load(file));
                 importPage.layout();
