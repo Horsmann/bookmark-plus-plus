@@ -88,7 +88,7 @@ public class JavaElementChangedListener implements IElementChangedListener {
             pair = getRenameInformation(affectedChildren[0].getAffectedChildren());
         } else if (affectedChildren.length == 3) {
             if (didElementBreakDuringRename(affectedChildren)) {
-                saveIdBeforeItBroke(affectedChildren);
+                mapBrokenIdPartsToOldId(affectedChildren);
                 System.out.println("broke");
             } else if (isBrokenElementCorrected(affectedChildren)) {
                 pair = getValidIdPairFromStorage(affectedChildren);
@@ -96,17 +96,13 @@ public class JavaElementChangedListener implements IElementChangedListener {
             }
             // System.out.println("Add: " + IJavaElementDelta.ADDED + "\n" +
             // "Remove: " + IJavaElementDelta.REMOVED);
-//            System.out.println(affectedChildren[0].getKind() + "Id: "
-//                    + affectedChildren[0].getElement().getHandleIdentifier());
-//            System.out.println(affectedChildren[1].getKind() + " Id: "
-//                    + affectedChildren[1].getElement().getHandleIdentifier());
-//            System.out.println(affectedChildren[2].getKind() + " Id: "
-//                    + affectedChildren[2].getElement().getHandleIdentifier());
-        } else {
-            System.out.println("array-length: " + affectedChildren.length);
+            // System.out.println(affectedChildren[0].getKind() + "Id: "
+            // + affectedChildren[0].getElement().getHandleIdentifier());
+            // System.out.println(affectedChildren[1].getKind() + " Id: "
+            // + affectedChildren[1].getElement().getHandleIdentifier());
+            // System.out.println(affectedChildren[2].getKind() + " Id: "
+            // + affectedChildren[2].getElement().getHandleIdentifier());
         }
-        // System.out.println("Length: " + affectedChildren.length);
-        System.out.println();
         return pair;
     }
 
@@ -126,7 +122,7 @@ public class JavaElementChangedListener implements IElementChangedListener {
         return isAdd(child1) && isRemove(child2) && isRemove(child3);
     }
 
-    private void saveIdBeforeItBroke(IJavaElementDelta[] affectedChildren) {
+    private void mapBrokenIdPartsToOldId(IJavaElementDelta[] affectedChildren) {
         String idChild1 = affectedChildren[0].getElement().getHandleIdentifier();
         String idChild2 = affectedChildren[1].getElement().getHandleIdentifier();
         String idChild3 = affectedChildren[2].getElement().getHandleIdentifier();
@@ -138,7 +134,13 @@ public class JavaElementChangedListener implements IElementChangedListener {
         IJavaElementDelta child1 = affectedChildren[0];
         IJavaElementDelta child2 = affectedChildren[1];
         IJavaElementDelta child3 = affectedChildren[2];
-        return isAdd(child1) && isAdd(child2) && isRemove(child3);
+        return hasSameParent(child1, child3) && hasSameParent(child1, child2) && isAdd(child1) && isAdd(child2) && isRemove(child3);
+    }
+
+    private boolean hasSameParent(IJavaElementDelta child1, IJavaElementDelta child2) {
+        String parentId = child1.getElement().getParent().getHandleIdentifier();
+        String child2Id = child2.getElement().getParent().getHandleIdentifier();
+        return parentId.equals(child2Id);
     }
 
     private boolean isRemove(IJavaElementDelta child) {
@@ -153,8 +155,8 @@ public class JavaElementChangedListener implements IElementChangedListener {
         Optional<IEditorPart> editor = Optional.absent();
         IWorkbench workbench = PlatformUI.getWorkbench();
         IWorkbenchWindow[] workbenchWindows = workbench.getWorkbenchWindows();
-        for (IWorkbenchWindow ww : workbenchWindows) {
-            IWorkbenchPage activePage = ww.getActivePage();
+        for (IWorkbenchWindow window : workbenchWindows) {
+            IWorkbenchPage activePage = window.getActivePage();
             if (activePage != null) {
                 return Optional.of(activePage.getActiveEditor());
             }
