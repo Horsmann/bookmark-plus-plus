@@ -40,6 +40,11 @@ public class JavaElementBookmark implements IBookmark {
     }
 
     @Override
+    public String toString() {
+        return handleId;
+    }
+    
+    @Override
     public boolean isInferredNode() {
         return isInferred;
     }

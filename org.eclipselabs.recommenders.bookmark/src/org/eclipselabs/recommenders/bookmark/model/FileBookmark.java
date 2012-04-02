@@ -21,6 +21,11 @@ public class FileBookmark implements IBookmark {
         setPath(file);
     }
 
+    @Override
+    public String toString() {
+        return (isInWorkspace ? "INTERNAL: " : "EXTERNAL: ") + path;
+    }
+
     private void setPath(IFile file) {
         if (isInWorkspace) {
             this.path = getRelativePath(file);

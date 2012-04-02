@@ -27,6 +27,11 @@ public class Category implements IBookmarkModelComponent {
         Collections.addAll(this.bookmarks, bookmarks);
     }
 
+    @Override
+    public String toString() {
+        return getLabel();
+    }
+
     public String getLabel() {
         return label;
     }
