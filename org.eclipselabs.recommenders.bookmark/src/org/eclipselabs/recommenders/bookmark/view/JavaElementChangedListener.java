@@ -33,19 +33,12 @@ public class JavaElementChangedListener implements IElementChangedListener {
     @Override
     public void elementChanged(ElementChangedEvent event) {
         IJavaElementDelta delta = event.getDelta();
-        // if (!(delta.getKind() == IJavaElementDelta.CHANGED)) {
-        // return;
-        // }
-
-        System.out.println("Event: " + delta.getKind());
 
         IJavaElementDelta[] affectedChildren = delta.getAffectedChildren();
         for (IJavaElementDelta affected : affectedChildren) {
             String[] pair = getRenameInformation(affected.getAffectedChildren());
 
             if (!validBeforeAfterId(pair[0], pair[1])) {
-                // System.out.println("id pairs not valid: " + pair[0] + "|" +
-                // pair[1]);
                 return;
             }
             BookmarkRenameVisitor visitor = new BookmarkRenameVisitor(pair[0], pair[1]);
@@ -54,7 +47,7 @@ public class JavaElementChangedListener implements IElementChangedListener {
     }
 
     private void saveChangeInQueueUntilEditorIsSaved(BookmarkRenameVisitor visitor) {
-        Optional<IEditorPart> editorPart = getEditorPartOfActivePage();
+        Optional<IEditorPart> editorPart = getEditorPartsOfActivePage();
         if (editorPart.isPresent()) {
             setUpDirtyEditorHandling(editorPart);
             storeChanges(visitor, editorPart.get());
@@ -92,7 +85,6 @@ public class JavaElementChangedListener implements IElementChangedListener {
             pair[1] = getIdAfterChange(affectedChildren);
             System.out.println("Before: " + pair[0] + "\nAfter: " + pair[1]);
         } else if (affectedChildren.length == 1) {
-            System.out.println("1-Element: " + affectedChildren[0].getElement().getHandleIdentifier());
             pair = getRenameInformation(affectedChildren[0].getAffectedChildren());
         } else if (affectedChildren.length == 3) {
             if (didElementBreakDuringRename(affectedChildren)) {
@@ -157,7 +149,7 @@ public class JavaElementChangedListener implements IElementChangedListener {
         return child.getKind() == IJavaElementDelta.ADDED;
     }
 
-    private Optional<IEditorPart> getEditorPartOfActivePage() {
+    private Optional<IEditorPart> getEditorPartsOfActivePage() {
         Optional<IEditorPart> editor = Optional.absent();
         IWorkbench workbench = PlatformUI.getWorkbench();
         IWorkbenchWindow[] workbenchWindows = workbench.getWorkbenchWindows();
@@ -186,9 +178,12 @@ public class JavaElementChangedListener implements IElementChangedListener {
     private void executeChanges(IEditorPart part) {
         List<IModelVisitor> changes = getList(part);
         pendingChanges.remove(part);
+        System.out.println("Execute");
         for (IModelVisitor change : changes) {
+            System.out.println(change);
             Activator.getCommandInvoker().invoke(new RenameJavaElementsCommand(change));
         }
+        System.out.println("Execute-End");
     }
 
     private boolean validBeforeAfterId(String idBefore, String idAfter) {
