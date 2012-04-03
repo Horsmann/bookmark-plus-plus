@@ -6,8 +6,11 @@ import java.util.List;
 
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaElementDelta;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPropertyListener;
@@ -80,6 +83,7 @@ public class JavaElementChangedListener implements IElementChangedListener {
 
     private String[] getRenameInformation(IJavaElementDelta[] affectedChildren) {
         String[] pair = new String[] { "", "" };
+        //TODO: Die dritte Referenz, wenn man beim Methoden umbennen eine kurze Paus 
         if (affectedChildren.length == 2) {
             pair[0] = getIdBeforeChange(affectedChildren);
             pair[1] = getIdAfterChange(affectedChildren);
@@ -134,13 +138,25 @@ public class JavaElementChangedListener implements IElementChangedListener {
         IJavaElementDelta child1 = affectedChildren[0];
         IJavaElementDelta child2 = affectedChildren[1];
         IJavaElementDelta child3 = affectedChildren[2];
-        return hasSameParent(child1, child3) && hasSameParent(child1, child2) && isAdd(child1) && isAdd(child2) && isRemove(child3);
+        return isAdd(child1) && isAdd(child2) && isRemove(child3);
     }
 
-    private boolean hasSameParent(IJavaElementDelta child1, IJavaElementDelta child2) {
-        String parentId = child1.getElement().getParent().getHandleIdentifier();
-        String child2Id = child2.getElement().getParent().getHandleIdentifier();
-        return parentId.equals(child2Id);
+    private boolean doDeltasReferToElementOfSameType(IJavaElementDelta delta1, IJavaElementDelta delta2) {
+        return areTypes(delta1.getElement(), delta2.getElement())
+                || areMethods(delta1.getElement(), delta2.getElement())
+                || areField(delta1.getElement(), delta2.getElement());
+    }
+
+    private boolean areField(IJavaElement element, IJavaElement element2) {
+        return element instanceof IField && element2 instanceof IField;
+    }
+
+    private boolean areMethods(IJavaElement element, IJavaElement element2) {
+        return element instanceof IMethod && element2 instanceof IMethod;
+    }
+
+    private boolean areTypes(IJavaElement element, IJavaElement element2) {
+        return element instanceof IType && element2 instanceof IType;
     }
 
     private boolean isRemove(IJavaElementDelta child) {
