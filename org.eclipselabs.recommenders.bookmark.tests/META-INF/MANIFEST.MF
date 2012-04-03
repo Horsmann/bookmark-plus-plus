@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tests for Example Project
+Bundle-Name: Tests for Bookmark++
 Bundle-SymbolicName: org.eclipselabs.recommenders.bookmark.tests
-Bundle-Version: 0.1.0.qualifier
+Bundle-Version: 0.1.01.qualifier
 Bundle-Vendor: Eclipse Code Recommenders
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit,

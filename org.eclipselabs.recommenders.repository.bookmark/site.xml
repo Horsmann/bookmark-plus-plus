@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipselabs.recommenders.bookmark.feature_0.1.0.qualifier.jar" id="org.eclipselabs.recommenders.bookmark.feature" version="0.1.0.qualifier">
+   <feature url="features/org.eclipselabs.recommenders.bookmark.feature_0.1.1.qualifier.jar" id="org.eclipselabs.recommenders.bookmark.feature" version="0.1.01.qualifier">
       <category name="Bookmark++"/>
    </feature>
-   <feature url="features/org.eclipselabs.recommenders.feature.bookmark.source_0.1.0.qualifier.jar" id="org.eclipselabs.recommenders.feature.bookmark.source" version="0.1.0.qualifier">
+   <feature url="features/org.eclipselabs.recommenders.feature.bookmark.source_0.1.1.qualifier.jar" id="org.eclipselabs.recommenders.feature.bookmark.source" version="0.1.01.qualifier">
       <category name="Bookmark++"/>
    </feature>
    <category-def name="Bookmark++" label="Bookmark++"/>
