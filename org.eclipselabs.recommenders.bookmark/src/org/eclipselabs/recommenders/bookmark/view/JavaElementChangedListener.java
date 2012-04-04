@@ -11,6 +11,10 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.compiler.IProblem;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPropertyListener;
@@ -36,16 +40,157 @@ public class JavaElementChangedListener implements IElementChangedListener {
     @Override
     public void elementChanged(ElementChangedEvent event) {
         IJavaElementDelta delta = event.getDelta();
+        // traverseAndPrint(delta);
 
-        IJavaElementDelta[] affectedChildren = delta.getAffectedChildren();
-        for (IJavaElementDelta affected : affectedChildren) {
-            String[] pair = getRenameInformation(affected.getAffectedChildren());
+        LinkedList<DeltaItem> renameInformation = getRenameInformation(delta);
 
-            if (!validBeforeAfterId(pair[0], pair[1])) {
-                return;
+        for (DeltaItem item : renameInformation) {
+            System.out.println(item.kind + " " + item.id);
+        }
+
+        System.out.println(tagEvent(renameInformation));
+        System.out.println();
+
+        // if (!validBeforeAfterId(pair[0], pair[1])) {
+        // return;
+        // }
+        // BookmarkRenameVisitor visitor = new BookmarkRenameVisitor(pair[0],
+        // pair[1]);
+        // saveChangeInQueueUntilEditorIsSaved(visitor);
+
+    }
+
+    private String tagEvent(LinkedList<DeltaItem> renameInformation) {
+
+        if (renameInformation.size() == 2) {
+            if (doesReferToSameType(renameInformation)) {
+                return "Correct before/after";
+            } else {
+                return "malformed event of temp. invalid model";
             }
-            BookmarkRenameVisitor visitor = new BookmarkRenameVisitor(pair[0], pair[1]);
-            saveChangeInQueueUntilEditorIsSaved(visitor);
+        } else if (renameInformation.size() == 3) {
+            if (isAddRemoveRemove(renameInformation)) {
+                return process3_1xAdd_2xRemove(renameInformation);
+                // process3_1xAdd_2xR(renameInformation);
+            } else if (isAddAddRemove(renameInformation)) {
+                return process3_2xAdd_1xRemove(renameInformation);
+            }
+        }
+
+        return "UNKNOWN-TAG";
+    }
+
+    private String process3_1xAdd_2xRemove(LinkedList<DeltaItem> renameInformation) {
+        DeltaItem deltaItem = renameInformation.get(0);
+        DeltaItem deltaItem2 = renameInformation.get(1);
+        DeltaItem deltaItem3 = renameInformation.get(2);
+        
+        return "obtained 2 fragments that have to be mapped on the added element";
+    }
+
+    private String process3_2xAdd_1xRemove(LinkedList<DeltaItem> renameInformation) {
+        DeltaItem deltaItem = renameInformation.get(0);
+        DeltaItem deltaItem2 = renameInformation.get(1);
+        DeltaItem deltaItem3 = renameInformation.get(2);
+
+        if (implementSameIJavaElementSubInterface(deltaItem, deltaItem2)) {
+            return "Garbage-ID: " + deltaItem3.id;
+        }
+        return "Garbage-ID: " + deltaItem2.id;
+
+    }
+    
+    private boolean doesReferToSameType(LinkedList<DeltaItem> renameInformation) {
+        DeltaItem deltaItem = renameInformation.get(0);
+        DeltaItem deltaItem2 = renameInformation.get(1);
+
+        return implementSameIJavaElementSubInterface(deltaItem, deltaItem2);
+    }
+
+    private boolean implementSameIJavaElementSubInterface(DeltaItem deltaOne, DeltaItem deltaTwo) {
+        if (isIField(deltaOne)) {
+            return isIField(deltaTwo);
+        } else if (isIMethod(deltaOne)) {
+            return isIMethod(deltaTwo);
+        } else if (isIType(deltaOne)) {
+            return isIType(deltaTwo);
+        }
+        return false;
+    }
+
+    private boolean isIType(DeltaItem deltaItem) {
+        return JavaCore.create(deltaItem.id) instanceof IType;
+    }
+
+    private boolean isIMethod(DeltaItem deltaItem) {
+        return JavaCore.create(deltaItem.id) instanceof IMethod;
+    }
+
+    private boolean isIField(DeltaItem deltaItem) {
+        return JavaCore.create(deltaItem.id) instanceof IField;
+    }
+
+    private boolean isAddAddRemove(LinkedList<DeltaItem> renameInformation) {
+        boolean remove = false;
+        boolean add1 = false;
+        boolean add2 = false;
+
+        for (DeltaItem di : renameInformation) {
+            if (di.kind == IJavaElementDelta.REMOVED) {
+                remove = true;
+            }
+            if (di.kind == IJavaElementDelta.ADDED) {
+                if (add1 == true) {
+                    add2 = true;
+                } else {
+                    add1 = true;
+                }
+            }
+        }
+
+        return remove && add1 && add2;
+    }
+
+    private boolean isAddRemoveRemove(LinkedList<DeltaItem> renameInformation) {
+        boolean add = false;
+        boolean remove1 = false;
+        boolean remove2 = false;
+
+        for (DeltaItem di : renameInformation) {
+            if (di.kind == IJavaElementDelta.ADDED) {
+                add = true;
+            }
+            if (di.kind == IJavaElementDelta.REMOVED) {
+                if (remove1 == true) {
+                    remove2 = true;
+                } else {
+                    remove1 = true;
+                }
+            }
+        }
+
+        return add && remove1 && remove2;
+    }
+
+    void traverseAndPrint(IJavaElementDelta delta) {
+        switch (delta.getKind()) {
+        case IJavaElementDelta.ADDED:
+            System.out.println(delta.getElement().getHandleIdentifier() + " was added");
+            break;
+        case IJavaElementDelta.REMOVED:
+            System.out.println(delta.getElement().getHandleIdentifier() + " was removed");
+            break;
+        case IJavaElementDelta.CHANGED:
+            // System.out.println(delta.getElement().getHandleIdentifier() +
+            // " was changed");
+            if ((delta.getFlags() & IJavaElementDelta.F_CHILDREN) != 0) {
+                System.out.println("The change was in its children");
+            }
+            break;
+        }
+        IJavaElementDelta[] children = delta.getAffectedChildren();
+        for (int i = 0; i < children.length; i++) {
+            traverseAndPrint(children[i]);
         }
     }
 
@@ -81,90 +226,39 @@ public class JavaElementChangedListener implements IElementChangedListener {
         return propertyListener;
     }
 
-    private String[] getRenameInformation(IJavaElementDelta[] affectedChildren) {
-        String[] pair = new String[] { "", "" };
-        //TODO: Die dritte Referenz, wenn man beim Methoden umbennen eine kurze Paus 
-        if (affectedChildren.length == 2) {
-            pair[0] = getIdBeforeChange(affectedChildren);
-            pair[1] = getIdAfterChange(affectedChildren);
-            System.out.println("Before: " + pair[0] + "\nAfter: " + pair[1]);
-        } else if (affectedChildren.length == 1) {
-            pair = getRenameInformation(affectedChildren[0].getAffectedChildren());
-        } else if (affectedChildren.length == 3) {
-            if (didElementBreakDuringRename(affectedChildren)) {
-                mapBrokenIdPartsToOldId(affectedChildren);
-                System.out.println("broke");
-            } else if (isBrokenElementCorrected(affectedChildren)) {
-                pair = getValidIdPairFromStorage(affectedChildren);
-                System.out.println("fixed, Before: " + pair[0] + "\nAfter: " + pair[1]);
+    private LinkedList<DeltaItem> getRenameInformation(IJavaElementDelta delta) {
+
+        LinkedList<DeltaItem> list = new LinkedList<JavaElementChangedListener.DeltaItem>();
+
+        switch (delta.getKind()) {
+        case IJavaElementDelta.ADDED: {
+            String id = delta.getElement().getHandleIdentifier();
+            list.add(new DeltaItem(IJavaElementDelta.ADDED, id));
+            // System.out.println(delta.getElement().getHandleIdentifier() +
+            // " was added");
+            break;
+        }
+        case IJavaElementDelta.REMOVED: {
+            String id = delta.getElement().getHandleIdentifier();
+            list.add(new DeltaItem(IJavaElementDelta.REMOVED, id));
+
+            // System.out.println(delta.getElement().getHandleIdentifier() +
+            // " was removed");
+            break;
+        }
+        case IJavaElementDelta.CHANGED:
+            // System.out.println(delta.getElement().getHandleIdentifier() +
+            // " was changed");
+            if ((delta.getFlags() & IJavaElementDelta.F_CHILDREN) != 0) {
+                IJavaElementDelta[] children = delta.getAffectedChildren();
+                for (int i = 0; i < children.length; i++) {
+                    list.addAll(getRenameInformation(children[i]));
+                }
             }
-            // System.out.println("Add: " + IJavaElementDelta.ADDED + "\n" +
-            // "Remove: " + IJavaElementDelta.REMOVED);
-            // System.out.println(affectedChildren[0].getKind() + "Id: "
-            // + affectedChildren[0].getElement().getHandleIdentifier());
-            // System.out.println(affectedChildren[1].getKind() + " Id: "
-            // + affectedChildren[1].getElement().getHandleIdentifier());
-            // System.out.println(affectedChildren[2].getKind() + " Id: "
-            // + affectedChildren[2].getElement().getHandleIdentifier());
+            break;
         }
-        return pair;
-    }
 
-    private String[] getValidIdPairFromStorage(IJavaElementDelta[] affectedChildren) {
-        String handleIdentifier = affectedChildren[1].getElement().getHandleIdentifier();
-        String string = brokenChanges.remove(handleIdentifier);
-        if (string != null) {
-            return new String[] { string, affectedChildren[0].getElement().getHandleIdentifier() };
-        }
-        return new String[] { "", "" };
-    }
-
-    private boolean isBrokenElementCorrected(IJavaElementDelta[] affectedChildren) {
-        IJavaElementDelta child1 = affectedChildren[0];
-        IJavaElementDelta child2 = affectedChildren[1];
-        IJavaElementDelta child3 = affectedChildren[2];
-        return isAdd(child1) && isRemove(child2) && isRemove(child3);
-    }
-
-    private void mapBrokenIdPartsToOldId(IJavaElementDelta[] affectedChildren) {
-        String idChild1 = affectedChildren[0].getElement().getHandleIdentifier();
-        String idChild2 = affectedChildren[1].getElement().getHandleIdentifier();
-        String idChild3 = affectedChildren[2].getElement().getHandleIdentifier();
-        brokenChanges.put(idChild1, idChild3);
-        brokenChanges.put(idChild2, idChild3);
-    }
-
-    private boolean didElementBreakDuringRename(IJavaElementDelta[] affectedChildren) {
-        IJavaElementDelta child1 = affectedChildren[0];
-        IJavaElementDelta child2 = affectedChildren[1];
-        IJavaElementDelta child3 = affectedChildren[2];
-        return isAdd(child1) && isAdd(child2) && isRemove(child3);
-    }
-
-    private boolean doDeltasReferToElementOfSameType(IJavaElementDelta delta1, IJavaElementDelta delta2) {
-        return areTypes(delta1.getElement(), delta2.getElement())
-                || areMethods(delta1.getElement(), delta2.getElement())
-                || areField(delta1.getElement(), delta2.getElement());
-    }
-
-    private boolean areField(IJavaElement element, IJavaElement element2) {
-        return element instanceof IField && element2 instanceof IField;
-    }
-
-    private boolean areMethods(IJavaElement element, IJavaElement element2) {
-        return element instanceof IMethod && element2 instanceof IMethod;
-    }
-
-    private boolean areTypes(IJavaElement element, IJavaElement element2) {
-        return element instanceof IType && element2 instanceof IType;
-    }
-
-    private boolean isRemove(IJavaElementDelta child) {
-        return child.getKind() == IJavaElementDelta.REMOVED;
-    }
-
-    private boolean isAdd(IJavaElementDelta child) {
-        return child.getKind() == IJavaElementDelta.ADDED;
+        return list;
     }
 
     private Optional<IEditorPart> getEditorPartsOfActivePage() {
@@ -315,5 +409,15 @@ public class JavaElementChangedListener implements IElementChangedListener {
         public void partInputChanged(IWorkbenchPartReference partRef) {
         }
 
+    }
+
+    class DeltaItem {
+        int kind; // refers to IJavaElementDelta constants
+        String id;
+
+        public DeltaItem(int removed, String id) {
+            this.kind = removed;
+            this.id = id;
+        }
     }
 }

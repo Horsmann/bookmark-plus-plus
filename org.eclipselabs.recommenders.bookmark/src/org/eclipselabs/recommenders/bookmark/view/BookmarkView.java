@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ElementChangedEvent;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -26,11 +27,20 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IPageListener;
+import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWindowListener;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerActivation;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.part.ViewPart;
@@ -115,6 +125,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     private void addJavaElementChangeListener() {
+
         JavaCore.addElementChangedListener(new JavaElementChangedListener(), ElementChangedEvent.POST_RECONCILE);
     }
 
@@ -591,5 +602,4 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     public void setFocus() {
     }
 
-    
 }
