@@ -67,16 +67,23 @@ public class JavaElementChangedListener implements IElementChangedListener {
     private LinkedList<DeltaItem> extractChangesFromDeltaInformation(LinkedList<DeltaItem> elementChanges) {
 
         if (elementChanges.size() == 2) {
+            /*
+             * a simple change, no typos or typing breaks
+             */
             return processTwoElementEvent(elementChanges);
-        } else if (elementChanges.size() == 3) {
+        } else if (elementChanges.size() == 3 || elementChanges.size() >= 5) {
+            /*
+             * a typo with an illegal sign (.,' etc) causes several add or
+             * remove notifications, requires disambiguation
+             */
             return processThreeElementEvent(elementChanges);
         } else if (elementChanges.size() == 4) {
+            /*
+             */
             return processFourElementEvent(elementChanges);
-        } else if (elementChanges.size() >= 5) {
-            return processThreeElementEvent(elementChanges);
         }
 
-        return new LinkedList<JavaElementChangedListener.DeltaItem>();
+        return new LinkedList<DeltaItem>();
     }
 
     private LinkedList<DeltaItem> processTwoElementEvent(LinkedList<DeltaItem> elementChanges) {
