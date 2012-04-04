@@ -125,8 +125,7 @@ public class BookmarkView extends ViewPart implements BookmarkCommandInvoker {
     }
 
     private void addJavaElementChangeListener() {
-
-        JavaCore.addElementChangedListener(new JavaElementChangedListener(), ElementChangedEvent.POST_RECONCILE);
+        JavaCore.addElementChangedListener(new JavaElementChangedListener());
     }
 
     private void addViewPartListener() {

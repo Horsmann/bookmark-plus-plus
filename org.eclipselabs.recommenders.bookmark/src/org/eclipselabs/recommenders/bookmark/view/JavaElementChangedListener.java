@@ -42,69 +42,176 @@ public class JavaElementChangedListener implements IElementChangedListener {
         IJavaElementDelta delta = event.getDelta();
         // traverseAndPrint(delta);
 
-        LinkedList<DeltaItem> renameInformation = getRenameInformation(delta);
+        LinkedList<DeltaItem> elementChanges = getChangeInformation(delta);
+        elementChanges = extractChangesFromDeltaInformation(elementChanges);
 
-        for (DeltaItem item : renameInformation) {
-            System.out.println(item.kind + " " + item.id);
+        if (elementChanges.size() == 2) {
+            for (DeltaItem item : elementChanges) {
+                System.out.println(item.kind + " " + item.id);
+            }
+            String idBefore = (elementChanges.get(0).kind == IJavaElementDelta.REMOVED ? elementChanges.get(0).id
+                    : elementChanges.get(1).id);
+            String idAfter = (elementChanges.get(0).kind == IJavaElementDelta.ADDED ? elementChanges.get(0).id
+                    : elementChanges.get(1).id);
+
+            System.out.println("Before: " + idBefore);
+            System.out.println("After: " + idAfter);
+            BookmarkRenameVisitor visitor = new BookmarkRenameVisitor(idBefore, idAfter);
+            Activator.getCommandInvoker().invoke(new RenameJavaElementsCommand(visitor));
         }
-
-        System.out.println(tagEvent(renameInformation));
-        System.out.println();
-
-        // if (!validBeforeAfterId(pair[0], pair[1])) {
-        // return;
-        // }
-        // BookmarkRenameVisitor visitor = new BookmarkRenameVisitor(pair[0],
-        // pair[1]);
+        System.out.println("\n");
         // saveChangeInQueueUntilEditorIsSaved(visitor);
 
     }
 
-    private String tagEvent(LinkedList<DeltaItem> renameInformation) {
+    private LinkedList<DeltaItem> extractChangesFromDeltaInformation(LinkedList<DeltaItem> elementChanges) {
 
-        if (renameInformation.size() == 2) {
-            if (doesReferToSameType(renameInformation)) {
-                return "Correct before/after";
-            } else {
-                return "malformed event of temp. invalid model";
+        if (elementChanges.size() == 2) {
+            return processTwoElementEvent(elementChanges);
+        } else if (elementChanges.size() == 3) {
+            return processThreeElementEvent(elementChanges);
+        } else if (elementChanges.size() == 4) {
+            return processFourElementEvent(elementChanges);
+        } else if (elementChanges.size() >= 5) {
+            return processThreeElementEvent(elementChanges);
+        }
+
+        return new LinkedList<JavaElementChangedListener.DeltaItem>();
+    }
+
+    private LinkedList<DeltaItem> processTwoElementEvent(LinkedList<DeltaItem> elementChanges) {
+        if (isConsitentBeforeAfterInformation(elementChanges)) {
+            return elementChanges;
+        }
+        return new LinkedList<JavaElementChangedListener.DeltaItem>();
+    }
+
+    private LinkedList<DeltaItem> processThreeElementEvent(LinkedList<DeltaItem> elementChanges) {
+        if (is_1xAdd_2xRemove(elementChanges)) {
+            return recoverOldIdFromFragments(elementChanges);
+        } else if (is_1xRemove_with_several_adds(elementChanges)) {
+            return mapAddedFragmentsToRemovedId(elementChanges);
+        }
+        return new LinkedList<DeltaItem>();
+    }
+
+    private LinkedList<DeltaItem> processFourElementEvent(LinkedList<DeltaItem> elementChanges) {
+        elementChanges.remove(1);
+        elementChanges.remove(2);
+        return elementChanges;
+    }
+
+    private LinkedList<DeltaItem> recoverOldIdFromFragments(LinkedList<DeltaItem> elementChanges) {
+        Optional<DeltaItem> added = getFirstOccurenceOfAddedDelta(elementChanges);
+        if (!added.isPresent()) {
+            try {
+                throw new Exception("no added found");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } else if (renameInformation.size() == 3) {
-            if (isAddRemoveRemove(renameInformation)) {
-                return process3_1xAdd_2xRemove(renameInformation);
-                // process3_1xAdd_2xR(renameInformation);
-            } else if (isAddAddRemove(renameInformation)) {
-                return process3_2xAdd_1xRemove(renameInformation);
+        }
+        // perform mapping of remove-paths to the added one
+        String removedId = getChangeBeforeItBrokeWithFragmentIds(elementChanges, added.get());
+
+        if (removedId != null) {
+            System.out.println("recovered changes");
+            return assembleCompleteChangeEvent(removedId, added.get());
+        }
+
+        // "obtained 2 fragments that have to be mapped on the added element";
+        return new LinkedList<DeltaItem>();
+    }
+
+    private LinkedList<DeltaItem> assembleCompleteChangeEvent(String removedId, DeltaItem added) {
+        LinkedList<DeltaItem> completeChange = new LinkedList<DeltaItem>();
+        completeChange.add(new DeltaItem(IJavaElementDelta.REMOVED, removedId));
+        completeChange.add(new DeltaItem(IJavaElementDelta.ADDED, added.id));
+        return completeChange;
+    }
+
+    private String getChangeBeforeItBrokeWithFragmentIds(LinkedList<DeltaItem> elementChanges, DeltaItem added) {
+        String removedId = null;
+        for (DeltaItem item : elementChanges) {
+            if (item != added) {
+                String mapValue = brokenChanges.remove(item.id);
+                removedId = assignIfStillNull(mapValue, removedId);
+            }
+        }
+        return removedId;
+    }
+
+    private String assignIfStillNull(String mapValue, String removedId) {
+        if (mapValue != null && removedId == null) {
+            removedId = mapValue;
+        }
+        return removedId;
+    }
+
+    private Optional<DeltaItem> getFirstOccurenceOfAddedDelta(LinkedList<DeltaItem> elementChanges) {
+        Optional<DeltaItem> added = Optional.absent();
+        for (DeltaItem item : elementChanges) {
+            if (item.kind == IJavaElementDelta.ADDED) {
+                added = Optional.of(item);
+                break;
+            }
+        }
+        return added;
+    }
+
+    private LinkedList<DeltaItem> mapAddedFragmentsToRemovedId(LinkedList<DeltaItem> elementChanges) {
+        System.out.println("process3_1xRemove_severalAdds");
+
+        Optional<DeltaItem> removed = getFirstOccurenceOfRemovedDelta(elementChanges);
+        if (!removed.isPresent()) {
+            try {
+                throw new Exception("no remove found");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // perform mapping of remove-paths to the added one
+        for (DeltaItem item : elementChanges) {
+            if (item != removed.get() && item.kind == IJavaElementDelta.ADDED) {
+                brokenChanges.put(item.id, removed.get().id);
             }
         }
 
-        return "UNKNOWN-TAG";
+        // DeltaItem deltaItem = elementChanges.get(0);
+        // DeltaItem deltaItem2 = elementChanges.get(1);
+        // DeltaItem deltaItem3 = elementChanges.get(2);
+        //
+        // if (implementSameIJavaElementSubInterface(deltaItem, deltaItem2)) {
+        // elementChanges.remove(deltaItem3);
+        // } else {
+        // elementChanges.remove(deltaItem2);
+        // }
+        System.out.println("saved to storage");
+
+        return new LinkedList<JavaElementChangedListener.DeltaItem>();
     }
 
-    private String process3_1xAdd_2xRemove(LinkedList<DeltaItem> renameInformation) {
-        DeltaItem deltaItem = renameInformation.get(0);
-        DeltaItem deltaItem2 = renameInformation.get(1);
-        DeltaItem deltaItem3 = renameInformation.get(2);
-        
-        return "obtained 2 fragments that have to be mapped on the added element";
-    }
-
-    private String process3_2xAdd_1xRemove(LinkedList<DeltaItem> renameInformation) {
-        DeltaItem deltaItem = renameInformation.get(0);
-        DeltaItem deltaItem2 = renameInformation.get(1);
-        DeltaItem deltaItem3 = renameInformation.get(2);
-
-        if (implementSameIJavaElementSubInterface(deltaItem, deltaItem2)) {
-            return "Garbage-ID: " + deltaItem3.id;
+    private Optional<DeltaItem> getFirstOccurenceOfRemovedDelta(LinkedList<DeltaItem> elementChanges) {
+        Optional<DeltaItem> removed = Optional.absent();
+        for (DeltaItem item : elementChanges) {
+            if (item.kind == IJavaElementDelta.REMOVED) {
+                removed = Optional.of(item);
+                break;
+            }
         }
-        return "Garbage-ID: " + deltaItem2.id;
-
+        return removed;
     }
-    
-    private boolean doesReferToSameType(LinkedList<DeltaItem> renameInformation) {
+
+    private boolean isConsitentBeforeAfterInformation(LinkedList<DeltaItem> renameInformation) {
         DeltaItem deltaItem = renameInformation.get(0);
         DeltaItem deltaItem2 = renameInformation.get(1);
 
-        return implementSameIJavaElementSubInterface(deltaItem, deltaItem2);
+        return implementSameIJavaElementSubInterface(deltaItem, deltaItem2)
+                && isOneAddOneRemoveDelta(deltaItem, deltaItem2);
+    }
+
+    private boolean isOneAddOneRemoveDelta(DeltaItem deltaItem, DeltaItem deltaItem2) {
+        return (deltaItem.kind == IJavaElementDelta.ADDED && deltaItem2.kind == IJavaElementDelta.REMOVED)
+                || (deltaItem.kind == IJavaElementDelta.REMOVED && deltaItem2.kind == IJavaElementDelta.ADDED);
     }
 
     private boolean implementSameIJavaElementSubInterface(DeltaItem deltaOne, DeltaItem deltaTwo) {
@@ -130,46 +237,30 @@ public class JavaElementChangedListener implements IElementChangedListener {
         return JavaCore.create(deltaItem.id) instanceof IField;
     }
 
-    private boolean isAddAddRemove(LinkedList<DeltaItem> renameInformation) {
+    private boolean is_1xRemove_with_several_adds(LinkedList<DeltaItem> renameInformation) {
         boolean remove = false;
-        boolean add1 = false;
-        boolean add2 = false;
 
-        for (DeltaItem di : renameInformation) {
-            if (di.kind == IJavaElementDelta.REMOVED) {
+        for (DeltaItem deltaEvent : renameInformation) {
+            if (deltaEvent.kind == IJavaElementDelta.REMOVED && remove == false) {
                 remove = true;
-            }
-            if (di.kind == IJavaElementDelta.ADDED) {
-                if (add1 == true) {
-                    add2 = true;
-                } else {
-                    add1 = true;
-                }
+            } else {
+                remove = false; // expected only 1 add event
             }
         }
-
-        return remove && add1 && add2;
+        return remove;
     }
 
-    private boolean isAddRemoveRemove(LinkedList<DeltaItem> renameInformation) {
+    private boolean is_1xAdd_2xRemove(LinkedList<DeltaItem> renameInformation) {
         boolean add = false;
-        boolean remove1 = false;
-        boolean remove2 = false;
 
-        for (DeltaItem di : renameInformation) {
-            if (di.kind == IJavaElementDelta.ADDED) {
+        for (DeltaItem deltaEvent : renameInformation) {
+            if (deltaEvent.kind == IJavaElementDelta.ADDED && add == false) {
                 add = true;
-            }
-            if (di.kind == IJavaElementDelta.REMOVED) {
-                if (remove1 == true) {
-                    remove2 = true;
-                } else {
-                    remove1 = true;
-                }
+            } else if (deltaEvent.kind == IJavaElementDelta.ADDED && add == true) {
+                add = false; // expected only 1 add event
             }
         }
-
-        return add && remove1 && remove2;
+        return add;
     }
 
     void traverseAndPrint(IJavaElementDelta delta) {
@@ -226,7 +317,7 @@ public class JavaElementChangedListener implements IElementChangedListener {
         return propertyListener;
     }
 
-    private LinkedList<DeltaItem> getRenameInformation(IJavaElementDelta delta) {
+    private LinkedList<DeltaItem> getChangeInformation(IJavaElementDelta delta) {
 
         LinkedList<DeltaItem> list = new LinkedList<JavaElementChangedListener.DeltaItem>();
 
@@ -234,25 +325,17 @@ public class JavaElementChangedListener implements IElementChangedListener {
         case IJavaElementDelta.ADDED: {
             String id = delta.getElement().getHandleIdentifier();
             list.add(new DeltaItem(IJavaElementDelta.ADDED, id));
-            // System.out.println(delta.getElement().getHandleIdentifier() +
-            // " was added");
             break;
         }
         case IJavaElementDelta.REMOVED: {
             String id = delta.getElement().getHandleIdentifier();
             list.add(new DeltaItem(IJavaElementDelta.REMOVED, id));
-
-            // System.out.println(delta.getElement().getHandleIdentifier() +
-            // " was removed");
             break;
         }
         case IJavaElementDelta.CHANGED:
-            // System.out.println(delta.getElement().getHandleIdentifier() +
-            // " was changed");
             if ((delta.getFlags() & IJavaElementDelta.F_CHILDREN) != 0) {
-                IJavaElementDelta[] children = delta.getAffectedChildren();
-                for (int i = 0; i < children.length; i++) {
-                    list.addAll(getRenameInformation(children[i]));
+                for (IJavaElementDelta child : delta.getAffectedChildren()) {
+                    list.addAll(getChangeInformation(child));
                 }
             }
             break;
