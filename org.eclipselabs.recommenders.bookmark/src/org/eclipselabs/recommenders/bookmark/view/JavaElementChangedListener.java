@@ -58,15 +58,18 @@ public class JavaElementChangedListener implements IElementChangedListener {
             System.out.println("After: " + idAfter);
             BookmarkRenameVisitor visitor = new BookmarkRenameVisitor(idBefore, idAfter);
             Activator.getCommandInvoker().invoke(new RenameJavaElementsCommand(visitor));
+            System.out.println("\n");
         }
-        System.out.println("\n");
         // saveChangeInQueueUntilEditorIsSaved(visitor);
 
     }
 
     private LinkedList<DeltaItem> extractChangesFromDeltaInformation(LinkedList<DeltaItem> elementChanges) {
 
-        if (elementChanges.size() == 2) {
+        if (elementChanges.size() == 1) {
+            // umbennen einer variable und aufhšren zu tippen wenn diese ein
+            // schlŸsselwort in java ist --> nur 1 remove event
+        } else if (elementChanges.size() == 2) {
             /*
              * a simple change, no typos or typing breaks
              */
@@ -79,6 +82,7 @@ public class JavaElementChangedListener implements IElementChangedListener {
             return processThreeElementEvent(elementChanges);
         } else if (elementChanges.size() == 4) {
             /*
+             * a special case
              */
             return processFourElementEvent(elementChanges);
         }
