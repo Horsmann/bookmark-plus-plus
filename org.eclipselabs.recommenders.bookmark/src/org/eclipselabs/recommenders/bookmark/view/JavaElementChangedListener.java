@@ -2,48 +2,41 @@ package org.eclipselabs.recommenders.bookmark.view;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.jdt.core.ElementChangedEvent;
 import org.eclipse.jdt.core.IElementChangedListener;
 import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.compiler.IProblem;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPartListener2;
-import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchPartConstants;
-import org.eclipse.ui.IWorkbenchPartReference;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipselabs.recommenders.bookmark.Activator;
 import org.eclipselabs.recommenders.bookmark.commands.RenameJavaElementsCommand;
-import org.eclipselabs.recommenders.bookmark.model.IModelVisitor;
 import org.eclipselabs.recommenders.bookmark.renameparticipant.BookmarkRenameVisitor;
 
 import com.google.common.base.Optional;
 
 public class JavaElementChangedListener implements IElementChangedListener {
 
-    private HashMap<IEditorPart, List<IModelVisitor>> pendingChanges = new HashMap<IEditorPart, List<IModelVisitor>>();
     private HashMap<String, String> brokenChanges = new HashMap<String, String>();
+    private String singleRemove = "";
 
     @Override
     public void elementChanged(ElementChangedEvent event) {
         IJavaElementDelta delta = event.getDelta();
         // traverseAndPrint(delta);
-
-        LinkedList<DeltaItem> elementChanges = getChangeInformation(delta);
-        elementChanges = extractChangesFromDeltaInformation(elementChanges);
+        CompilationUnit compilationUnitAST = delta.getCompilationUnitAST();
+        if (compilationUnitAST != null) {
+            IProblem[] problems = compilationUnitAST.getProblems();
+            System.out.println("Problems: " + problems.length);
+            for (IProblem problem : problems) {
+                System.out.println("Error: " + problem.isError() + "\n" + problem.getID() + "==?" + IProblem.Syntax);
+            }
+        }
+        LinkedList<DeltaItem> elementChanges = transformEventDataIntoOwnDataStructure(delta);
+        elementChanges = reduceEventDataToOneBeforeAndAfterEvent(elementChanges);
 
         if (elementChanges.size() == 2) {
             for (DeltaItem item : elementChanges) {
@@ -56,51 +49,110 @@ public class JavaElementChangedListener implements IElementChangedListener {
 
             System.out.println("Before: " + idBefore);
             System.out.println("After: " + idAfter);
+
+            if (idBefore == null || idAfter == null || idBefore.equals("") || idAfter.equals("")) {
+                int a = 0;
+                a++;
+            }
+
             BookmarkRenameVisitor visitor = new BookmarkRenameVisitor(idBefore, idAfter);
             Activator.getCommandInvoker().invoke(new RenameJavaElementsCommand(visitor));
             System.out.println("\n");
         }
-        // saveChangeInQueueUntilEditorIsSaved(visitor);
-
     }
 
-    private LinkedList<DeltaItem> extractChangesFromDeltaInformation(LinkedList<DeltaItem> elementChanges) {
+    private LinkedList<DeltaItem> reduceEventDataToOneBeforeAndAfterEvent(LinkedList<DeltaItem> elementChanges) {
 
         if (elementChanges.size() == 1) {
-            // umbennen einer variable und aufhšren zu tippen wenn diese ein
-            // schlŸsselwort in java ist --> nur 1 remove event
+            return processOneChangeEvent(elementChanges.get(0));
         } else if (elementChanges.size() == 2) {
-            /*
-             * a simple change, no typos or typing breaks
-             */
-            return processTwoElementEvent(elementChanges);
-        } else if (elementChanges.size() == 3 || elementChanges.size() >= 5) {
-            /*
-             * a typo with an illegal sign (.,' etc) causes several add or
-             * remove notifications, requires disambiguation
-             */
-            return processThreeElementEvent(elementChanges);
-        } else if (elementChanges.size() == 4) {
-            /*
-             * a special case
-             */
-            return processFourElementEvent(elementChanges);
+            return processTwoChangeEvents(elementChanges);
+
+        } else if (elementChanges.size() >= 3 /*
+                                               * elementChanges.size() == 3 ||
+                                               * elementChanges.size() >= 5
+                                               */) {
+            return processThreeOrMoreChangeEvents(elementChanges);
         }
+        // } else if (elementChanges.size() == 4) {
+        // return processFourElementEvent(elementChanges);
+        // }
 
         return new LinkedList<DeltaItem>();
     }
 
-    private LinkedList<DeltaItem> processTwoElementEvent(LinkedList<DeltaItem> elementChanges) {
+    private LinkedList<DeltaItem> processTwoChangeEvents(LinkedList<DeltaItem> elementChanges) {
+        DeltaItem itemOne = elementChanges.get(0);
+        DeltaItem itemTwo = elementChanges.get(1);
+        boolean deltaOneValid = !isTrash(itemOne);
+        boolean deltaTwoValid = !isTrash(itemTwo);
+        if (deltaOneValid && deltaTwoValid) {
+            return processTwoValidChangeEvents(elementChanges);
+        }
+        if (!deltaOneValid && deltaTwoValid) {
+            return processFirstEventInvalidSecondEventValid(itemOne, itemTwo);
+        }
+        return processFirstEventValidSecondEventInvalid(itemOne, itemTwo);
+    }
+
+    private LinkedList<DeltaItem> processFirstEventValidSecondEventInvalid(DeltaItem itemOne, DeltaItem itemTwo) {
+        if (itemOne.kind == IJavaElementDelta.REMOVED) {
+            singleRemove = itemOne.id;
+        } else if (!singleRemove.equals("")) {
+            LinkedList<DeltaItem> list = new LinkedList<DeltaItem>();
+            list.add(itemOne);
+            list.add(new DeltaItem(IJavaElementDelta.REMOVED, getStoredRemoveId()));
+            return list;
+        }
+        return new LinkedList<DeltaItem>();
+    }
+
+    private LinkedList<DeltaItem> processFirstEventInvalidSecondEventValid(DeltaItem itemOne, DeltaItem itemTwo) {
+        if (itemTwo.kind == IJavaElementDelta.REMOVED) {
+            singleRemove = itemTwo.id;
+        } else if (!singleRemove.equals("")) {
+            LinkedList<DeltaItem> list = new LinkedList<DeltaItem>();
+            list.add(itemOne);
+            list.add(new DeltaItem(IJavaElementDelta.REMOVED, getStoredRemoveId()));
+            return list;
+        }
+        return new LinkedList<DeltaItem>();
+    }
+
+    private String getStoredRemoveId() {
+        String savedId = singleRemove;
+        singleRemove = "";
+        return savedId;
+    }
+
+    private LinkedList<DeltaItem> processOneChangeEvent(DeltaItem deltaItem) {
+
+        if (deltaItem.kind == IJavaElementDelta.REMOVED) {
+            singleRemove = deltaItem.id;
+        } else if (deltaItem.kind == IJavaElementDelta.ADDED && !singleRemove.contentEquals("")) {
+            LinkedList<DeltaItem> list = new LinkedList<JavaElementChangedListener.DeltaItem>();
+            list.add(deltaItem);
+            list.add(new DeltaItem(IJavaElementDelta.REMOVED, singleRemove));
+            return list;
+        }
+        return new LinkedList<DeltaItem>();
+    }
+
+    private boolean isTrash(DeltaItem delta) {
+        return delta.id.endsWith("|1");
+    }
+
+    private LinkedList<DeltaItem> processTwoValidChangeEvents(LinkedList<DeltaItem> elementChanges) {
         if (isConsitentBeforeAfterInformation(elementChanges)) {
             return elementChanges;
         }
         return new LinkedList<JavaElementChangedListener.DeltaItem>();
     }
 
-    private LinkedList<DeltaItem> processThreeElementEvent(LinkedList<DeltaItem> elementChanges) {
-        if (is_1xAdd_2xRemove(elementChanges)) {
+    private LinkedList<DeltaItem> processThreeOrMoreChangeEvents(LinkedList<DeltaItem> elementChanges) {
+        if (is1xAddWithSeveralRemoves(elementChanges)) {
             return recoverOldIdFromFragments(elementChanges);
-        } else if (is_1xRemove_with_several_adds(elementChanges)) {
+        } else if (is1xRemoveWithSeveralAdds(elementChanges)) {
             return mapAddedFragmentsToRemovedId(elementChanges);
         }
         return new LinkedList<DeltaItem>();
@@ -187,15 +239,6 @@ public class JavaElementChangedListener implements IElementChangedListener {
             }
         }
 
-        // DeltaItem deltaItem = elementChanges.get(0);
-        // DeltaItem deltaItem2 = elementChanges.get(1);
-        // DeltaItem deltaItem3 = elementChanges.get(2);
-        //
-        // if (implementSameIJavaElementSubInterface(deltaItem, deltaItem2)) {
-        // elementChanges.remove(deltaItem3);
-        // } else {
-        // elementChanges.remove(deltaItem2);
-        // }
         System.out.println("saved to storage");
 
         return new LinkedList<JavaElementChangedListener.DeltaItem>();
@@ -248,7 +291,7 @@ public class JavaElementChangedListener implements IElementChangedListener {
         return JavaCore.create(deltaItem.id) instanceof IField;
     }
 
-    private boolean is_1xRemove_with_several_adds(LinkedList<DeltaItem> renameInformation) {
+    private boolean is1xRemoveWithSeveralAdds(LinkedList<DeltaItem> renameInformation) {
         boolean remove = false;
 
         for (DeltaItem deltaEvent : renameInformation) {
@@ -261,7 +304,7 @@ public class JavaElementChangedListener implements IElementChangedListener {
         return remove;
     }
 
-    private boolean is_1xAdd_2xRemove(LinkedList<DeltaItem> renameInformation) {
+    private boolean is1xAddWithSeveralRemoves(LinkedList<DeltaItem> renameInformation) {
         boolean add = false;
 
         for (DeltaItem deltaEvent : renameInformation) {
@@ -269,66 +312,13 @@ public class JavaElementChangedListener implements IElementChangedListener {
                 add = true;
             } else if (deltaEvent.kind == IJavaElementDelta.ADDED && add == true) {
                 add = false; // expected only 1 add event
+                break;
             }
         }
         return add;
     }
 
-    void traverseAndPrint(IJavaElementDelta delta) {
-        switch (delta.getKind()) {
-        case IJavaElementDelta.ADDED:
-            System.out.println(delta.getElement().getHandleIdentifier() + " was added");
-            break;
-        case IJavaElementDelta.REMOVED:
-            System.out.println(delta.getElement().getHandleIdentifier() + " was removed");
-            break;
-        case IJavaElementDelta.CHANGED:
-            // System.out.println(delta.getElement().getHandleIdentifier() +
-            // " was changed");
-            if ((delta.getFlags() & IJavaElementDelta.F_CHILDREN) != 0) {
-                System.out.println("The change was in its children");
-            }
-            break;
-        }
-        IJavaElementDelta[] children = delta.getAffectedChildren();
-        for (int i = 0; i < children.length; i++) {
-            traverseAndPrint(children[i]);
-        }
-    }
-
-    private void saveChangeInQueueUntilEditorIsSaved(BookmarkRenameVisitor visitor) {
-        Optional<IEditorPart> editorPart = getEditorPartsOfActivePage();
-        if (editorPart.isPresent()) {
-            setUpDirtyEditorHandling(editorPart);
-            storeChanges(visitor, editorPart.get());
-        }
-    }
-
-    private void setUpDirtyEditorHandling(Optional<IEditorPart> editorPart) {
-        PropertyListener registerPropertyListener = registerPropertyListener(editorPart.get());
-        ActivePagePartListener registerPageCloseListener = registerPageCloseListener(editorPart.get());
-        registerPageCloseListener.setPropertyListener(registerPropertyListener);
-    }
-
-    private void storeChanges(BookmarkRenameVisitor visitor, IEditorPart iEditorPart) {
-        List<IModelVisitor> list = getList(iEditorPart);
-        list.add(visitor);
-    }
-
-    private ActivePagePartListener registerPageCloseListener(IEditorPart iEditorPart) {
-        IWorkbenchPage page = iEditorPart.getSite().getPage();
-        ActivePagePartListener activePageListener = new ActivePagePartListener(iEditorPart, this);
-        page.addPartListener(activePageListener);
-        return activePageListener;
-    }
-
-    private PropertyListener registerPropertyListener(IEditorPart iEditorPart) {
-        PropertyListener propertyListener = new PropertyListener(iEditorPart);
-        iEditorPart.addPropertyListener(propertyListener);
-        return propertyListener;
-    }
-
-    private LinkedList<DeltaItem> getChangeInformation(IJavaElementDelta delta) {
+    private LinkedList<DeltaItem> transformEventDataIntoOwnDataStructure(IJavaElementDelta delta) {
 
         LinkedList<DeltaItem> list = new LinkedList<JavaElementChangedListener.DeltaItem>();
 
@@ -346,163 +336,13 @@ public class JavaElementChangedListener implements IElementChangedListener {
         case IJavaElementDelta.CHANGED:
             if ((delta.getFlags() & IJavaElementDelta.F_CHILDREN) != 0) {
                 for (IJavaElementDelta child : delta.getAffectedChildren()) {
-                    list.addAll(getChangeInformation(child));
+                    list.addAll(transformEventDataIntoOwnDataStructure(child));
                 }
             }
             break;
         }
 
         return list;
-    }
-
-    private Optional<IEditorPart> getEditorPartsOfActivePage() {
-        Optional<IEditorPart> editor = Optional.absent();
-        IWorkbench workbench = PlatformUI.getWorkbench();
-        IWorkbenchWindow[] workbenchWindows = workbench.getWorkbenchWindows();
-        for (IWorkbenchWindow window : workbenchWindows) {
-            IWorkbenchPage activePage = window.getActivePage();
-            if (activePage != null) {
-                return Optional.of(activePage.getActiveEditor());
-            }
-        }
-        return editor;
-    }
-
-    public void removeAllChangesFor(IEditorPart editorPart) {
-        pendingChanges.remove(editorPart);
-    }
-
-    private List<IModelVisitor> getList(IEditorPart editorPart) {
-        if (pendingChanges.get(editorPart) == null) {
-            List<IModelVisitor> outstanding = new LinkedList<IModelVisitor>();
-            pendingChanges.put(editorPart, outstanding);
-            return outstanding;
-        }
-        return pendingChanges.get(editorPart);
-    }
-
-    private void executeChanges(IEditorPart part) {
-        List<IModelVisitor> changes = getList(part);
-        pendingChanges.remove(part);
-        System.out.println("Execute");
-        for (IModelVisitor change : changes) {
-            System.out.println(change);
-            Activator.getCommandInvoker().invoke(new RenameJavaElementsCommand(change));
-        }
-        System.out.println("Execute-End");
-    }
-
-    private boolean validBeforeAfterId(String idBefore, String idAfter) {
-        return !idBefore.equals("") && !idAfter.equals("");
-    }
-
-    private String getIdAfterChange(IJavaElementDelta[] beforeAfter) {
-        if (beforeAfter.length != 2) {
-            return "";
-        }
-        IJavaElementDelta after = beforeAfter[0];
-        IJavaElement element = after.getElement();
-        if (element != null) {
-            return element.getHandleIdentifier();
-        }
-        return "";
-    }
-
-    private String getIdBeforeChange(IJavaElementDelta[] beforeAfter) {
-        if (beforeAfter.length != 2) {
-            return "";
-        }
-        IJavaElementDelta before = beforeAfter[1];
-        IJavaElement element = before.getElement();
-        if (element != null) {
-            return element.getHandleIdentifier();
-        }
-        return "";
-    }
-
-    class PropertyListener implements IPropertyListener {
-
-        private final IEditorPart editorPart;
-
-        public PropertyListener(IEditorPart editorPart) {
-            this.editorPart = editorPart;
-        }
-
-        @Override
-        public void propertyChanged(Object source, int propId) {
-            if (editorContentSaved(propId)) {
-                removeListener();
-                executeChanges(editorPart);
-            }
-        }
-
-        private boolean editorContentSaved(int propId) {
-            return (propId == IWorkbenchPartConstants.PROP_DIRTY && !editorPart.isDirty());
-        }
-
-        public void removeListener() {
-            editorPart.removePropertyListener(this);
-        }
-
-    }
-
-    class ActivePagePartListener implements IPartListener2 {
-
-        private PropertyListener propertyListener;
-        private final JavaElementChangedListener changeListener;
-        private IEditorPart editorPart;
-
-        public ActivePagePartListener(IEditorPart editorPart, JavaElementChangedListener javaElementChangedListener) {
-            this.editorPart = editorPart;
-            this.changeListener = javaElementChangedListener;
-        }
-
-        public void setPropertyListener(PropertyListener propertyListener) {
-            this.propertyListener = propertyListener;
-        }
-
-        @Override
-        public void partActivated(IWorkbenchPartReference partRef) {
-        }
-
-        @Override
-        public void partBroughtToTop(IWorkbenchPartReference partRef) {
-        }
-
-        @Override
-        public void partClosed(IWorkbenchPartReference partRef) {
-
-            IWorkbenchPart part = partRef.getPart(false);
-            if (part instanceof IEditorPart) {
-                IEditorPart eventEditorPart = (IEditorPart) part;
-                if (editorPart == eventEditorPart) {
-                    changeListener.removeAllChangesFor(editorPart);
-                    propertyListener.removeListener();
-                }
-            }
-
-        }
-
-        @Override
-        public void partDeactivated(IWorkbenchPartReference partRef) {
-        }
-
-        @Override
-        public void partOpened(IWorkbenchPartReference partRef) {
-        }
-
-        @Override
-        public void partHidden(IWorkbenchPartReference partRef) {
-        }
-
-        @Override
-        public void partVisible(IWorkbenchPartReference partRef) {
-        }
-
-        @Override
-        public void partInputChanged(IWorkbenchPartReference partRef) {
-        }
-
     }
 
     class DeltaItem {
@@ -512,6 +352,16 @@ public class JavaElementChangedListener implements IElementChangedListener {
         public DeltaItem(int removed, String id) {
             this.kind = removed;
             this.id = id;
+        }
+
+        @Override
+        public String toString() {
+            return getTextForKind() + ": " + id;
+        }
+
+        private String getTextForKind() {
+            return (kind == IJavaElementDelta.ADDED ? "ADDED" : (kind == IJavaElementDelta.REMOVED) ? "REMOVED"
+                    : "UNKNOWN");
         }
     }
 }
