@@ -81,16 +81,14 @@ public class BookmarkRenameVisitor implements IChangeBookmark {
     private void replaceMethodSignatureParameterOfChangedTypes(JavaElementBookmark javaElementBookmark, String oldName,
             String newName) {
         String[][] pairs = { { "Q" + oldName + ";", "Q" + newName + ";" },
-                { newName + ".java[" + oldName + "[", newName + ".java[" + newName + "[" },
-                { newName + ".java[" + oldName + "~", newName + ".java[" + newName + "~" },
-                { newName + ".java[" + oldName + "^", newName + ".java[" + newName + "^" } };
+                { newName + ".java\\[" + oldName + "\\[", newName + ".java[" + newName + "[" },
+                { newName + ".java\\[" + oldName + "~", newName + ".java[" + newName + "~" },
+                { newName + ".java\\[" + oldName + "\\^", newName + ".java[" + newName + "^" },
+                { newName + ".java\\[" + oldName + "$", newName + ".java[" + newName } };
         String handleId = javaElementBookmark.getHandleId();
         for (int i = 0; i < pairs.length; i++) {
-            handleId = handleId.replace(pairs[i][0], pairs[i][1]);
+            handleId = handleId.replaceAll(pairs[i][0], pairs[i][1]);
         }
-
-        //TODO: SatzEnde Situation
-        handleId = handleId.replaceAll(newName + ".java\\[" + oldName + "$", newName + ".java[" + newName);
 
         System.out.println(handleId);
         javaElementBookmark.setHandleId(handleId);
