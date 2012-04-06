@@ -18,8 +18,7 @@ import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
 
 public class JavaElementRenameParticipant extends RenameParticipant {
 
-    private String oldHandleId;
-    private String newHandleId;
+    private String[] change = new String[2];
 
     private RenameSupported elementType = RenameSupported.NOT_SUPPORTED;
 
@@ -30,9 +29,9 @@ public class JavaElementRenameParticipant extends RenameParticipant {
             return false;
         }
 
-        oldHandleId = ((IJavaElement) element).getHandleIdentifier();
+        String oldHandleId = ((IJavaElement) element).getHandleIdentifier();
         detectElementType((IJavaElement) element);
-        newHandleId = generateNewHandleId(oldHandleId);
+        change = generateNewHandleId(oldHandleId);
         if (!initSuccessful()) {
             return false;
         }
@@ -44,10 +43,10 @@ public class JavaElementRenameParticipant extends RenameParticipant {
     }
 
     private boolean initSuccessful() {
-        return elementType != RenameSupported.NOT_SUPPORTED && !oldHandleId.equals("") && !newHandleId.equals("");
+        return elementType != RenameSupported.NOT_SUPPORTED && !change[0].equals("") && !change[1].equals("");
     }
 
-    private String generateNewHandleId(String oldHandleId) {
+    private String[] generateNewHandleId(String oldHandleId) {
 
         String id = "";
 
@@ -55,25 +54,61 @@ public class JavaElementRenameParticipant extends RenameParticipant {
         switch (elementType) {
         case IFIELD:
             id = updateIdStem(oldHandleId, newName, "^", false);
-            break;
-        case ITYPE:
-            id = updateIdStem(oldHandleId, newName, "[", false);
-            break;
+            return new String[] { oldHandleId, id };
         case ICOMPILATION_UNIT:
             id = updateIdStem(oldHandleId, newName, "{", true);
-            break;
+            return new String[] { oldHandleId, id };
         case IPACKAGE_FRAGMENT:
             id = updateIdStem(oldHandleId, newName, "<", true);
-            break;
+            return new String[] { oldHandleId, id };
         case IPACKAGE_FRAGMENT_ROOT:
             id = updateIdStem(oldHandleId, newName, "/", true);
-            break;
+            return new String[] { oldHandleId, id };
+        case ITYPE:
+            return updateTypeIdStem(oldHandleId, newName);
         case IMETHOD:
             id = updateMethodIdStem(oldHandleId, newName);
-            break;
+            return new String[] { oldHandleId, newName };
         }
 
-        return id;
+        return new String[] { "", "" };
+    }
+
+    private String[] updateTypeIdStem(String oldHandleId, String newName) {
+        String interimStem = updateIdStem(oldHandleId, newName, "[", false);
+        if (isTypePreceededByCompilationUnitName(interimStem, newName)) {
+            String newId = alsoUpdatePreceedingCompilationUnitName(interimStem, newName);
+            String oldId = updateOldIdsCompilationUnitNameToNewName(oldHandleId, newName);
+            return new String[] { oldId, newId };
+        }
+
+        return new String[] { oldHandleId, interimStem };
+    }
+
+    /**
+     * The updates of ids in the model happens incremental, the id part of the
+     * compilation unit will already be updated once the type information is
+     * processed. the old id is still referencing to the old compilation unit
+     * name. to enable a matching the old compilation unit name has to be
+     * updated here otherwise the type information is not updated correctly
+     */
+    private String updateOldIdsCompilationUnitNameToNewName(String oldHandleId, String newName) {
+        int start = oldHandleId.indexOf("{") + 1;
+        int end = oldHandleId.indexOf(".java[");
+        return oldHandleId.substring(0, start) + newName + oldHandleId.substring(end);
+    }
+
+    private String alsoUpdatePreceedingCompilationUnitName(String interimStem, String newName) {
+        int endIndex = interimStem.indexOf(".java[" + newName);
+        if (endIndex == -1) {
+            return interimStem;
+        }
+        int startIndex = interimStem.indexOf("{") + 1;
+        return interimStem.substring(0, startIndex) + newName + interimStem.substring(endIndex);
+    }
+
+    private boolean isTypePreceededByCompilationUnitName(String interimStem, String newName) {
+        return interimStem.indexOf(".java[" + newName) > -1;
     }
 
     private String updateMethodIdStem(String oldHandleId, String newName) {
@@ -145,7 +180,7 @@ public class JavaElementRenameParticipant extends RenameParticipant {
     }
 
     private IChangeBookmark getVisitor() {
-        return new BookmarkRenameVisitor(oldHandleId, newHandleId);
+        return new BookmarkRenameVisitor(change[0], change[1]);
     }
 
 }

@@ -22,19 +22,14 @@ public class JavaElementChangedListener implements IElementChangedListener {
 
     private HashMap<String, String> brokenChanges = new HashMap<String, String>();
     private String singleRemove = "";
+    private boolean isError = false;
 
     @Override
     public void elementChanged(ElementChangedEvent event) {
         IJavaElementDelta delta = event.getDelta();
         // traverseAndPrint(delta);
-        CompilationUnit compilationUnitAST = delta.getCompilationUnitAST();
-        if (compilationUnitAST != null) {
-            IProblem[] problems = compilationUnitAST.getProblems();
-            System.out.println("Problems: " + problems.length);
-            for (IProblem problem : problems) {
-                System.out.println("Error: " + problem.isError() + "\n" + problem.getID() + "==?" + IProblem.Syntax);
-            }
-        }
+        hasErrors(delta);
+
         LinkedList<DeltaItem> elementChanges = transformEventDataIntoOwnDataStructure(delta);
         elementChanges = reduceEventDataToOneBeforeAndAfterEvent(elementChanges);
 
@@ -61,13 +56,33 @@ public class JavaElementChangedListener implements IElementChangedListener {
         }
     }
 
+    private void hasErrors(IJavaElementDelta delta) {
+        CompilationUnit compilationUnitAST = delta.getCompilationUnitAST();
+        if (compilationUnitAST == null) {
+            return;
+        }
+
+        for (IProblem problem : compilationUnitAST.getProblems()) {
+            vertexteId(problem.getID());
+            if (isError = problem.isError()) {
+                break;
+            }
+        }
+    }
+
+    private String vertexteId(int id) {
+        if ((id & IProblem.Syntax) != 0){
+            System.out.println("Syntax");
+        }
+        return null;
+    }
+
     private LinkedList<DeltaItem> reduceEventDataToOneBeforeAndAfterEvent(LinkedList<DeltaItem> elementChanges) {
 
         if (elementChanges.size() == 1) {
             return processOneChangeEvent(elementChanges.get(0));
         } else if (elementChanges.size() == 2) {
             return processTwoChangeEvents(elementChanges);
-
         } else if (elementChanges.size() >= 3 /*
                                                * elementChanges.size() == 3 ||
                                                * elementChanges.size() >= 5
@@ -82,6 +97,11 @@ public class JavaElementChangedListener implements IElementChangedListener {
     }
 
     private LinkedList<DeltaItem> processTwoChangeEvents(LinkedList<DeltaItem> elementChanges) {
+        
+        if(isError){
+            return new LinkedList<DeltaItem>();
+        }
+        
         DeltaItem itemOne = elementChanges.get(0);
         DeltaItem itemTwo = elementChanges.get(1);
         boolean deltaOneValid = !isTrash(itemOne);
