@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipselabs.recommenders</groupId>
 	<artifactId>org.eclipselabs.recommenders.bookmark.parent</artifactId>
-	<version>0.1.01-SNAPSHOT</version>
+	<version>0.1.02-SNAPSHOT</version>
 	<packaging>pom</packaging>
     
     	<properties>

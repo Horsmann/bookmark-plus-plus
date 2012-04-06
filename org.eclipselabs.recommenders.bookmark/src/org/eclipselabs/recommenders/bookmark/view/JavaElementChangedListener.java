@@ -29,6 +29,7 @@ public class JavaElementChangedListener implements IElementChangedListener {
         IJavaElementDelta delta = event.getDelta();
         // traverseAndPrint(delta);
         hasErrors(delta);
+        System.out.println("Error: " + isError);
 
         LinkedList<DeltaItem> elementChanges = transformEventDataIntoOwnDataStructure(delta);
         elementChanges = reduceEventDataToOneBeforeAndAfterEvent(elementChanges);

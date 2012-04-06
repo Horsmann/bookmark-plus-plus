@@ -2,7 +2,7 @@
 <feature
       id="org.eclipselabs.recommenders.feature.bookmark.source"
       label="Bookmark Feature Source"
-      version="0.1.01.qualifier"
+      version="0.1.02.qualifier"
       provider-name="Eclipse Code Recommenders">
 
    <description url="http://www.example.com/description">
