@@ -43,7 +43,7 @@ public class BookmarkRenameVisitor implements IChangeBookmark {
 
         if (isEqual(javaElementBookmark.getHandleId())) {
             javaElementBookmark.setHandleId(newId);
-        } else /* if (idIsContained(javaElementBookmark)) */{
+        } else {
             updateElement(javaElementBookmark);
         }
 
@@ -63,14 +63,21 @@ public class BookmarkRenameVisitor implements IChangeBookmark {
         updateTypeInformationInId(javaElementBookmark);
     }
 
+    /**
+     * If the type is renamed that gives the compilation unit its name the
+     * rename events have not necessarily been produced in an order that enables
+     * simple before/after updating. Hence, this method also updates the
+     * compilation unit name if the change of its name giving type is processed
+     * first. Additionally, if the type occurs as parameters in bookmarked
+     * methods those type parameters are also updated here.
+     */
     private void updateTypeInformationInId(JavaElementBookmark javaElementBookmark) {
         IJavaElement oldEle = JavaCore.create(oldId);
         IJavaElement newEle = JavaCore.create(newId);
         if (isType(oldEle) && isType(newEle)) {
             String oldElementName = oldEle.getElementName();
             String newElementName = newEle.getElementName();
-            replaceMethodSignatureParameterOfChangedTypes(javaElementBookmark, removeFileEnding(oldElementName),
-                    removeFileEnding(newElementName));
+            updateIdsWithRegEx(javaElementBookmark, removeFileEnding(oldElementName), removeFileEnding(newElementName));
         }
     }
 
@@ -78,8 +85,7 @@ public class BookmarkRenameVisitor implements IChangeBookmark {
         return element instanceof IType || element instanceof ICompilationUnit;
     }
 
-    private void replaceMethodSignatureParameterOfChangedTypes(JavaElementBookmark javaElementBookmark, String oldName,
-            String newName) {
+    private void updateIdsWithRegEx(JavaElementBookmark javaElementBookmark, String oldName, String newName) {
         String[][] pairs = { { "Q" + oldName + ";", "Q" + newName + ";" },
                 { newName + ".java\\[" + oldName + "\\[", newName + ".java[" + newName + "[" },
                 { newName + ".java\\[" + oldName + "~", newName + ".java[" + newName + "~" },
@@ -89,8 +95,6 @@ public class BookmarkRenameVisitor implements IChangeBookmark {
         for (int i = 0; i < pairs.length; i++) {
             handleId = handleId.replaceAll(pairs[i][0], pairs[i][1]);
         }
-
-        System.out.println(handleId);
         javaElementBookmark.setHandleId(handleId);
     }
 
@@ -100,10 +104,6 @@ public class BookmarkRenameVisitor implements IChangeBookmark {
             return name.substring(0, indexOf);
         }
         return name;
-    }
-
-    private boolean idIsContained(JavaElementBookmark javaElementBookmark) {
-        return javaElementBookmark.getHandleId().startsWith(oldId);
     }
 
     @Override
