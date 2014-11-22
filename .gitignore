@@ -17,3 +17,6 @@ target/
 *~
 *#
 *.licensed
+**/.project
+**/.classpath
+**/.settings/
