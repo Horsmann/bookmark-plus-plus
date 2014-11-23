@@ -7,7 +7,6 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.eclipselabs.recommenders.bookmark.tests</artifactId>
-	<version>0.1.02-SNAPSHOT</version>
 	<packaging>eclipse-test-plugin</packaging>	
 	
 	<dependencies>
@@ -15,5 +14,48 @@
 	<properties>
 		<eclemma.instrument.bundles>org.eclipselabs.recommenders.bookmark</eclemma.instrument.bundles>
 	</properties>
-	
+	<repositories>
+    <repository>
+        <id>orbit-kepler</id>
+        <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20130517111416/repository/</url>
+        <layout>p2</layout>
+    </repository>
+</repositories>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.eclipse.tycho
+										</groupId>
+										<artifactId>
+											tycho-source-plugin
+										</artifactId>
+										<versionRange>
+											[0.13.0,)
+										</versionRange>
+										<goals>
+											<goal>plugin-source</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>
