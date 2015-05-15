@@ -1,0 +1,2 @@
+A much more convenient alternative to the bookmark plugin that ships with Eclipse. Bookmark++ enables bookmarking of source/class files, methods, variables and miscellaneous configuration files. Organize your bookmarks in categories and share them with other developers.
+Bookmark++ offers place saving representation modes to use up as less space as possible on your screen.
